@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Header from "@/app/_components/layout/templates/header";
+import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
+import Main from "@/app/_components/layout/templates/main";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,13 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/*この階層でHeaderとMainを定義する。モバイルでのoverflowの制御もここで行う。このwrapperのrefが必要な場合は別コンポーネントとして切り分ける可能性もある。*/}
         <div className={'w-[100svw] h-[100svh] md:overflow-hidden overflow-y-scroll'}>
-
+          <ScrollDetector/>
+          <Header/>
+          <Main>{children}</Main>
         </div>
       </body>
     </html>

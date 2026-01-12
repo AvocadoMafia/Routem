@@ -1,26 +1,88 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background-0: #f8f9ff;
+  --background-1: #ffffff;
+  --foreground-0: #48484e;
+  --foreground-1: #63636e;
+  --accent-0: #2d1ff6;
+  --accent-1: #ff7dd8;
+  --accent-2: #55d2c3;
+  --grass: #e6e8ed;
+  --accent-warning: #fb123e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@utility theme-reversed {
+  --background-1: #232323;
+  --background-0: #292929;
+  --foreground-0: #ededed;
+  --foreground-1: #aeaeae;
+  --accent-0: #7b56ff;
+  --accent-1: #ff5999;
+  --accent-2: #55d2c3;
+  --grass: #474747;
+  --accent-warning: #fb123e;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @variant dark {
+    --background-0: #f8f9ff;
+    --background-1: #ffffff;
+    --foreground-0: #48484e;
+    --foreground-1: #63636e;
+    --accent-0: #2d1ff6;
+    --accent-1: #ff7dd8;
+    --accent-2: #55d2c3;
+    --grass: #e6e8ed;
+    --accent-warning: #fb123e;
   }
 }
 
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Light mode (明示的にlightクラスが付いたとき) */
+.light {
+  --background-0: #f8f9ff;
+  --background-1: #ffffff;
+  --foreground-0: #48484e;
+  --foreground-1: #63636e;
+  --accent-0: #2d1ff6;
+  --accent-1: #ff7dd8;
+  --accent-2: #55d2c3;
+  --grass: #e6e8ed;
+  --accent-warning: #fb123e;
+}
+
+.dark {
+  --background-1: #232323;
+  --background-0: #292929;
+  --foreground-0: #ededed;
+  --foreground-1: #aeaeae;
+  --accent-0: #7b56ff;
+  --accent-1: #ff5999;
+  --accent-2: #55d2c3;
+  --grass: #474747;
+  --accent-warning: #fb123e;
+}
+
+@theme inline {
+  --color-background-0: var(--background-0);
+  --color-background-1: var(--background-1);
+  --color-foreground-0: var(--foreground-0);
+  --color-foreground-1: var(--foreground-1);
+  --color-accent-0: var(--accent-0);
+  --color-accent-1: var(--accent-1);
+  --color-accent-2: var(--accent-2);
+  --color-grass: var(--grass);
+  --color-accent-warning: var(--accent-warning);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--background-0);
+  color: var(--foreground-0);
   font-family: Arial, Helvetica, sans-serif;
 }
