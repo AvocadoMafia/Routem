@@ -26,7 +26,7 @@ export default function FeaturedUserCard({ user, metric, onClick }: FeaturedUser
         className="absolute inset-0 w-full h-full object-cover"
       />
       {/* Black overlay */}
-      <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
         {/* Rank badge */}
         <div className="absolute top-4 left-4 z-10">
@@ -49,7 +49,7 @@ export default function FeaturedUserCard({ user, metric, onClick }: FeaturedUser
                             from US・17k followers
                         </p>
                     </div>
-                    <img src={user.profileImage || '/mockImages/userIcon.jpg'} alt={`${user.name} icon`} className={'w-11 h-11 rounded-full'}/>
+                    <img src={user.profileImage || '/mockImages/userIcon_1.jpg'} alt={`${user.name} icon`} className={'w-11 h-11 rounded-full'}/>
                 </div>
             </div>
         </div>

@@ -38,7 +38,7 @@ export default function FeaturedRouteCard({ route, metric = 'likes', onClick }: 
         className="absolute inset-0 w-full h-full object-cover"
       />
       {/* Black overlay */}
-      <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       {/* Rank badge */}
       <div className="absolute top-4 left-4 z-10">

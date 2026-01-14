@@ -1,4 +1,4 @@
-import RouteCard, { RouteCardProps } from '@/app/_components/common/templates/routeCard';
+import RouteCardHorizontal, { RouteCardProps } from '@/app/_components/common/templates/routeCardHorizontal';
 
 // Simple mock data for route cards (replace with API integration as needed)
 export const mockRoutes: RouteCardProps[] = [
@@ -36,7 +36,7 @@ export default function RouteList({ focusedIndex, setFocusedIndex }: RouteListPr
       }}
     >
       {mockRoutes.map((route, idx) => (
-        <RouteCard
+        <RouteCardHorizontal
           key={`${route.title}-${idx}`}
           {...route}
           isFocused={focusedIndex === idx}

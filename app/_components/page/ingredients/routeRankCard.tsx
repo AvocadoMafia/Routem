@@ -1,21 +1,11 @@
 import React from 'react'
 import { HiHeart, HiEye } from 'react-icons/hi2'
+import {Route} from "@/lib/client/types";
 
 export type RouteMetricType = 'likes' | 'views'
 
-export type TopRoute = {
-  id: string
-  title: string
-  user: string
-  likesThisWeek: number
-  viewsThisWeek?: number
-  category: string
-  /** URL of the route thumbnail image */
-  thumbnailImageSrc?: string
-}
-
 export type RouteRankCardProps = {
-  route: TopRoute
+  route: Route
   rank: number
   metric?: RouteMetricType
   onClick?: () => void

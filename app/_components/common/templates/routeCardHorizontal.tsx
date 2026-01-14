@@ -20,7 +20,7 @@ export type RouteCardProps = {
 };
 
 // 横長のシンプルな旅行ルート サムネイルカード
-const RouteCard: FC<RouteCardProps> = ({
+const RouteCardHorizontal: FC<RouteCardProps> = ({
   title,
   user,
   likes,
@@ -109,4 +109,4 @@ const RouteCard: FC<RouteCardProps> = ({
   );
 };
 
-export default RouteCard;
+export default RouteCardHorizontal;

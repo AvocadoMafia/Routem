@@ -46,7 +46,7 @@ export function UserCard({ user, rank, metric, onClick }: UserCardProps) {
         {/* Middle section: icon, rank, name, metric */}
         <div className=" p-3 flex items-center gap-3">
           <img
-            src={user.profileImage || "/mockImages/userIcon.jpg"}
+            src={user.profileImage || "/mockImages/userIcon_1.jpg"}
             alt={`${user.name} icon`}
             className="w-11 h-11 rounded-full object-cover bg-accent-0/10"
           />

@@ -7,7 +7,7 @@ type RootViewerProps = {
   focusedIndex: number;
 };
 
-export default function RootViewer({ focusedIndex }: RootViewerProps) {
+export default function RouteViewer({ focusedIndex }: RootViewerProps) {
   const route = focusedIndex !== null ? mockRoutes[focusedIndex] : null;
 
   return (
