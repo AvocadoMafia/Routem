@@ -1,3 +1,5 @@
+import {LuMapPin} from "react-icons/lu";
+
 export default function PhotoContainer(props: { test: number }) {
     const title =
         props.test === 1
@@ -7,7 +9,8 @@ export default function PhotoContainer(props: { test: number }) {
                 : "Tokyo";
 
     return (
-        <div className="group relative w-full overflow-hidden rounded-xl transition-shadow duration-300 hover:shadow-xl">
+        <div
+            className="group relative w-full overflow-hidden rounded-xl transition-shadow duration-300 hover:shadow-xl">
             {/* 画像 */}
             <img
                 src={
@@ -41,14 +44,11 @@ export default function PhotoContainer(props: { test: number }) {
             />
 
             {/* タイトル（右下） */}
-            <h2
+            <div
                 className="
           absolute
           bottom-4
           right-4
-          text-white
-          text-2xl
-          font-bold
           opacity-0
           translate-y-2
           transition-all
@@ -56,10 +56,20 @@ export default function PhotoContainer(props: { test: number }) {
           ease-out
           group-hover:opacity-100
           group-hover:translate-y-0
+          flex flex-col gap-4 items-end
         "
             >
-                {title}
-            </h2>
+                <div className={'flex items-center gap-2 text-white text-3xl font-bold'}>
+                    <LuMapPin/>
+                    <span>Kyoto, Japan</span>
+                </div>
+                <p className={'text-gray-200 text-2xl font-bold '}>from Kyoto Old Town Walk</p>
+                <div className={'flex items-center gap-2 text-gray-200 text-lg'}>
+                    <span>by</span>
+                    <img className={'w-7 h-7 rounded-full'} src={'/mockImages/userIcon_1.jpg'}/>
+                    <span>mock_user</span>
+                </div>
+            </div>
         </div>
     );
 }

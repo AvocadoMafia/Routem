@@ -10,7 +10,7 @@ const mockTopRoutes: Route[] = [
     { id: 'r6', title: 'Mount Fuji Scenic Drive', user: 'yuki', likesThisWeek: 760, viewsThisWeek: 14550, category: 'Nature', thumbnailImageSrc: '/mockImages/Fuji.jpg' },
 ]
 
-export default function RecommendedArticlesList() {
+export default function RecommendedRoutesList() {
   return (
       <div className={'w-full h-fit flex flex-col gap-3'}>
           <h2 className="text-sm font-semibold text-foreground-0">Recommended For You</h2>
