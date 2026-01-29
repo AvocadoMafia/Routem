@@ -5,12 +5,18 @@ import {Map} from "react-map-gl/mapbox-legacy";
 import RouteList from "@/app/_components/page/ingredients/routeList";
 import RouteViewer from "@/app/_components/page/ingredients/routeViewer";
 import RouteFilter from "@/app/_components/page/ingredients/routeFilter";
+import {Route} from "@/lib/client/types";
 
-export default function MapViewer() {
+type Props = {
+    routes: Route[]
+}
+
+export default function MapViewerOnLaptop(props: Props) {
     const [focusedRouteIndex, setFocusedRouteIndex] = useState<number>(1);
 
+
     return (
-        <div className={'w-full rounded-2xl h-fit overflow-hidden relative'}>
+        <div className={'w-full rounded-2xl h-fit overflow-hidden relative md:block hidden'}>
             <div className={'w-full h-[600px] flex flex-row border-b-1 border-grass/20'}>
                 {/*まだマップのシークレットがないので一旦コメントアウトし、ダミーとして画像を表示*/}
                 {/*<Map*/}
@@ -27,8 +33,8 @@ export default function MapViewer() {
                     <img src={'/map.png'} alt={'map'} className={'w-full h-full object-cover'}/>
                     {/* マップ上のオーバーレイなどが必要な場合はここに追加 */}
                 </div>
-                <RouteViewer focusedIndex={focusedRouteIndex} />
-                <RouteList focusedIndex={focusedRouteIndex} setFocusedIndex={setFocusedRouteIndex} />
+                <RouteViewer focusedIndex={focusedRouteIndex} routes={props.routes}/>
+                <RouteList focusedIndex={focusedRouteIndex} routes={props.routes} setFocusedIndex={setFocusedRouteIndex} />
             </div>
             <RouteFilter/>
         </div>

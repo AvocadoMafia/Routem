@@ -47,8 +47,8 @@ export default function PhotoContainer(props: { test: number }) {
             <div
                 className="
           absolute
-          bottom-4
-          right-4
+          bottom-0
+          right-0
           opacity-0
           translate-y-2
           transition-all
@@ -56,17 +56,18 @@ export default function PhotoContainer(props: { test: number }) {
           ease-out
           group-hover:opacity-100
           group-hover:translate-y-0
-          flex flex-col gap-4 items-end
+          flex flex-col md:gap-4 gap-1 items-end
+          p-4
         "
             >
-                <div className={'flex items-center gap-2 text-white text-3xl font-bold'}>
+                <div className={'flex items-center gap-2 text-white text-md sm:text-lg md:text-3xl font-bold'}>
                     <LuMapPin/>
                     <span>Kyoto, Japan</span>
                 </div>
-                <p className={'text-gray-200 text-2xl font-bold '}>from Kyoto Old Town Walk</p>
-                <div className={'flex items-center gap-2 text-gray-200 text-lg'}>
+                <p className={'text-gray-200 text-sm sm:text-md md:text-2xl font-bold line-clamp-2'}>from Kyoto Old Town Walk</p>
+                <div className={'flex items-center gap-2 text-gray-200 text-xs sm:text-sm md:text-lg'}>
                     <span>by</span>
-                    <img className={'w-7 h-7 rounded-full'} src={'/mockImages/userIcon_1.jpg'}/>
+                    <img className={'w-5 md:w-7 h-5 md:h-7 rounded-full'} src={'/mockImages/userIcon_1.jpg'}/>
                     <span>mock_user</span>
                 </div>
             </div>

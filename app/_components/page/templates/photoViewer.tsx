@@ -8,7 +8,6 @@ export default function PhotoViewer(props: {}) {
     const breakpoints = {
         default: 3,
         1280: 2,
-        640: 1,
     };
 
     return (

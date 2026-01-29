@@ -1,22 +1,23 @@
 'use client'
 
-import { mockRoutes } from '@/app/_components/page/ingredients/routeList';
 import Image from 'next/image';
+import {Route} from "@/lib/client/types";
 
-type RootViewerProps = {
+type Props = {
   focusedIndex: number;
+  routes: Route[]
 };
 
-export default function RouteViewer({ focusedIndex }: RootViewerProps) {
-  const route = focusedIndex !== null ? mockRoutes[focusedIndex] : null;
+export default function RouteViewer(props: Props) {
+  const route = props.focusedIndex !== null ? props.routes[props.focusedIndex] : null;
 
   return (
-    <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll overscroll-contain bg-background-1/50 p-6 border-l border-grass/20'}>
+    <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll bg-background-1/50 p-6 border-l border-grass/20'}>
       {route ? (
         <>
           <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
             <Image
-              src={route.thumbnailImageSrc ?? route.thumbnailSrc ?? '/map.png'}
+              src={route.thumbnailImageSrc ?? '/map.png'}
               alt={route.title}
               fill
               className="object-cover"
@@ -42,7 +43,7 @@ export default function RouteViewer({ focusedIndex }: RootViewerProps) {
                 >
                   <path d="M11.645 20.91l-.007-.003-.022-.01a15.247 15.247 0 01-.383-.173 25.18 25.18 0 01-4.244-2.673C4.688 16.357 2.25 13.852 2.25 10.5A5.25 5.25 0 017.5 5.25a5.23 5.23 0 014.5 2.508 5.23 5.23 0 014.5-2.508 5.25 5.25 0 015.25 5.25c0 3.352-2.438 5.857-4.739 7.551a25.175 25.175 0 01-4.244 2.673 15.247 15.247 0 01-.383.173l-.022.01-.007.003a.752.752 0 01-.614 0z" />
                 </svg>
-                {route.likes} Likes
+                {route.likesThisWeek} Likes
               </span>
             </div>
 
