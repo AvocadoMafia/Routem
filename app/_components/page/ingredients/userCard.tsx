@@ -28,11 +28,11 @@ export function UserCard(props: Props) {
         </div>
 
         {/* Middle section: icon, rank, name, metric */}
-        <div className=" p-3 flex items-center gap-3">
+        <div className="md:p-3 p-1.5 flex items-center md:gap-3 gap-1.5">
           <img
             src={props.user.profileImage || "/mockImages/userIcon_1.jpg"}
             alt={`${props.user.name} icon`}
-            className="w-11 h-11 rounded-full object-cover bg-accent-0/10"
+            className="md:w-11 w-8 md:h-11 h-8 rounded-full object-cover bg-accent-0/10"
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">

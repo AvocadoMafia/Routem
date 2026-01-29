@@ -39,17 +39,17 @@ export default function RouteCardBasic(props: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="w-full grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-lg bg-background-0 border border-grass/10">
+                <div className="w-full grid grid-cols-2 gap-3 md:text-sm text-xs">
+                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1">
                         <span className="block text-foreground-1/40">Duration</span>
                         <span className="font-medium text-foreground-1">2.5 hours</span>
                     </div>
-                    <div className="rounded-lg bg-background-0 border border-grass/10">
+                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1">
                         <span className="block text-foreground-1/40">Expenses</span>
                         <span className="font-medium text-foreground-1">＄200</span>
                     </div>
                 </div>
-                <div className={'w-full text-foreground-1 line-clamp-7 text-sm'}>
+                <div className={'w-full text-foreground-1 line-clamp-7 md:text-sm text-xs'}>
                     This is a one-day travel route in Kyoto.
                     In the morning, start at Fushimi Inari Shrine and walk through the famous red torii gates.
                     Next, go to Kiyomizu-dera Temple and enjoy the view of the city.

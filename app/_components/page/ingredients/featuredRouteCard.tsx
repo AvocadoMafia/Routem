@@ -43,7 +43,7 @@ export default function FeaturedRouteCard(props: Props) {
           </p>
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-end">
-              <h3 className="text-4xl text-white font-bold">{props.route.title}</h3>
+              <h3 className="md:text-4xl text-2xl text-white font-bold">{props.route.title}</h3>
               <p className="text-sm text-gray-300">by @{props.route.user.name} ・ {props.route.category}</p>
             </div>
           </div>

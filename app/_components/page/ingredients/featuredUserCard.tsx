@@ -38,7 +38,7 @@ export default function FeaturedUserCard(props: Props) {
                 <p className={'text-xl text-gray-300 font-bold'}>{props.user.likesThisWeek} new followers</p>
                 <div className={'flex items-center gap-2'}>
                     <div className={'flex flex-col items-end'}>
-                        <h3 className={'text-4xl text-white font-bold'}>
+                        <h3 className={'md:text-4xl text-2xl text-white font-bold'}>
                             {props.user.name}
                         </h3>
                         <p className={'text-sm text-gray-300'}>
