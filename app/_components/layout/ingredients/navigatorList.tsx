@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {MdExplore, MdInfo, MdLogin} from "react-icons/md";
+import {MdEdit, MdExplore, MdInfo, MdLogin} from "react-icons/md";
 
 
 export default function NavigatorList() {
@@ -29,6 +29,12 @@ export default function NavigatorList() {
             >
                 <MdInfo className={'text-xl'}/>
                 <span className={'md:block hidden'}>About</span>
+            </motion.button>
+            <motion.button onClick={() => router.push('/articles/new')} className={'bg-background-1 text-foreground-0 py-1 px-2 box-border rounded-full flex gap-2 text-lg items-center hover:theme-reversed transition-colors duration-150 cursor-pointer'}
+                           whileHover={{scale:1.05}}
+            >
+                <MdEdit className={'text-xl'}/>
+                <span className={'md:block hidden'}>Edit Route</span>
             </motion.button>
         </div>
     )

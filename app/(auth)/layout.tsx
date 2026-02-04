@@ -3,7 +3,8 @@
 
 export default function AuthRootLayout({ children }: { children: React.ReactNode }) {
   return (
-      <div>
+      //スクロールさせる予定がないのでh-screen
+      <div className={'w-full h-screen'}>
           {children}
       </div>
   );

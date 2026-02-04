@@ -10,8 +10,8 @@ export default async function ExamplePage() {
     return (
         <div className={'w-full h-full'}>
             <ul>
-                {users.map((user, index) => (
-                    <li key={index} className={'text-foreground'}>{user.name}</li>
+                {users.map((user: { name: string }, index: number) => (
+                    <li key={index} className={'text-foreground-0'}>{user.name}</li>
                 ))}
             </ul>
         </div>
