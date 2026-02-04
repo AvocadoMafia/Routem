@@ -23,10 +23,11 @@ export default function NodeLinkDiagram({
     onDeleteWaypoint,
     onAddItem
 }: NodeLinkDiagramProps) {
+    // 挿入メニューを表示しているアイテムのID
     const [addingAfterId, setAddingAfterId] = useState<string | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Close menu when clicking outside
+    // メニューの外側をクリックした時にメニューを閉じる
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -40,6 +41,7 @@ export default function NodeLinkDiagram({
     return (
         <div className="w-[450px] h-full bg-background-0/50 backdrop-blur-md border-r border-grass flex flex-col no-scrollbar overflow-y-auto">
             <div className="p-8 flex flex-col flex-1">
+                {/* ヘッダー */}
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-xl font-bold text-foreground-0">Route Structure</h2>
                     <span className="text-xs font-medium px-2 py-1 bg-grass rounded-full text-foreground-1">
@@ -47,12 +49,19 @@ export default function NodeLinkDiagram({
                     </span>
                 </div>
 
+                {/* 
+                  ダイアグラムのコア：CSS Gridを使用したレイアウト
+                  - 1列目 (48px): ノード（点）と垂直線
+                  - 2列目 (1fr): カード（情報パネル）
+                  各アイテム（経由地/交通手段）は2つのグリッド行を占有します。
+                */}
                 <div className="relative grid grid-cols-[48px_1fr] gap-6 flex-1 pb-10">
-                    {/* Background Line (covers from first node to last node) */}
+                    
+                    {/* 背景の垂直線（最初のノードから最後のノードまでを貫通） */}
                     {items.length > 1 && (
                         <div
                             style={{
-                                gridRow: `2 / ${items.length * 2}`,
+                                gridRow: `2 / ${items.length * 2}`, // 2行目から開始し、最後のアイテムの行まで伸ばす
                                 gridColumn: '1'
                             }}
                             className="w-0.5 justify-self-center bg-accent-0/30 pointer-events-none"
@@ -63,12 +72,12 @@ export default function NodeLinkDiagram({
                         const isSelected = selectedItemId === item.id;
                         const isWaypoint = item.type === 'waypoint';
 
-                        // Each item takes 2 grid rows
+                        // このアイテムが開始するグリッド行のインデックス
                         const startRow = index * 2 + 1;
 
                         return (
                             <div key={item.id} className="contents group/item">
-                                {/* Left Column: Node Area (Spans 2 rows) */}
+                                {/* 左列：ノードエリア (2行分を占有して中央配置を容易にする) */}
                                 <div
                                     style={{ gridRow: `${startRow} / span 2`, gridColumn: '1' }}
                                     className="relative flex items-center justify-center z-10"
@@ -80,7 +89,7 @@ export default function NodeLinkDiagram({
                                     />
                                 </div>
 
-                                {/* Right Column: Card Area (Spans 2 rows) */}
+                                {/* 右列：カードエリア (2行分を占有) */}
                                 <div
                                     style={{ gridRow: `${startRow} / span 2`, gridColumn: '2' }}
                                     className="flex items-center"
@@ -102,7 +111,12 @@ export default function NodeLinkDiagram({
                                     )}
                                 </div>
 
-                                {/* Link Area: Bridge between item i and i+1 (Spans 2nd row of i and 1st row of i+1) */}
+                                {/* 
+                                  インライン追加エリア:
+                                  アイテム i と i+1 の間の隙間に配置。
+                                  前のアイテムの2行目と、次のアイテムの1行目にまたがることで、
+                                  カードの高さに関わらず幾何学的な中央に「＋」ボタンを配置します。
+                                */}
                                 {index < items.length - 1 && (
                                     <div
                                         style={{ gridRow: `${startRow + 1} / span 2`, gridColumn: '1' }}
@@ -125,7 +139,7 @@ export default function NodeLinkDiagram({
                 </div>
             </div>
 
-            {/* 追加ボタン */}
+            {/* 下部の「経由地を追加」ボタン */}
             <div className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky bottom-0 mt-auto">
                 <button
                     onClick={onAddWaypoint}

@@ -7,20 +7,34 @@ import {Transportation, Waypoint, RouteItem} from "@/lib/client/types";
 
 
 export default function ClientRoot() {
+    // -------------------------------------------------------------------------
+    // 状態管理
+    // -------------------------------------------------------------------------
+
+    // ルートを構成するアイテム（経由地・交通手段）のリスト
     const [items, setItems] = useState<RouteItem[]>([
         { id: "1", type: 'waypoint', name: "Waypoint 1", memo: "Note 1", order: 1 },
     ]);
+
+    // 現在編集中のアイテムID
     const [selectedItemId, setSelectedItemId] = useState<string | null>("1");
 
+    // -------------------------------------------------------------------------
+    // ロジック
+    // -------------------------------------------------------------------------
+
+    // 指定したアイテムの内容を更新する
     const updateItem = (id: string, updates: Partial<RouteItem>) => {
         setItems((prev) =>
             prev.map((item) => (item.id === id ? { ...item, ...updates } as RouteItem : item))
         );
     };
 
+    // 指定したアイテムを削除する
     const deleteItem = (id: string) => {
         setItems((prev) => {
             const next = prev.filter((item) => item.id !== id);
+            // 削除したアイテムが選択中だった場合、他のアイテムを選択状態にする
             if (selectedItemId === id) {
                 setSelectedItemId(next.length > 0 ? next[0].id : null);
             }
@@ -28,6 +42,7 @@ export default function ClientRoot() {
         });
     };
 
+    // アイテム（経由地または交通手段）を特定のアイテムの後ろに挿入する
     const addItem = (afterId: string, type: 'waypoint' | 'transportation') => {
         const index = items.findIndex(item => item.id === afterId);
         if (index === -1) return;
@@ -56,11 +71,14 @@ export default function ClientRoot() {
         const newItems = [...items];
         newItems.splice(index + 1, 0, newItem);
         setItems(newItems);
+        // 追加したアイテムを即座に編集状態にする
         setSelectedItemId(newId);
     };
 
+    // 現在選択されているアイテムのオブジェクトを取得
     const selectedItem = items.find((item) => item.id === selectedItemId);
 
+    // リストの最後に新しい経由地を追加する（必要に応じて交通手段も自動挿入）
     const addWaypoint = () => {
         const newWaypointId = Math.random().toString(36).substr(2, 9);
         const newWaypoint: Waypoint = {
@@ -72,7 +90,7 @@ export default function ClientRoot() {
         };
 
         if (items.length > 0) {
-            // すでにアイテムがある場合、交通手段を自動挿入する
+            // すでにアイテムがある場合、地点間の移動をスムーズにするため交通手段（徒歩）を自動挿入する
             const newTransportId = Math.random().toString(36).substr(2, 9);
             const newTransport: Transportation = {
                 id: newTransportId,
@@ -85,10 +103,11 @@ export default function ClientRoot() {
         } else {
             setItems([...items, newWaypoint]);
         }
-        
+
         setSelectedItemId(newWaypointId);
     };
 
+    // 指定したアイテムの後に交通手段を追加する（直接呼び出し用）
     const addTransportation = (afterId: string) => {
         const index = items.findIndex(item => item.id === afterId);
         if (index === -1) return;
@@ -99,7 +118,7 @@ export default function ClientRoot() {
             type: 'transportation',
             method: 'walk',
             memo: "",
-            order: 0, // orderは後で振り直すか、単に配列順にする
+            order: 0,
         };
 
         const newItems = [...items];
@@ -110,6 +129,7 @@ export default function ClientRoot() {
 
     return (
         <div className="w-full h-full flex flex-row bg-background-0">
+            {/* 左側：ルート構成の可視化と操作 */}
             <NodeLinkDiagram
                 items={items}
                 selectedItemId={selectedItemId}
@@ -118,6 +138,7 @@ export default function ClientRoot() {
                 onDeleteWaypoint={deleteItem}
                 onAddItem={addItem}
             />
+            {/* 右側：詳細情報の編集フォーム */}
             <div className="flex-1 h-full overflow-hidden shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10">
                 <RouteEditingSection
                     selectedItem={selectedItem}

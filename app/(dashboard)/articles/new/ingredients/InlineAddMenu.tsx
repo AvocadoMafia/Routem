@@ -11,14 +11,19 @@ interface InlineAddMenuProps {
 export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }: InlineAddMenuProps) {
     return (
         <div className="relative flex items-center justify-center group/link z-20 w-full h-full">
-            {/* Clickable Connection Area */}
+            {/* 
+              クリック判定用の透明なエリア
+              - ホバー時にメニューを表示するためのトリガーとなる
+              - onMouseDown={(e) => e.stopPropagation()} は、
+                メニュー外クリック検知ロジックと競合してメニューが即座に閉じるのを防ぐために重要
+            */}
             <div
                 className="w-4 h-full cursor-pointer bg-transparent"
                 onClick={onToggle}
                 onMouseDown={(e) => e.stopPropagation()}
             />
 
-            {/* Quick Add Button at the Midpoint */}
+            {/* 中点に配置される「＋」ボタン */}
             <div
                 className={`
                     absolute left-1/2 -translate-x-1/2 transition-all duration-200
@@ -35,16 +40,24 @@ export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }
                     bg-accent-0 text-white hover:scale-110 active:scale-95
                     cursor-pointer
                 `}>
-                    <Plus size={14} strokeWidth={3} className={`transition-transform duration-200`} />
+                    <Plus 
+                        size={14} 
+                        strokeWidth={3} 
+                        className={`transition-transform duration-200 ${isAdding ? 'rotate-45' : ''}`} 
+                    />
                 </div>
 
-                {/* Choice Menu */}
+                {/* 
+                  選択メニュー（ポップアップ）
+                  - Waypoint または Transport を選択して挿入できる
+                */}
                 {isAdding && (
                     <div
                         ref={menuRef}
                         className="absolute left-8 top-1/2 -translate-y-1/2 bg-background-1 border border-grass rounded-2xl shadow-xl p-2 flex gap-2 animate-in fade-in zoom-in slide-in-from-left-4 duration-200 pointer-events-auto"
                         onMouseDown={(e) => e.stopPropagation()}
                     >
+                        {/* Waypoint追加ボタン */}
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -57,7 +70,10 @@ export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }
                             </div>
                             <span className="text-xs font-bold text-foreground-0">Waypoint</span>
                         </button>
+
                         <div className="w-px bg-grass my-1" />
+
+                        {/* Transport追加ボタン */}
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();

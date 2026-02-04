@@ -13,6 +13,7 @@ export default function RouteNode({ item, isSelected, onSelect }: RouteNodeProps
     return (
         <div className="relative flex items-center justify-center z-10 w-full h-full">
             {isWaypoint ? (
+                /* 経由地（地点）の表示：円形のノード */
                 <div
                     onClick={(e) => {
                         e.stopPropagation();
@@ -32,6 +33,7 @@ export default function RouteNode({ item, isSelected, onSelect }: RouteNodeProps
                     )}
                 </div>
             ) : (
+                /* 交通手段の表示：移動アイコン入りのボックス */
                 <div
                     className={`
                         w-8 h-8 rounded-xl shrink-0 cursor-pointer transition-all duration-300 flex items-center justify-center border-2

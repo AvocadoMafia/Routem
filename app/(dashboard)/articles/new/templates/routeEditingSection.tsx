@@ -9,6 +9,7 @@ interface RouteEditingSectionProps {
 }
 
 export default function RouteEditingSection({ selectedItem, onUpdateItem }: RouteEditingSectionProps) {
+    // アイテムが選択されていない場合の空状態表示
     if (!selectedItem) {
         return (
             <div className="w-full h-full flex-1 flex flex-col items-center justify-center text-foreground-1 bg-background-1/30 animate-pulse">
@@ -25,7 +26,7 @@ export default function RouteEditingSection({ selectedItem, onUpdateItem }: Rout
     return (
         <div className="w-full h-full flex-1 bg-background-1 p-10 overflow-y-auto no-scrollbar">
             <div className="max-w-3xl mx-auto space-y-12 pb-20">
-                {/* Header Section */}
+                {/* ヘッダーセクション: 現在編集中のアイテムの種類を表示 */}
                 <div className="flex items-end justify-between border-b border-grass pb-6">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -41,6 +42,9 @@ export default function RouteEditingSection({ selectedItem, onUpdateItem }: Rout
                 </div>
 
                 <div className="grid grid-cols-1 gap-10">
+                    {/*
+                      アイテムの種類に応じて、経由地用エディタまたは交通手段用エディタを切り替える
+                    */}
                     {isWaypoint ? (
                         <WaypointEditor
                             item={selectedItem}
@@ -53,7 +57,7 @@ export default function RouteEditingSection({ selectedItem, onUpdateItem }: Rout
                         />
                     )}
 
-                    {/* Notes */}
+                    {/* 共通のメモ入力エリア */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                             <MessageSquare size={16} /> Notes / Details

@@ -12,6 +12,7 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                 Transportation Mode
             </label>
+            {/* 交通手段を選択するボタングリッド */}
             <div className="grid grid-cols-5 gap-3">
                 {[
                     { id: 'walk', label: 'Walk', icon: <Footprints size={20} /> },
@@ -30,6 +31,7 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
                                 : 'bg-background-0 text-foreground-1 border-grass hover:border-accent-0/30 hover:bg-background-1'}
                         `}
                     >
+                        {/* 選択中のアイコンを少し強調 */}
                         <div className={`${item.method === m.id ? 'scale-110' : ''} transition-transform`}>
                             {m.icon}
                         </div>

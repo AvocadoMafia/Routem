@@ -26,17 +26,20 @@ export type Waypoint = {
     id: string;
     type: 'waypoint';
     name: string;
-    image?: string;
-    memo: string;
-    order: number;
+    image?: string; // 経由地の画像URL
+    memo: string;  // 経由地に関するメモ
+    order: number; // 並び順（現在は配列のインデックスを優先）
 };
 
 export type Transportation = {
     id: string;
     type: 'transportation';
-    method: 'walk' | 'train' | 'bus' | 'car' | 'other';
-    memo: string;
+    method: 'walk' | 'train' | 'bus' | 'car' | 'other'; // 移動手段
+    memo: string; // 移動に関するメモ（乗り換え情報など）
     order: number;
 };
 
+/**
+ * ルートを構成する各要素（経由地または交通手段）の共通型
+ */
 export type RouteItem = Waypoint | Transportation;

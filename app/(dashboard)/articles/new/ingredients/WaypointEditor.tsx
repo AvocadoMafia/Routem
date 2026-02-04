@@ -9,7 +9,7 @@ interface WaypointEditorProps {
 export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) {
     return (
         <div className="grid grid-cols-1 gap-10">
-            {/* Waypoint Name */}
+            {/* 経由地名の入力フィールド */}
             <div className="space-y-3">
                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                     Waypoint Name
@@ -23,7 +23,11 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                 />
             </div>
 
-            {/* Image Upload */}
+            {/* 
+              画像アップロード・表示エリア:
+              - 画像が未設定の場合はアップロードを促すプレースホルダーを表示
+              - 設定済みの場合は画像を表示し、ホバー時に変更オプションを表示
+            */}
             <div className="space-y-3">
                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                     <ImageIcon size={16} /> Visuals

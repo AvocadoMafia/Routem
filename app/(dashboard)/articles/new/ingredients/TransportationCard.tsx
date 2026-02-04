@@ -27,11 +27,18 @@ export default function TransportationCard({ item, isSelected, onSelect, onDelet
                     {item.method === 'car' && 'Car'}
                     {item.method === 'other' && 'Other'}
                 </span>
+                {/* メモがある場合、プレビューを表示 */}
                 {item.memo && <div className="text-[10px] text-foreground-1/70 truncate mt-0.5">{item.memo}</div>}
             </div>
+
+            {/* 
+              削除ボタン:
+              - 常に右側の固定位置（中央）に配置
+              - 親要素（group/item）にホバーした時のみ表示される
+            */}
             <button
                 onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // 親要素の onClick (選択処理) を防ぐ
                     onDelete();
                 }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 text-foreground-1 hover:text-accent-warning"
