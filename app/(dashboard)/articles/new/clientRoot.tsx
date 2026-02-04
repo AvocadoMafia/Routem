@@ -19,9 +19,39 @@ export default function ClientRoot() {
     // 現在編集中のアイテムID
     const [selectedItemId, setSelectedItemId] = useState<string | null>("1");
 
+    // 投稿状態
+    const [publishing, setPublishing] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+
     // -------------------------------------------------------------------------
     // ロジック
     // -------------------------------------------------------------------------
+
+    // 投稿処理: 現在の items を API に送信
+    const handlePublish = async () => {
+        setPublishing(true);
+        setMessage(null);
+        try {
+            // order を振り直す（配列順を優先）
+            const normalizedItems = items.map((it, idx) => ({ ...it, order: idx }));
+            const res = await fetch('/api/v1/routems', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: normalizedItems })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data?.error || 'Failed to publish');
+            }
+            setMessage(`Published! routeId=${data.routeId}`);
+            // TODO: 必要に応じて遷移など実装: router.push(`/routes/${data.routeId}`)
+            console.log('Created route:', data);
+        } catch (e: any) {
+            setMessage(e?.message ?? 'Publish failed');
+        } finally {
+            setPublishing(false);
+        }
+    };
 
     // 指定したアイテムの内容を更新する
     const updateItem = (id: string, updates: Partial<RouteItem>) => {
@@ -138,12 +168,27 @@ export default function ClientRoot() {
                 onDeleteWaypoint={deleteItem}
                 onAddItem={addItem}
             />
-            {/* 右側：詳細情報の編集フォーム */}
-            <div className="flex-1 h-full overflow-hidden shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10">
-                <RouteEditingSection
-                    selectedItem={selectedItem}
-                    onUpdateItem={(updates) => selectedItemId && updateItem(selectedItemId, updates)}
-                />
+            {/* 右側：詳細情報の編集フォーム＋投稿アクション */}
+            <div className="flex-1 h-full overflow-hidden shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex flex-col">
+                {/* アクションバー */}
+                <div className="flex items-center justify-between p-4 border-b border-grass bg-background-1/60 backdrop-blur sticky top-0 z-20">
+                    <div className="text-sm text-foreground-1">
+                        {message ? <span>{message}</span> : <span>Prepare your route and click Publish</span>}
+                    </div>
+                    <button
+                        onClick={handlePublish}
+                        disabled={publishing}
+                        className={`px-4 py-2 rounded-xl font-bold text-white shadow ${publishing ? 'bg-accent-0/50 cursor-not-allowed' : 'bg-accent-0 hover:bg-accent-0/90 active:scale-[0.98]'} `}
+                    >
+                        {publishing ? 'Publishing...' : 'Publish'}
+                    </button>
+                </div>
+                <div className="flex-1">
+                    <RouteEditingSection
+                        selectedItem={selectedItem}
+                        onUpdateItem={(updates) => selectedItemId && updateItem(selectedItemId, updates)}
+                    />
+                </div>
             </div>
         </div>
     )

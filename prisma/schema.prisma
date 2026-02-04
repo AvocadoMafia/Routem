@@ -13,8 +13,108 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//テストモデルUSER
+// 簡易ユーザモデル（検証用）
 model User {
-  id   String @id @default(cuid())
-  name String @unique
+  id   String @id @default(cuid()) // ユーザID
+  name String @unique              // 表示名（ユニーク）
+}
+
+// 地図上の地点（POI）。OSMやMapbox等の出典を保持
+model Spot {
+  id        String @id         // スポットID（OSM IDなど外部IDを流用想定）
+  name      String             // 名称
+  longitude Float              // 経度（EPSG:4326）
+  latitude  Float              // 緯度（EPSG:4326）
+  source    String             // 由来（例: "osm", "mapbox"）
+
+  // リレーション
+  routeSpots RouteSpot[]       // 旧来の並び（中間テーブル）
+  RouteNode  RouteNode[]       // 表示用のノード（順序付き）
+}
+
+// 1つの旅行ルート（全体）。可視化・並び順・区間などの単位となる
+model Route {
+  id        String   @id @default(cuid()) // ルートID
+  createdAt DateTime @default(now())      // 作成日時
+
+  // 表示・経路構成に使う関連
+  routeSpots RouteSpot[] // 旧来の中間テーブル（単純な順序づけ）
+  RouteNode  RouteNode[] // 新設のノード表現（順序＋区間表現と連携）
+}
+
+// 旧来の「ルートとスポット」を結ぶ中間モデル。単純な順序づけでの表示・互換のために残置
+model RouteSpot {
+  id    String @id @default(cuid()) // レコードID
+  order Int                         // ルート内の並び順
+
+  routeId String // 所属するRoute
+  spotId  String // 紐づくSpot
+
+  // リレーション
+  route Route @relation(fields: [routeId], references: [id])
+  spot  Spot  @relation(fields: [spotId], references: [id])
+
+  // 同一Route内でorderは一意
+  @@unique([routeId, order])
+}
+
+// ルート上の「ノード」（＝経由地の並びを表す）。1つのノードは1つのSpotに対応し、Route内で順序が一意
+model RouteNode {
+  id    String @id @default(cuid()) // ノードID
+  order Int                         // ルート内の並び順（0,1,2,...）
+
+  routeId String // 所属するRouteのID
+  spotId  String // 対応する地点(Spot)のID
+
+  // リレーション
+  route Route @relation(fields: [routeId], references: [id])
+  spot  Spot  @relation(fields: [spotId], references: [id])
+
+  // セグメントとの双方向リレーション（外部キーはRouteSegment側が保持）
+  // 1ノードにつき、出ていくセグメントは最大1、入ってくるセグメントも最大1（RouteSegment側のuniqueで担保）
+  outgoing RouteSegment? @relation("FromNode") // このノードをfromとするセグメント
+  incoming RouteSegment? @relation("ToNode")   // このノードをtoとするセグメント
+
+  @@unique([routeId, order]) // 同一Route内での順序は一意
+}
+
+// 2つのRouteNode間を結ぶ「区間」。1区間は複数の細分ステップ(SegmentStep)を持つことができる
+model RouteSegment {
+  id String @id @default(cuid()) // セグメントID
+
+  // 片方向の有向辺を想定（from -> to）。各ノードにつき outgoing/incoming は最大1にするためunique
+  fromNodeId String @unique // 始点ノードID
+  toNodeId   String @unique // 終点ノードID
+
+  routeId String // 属するRouteのID（Routeでグループ化したい場合に使用）
+
+  // リレーション：外部キーは本モデルが保持
+  fromNode RouteNode @relation("FromNode", fields: [fromNodeId], references: [id])
+  toNode   RouteNode @relation("ToNode", fields: [toNodeId], references: [id])
+
+  // このセグメントを構成する詳細ステップ
+  steps SegmentStep[]
+}
+
+// 1つのセグメントを構成する細分ステップ（徒歩→電車→徒歩などの最小単位）
+model SegmentStep {
+  id    String @id @default(cuid()) // ステップID
+  order Int                         // セグメント内の順序（0,1,2,...）
+
+  segmentId String // 親セグメントID
+  segment   RouteSegment @relation(fields: [segmentId], references: [id]) // 親セグメント
+
+  // このステップの移動モード・所要時間・距離
+  mode     TransportMode
+  duration Int?  // 分
+  distance Float? // m
+}
+
+// 移動モードの列挙。描画スタイルやアイコン分岐に利用
+enum TransportMode {
+  WALK  // 徒歩
+  TRAIN // 電車
+  BUS   // バス
+  CAR   // 車
+  BIKE  // 自転車
 }

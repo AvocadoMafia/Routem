@@ -26,7 +26,7 @@ export type Waypoint = {
     id: string;
     type: 'waypoint';
     name: string;
-    image?: string; // 経由地の画像URL
+    images?: string[]; // 経由地の画像URL（最大3枚）
     memo: string;  // 経由地に関するメモ
     order: number; // 並び順（現在は配列のインデックスを優先）
 };

@@ -30,11 +30,11 @@ export default function WaypointCard({ item, isSelected, onSelect, onDelete }: W
                         {item.memo || "Enter details..."}
                     </div>
                 </div>
-                {/* 画像が設定されている場合のみ表示 */}
-                {item.image && (
+                {/* 画像が設定されている場合のみ表示（先頭のサムネイルを使用） */}
+                {item.images && item.images.length > 0 && (
                     <div className="ml-3 shrink-0">
                         <div className="w-12 h-12 rounded-lg bg-grass overflow-hidden">
-                            <img src={item.image} alt="" className="w-full h-full object-cover" />
+                            <img src={item.images[0]} alt="" className="w-full h-full object-cover" />
                         </div>
                     </div>
                 )}

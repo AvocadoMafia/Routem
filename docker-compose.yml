@@ -25,8 +25,8 @@ services:
       - "9000:9000"  # S3 API (データ転送用)
       - "9001:9001"  # Web UI (管理画面用)
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
 
     command: server --console-address ":9001" /data
 
@@ -45,9 +45,9 @@ services:
         sleep 2;
       done;
       echo 'MinIO is up! Proceeding with configuration.';
-      /usr/bin/mc alias set minio_dev http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
-      /usr/bin/mc mb minio_dev/cleimages --region=ap-northeast-1;
-      /usr/bin/mc anonymous set public minio_dev/cleimages;
+      /usr/bin/mc alias set minio_dev http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+      /usr/bin/mc mb minio_dev/rtmimages --region=${MINIO_REGION};
+      /usr/bin/mc anonymous set public minio_dev/rtmimages;
       exit 0;
       "
 

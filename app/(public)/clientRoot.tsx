@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import ContentsSelector from "@/app/(public)/_components/templates/contentsSelector";
 import MapViewerOnLaptop from "@/app/(public)/_components/templates/mapViewerOnLaptop";
 import TopUsersList from "@/app/(public)/_components/templates/topUsersList";
@@ -8,7 +8,7 @@ import TopRoutesList from "@/app/(public)/_components/templates/topRoutesList";
 import RecommendedRoutesList from "@/app/(public)/_components/templates/recommendedRoutesList";
 import PhotoViewer from "@/app/(public)/_components/templates/photoViewer";
 import RouteListBasic from "@/app/(public)/_components/templates/routeListBasic";
-import {GiGreekTemple, GiPaintBrush} from "react-icons/gi";
+import {GiGreekTemple} from "react-icons/gi";
 import {PiForkKnife, PiMountains} from "react-icons/pi";
 import {LuPalette} from "react-icons/lu";
 import {FaRunning} from "react-icons/fa";
@@ -31,16 +31,48 @@ export default function ClientRoot() {
         { id: 'u7', name: 'Sara Ito', likesThisWeek: 1110, viewsThisWeek: 25040, location: 'Nara, JP', bio: 'Nature walks and deer lover in Nara.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
     ]
 
+    // Fetch routes from API
+    const [routes, setRoutes] = useState<Route[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    // Mock routes for demo (this week)
-    const mockTopRoutes: Route[] = [
-        { id: 'r1', title: 'Kyoto Old Town Walk', user: mockUsers[0], likesThisWeek: 1280, viewsThisWeek: 18200, category: 'History', thumbnailImageSrc: '/mockImages/Kyoto.jpg' },
-        { id: 'r2', title: 'Okinawa Beach Hopping', user: mockUsers[1], likesThisWeek: 990, viewsThisWeek: 15420, category: 'Beach', thumbnailImageSrc: '/mockImages/Okinawa.jpg' },
-        { id: 'r3', title: 'Hokkaido Food Trip', user: mockUsers[2], likesThisWeek: 1570, viewsThisWeek: 21030, category: 'Food', thumbnailImageSrc: '/mockImages/Hokkaido.jpg' },
-        { id: 'r4', title: 'Tokyo Night Lights', user: mockUsers[3], likesThisWeek: 870, viewsThisWeek: 16800, category: 'City', thumbnailImageSrc: '/mockImages/Tokyo.jpg' },
-        { id: 'r5', title: 'Nara Temple Circuit', user: mockUsers[4], likesThisWeek: 1430, viewsThisWeek: 19990, category: 'Culture', thumbnailImageSrc: '/mockImages/Nara.jpg' },
-        { id: 'r6', title: 'Mount Fuji Scenic Drive', user: mockUsers[5], likesThisWeek: 760, viewsThisWeek: 14550, category: 'Nature', thumbnailImageSrc: '/mockImages/Fuji.jpg' },
-    ]
+    useEffect(() => {
+        let cancelled = false;
+        async function load() {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch('/api/v1/routems?take=12', { cache: 'no-store' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data?.error || 'Failed to load routes');
+                if (!cancelled) setRoutes(data.routes as Route[]);
+            } catch (e: any) {
+                if (!cancelled) setError(e?.message ?? 'Failed to load');
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        }
+        load();
+        return () => { cancelled = true };
+    }, []);
+
+    // In case there are fewer than expected items, fill to avoid UI index errors.
+    const paddedRoutes = useMemo<Route[]>(() => {
+        const base: Route[] = routes ?? [];
+        if (base.length >= 6) return base;
+        // pad with placeholders
+        const placeholdersNeeded = 6 - base.length;
+        const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => ({
+            id: `placeholder-${i}`,
+            title: `Sample Route ${i + 1}`,
+            user: mockUsers[i % mockUsers.length],
+            likesThisWeek: 0,
+            viewsThisWeek: 0,
+            category: 'General',
+            thumbnailImageSrc: '/mockImages/Kyoto.jpg'
+        }));
+        return [...base, ...placeholders];
+    }, [routes]);
 
     const [selected, setSelected] = useState<selectedType>('home')
     return (
@@ -50,11 +82,18 @@ export default function ClientRoot() {
                 switch (selected) {
                     case 'home': return (
                         <div className={'w-full h-fit flex flex-col items-center gap-8'}>
-                            <MapViewerOnLaptop routes={mockTopRoutes}/>
-                            <MapViewerOnMobile routes={mockTopRoutes}/>
-                            <TopRoutesList routes={mockTopRoutes} />
-                            <TopUsersList users={mockUsers}/>
-                            <RecommendedRoutesList routes={mockTopRoutes}/>
+                            {error && <div className={'w-full text-red-500 text-sm'}>{error}</div>}
+                            {loading ? (
+                                <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>
+                            ) : (
+                                <>
+                                    <MapViewerOnLaptop routes={paddedRoutes}/>
+                                    <MapViewerOnMobile routes={paddedRoutes}/>
+                                    <TopRoutesList routes={paddedRoutes} />
+                                    <TopUsersList users={mockUsers}/>
+                                    <RecommendedRoutesList routes={paddedRoutes}/>
+                                </>
+                            )}
                         </div>
                     )
                     case 'photos': return (
@@ -73,7 +112,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
@@ -86,7 +125,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
@@ -99,7 +138,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
@@ -112,11 +151,11 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-0 font-bold'}>
+                                    <div className={'flex flex-row items中心 gap-2 text-foreground-0 font-bold'}>
                                         <FaRunning className={'text-3xl'}/>
                                         <h2 className={'text-2xl'}>Activity</h2>
                                     </div>
@@ -125,7 +164,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                         </div>
                     )
