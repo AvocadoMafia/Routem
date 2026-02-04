@@ -1,7 +1,7 @@
 "use client"
 
-import FeaturedRouteCard from '@/app/_components/page/ingredients/featuredRouteCard'
-import RouteRankCard from '@/app/_components/page/ingredients/routeRankCard'
+import FeaturedRouteCard from '@/app/(public)/_components/ingredients/featuredRouteCard'
+import RouteRankCard from '@/app/(public)/_components/ingredients/routeRankCard'
 import {Route} from "@/lib/client/types";
 
 type Props = {

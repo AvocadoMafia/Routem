@@ -1,4 +1,4 @@
-import PhotoContainer from "@/app/_components/page/ingredients/photoContainer";
+import PhotoContainer from "@/app/(public)/_components/ingredients/photoContainer";
 import Masonry from "react-masonry-css";
 
 

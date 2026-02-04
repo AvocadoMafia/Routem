@@ -1,9 +1,9 @@
 'use client'
 
-import FeaturedUserCard from '@/app/_components/page/ingredients/featuredUserCard'
+import FeaturedUserCard from '@/app/(public)/_components/ingredients/featuredUserCard'
 import { User } from "@/lib/client/types"
-import RouteRankCard from "@/app/_components/page/ingredients/routeRankCard";
-import {UserCard} from "@/app/_components/page/ingredients/userCard";
+import RouteRankCard from "@/app/(public)/_components/ingredients/routeRankCard";
+import {UserCard} from "@/app/(public)/_components/ingredients/userCard";
 
 
 type Props = {

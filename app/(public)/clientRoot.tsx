@@ -1,20 +1,20 @@
 'use client'
 
 import {useState} from "react";
-import ContentsSelector from "@/app/_components/page/templates/contentsSelector";
-import MapViewerOnLaptop from "@/app/_components/page/templates/mapViewerOnLaptop";
-import TopUsersList from "@/app/_components/page/templates/topUsersList";
-import TopRoutesList from "@/app/_components/page/templates/topRoutesList";
-import RecommendedRoutesList from "@/app/_components/page/templates/recommendedRoutesList";
-import PhotoViewer from "@/app/_components/page/templates/photoViewer";
-import RouteListBasic from "@/app/_components/page/templates/routeListBasic";
+import ContentsSelector from "@/app/(public)/_components/templates/contentsSelector";
+import MapViewerOnLaptop from "@/app/(public)/_components/templates/mapViewerOnLaptop";
+import TopUsersList from "@/app/(public)/_components/templates/topUsersList";
+import TopRoutesList from "@/app/(public)/_components/templates/topRoutesList";
+import RecommendedRoutesList from "@/app/(public)/_components/templates/recommendedRoutesList";
+import PhotoViewer from "@/app/(public)/_components/templates/photoViewer";
+import RouteListBasic from "@/app/(public)/_components/templates/routeListBasic";
 import {GiGreekTemple, GiPaintBrush} from "react-icons/gi";
 import {PiForkKnife, PiMountains} from "react-icons/pi";
 import {LuPalette} from "react-icons/lu";
 import {FaRunning} from "react-icons/fa";
 import {IoIosArrowForward} from "react-icons/io";
 import {Route, User} from "@/lib/client/types";
-import MapViewerOnMobile from "@/app/_components/page/templates/mapViewerOnMobile";
+import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
 
 export type selectedType = 'home' | 'photos' | 'interests' | 'recent' | 'trending'
 

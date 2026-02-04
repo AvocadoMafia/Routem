@@ -1,5 +1,5 @@
-import ContentsSelector from "@/app/_components/page/templates/contentsSelector";
-import ClientRoot from "@/app/_components/page/clientRoot";
+import ContentsSelector from "@/app/(public)/_components/templates/contentsSelector";
+import ClientRoot from "@/app/(public)/clientRoot";
 
 export default function Page() {
   return (

@@ -3,7 +3,7 @@
 import {headerHeightAtom} from "@/lib/client/atoms";
 import {useAtomValue} from "jotai";
 import { HiMap, HiSparkles, HiFlag, HiClock, HiFire } from "react-icons/hi2";
-import {selectedType} from "@/app/_components/page/clientRoot";
+import {selectedType} from "@/app/(public)/clientRoot";
 import {HiHome} from "react-icons/hi";
 
 const SELECTOR_ITEMS = [
