@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "./globals.css";
 import Header from "@/app/_components/layout/templates/header";
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";

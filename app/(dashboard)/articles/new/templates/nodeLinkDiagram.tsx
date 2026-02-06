@@ -92,7 +92,7 @@ export default function NodeLinkDiagram({
                                 {/* 右列：カードエリア (2行分を占有) */}
                                 <div
                                     style={{ gridRow: `${startRow} / span 2`, gridColumn: '2' }}
-                                    className="flex items-center"
+                                    className="flex items-center min-w-0 flex-1"
                                 >
                                     {isWaypoint ? (
                                         <WaypointCard

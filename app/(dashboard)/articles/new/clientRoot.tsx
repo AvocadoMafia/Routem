@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NodeLinkDiagram from "@/app/(dashboard)/articles/new/templates/nodeLinkDiagram";
 import RouteEditingSection from "@/app/(dashboard)/articles/new/templates/routeEditingSection";
 import RouteSettingsSection from "@/app/(dashboard)/articles/new/templates/routeSettingsSection";
 import ActionBar from "@/app/(dashboard)/articles/new/ingredients/actionBar";
 import {Transportation, Waypoint, RouteItem} from "@/lib/client/types";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
@@ -26,12 +27,19 @@ export default function ClientRoot() {
     const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(undefined);
 
     // ルートを構成するアイテム（経由地・交通手段）のリスト
-    const [items, setItems] = useState<RouteItem[]>([
-        { id: "1", type: 'waypoint', name: "Waypoint 1", memo: "", order: 1 },
-    ]);
+    const [items, setItems] = useState<RouteItem[]>([]);
+
+    // 初期化時に最初のWaypointを追加する
+    useEffect(() => {
+        const initialId = Math.random().toString(36).substr(2, 9);
+        setItems([
+            { id: initialId, type: 'waypoint', name: "Waypoint 1", memo: "", order: 1 },
+        ]);
+        setSelectedItemId(initialId);
+    }, []);
 
     // 現在編集中のアイテムID
-    const [selectedItemId, setSelectedItemId] = useState<string | null>("1");
+    const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
     // 投稿状態
     const [publishing, setPublishing] = useState(false);
@@ -42,8 +50,14 @@ export default function ClientRoot() {
     // ロジック
     // -------------------------------------------------------------------------
 
+    // 各バリデーション項目の個別判定
+    const isTitleSet = title.trim() !== "";
+    const isBioSet = bio.trim() !== "";
+    const isThumbnailSet = thumbnailImageSrc !== undefined;
+    const isWaypointsSet = items.filter(it => it.type === 'waypoint').length >= 2;
+
     // 公開設定が完了しているか確認
-    const isSettingsComplete = title.trim() !== "" && bio.trim() !== "" && thumbnailImageSrc !== undefined;
+    const isSettingsComplete = isTitleSet && isBioSet && isThumbnailSet && isWaypointsSet;
 
     // 画像アップロード処理
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +101,15 @@ export default function ClientRoot() {
 
     // 投稿処理: 現在の items を API に送信
     const handlePublish = async () => {
+        if (!isSettingsComplete) return;
+
+        // 追加バリデーション: 最初のアイテムと最後のアイテムがWaypointであること
+        const waypoints = items.filter(it => it.type === 'waypoint');
+        if (waypoints.length < 2) {
+            setMessage("At least 2 waypoints are required.");
+            return;
+        }
+
         setPublishing(true);
         setMessage(null);
         try {
@@ -131,7 +154,29 @@ export default function ClientRoot() {
     // 指定したアイテムを削除する
     const deleteItem = (id: string) => {
         setItems((prev) => {
-            const next = prev.filter((item) => item.id !== id);
+            const filtered = prev.filter((item) => item.id !== id);
+
+            // 連続する交通手段を統合 or 削除するなどの正規化
+            const next: RouteItem[] = [];
+            for (let i = 0; i < filtered.length; i++) {
+                const curr = filtered[i];
+                const prevItem = next[next.length - 1];
+
+                // 交通手段が連続する場合、2つ目以降はスキップ（または統合の余地ありだが、一旦シンプルに1つ残す）
+                if (curr.type === 'transportation' && prevItem?.type === 'transportation') {
+                    continue;
+                }
+                next.push(curr);
+            }
+
+            // 先頭や末尾が交通手段なら削除
+            while (next.length > 0 && next[0].type === 'transportation') {
+                next.shift();
+            }
+            while (next.length > 0 && next[next.length - 1].type === 'transportation') {
+                next.pop();
+            }
+
             // 削除したアイテムが選択中だった場合、他のアイテムを選択状態にする
             if (selectedItemId === id) {
                 setSelectedItemId(next.length > 0 ? next[0].id : null);
@@ -240,12 +285,22 @@ export default function ClientRoot() {
             <div className="flex-1 h-full overflow-y-auto no-scrollbar shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex flex-col">
                 <ActionBar
                     isSettingsComplete={isSettingsComplete}
+                    isTitleSet={isTitleSet}
+                    isBioSet={isBioSet}
+                    isThumbnailSet={isThumbnailSet}
+                    isWaypointsSet={isWaypointsSet}
                     activeSection={activeSection}
                     setActiveSection={setActiveSection}
                     handlePublish={handlePublish}
                     publishing={publishing}
                 />
                 <div className="h-fit">
+                    {message && (
+                        <div className={`mx-10 mt-4 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300 ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-accent-2/10 text-accent-2 border border-accent-2/20'}`}>
+                            {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
+                            <span className="text-sm font-bold">{message}</span>
+                        </div>
+                    )}
                     {activeSection === 'edit' ? (
                         <div className="w-full h-full animate-in fade-in duration-300">
                             <RouteEditingSection

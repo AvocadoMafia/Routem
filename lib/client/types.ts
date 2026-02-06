@@ -1,6 +1,14 @@
 import {Prisma} from "@prisma/client";
 
-export type Route = Prisma.RouteGetPayload<{include: {author: {include: {profileImage: true}}, thumbnail: true, likes: true, views: true}}> & {
+export type Route = Prisma.RouteGetPayload<{
+    include: {
+        author: {include: {profileImage: true}},
+        thumbnail: true,
+        likes: true,
+        views: true,
+        RouteNode: {include: {spot: true}}
+    }
+}> & {
     likesThisWeek: number;
     viewsThisWeek: number;
 }
@@ -27,6 +35,7 @@ export type Waypoint = {
     order: number; // 並び順
     lat?: number;
     lng?: number;
+    mapboxId?: string;
 };
 
 export type Transportation = {

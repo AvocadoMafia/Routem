@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image';
+import Link from 'next/link';
 import {Route} from "@/lib/client/types";
 
 type Props = {
@@ -15,20 +16,24 @@ export default function RouteViewer(props: Props) {
     <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll bg-background-1/50 p-6 border-l border-grass/20'}>
       {route ? (
         <>
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
-            <Image
-              src={route.thumbnail?.url ?? '/map.png'}
-              alt={route.title}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          </div>
+          <Link href={`/routes/${route.id}`} className="block group">
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
+              <Image
+                src={route.thumbnail?.url ?? '/map.png'}
+                alt={route.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                unoptimized
+              />
+            </div>
+          </Link>
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-foreground-1 leading-tight">
-                {route.title}
-              </h2>
+              <Link href={`/routes/${route.id}`} className="hover:text-accent-0 transition-colors">
+                <h2 className="text-2xl font-bold text-foreground-1 leading-tight">
+                  {route.title}
+                </h2>
+              </Link>
               <p className="text-foreground-1/60 mt-1">
                 by @{route.author.name} • {route.category}
               </p>
@@ -50,22 +55,21 @@ export default function RouteViewer(props: Props) {
 
             <div className="mt-4 flex flex-col gap-3">
               <h3 className="text-lg font-semibold text-foreground-1">Description</h3>
-              <p className="text-foreground-1/80 leading-relaxed">
-                This is a beautiful route through {route.category} focused spots.
-                Enjoy the amazing views and local culture curated by @{route.author.name}.
+              <p className="text-foreground-1/80 leading-relaxed line-clamp-4">
+                {route.bio}
               </p>
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
-              <h3 className="text-lg font-semibold text-foreground-1">Route Details</h3>
+              <h3 className="text-lg font-semibold text-foreground-1">Route Info</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-1/40">Distance</span>
-                  <span className="font-medium text-foreground-1">5.2 km</span>
+                  <span className="block text-foreground-1/40 text-xs">Created</span>
+                  <span className="font-medium text-foreground-1">{new Date(route.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-1/40">Duration</span>
-                  <span className="font-medium text-foreground-1">2.5 hours</span>
+                  <span className="block text-foreground-1/40 text-xs">Waypoints</span>
+                  <span className="font-medium text-foreground-1">{route.RouteNode.length} stops</span>
                 </div>
               </div>
             </div>

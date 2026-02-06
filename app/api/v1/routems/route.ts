@@ -23,7 +23,15 @@ export async function GET(req: NextRequest) {
         },
         thumbnail: true,
         likes: true,
-        views: true
+        views: true,
+        RouteNode: {
+          include: {
+            spot: true
+          },
+          orderBy: {
+            order: 'asc'
+          }
+        }
       }
     });
 
@@ -46,6 +54,7 @@ export async function GET(req: NextRequest) {
       likesThisWeek: r.likes.length,
       viewsThisWeek: r.views.length,
       thumbnail: r.thumbnail,
+      RouteNode: r.RouteNode,
     }));
 
     return NextResponse.json({ routes: mapped }, { status: 200 });
@@ -104,12 +113,16 @@ export async function POST(req: NextRequest) {
 
       for (let order = 0; order < waypointItems.length; order++) {
         const w = waypointItems[order];
-        const spotId = String(w.id);
+        const spotId = w.mapboxId ?? String(w.id);
         const name = w.name ?? `Waypoint ${order + 1}`;
         const lat = typeof w.lat === "number" ? w.lat : 0;
         const lng = typeof w.lng === "number" ? w.lng : 0;
         const details = w.memo ?? "";
 
+        // spotId が Mapbox ID の場合は既存の Spot を更新し、
+        // そうでない（一時的なIDの）場合は新しい Spot を作成する挙動にする
+        // ただし、現在は upsert なので Mapbox ID があってもなくても同じ挙動
+        // 一時的なIDが衝突しないようクライアント側でランダムIDを生成するようにした
         await tx.spot.upsert({
           where: { id: spotId },
           update: { name, latitude: lat, longitude: lng },
@@ -118,7 +131,7 @@ export async function POST(req: NextRequest) {
             name,
             latitude: lat,
             longitude: lng,
-            source: "user",
+            source: w.mapboxId ? "mapbox" : "user",
           },
         });
 
@@ -165,21 +178,24 @@ export async function POST(req: NextRequest) {
         const fromIndexInItems = items.findIndex((it: any) => it.id === from.waypointId);
         const toIndexInItems = items.findIndex((it: any) => it.id === to.waypointId);
         const between = items.slice(
-          Math.min(fromIndexInItems, toIndexInItems) + 1,
-          Math.max(fromIndexInItems, toIndexInItems)
+          fromIndexInItems + 1,
+          toIndexInItems
         );
-        const firstTrans = between.find((it: any) => it.type === "transportation");
+        const transItems = between.filter((it: any) => it.type === "transportation");
 
-        if (firstTrans && firstTrans.method) {
-          const mode = mapMethodToTransportMode(firstTrans.method);
-          await tx.segmentStep.create({
-            data: {
-              segmentId: segment.id,
-              order: 0,
-              mode,
-              details: firstTrans.memo ?? "",
-            },
-          });
+        for (let j = 0; j < transItems.length; j++) {
+          const trans = transItems[j];
+          if (trans.method) {
+            const mode = mapMethodToTransportMode(trans.method);
+            await tx.segmentStep.create({
+              data: {
+                segmentId: segment.id,
+                order: j,
+                mode,
+                details: trans.memo ?? "",
+              },
+            });
+          }
         }
       }
 

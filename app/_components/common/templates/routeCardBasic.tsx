@@ -3,13 +3,14 @@ import React from "react";
 import {Icon} from "@mui/material";
 import {HiEye, HiHeart} from "react-icons/hi2";
 import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
     route: Route
 }
 export default function RouteCardBasic(props: Props) {
     return (
-        <div className={'group w-full h-[300px] overflow-hidden rounded-xl flex shadow-sm hover:shadow-md'}>
+        <Link href={`/routes/${props.route.id}`} className={'group w-full h-[300px] overflow-hidden rounded-xl flex shadow-sm hover:shadow-md transition-shadow'}>
             <div className={'flex-1 h-full relative overflow-hidden'}>
                 {/* オーバーレイ（視認性向上） */}
                 <div className="absolute inset-0 bg-black/40 z-10"/>
@@ -51,20 +52,20 @@ export default function RouteCardBasic(props: Props) {
                     </div>
                 </div>
                 <div className="w-full grid grid-cols-2 gap-3 md:text-sm text-xs">
-                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1">
-                        <span className="block text-foreground-1/40">Duration</span>
-                        <span className="font-medium text-foreground-1">2.5 hours</span>
+                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1 flex flex-col justify-center px-2">
+                        <span className="block text-foreground-1/40 text-[10px]">Stops</span>
+                        <span className="font-medium text-foreground-1 truncate">{props.route.RouteNode.length} pts</span>
                     </div>
-                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1">
-                        <span className="block text-foreground-1/40">Expenses</span>
-                        <span className="font-medium text-foreground-1">$200</span>
+                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1 flex flex-col justify-center px-2">
+                        <span className="block text-foreground-1/40 text-[10px]">Category</span>
+                        <span className="font-medium text-foreground-1 truncate">{props.route.category}</span>
                     </div>
                 </div>
                 <div className={'w-full text-foreground-1 line-clamp-7 md:text-sm text-xs whitespace-pre-wrap'}>
                     {props.route.bio}
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 

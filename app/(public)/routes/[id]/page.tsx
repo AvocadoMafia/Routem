@@ -1,6 +1,6 @@
 import { getPrisma } from "@/lib/config/server";
 import { notFound } from "next/navigation";
-import { MapPin, Navigation, Clock, Ruler } from "lucide-react";
+import { MapPin, Navigation, Clock, Ruler, Footprints, TrainFront, Bus, Car, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 export default async function RouteDetailPage({ params }: { params: { id: string } }) {
@@ -38,7 +38,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
         <div className="flex items-center gap-4 mb-4">
           {route.author.profileImage && (
             <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image src={route.author.profileImage.url} alt={route.author.name} fill className="object-cover" />
+              <Image src={route.author.profileImage.url} alt={route.author.name} fill className="object-cover" unoptimized />
             </div>
           )}
           <span className="font-bold text-foreground-0">{route.author.name}</span>
@@ -50,7 +50,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
 
       {route.thumbnail && (
         <div className="relative w-full aspect-video rounded-3xl overflow-hidden mb-16 shadow-xl">
-          <Image src={route.thumbnail.url} alt={route.title} fill className="object-cover" />
+          <Image src={route.thumbnail.url} alt={route.title} fill className="object-cover" unoptimized />
         </div>
       )}
 
@@ -76,7 +76,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
                   <div className="grid grid-cols-3 gap-4 mb-6">
                     {node.images.map(img => (
                       <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden shadow-sm">
-                        <Image src={img.url} alt="" fill className="object-cover" />
+                        <Image src={img.url} alt="" fill className="object-cover" unoptimized />
                       </div>
                     ))}
                   </div>
@@ -85,13 +85,17 @@ export default async function RouteDetailPage({ params }: { params: { id: string
             </div>
 
             {/* Segment / Transportation */}
-            {node.outgoing && (
+            {node.outgoing && node.outgoing.steps.length > 0 && (
               <div className="flex gap-8 mb-12 ml-6 pl-10 border-l-0">
-                <div className="flex-1 bg-background-1/50 rounded-2xl p-6 border border-grass">
+                <div className="flex-1 bg-background-1/50 rounded-2xl p-6 border border-grass space-y-4">
                   {node.outgoing.steps.map(step => (
                     <div key={step.id} className="flex items-center gap-6">
                       <div className="flex items-center gap-2 px-3 py-1 bg-accent-0/10 text-accent-0 rounded-full text-xs font-bold uppercase">
-                        <Navigation size={14} />
+                        {step.mode === 'WALK' && <Footprints size={14} />}
+                        {step.mode === 'TRAIN' && <TrainFront size={14} />}
+                        {step.mode === 'BUS' && <Bus size={14} />}
+                        {step.mode === 'CAR' && <Car size={14} />}
+                        {step.mode === 'BIKE' && <Sparkles size={14} />}
                         {step.mode}
                       </div>
                       <p className="text-sm font-medium text-foreground-0">{step.details}</p>

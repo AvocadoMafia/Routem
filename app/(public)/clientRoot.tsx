@@ -79,7 +79,37 @@ export default function ClientRoot() {
             category: 'General',
             thumbnail: { url: '/mockImages/Kyoto.jpg' } as any,
             likes: [],
-            views: []
+            views: [],
+            RouteNode: [
+                {
+                    id: `node-${i}-1`,
+                    order: 0,
+                    routeId: `placeholder-${i}`,
+                    spotId: 'kyoto-station',
+                    details: 'Start from Kyoto Station',
+                    spot: {
+                        id: 'kyoto-station',
+                        name: 'Kyoto Station',
+                        longitude: 135.7588,
+                        latitude: 34.9858,
+                        source: 'mock'
+                    }
+                },
+                {
+                    id: `node-${i}-2`,
+                    order: 1,
+                    routeId: `placeholder-${i}`,
+                    spotId: 'nara-park',
+                    details: 'Visit Nara Park',
+                    spot: {
+                        id: 'nara-park',
+                        name: 'Nara Park',
+                        longitude: 135.8430,
+                        latitude: 34.6851,
+                        source: 'mock'
+                    }
+                }
+            ] as any
         }));
         return [...base, ...placeholders];
     }, [routes]);
