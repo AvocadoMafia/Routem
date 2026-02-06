@@ -17,10 +17,11 @@ export default function RouteViewer(props: Props) {
         <>
           <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
             <Image
-              src={route.thumbnailImageSrc ?? '/map.png'}
+              src={route.thumbnail?.url ?? '/map.png'}
               alt={route.title}
               fill
               className="object-cover"
+              unoptimized
             />
           </div>
           <div className="flex flex-col gap-4">
@@ -29,7 +30,7 @@ export default function RouteViewer(props: Props) {
                 {route.title}
               </h2>
               <p className="text-foreground-1/60 mt-1">
-                by @{route.user.name} • {route.category}
+                by @{route.author.name} • {route.category}
               </p>
             </div>
 
@@ -51,7 +52,7 @@ export default function RouteViewer(props: Props) {
               <h3 className="text-lg font-semibold text-foreground-1">Description</h3>
               <p className="text-foreground-1/80 leading-relaxed">
                 This is a beautiful route through {route.category} focused spots.
-                Enjoy the amazing views and local culture curated by @{route.user.name}.
+                Enjoy the amazing views and local culture curated by @{route.author.name}.
               </p>
             </div>
 

@@ -36,6 +36,7 @@ export default function ClientRoot() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
+    //記事のfetch処理。fetch関数のwrapperやエラー等のハンドリングについては後ほど実行する。
     useEffect(() => {
         let cancelled = false;
         async function load() {
@@ -56,7 +57,7 @@ export default function ClientRoot() {
         return () => { cancelled = true };
     }, []);
 
-    // In case there are fewer than expected items, fill to avoid UI index errors.
+    // UIのエラーを回避するためにモック記事をfetchしたroutesに追加する
     const paddedRoutes = useMemo<Route[]>(() => {
         const base: Route[] = routes ?? [];
         if (base.length >= 6) return base;
@@ -65,11 +66,20 @@ export default function ClientRoot() {
         const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => ({
             id: `placeholder-${i}`,
             title: `Sample Route ${i + 1}`,
-            user: mockUsers[i % mockUsers.length],
+            bio: 'This is a sample description for the placeholder route.',
+            visibility: 'public',
+            authorId: mockUsers[i % mockUsers.length].id,
+            author: {
+                ...mockUsers[i % mockUsers.length],
+                profileImage: mockUsers[i % mockUsers.length].profileImage ? { url: mockUsers[i % mockUsers.length].profileImage } : null
+            } as any,
+            createdAt: new Date(),
             likesThisWeek: 0,
             viewsThisWeek: 0,
             category: 'General',
-            thumbnailImageSrc: '/mockImages/Kyoto.jpg'
+            thumbnail: { url: '/mockImages/Kyoto.jpg' } as any,
+            likes: [],
+            views: []
         }));
         return [...base, ...placeholders];
     }, [routes]);

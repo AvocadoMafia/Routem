@@ -1,12 +1,8 @@
-export type Route = {
-    id: string
-    title: string
-    user: User
-    likesThisWeek: number
-    viewsThisWeek?: number
-    category: string
-    /** URL of the route thumbnail image */
-    thumbnailImageSrc?: string
+import {Prisma} from "@prisma/client";
+
+export type Route = Prisma.RouteGetPayload<{include: {author: {include: {profileImage: true}}, thumbnail: true, likes: true, views: true}}> & {
+    likesThisWeek: number;
+    viewsThisWeek: number;
 }
 
 export type User = {
@@ -27,8 +23,10 @@ export type Waypoint = {
     type: 'waypoint';
     name: string;
     images?: string[]; // 経由地の画像URL（最大3枚）
-    memo: string;  // 経由地に関するメモ
-    order: number; // 並び順（現在は配列のインデックスを優先）
+    memo: string;  // 経由地に関するメモ (RouteNode.details)
+    order: number; // 並び順
+    lat?: number;
+    lng?: number;
 };
 
 export type Transportation = {

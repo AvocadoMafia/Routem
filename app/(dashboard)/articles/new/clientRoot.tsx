@@ -3,17 +3,31 @@
 import { useState } from "react";
 import NodeLinkDiagram from "@/app/(dashboard)/articles/new/templates/nodeLinkDiagram";
 import RouteEditingSection from "@/app/(dashboard)/articles/new/templates/routeEditingSection";
+import RouteSettingsSection from "@/app/(dashboard)/articles/new/templates/routeSettingsSection";
+import ActionBar from "@/app/(dashboard)/articles/new/ingredients/actionBar";
 import {Transportation, Waypoint, RouteItem} from "@/lib/client/types";
+import { useRouter } from "next/navigation";
 
 
 export default function ClientRoot() {
+    const router = useRouter();
     // -------------------------------------------------------------------------
     // 状態管理
     // -------------------------------------------------------------------------
 
+    // セクションの切り替え ('edit' | 'settings')
+    const [activeSection, setActiveSection] = useState<'edit' | 'settings'>('edit');
+
+    // ルート全体のメタ情報
+    const [title, setTitle] = useState("");
+    const [bio, setBio] = useState("");
+    const [category, setCategory] = useState("General");
+    const [visibility, setVisibility] = useState<'public' | 'private'>('private');
+    const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(undefined);
+
     // ルートを構成するアイテム（経由地・交通手段）のリスト
     const [items, setItems] = useState<RouteItem[]>([
-        { id: "1", type: 'waypoint', name: "Waypoint 1", memo: "Note 1", order: 1 },
+        { id: "1", type: 'waypoint', name: "Waypoint 1", memo: "", order: 1 },
     ]);
 
     // 現在編集中のアイテムID
@@ -21,11 +35,55 @@ export default function ClientRoot() {
 
     // 投稿状態
     const [publishing, setPublishing] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
 
     // -------------------------------------------------------------------------
     // ロジック
     // -------------------------------------------------------------------------
+
+    // 公開設定が完了しているか確認
+    const isSettingsComplete = title.trim() !== "" && bio.trim() !== "" && thumbnailImageSrc !== undefined;
+
+    // 画像アップロード処理
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setMessage(null);
+        try {
+            // 1) 署名付きURLを取得
+            const params = new URLSearchParams({
+                fileName: file.name,
+                contentType: file.type,
+                type: 'route-thumbnails'
+            });
+            const res = await fetch(`/api/v1/uploads?${params.toString()}`);
+            const { uploadUrl, publicUrl } = await res.json();
+
+            if (!res.ok) throw new Error('Failed to get upload URL');
+
+            // 2) S3(MinIO)に直接アップロード
+            const uploadRes = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: file,
+                headers: {
+                    'Content-Type': file.type
+                }
+            });
+
+            if (!uploadRes.ok) throw new Error('Failed to upload image');
+
+            // 3) 公開URLを状態にセット
+            setThumbnailImageSrc(publicUrl);
+            setMessage('Image uploaded successfully!');
+        } catch (e: any) {
+            setMessage(e?.message ?? 'Upload failed');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     // 投稿処理: 現在の items を API に送信
     const handlePublish = async () => {
@@ -37,15 +95,25 @@ export default function ClientRoot() {
             const res = await fetch('/api/v1/routems', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items: normalizedItems })
+                body: JSON.stringify({
+                    title,
+                    bio,
+                    category,
+                    visibility,
+                    thumbnailImageSrc,
+                    items: normalizedItems
+                })
             });
             const data = await res.json();
             if (!res.ok) {
                 throw new Error(data?.error || 'Failed to publish');
             }
-            setMessage(`Published! routeId=${data.routeId}`);
-            // TODO: 必要に応じて遷移など実装: router.push(`/routes/${data.routeId}`)
-            console.log('Created route:', data);
+            setMessage(`Published! Redirecting...`);
+
+            // 正常に投稿が完了したら、ルートページに遷移
+            if (data.routeId) {
+                router.push(`/routes/${data.routeId}`);
+            }
         } catch (e: any) {
             setMessage(e?.message ?? 'Publish failed');
         } finally {
@@ -169,25 +237,39 @@ export default function ClientRoot() {
                 onAddItem={addItem}
             />
             {/* 右側：詳細情報の編集フォーム＋投稿アクション */}
-            <div className="flex-1 h-full overflow-hidden shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex flex-col">
-                {/* アクションバー */}
-                <div className="flex items-center justify-between p-4 border-b border-grass bg-background-1/60 backdrop-blur sticky top-0 z-20">
-                    <div className="text-sm text-foreground-1">
-                        {message ? <span>{message}</span> : <span>Prepare your route and click Publish</span>}
-                    </div>
-                    <button
-                        onClick={handlePublish}
-                        disabled={publishing}
-                        className={`px-4 py-2 rounded-xl font-bold text-white shadow ${publishing ? 'bg-accent-0/50 cursor-not-allowed' : 'bg-accent-0 hover:bg-accent-0/90 active:scale-[0.98]'} `}
-                    >
-                        {publishing ? 'Publishing...' : 'Publish'}
-                    </button>
-                </div>
-                <div className="flex-1">
-                    <RouteEditingSection
-                        selectedItem={selectedItem}
-                        onUpdateItem={(updates) => selectedItemId && updateItem(selectedItemId, updates)}
-                    />
+            <div className="flex-1 h-full overflow-y-auto no-scrollbar shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex flex-col">
+                <ActionBar
+                    isSettingsComplete={isSettingsComplete}
+                    activeSection={activeSection}
+                    setActiveSection={setActiveSection}
+                    handlePublish={handlePublish}
+                    publishing={publishing}
+                />
+                <div className="h-fit">
+                    {activeSection === 'edit' ? (
+                        <div className="w-full h-full animate-in fade-in duration-300">
+                            <RouteEditingSection
+                                selectedItem={selectedItem}
+                                onUpdateItem={(updates) => selectedItemId && updateItem(selectedItemId, updates)}
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-full h-full animate-in fade-in duration-300">
+                            <RouteSettingsSection
+                                title={title}
+                                setTitle={setTitle}
+                                bio={bio}
+                                setBio={setBio}
+                                category={category}
+                                setCategory={setCategory}
+                                visibility={visibility}
+                                setVisibility={setVisibility}
+                                thumbnailImageSrc={thumbnailImageSrc}
+                                handleImageUpload={handleImageUpload}
+                                uploading={uploading}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

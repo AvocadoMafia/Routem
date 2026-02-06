@@ -49,14 +49,14 @@ export default function NodeLinkDiagram({
                     </span>
                 </div>
 
-                {/* 
+                {/*
                   ダイアグラムのコア：CSS Gridを使用したレイアウト
                   - 1列目 (48px): ノード（点）と垂直線
                   - 2列目 (1fr): カード（情報パネル）
                   各アイテム（経由地/交通手段）は2つのグリッド行を占有します。
                 */}
                 <div className="relative grid grid-cols-[48px_1fr] gap-6 flex-1 pb-10">
-                    
+
                     {/* 背景の垂直線（最初のノードから最後のノードまでを貫通） */}
                     {items.length > 1 && (
                         <div
@@ -111,7 +111,7 @@ export default function NodeLinkDiagram({
                                     )}
                                 </div>
 
-                                {/* 
+                                {/*
                                   インライン追加エリア:
                                   アイテム i と i+1 の間の隙間に配置。
                                   前のアイテムの2行目と、次のアイテムの1行目にまたがることで、
@@ -140,7 +140,7 @@ export default function NodeLinkDiagram({
             </div>
 
             {/* 下部の「経由地を追加」ボタン */}
-            <div className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky bottom-0 mt-auto">
+            <div className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky bottom-0 mt-auto z-50">
                 <button
                     onClick={onAddWaypoint}
                     className="w-full py-4 bg-accent-0 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-0/90 active:scale-[0.98] transition-all shadow-[0_10px_20px_rgba(45,31,246,0.2)]"

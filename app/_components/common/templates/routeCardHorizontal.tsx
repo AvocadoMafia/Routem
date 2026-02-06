@@ -8,7 +8,7 @@ type Props = {
 }
 // 横長のシンプルな旅行ルート サムネイルカード
 export default function RouteCardHorizontal(props: Props){
-  const bgSrc = props.route.thumbnailImageSrc  ?? '/map.png';
+  const bgSrc = props.route.thumbnail?.url  ?? '/map.png';
   return (
     <div
       className={`relative w-full max-w-2xl overflow-hidden rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer ${
@@ -30,6 +30,7 @@ export default function RouteCardHorizontal(props: Props){
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover"
           priority={false}
+          unoptimized
         />
         {/* オーバーレイ（視認性向上） */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/20" />
@@ -50,7 +51,7 @@ export default function RouteCardHorizontal(props: Props){
               props.isFocused ? 'text-white/90' : 'text-foreground-1/70'
             }`}
           >
-            <span className="truncate">@{props.route.user.name}</span>
+            <span className="truncate">@{props.route.author.name}</span>
             <span
               className={`transition-colors duration-300 ${
                 props.isFocused ? 'text-white/40' : 'text-foreground-1/30'

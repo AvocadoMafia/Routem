@@ -3,6 +3,7 @@
 import { Route } from "@/lib/client/types";
 import { HiHeart } from "react-icons/hi2";
 import { Swiper, SwiperSlide } from "swiper/react";
+import Image from "next/image";
 import 'swiper/css';
 
 type Props = {
@@ -22,16 +23,20 @@ export default function MapViewerOnMobile(props: Props) {
                         <div className="w-full h-[700px] flex flex-col rounded-xl overflow-hidden">
                             {/* 上部マップ */}
                             <div className="w-full h-[200px] relative">
-                                <img
+                                <Image
                                     className="absolute w-full h-full object-cover"
                                     src="/map.png"
                                     alt=""
+                                    fill
+                                    unoptimized
                                 />
                                 <div className="absolute z-10 h-full w-1/3 p-1 bg-background-0/50 backdrop-blur-sm right-0">
-                                    <img
+                                    <Image
                                         className="w-full h-full rounded-lg object-cover border border-background-0 shadow-md"
-                                        src={route.thumbnailImageSrc}
+                                        src={route.thumbnail?.url ?? '/map.png'}
                                         alt=""
+                                        fill
+                                        unoptimized
                                     />
                                 </div>
                             </div>
@@ -43,12 +48,16 @@ export default function MapViewerOnMobile(props: Props) {
                                 </h1>
 
                                 <div className="text-lg flex items-center gap-2 text-foreground-1">
-                                    <img
-                                        className="w-8 h-8 rounded-full"
-                                        src={route.user.profileImage}
-                                        alt=""
-                                    />
-                                    <span>{route.user.name}</span>
+                                    <div className="relative w-8 h-8">
+                                        <Image
+                                            className="rounded-full"
+                                            src={route.author.profileImage?.url || "/mockImages/userIcon_1.jpg"}
+                                            alt=""
+                                            fill
+                                            unoptimized
+                                        />
+                                    </div>
+                                    <span>{route.author.name}</span>
                                     <span>・ {route.category}</span>
                                 </div>
 
@@ -65,7 +74,7 @@ export default function MapViewerOnMobile(props: Props) {
                                     </h3>
                                     <p className="text-foreground-1/80 leading-relaxed">
                                         This is a beautiful route through {route.category} focused spots.
-                                        Enjoy the amazing views and local culture curated by @{route.user.name}.
+                                        Enjoy the amazing views and local culture curated by @{route.author.name}.
                                     </p>
                                 </div>
 

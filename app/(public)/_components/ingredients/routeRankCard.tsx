@@ -1,6 +1,7 @@
 import React from 'react'
 import { HiHeart, HiEye } from 'react-icons/hi2'
 import {Route} from "@/lib/client/types";
+import Image from 'next/image';
 
 
 export type Props = {
@@ -21,10 +22,12 @@ export default function RouteRankCard(props: Props) {
       <div className="w-full h-full rounded-xl shadow-sm hover:shadow-md overflow-hidden flex flex-col">
         {/* Top section: thumbnail header image */}
         <div className="relative h-32 overflow-hidden">
-          <img
-            src={props.route.thumbnailImageSrc || '/mockImages/Kyoto.jpg'}
+          <Image
+            src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
             alt={`${props.route.title} header`}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 duration-300 ease-out"
+            fill
+            className="object-cover group-hover:scale-105 duration-300 ease-out"
+            unoptimized
           />
         </div>
 
@@ -45,7 +48,7 @@ export default function RouteRankCard(props: Props) {
 
         {/* Bottom section: meta info (author & category) */}
         <div className="flex-1 bg-background-1 p-3">
-          <p className="text-xs text-foreground-1 truncate">@{props.route.user.name} ・ {props.route.category}</p>
+          <p className="text-xs text-foreground-1 truncate">@{props.route.author.name} ・ {props.route.category}</p>
         </div>
       </div>
     </button>

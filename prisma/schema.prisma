@@ -1,7 +1,7 @@
-//仮置きのprismaの設定ファイル。別のORMを用いる場合は削除。
-//prismaを用いた処理について、clientを最初生成する必要があり、dev環境ではnextの起動前に以下二つのコマンドの実行が必要となる。prod、stageでは自動実行させる予定。
-//npx prisma generate
-//npx prisma migrate dev
+// 仮置きのprismaの設定ファイル。別のORMを用いる場合は削除。
+// prismaを用いた処理について、clientを最初生成する必要があり、dev環境ではnextの起動前に以下二つのコマンドの実行が必要となる。prod、stageでは自動実行させる予定。
+// npx prisma generate
+// npx prisma migrate dev
 
 generator client {
   provider = "prisma-client-js"
@@ -9,43 +9,132 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  //ここは開発環境によって自動で切り替わらないため、prod、stageそれぞれで参照先を変える必要がある
+  // ここは開発環境によって自動で切り替わらないため、prod、stageそれぞれで参照先を変える必要がある
   url      = env("DATABASE_URL")
 }
 
 // 簡易ユーザモデル（検証用）
 model User {
-  id   String @id @default(cuid()) // ユーザID
-  name String @unique              // 表示名（ユニーク）
+  id             String  @id @default(cuid()) // ユーザID
+  name           String  @unique // 表示名（ユニーク）]
+  bio            String?
+  profileImage   Image?  @relation("UserProfileImage")
+  uploadedImages Image[] @relation("UserUploads") // ユーザがアップロードした画像一覧
+  routes         Route[]
+}
+
+// 画像モデル：RouteNodeの地点写真や、ユーザーのプロフィール画像などで利用
+model Image {
+  id        String      @id @default(cuid())
+  url       String // 画像の保存先URL（S3やCloudinaryなど）
+  status    ImageStatus @default(DRAFT) // 画像の採用状態
+  type      ImageType // 画像の利用目的
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // リレーション
+  uploaderId String? // アップロードしたユーザー
+  uploader   User?   @relation("UserUploads", fields: [uploaderId], references: [id])
+
+  // 各目的別のリレーション。外部キーをこちらに集約
+  routeNodeId String? // 紐づくルート上の地点（NODE_IMAGE用）
+  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id])
+
+  userProfileId String? @unique // ユーザーのプロフィール画像としての利用
+  userProfile   User?   @relation("UserProfileImage", fields: [userProfileId], references: [id])
+
+  routeThumbId String? @unique // ルートのサムネイルとしての利用
+  routeThumb   Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id])
+}
+
+// 画像の利用目的
+enum ImageType {
+  USER_PROFILE // ユーザーアイコン
+  ROUTE_THUMBNAIL // ルートのサムネイル
+  NODE_IMAGE // 地点（経由地）の写真
+  OTHER // その他
+}
+
+// 画像の採用ステータス
+enum ImageStatus {
+  ADOPTED // 正式に採用された
+  DRAFT // 一次保存・下書き状態
+  UNUSED // 利用されなかった（削除候補など）
 }
 
 // 地図上の地点（POI）。OSMやMapbox等の出典を保持
 model Spot {
-  id        String @id         // スポットID（OSM IDなど外部IDを流用想定）
-  name      String             // 名称
-  longitude Float              // 経度（EPSG:4326）
-  latitude  Float              // 緯度（EPSG:4326）
-  source    String             // 由来（例: "osm", "mapbox"）
+  id        String @id // スポットID（OSM IDなど外部IDを流用想定）
+  name      String // 名称
+  longitude Float // 経度（EPSG:4326）
+  latitude  Float // 緯度（EPSG:4326）
+  source    String // 由来（例: "osm", "mapbox"）
 
   // リレーション
-  routeSpots RouteSpot[]       // 旧来の並び（中間テーブル）
-  RouteNode  RouteNode[]       // 表示用のノード（順序付き）
+  RouteNode    RouteNode[] // 表示用のノード（順序付き）
+  RouteSegment RouteSegment[]
+  routeSpots   RouteSpot[]
 }
 
 // 1つの旅行ルート（全体）。可視化・並び順・区間などの単位となる
 model Route {
-  id        String   @id @default(cuid()) // ルートID
-  createdAt DateTime @default(now())      // 作成日時
+  id         String          @id @default(cuid()) // ルートID
+  createdAt  DateTime        @default(now()) // 作成日時
+  title      String
+  bio        String
+  category   String          @default("General") // カテゴリ
+  thumbnail  Image?          @relation("RouteThumbnail")
+  authorId   String
+  author     User            @relation(references: [id], fields: [authorId])
+  visibility RouteVisibility @default(private)
 
   // 表示・経路構成に使う関連
   routeSpots RouteSpot[] // 旧来の中間テーブル（単純な順序づけ）
   RouteNode  RouteNode[] // 新設のノード表現（順序＋区間表現と連携）
+
+  likes Like[]
+  views View[]
+}
+
+// いいねモデル
+model Like {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  target    LikeViewTarget
+
+  routeId String?
+  route   Route?  @relation(fields: [routeId], references: [id])
+
+  userId String
+  // ユーザーとのリレーション（必要に応じて）
+}
+
+// 閲覧数モデル
+model View {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  target    LikeViewTarget
+
+  routeId String?
+  route   Route?  @relation(fields: [routeId], references: [id])
+
+  userId String? // 未ログイン閲覧も考慮して任意
+}
+
+enum LikeViewTarget {
+  ROUTE
+}
+
+// ルートの可視性。publicかprivateか
+enum RouteVisibility {
+  public
+  private
 }
 
 // 旧来の「ルートとスポット」を結ぶ中間モデル。単純な順序づけでの表示・互換のために残置
 model RouteSpot {
   id    String @id @default(cuid()) // レコードID
-  order Int                         // ルート内の並び順
+  order Int // ルート内の並び順
 
   routeId String // 所属するRoute
   spotId  String // 紐づくSpot
@@ -59,9 +148,11 @@ model RouteSpot {
 }
 
 // ルート上の「ノード」（＝経由地の並びを表す）。1つのノードは1つのSpotに対応し、Route内で順序が一意
+// RouteNode→RouteSegment→RouteNodeといったような順序を設けるためのもの。ユーザー固有であり、Spotのように共有されるものではない。
+// そのため、ユーザー固有のメモや写真などはここに追加する。
 model RouteNode {
   id    String @id @default(cuid()) // ノードID
-  order Int                         // ルート内の並び順（0,1,2,...）
+  order Int // ルート内の並び順（0,1,2,...）
 
   routeId String // 所属するRouteのID
   spotId  String // 対応する地点(Spot)のID
@@ -73,7 +164,11 @@ model RouteNode {
   // セグメントとの双方向リレーション（外部キーはRouteSegment側が保持）
   // 1ノードにつき、出ていくセグメントは最大1、入ってくるセグメントも最大1（RouteSegment側のuniqueで担保）
   outgoing RouteSegment? @relation("FromNode") // このノードをfromとするセグメント
-  incoming RouteSegment? @relation("ToNode")   // このノードをtoとするセグメント
+  incoming RouteSegment? @relation("ToNode") // このノードをtoとするセグメント
+
+  // ノードに紐づく画像
+  images  Image[] @relation("NodeImages")
+  details String // その地点に関する説明。
 
   @@unique([routeId, order]) // 同一Route内での順序は一意
 }
@@ -93,28 +188,31 @@ model RouteSegment {
   toNode   RouteNode @relation("ToNode", fields: [toNodeId], references: [id])
 
   // このセグメントを構成する詳細ステップ
-  steps SegmentStep[]
+  steps  SegmentStep[]
+  spot   Spot?         @relation(fields: [spotId], references: [id])
+  spotId String?
 }
 
 // 1つのセグメントを構成する細分ステップ（徒歩→電車→徒歩などの最小単位）
 model SegmentStep {
   id    String @id @default(cuid()) // ステップID
-  order Int                         // セグメント内の順序（0,1,2,...）
+  order Int // セグメント内の順序（0,1,2,...）
 
   segmentId String // 親セグメントID
   segment   RouteSegment @relation(fields: [segmentId], references: [id]) // 親セグメント
 
   // このステップの移動モード・所要時間・距離
   mode     TransportMode
-  duration Int?  // 分
+  duration Int? // 分
   distance Float? // m
+  details  String // 移動手段移管する説明
 }
 
 // 移動モードの列挙。描画スタイルやアイコン分岐に利用
 enum TransportMode {
-  WALK  // 徒歩
+  WALK // 徒歩
   TRAIN // 電車
-  BUS   // バス
-  CAR   // 車
-  BIKE  // 自転車
+  BUS // バス
+  CAR // 車
+  BIKE // 自転車
 }

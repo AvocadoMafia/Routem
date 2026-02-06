@@ -117,8 +117,12 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
             }
 
             // 1) get presigned URL via GET with query params, force image/webp
-            const qs = new URLSearchParams({ fileName: file.name, contentType: 'image/webp' }).toString();
-            const presignRes = await fetch(`/api/v1/uploads/routeThumbnail?${qs}`, { method: 'GET' });
+            const qs = new URLSearchParams({ 
+                fileName: file.name, 
+                contentType: 'image/webp',
+                type: 'node-images'
+            }).toString();
+            const presignRes = await fetch(`/api/v1/uploads?${qs}`, { method: 'GET' });
             const presignData = await presignRes.json();
             if (!presignRes.ok) throw new Error(presignData?.error || 'アップロード用URLの取得に失敗しました');
 
