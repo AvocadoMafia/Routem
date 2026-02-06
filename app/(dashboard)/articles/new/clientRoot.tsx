@@ -112,7 +112,7 @@ export default function ClientRoot() {
 
             // 正常に投稿が完了したら、ルートページに遷移
             if (data.routeId) {
-                router.push(`/routes/${data.routeId}`);
+                router.push(`/`);
             }
         } catch (e: any) {
             setMessage(e?.message ?? 'Publish failed');

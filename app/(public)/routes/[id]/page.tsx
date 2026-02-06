@@ -4,9 +4,10 @@ import { MapPin, Navigation, Clock, Ruler } from "lucide-react";
 import Image from "next/image";
 
 export default async function RouteDetailPage({ params }: { params: { id: string } }) {
+  const test = await params
   const prisma = getPrisma();
   const route = await prisma.route.findUnique({
-    where: { id: params.id },
+    where: { id: test.id },
     include: {
       author: {
         include: { profileImage: true }
