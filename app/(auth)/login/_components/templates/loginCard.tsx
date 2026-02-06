@@ -21,7 +21,7 @@ export default function LoginCard() {
             stiffness: 200, // バネの硬さ
             damping: 20, // 減衰（大きいと揺れが少ない）
           }}
-          className="w-full h-full flex flex-col-reverse md:flex-row rounded-2xl items-center text-foreground-0 relative"
+          className="w-full h-full flex flex-col md:flex-row rounded-2xl items-center justify-center text-foreground-0 relative"
       >
         {/* 左側：画像 + ロゴ + 見出し */}
         <div className="w-full md:w-1/2 md:min-w-[500px] h-full md:h-auto p-3 overflow-hidden flex flex-col justify-center items-center gap-6 md:block hidden @container relative z-10 opacity-100 backdrop-blur-xs">
