@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import NodeLinkDiagram from "@/app/(dashboard)/articles/new/templates/nodeLinkDiagram";
 import RouteEditingSection from "@/app/(dashboard)/articles/new/templates/routeEditingSection";
 import RouteSettingsSection from "@/app/(dashboard)/articles/new/templates/routeSettingsSection";
 import ActionBar from "@/app/(dashboard)/articles/new/ingredients/actionBar";
 import {Transportation, Waypoint, RouteItem} from "@/lib/client/types";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, X, Settings as SettingsIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {useAtomValue} from "jotai";
+import {headerHeightAtom} from "@/lib/client/atoms";
 
 
 export default function ClientRoot() {
@@ -18,6 +20,15 @@ export default function ClientRoot() {
 
     // セクションの切り替え ('edit' | 'settings')
     const [activeSection, setActiveSection] = useState<'edit' | 'settings'>('edit');
+
+    // レスポンシブ: モバイル判定とモーダル表示
+    const [isMobile, setIsMobile] = useState(false);
+    const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
+    //ヘッダー高さの取得
+    const headerHeight = useAtomValue(headerHeightAtom)
+
 
     // ルート全体のメタ情報
     const [title, setTitle] = useState("");
@@ -37,6 +48,60 @@ export default function ClientRoot() {
         ]);
         setSelectedItemId(initialId);
     }, []);
+
+    // 画面幅によるモバイル判定
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const mql = window.matchMedia('(max-width: 767px)');
+        const onChange = (e: MediaQueryListEvent) => {
+            setIsMobile(e.matches);
+        };
+        // 初期判定
+        setIsMobile(mql.matches);
+        // 変更検知
+        if (mql.addEventListener) {
+            mql.addEventListener('change', onChange);
+        } else {
+            // Legacy browsers
+            mql.addListener(onChange as any);
+        }
+        return () => {
+            if (mql.removeEventListener) {
+                mql.removeEventListener('change', onChange);
+            } else {
+                // Legacy browsers
+                mql.removeListener(onChange as any);
+            }
+        };
+    }, []);
+
+    // ESCでモーダルを閉じる（編集/設定）
+    useEffect(() => {
+        if (!isEditorModalOpen && !isSettingsModalOpen) return;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (isSettingsModalOpen) setIsSettingsModalOpen(false);
+                else if (isEditorModalOpen) setIsEditorModalOpen(false);
+            }
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [isEditorModalOpen, isSettingsModalOpen]);
+
+
+    // 背景スクロールをロック（いずれかのモーダルが開いている時・モバイル時）
+    useEffect(() => {
+        if (!isMobile) return;
+        const originalOverflow = document.body.style.overflow;
+        if (isEditorModalOpen || isSettingsModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = originalOverflow || '';
+        }
+        return () => {
+            document.body.style.overflow = originalOverflow || '';
+        };
+    }, [isMobile, isEditorModalOpen, isSettingsModalOpen]);
 
     // 現在編集中のアイテムID
     const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -271,18 +336,36 @@ export default function ClientRoot() {
     };
 
     return (
-        <div className="w-full h-full flex flex-row bg-background-0">
+        <div className="relative w-full h-full flex flex-row bg-background-0">
             {/* 左側：ルート構成の可視化と操作 */}
             <NodeLinkDiagram
                 items={items}
                 selectedItemId={selectedItemId}
-                onSelectItem={setSelectedItemId}
+                onSelectItem={(id) => {
+                    setSelectedItemId(id);
+                    if (isMobile) {
+                        setIsSettingsModalOpen(false);
+                        setIsEditorModalOpen(true);
+                    }
+                }}
                 onAddWaypoint={addWaypoint}
                 onDeleteWaypoint={deleteItem}
                 onAddItem={addItem}
+                onOpenSettings={() => {
+                    if (isMobile) {
+                        setIsEditorModalOpen(false);
+                        setIsSettingsModalOpen(true);
+                    } else {
+                        setActiveSection('settings');
+                    }
+                }}
+                onPublish={handlePublish}
+                publishing={publishing}
+                isSettingsComplete={isSettingsComplete}
+                title={title}
             />
-            {/* 右側：詳細情報の編集フォーム＋投稿アクション */}
-            <div className="flex-1 h-full overflow-y-auto no-scrollbar shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex flex-col">
+            {/* 右側：詳細情報の編集フォーム＋投稿アクション（モバイルでは非表示） */}
+            <div className="hidden md:flex flex-1 h-full overflow-y-auto no-scrollbar shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex-col">
                 <ActionBar
                     isSettingsComplete={isSettingsComplete}
                     isTitleSet={isTitleSet}
@@ -327,6 +410,66 @@ export default function ClientRoot() {
                     )}
                 </div>
             </div>
+
+            {/* モバイル用エディタモーダル（フルスクリーン） */}
+            {isMobile && isEditorModalOpen && selectedItem && (
+                <div className="absolute inset-0 z-50 flex md:hidden" aria-modal="true" role="dialog">
+
+                    {/* Full-screen panel */}
+                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                        {/* Header */}
+                        <div className="sticky z-10 bg-background-1 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between" style={{ top: `${headerHeight}px` }}>
+                            <div className="text-base font-bold text-foreground-0">{selectedItem.type === 'waypoint' ? 'Edit Waypoint' : 'Edit Transportation'}</div>
+                            <button
+                                className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95"
+                                onClick={() => setIsEditorModalOpen(false)}
+                                aria-label="Close editor"
+                            >
+                                <X size={22} />
+                            </button>
+                        </div>
+
+                        <RouteEditingSection
+                            selectedItem={selectedItem}
+                            onUpdateItem={(updates) => selectedItemId && updateItem(selectedItemId, updates)}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* モバイル用設定モーダル（フルスクリーン） */}
+            {isMobile && isSettingsModalOpen && (
+                <div className="absolute inset-0 z-50 flex md:hidden" aria-modal="true" role="dialog">
+                    {/* Full-screen panel */}
+                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                        {/* Header */}
+                        <div className="sticky z-10 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between" style={{ top: `${headerHeight}px` }}>
+                            <div className="text-base font-bold text-foreground-0">Publication Settings</div>
+                            <button
+                                className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95"
+                                onClick={() => setIsSettingsModalOpen(false)}
+                                aria-label="Close settings"
+                            >
+                                <X size={22} />
+                            </button>
+                        </div>
+                        <RouteSettingsSection
+                            title={title}
+                            setTitle={setTitle}
+                            bio={bio}
+                            setBio={setBio}
+                            category={category}
+                            setCategory={setCategory}
+                            visibility={visibility}
+                            setVisibility={setVisibility}
+                            thumbnailImageSrc={thumbnailImageSrc}
+                            handleImageUpload={handleImageUpload}
+                            uploading={uploading}
+                        />
+                    </div>
+                </div>
+            )}
+
         </div>
     )
 
