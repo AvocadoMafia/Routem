@@ -10,13 +10,13 @@ import { usersService } from "@/features/users/service";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ user_id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   return handleRequest(async () => {
-    const { user_id } = await params;
-    const validated_params = await validateParams(UserIdSchema, { user_id });
+    const { id: id } = await params;
+    const validated_params = await validateParams(UserIdSchema, { id });
 
-    const user = await usersService.getUserById(validated_params.user_id);
+    const user = await usersService.getUserById(validated_params.id);
 
     return Response.json({ user });
   });
