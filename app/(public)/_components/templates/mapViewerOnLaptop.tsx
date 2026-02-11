@@ -25,7 +25,11 @@ export default function MapViewerOnLaptop(props: Props) {
     useEffect(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length === 0 || !mapRef.current) return;
 
-        const coords = focusedRoute.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
+        const coords = focusedRoute.routeNodes
+            .filter(node => node.spot)
+            .map(node => [node.spot.longitude, node.spot.latitude]);
+
+        if (coords.length === 0) return;
 
         if (coords.length === 1) {
             mapRef.current.flyTo({
@@ -50,7 +54,11 @@ export default function MapViewerOnLaptop(props: Props) {
 
     const lineData = useMemo(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length < 2) return null;
-        const coordinates = focusedRoute.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
+        const coordinates = focusedRoute.routeNodes
+            .filter(node => node.spot)
+            .map(node => [node.spot.longitude, node.spot.latitude]);
+
+        if (coordinates.length < 2) return null;
 
         return {
             type: 'Feature',
@@ -75,15 +83,15 @@ export default function MapViewerOnLaptop(props: Props) {
                     <Map
                         ref={mapRef}
                         initialViewState={{
-                            latitude: 35.6804,
-                            longitude: 139.7690,
+                            latitude: focusedRoute?.routeNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,
+                            longitude: focusedRoute?.routeNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,
                             zoom: 12,
                         }}
                         mapStyle="mapbox://styles/mapbox/streets-v12"
                         mapboxAccessToken={mapboxAccessToken}
                         style={{ width: "100%", height: "100%" }}
                     >
-                        {focusedRoute?.routeNodes?.map((node, idx) => (
+                        {focusedRoute?.routeNodes?.filter(node => node.spot).map((node, idx) => (
                             <Marker
                                 key={node.id}
                                 longitude={node.spot.longitude}

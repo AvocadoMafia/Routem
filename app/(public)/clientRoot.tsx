@@ -15,6 +15,7 @@ import {FaRunning} from "react-icons/fa";
 import {IoIosArrowForward} from "react-icons/io";
 import {Route, User} from "@/lib/client/types";
 import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
+import {RouteVisibility} from "@prisma/client";
 
 export type selectedType = 'home' | 'photos' | 'interests' | 'recent' | 'trending'
 
@@ -22,13 +23,13 @@ export default function ClientRoot() {
 
     // Mock users for demo (this week)
     const mockUsers: User[] = [
-        { id: 'u1', name: 'Aki Tanaka', likesThisWeek: 1240, viewsThisWeek: 28120, location: 'Tokyo, JP', bio: 'City explorer and coffee lover.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Nara.jpg' },
-        { id: 'u2', name: 'Kenji Sato', likesThisWeek: 980, viewsThisWeek: 19230, location: 'Osaka, JP', bio: 'Runner and ramen hunter in Kansai.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Tokyo.jpg' },
-        { id: 'u3', name: 'Serene Jane', likesThisWeek: 1570, viewsThisWeek: 32010, location: 'Kyoto, JP', bio: 'History routes and hidden shrines.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/userProfile.jpg' },
-        { id: 'u4', name: 'Yuta Mori', likesThisWeek: 870, viewsThisWeek: 16800, location: 'Sapporo, JP', bio: 'Snowy trails and craft beer enthusiast.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Fuji.jpg' },
-        { id: 'u5', name: 'Hana Suzuki', likesThisWeek: 1430, viewsThisWeek: 29990, location: 'Fukuoka, JP', bio: 'Weekend cyclist and bakery map maker from Japan. And Ive Lived in French since last year. Its great and I love here.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Kyoto.jpg' },
-        { id: 'u6', name: 'Ren Nakamura', likesThisWeek: 760, viewsThisWeek: 14550, location: 'Nagoya, JP', bio: 'Techie who loves riverfront jogs.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
-        { id: 'u7', name: 'Sara Ito', likesThisWeek: 1110, viewsThisWeek: 25040, location: 'Nara, JP', bio: 'Nature walks and deer lover in Nara.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
+        { id: 'u1', name: 'Aki Tanaka', location: 'Tokyo, JP', bio: 'City explorer and coffee lover.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Nara.jpg' },
+        { id: 'u2', name: 'Kenji Sato', location: 'Osaka, JP', bio: 'Runner and ramen hunter in Kansai.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Tokyo.jpg' },
+        { id: 'u3', name: 'Serene Jane', location: 'Kyoto, JP', bio: 'History routes and hidden shrines.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/userProfile.jpg' },
+        { id: 'u4', name: 'Yuta Mori', location: 'Sapporo, JP', bio: 'Snowy trails and craft beer enthusiast.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Fuji.jpg' },
+        { id: 'u5', name: 'Hana Suzuki', location: 'Fukuoka, JP', bio: 'Weekend cyclist and bakery map maker from Japan. And Ive Lived in French since last year. Its great and I love here.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Kyoto.jpg' },
+        { id: 'u6', name: 'Ren Nakamura', location: 'Nagoya, JP', bio: 'Techie who loves riverfront jogs.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
+        { id: 'u7', name: 'Sara Ito', location: 'Nara, JP', bio: 'Nature walks and deer lover in Nara.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
     ]
 
     // Fetch routes from API
@@ -43,7 +44,7 @@ export default function ClientRoot() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch('/api/v1/routems?take=12', { cache: 'no-store' });
+                const res = await fetch('/api/v1/routes?take=12', { cache: 'no-store' });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data?.error || 'Failed to load routes');
                 if (!cancelled) setRoutes(data.routes as Route[]);
@@ -66,21 +67,23 @@ export default function ClientRoot() {
         const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => ({
             id: `placeholder-${i}`,
             title: `Sample Route ${i + 1}`,
-            bio: 'This is a sample description for the placeholder route.',
-            visibility: 'public',
+            description: 'This is a sample description for the placeholder route.',
+            visibility: RouteVisibility.PUBLIC,
             authorId: mockUsers[i % mockUsers.length].id,
             author: {
                 ...mockUsers[i % mockUsers.length],
-                profileImage: mockUsers[i % mockUsers.length].profileImage ? { url: mockUsers[i % mockUsers.length].profileImage } : null
+                profileImage: mockUsers[i % mockUsers.length].profileImage ? { id: `img-u-${i}`, url: mockUsers[i % mockUsers.length].profileImage, type: 'USER_PROFILE', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: mockUsers[i % mockUsers.length].id, routeThumbId: null } : null,
+                gender: null,
+                age: null,
             } as any,
             createdAt: new Date(),
-            likesThisWeek: 0,
-            viewsThisWeek: 0,
-            category: 'General',
-            thumbnail: { url: '/mockImages/Kyoto.jpg' } as any,
-            likes: [],
-            views: [],
-            RouteNode: [
+            updatedAt: new Date(),
+            categoryId: 1,
+            category: { id: 1, name: 'General' },
+            thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: `placeholder-${i}` } as any,
+            likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ id: `like-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: `u${(j % 7) + 1}` })),
+            views: Array.from({ length: 100 + i * 20 }).map((_, j) => ({ id: `view-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: null })),
+            routeNodes: [
                 {
                     id: `node-${i}-1`,
                     order: 0,

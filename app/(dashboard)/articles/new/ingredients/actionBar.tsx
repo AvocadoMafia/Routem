@@ -3,7 +3,7 @@ import { CheckCircle2, AlertCircle, Edit3, Settings } from "lucide-react";
 interface ActionBarProps {
     isSettingsComplete: boolean;
     isTitleSet: boolean;
-    isBioSet: boolean;
+    isDescriptionSet: boolean;
     isThumbnailSet: boolean;
     isWaypointsSet: boolean;
     activeSection: 'edit' | 'settings';
@@ -15,7 +15,7 @@ interface ActionBarProps {
 export default function ActionBar({
     isSettingsComplete,
     isTitleSet,
-    isBioSet,
+    isDescriptionSet,
     isThumbnailSet,
     isWaypointsSet,
     activeSection,
@@ -37,8 +37,8 @@ export default function ActionBar({
                                     <span className={`text-[10px] font-medium flex items-center gap-1 ${isTitleSet ? 'text-accent-2' : 'text-foreground-1/50'}`}>
                                         {isTitleSet ? '✓' : '○'} Title
                                     </span>
-                                    <span className={`text-[10px] font-medium flex items-center gap-1 ${isBioSet ? 'text-accent-2' : 'text-foreground-1/50'}`}>
-                                        {isBioSet ? '✓' : '○'} Bio
+                                    <span className={`text-[10px] font-medium flex items-center gap-1 ${isDescriptionSet ? 'text-accent-2' : 'text-foreground-1/50'}`}>
+                                        {isDescriptionSet ? '✓' : '○'} Bio
                                     </span>
                                     <span className={`text-[10px] font-medium flex items-center gap-1 ${isThumbnailSet ? 'text-accent-2' : 'text-foreground-1/50'}`}>
                                         {isThumbnailSet ? '✓' : '○'} Thumbnail

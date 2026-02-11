@@ -7,17 +7,13 @@ export type Route = Prisma.RouteGetPayload<{
         likes: true,
         views: true,
         routeNodes: {include: {spot: true}}
+        category: true
     }
-}> & {
-    likesThisWeek: number;
-    viewsThisWeek: number;
-}
+}>
 
 export type User = {
     id: string;
     name: string;
-    likesThisWeek: number;
-    viewsThisWeek: number;
     bio?: string;
     location?: string;
     /** URL of the user's profile icon image */

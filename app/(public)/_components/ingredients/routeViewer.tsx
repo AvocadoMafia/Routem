@@ -35,7 +35,7 @@ export default function RouteViewer(props: Props) {
                 </h2>
               </Link>
               <p className="text-foreground-1/60 mt-1">
-                by @{route.author.name} • {route.category}
+                by @{route.author.name} • {route.category.name}
               </p>
             </div>
 
@@ -49,14 +49,14 @@ export default function RouteViewer(props: Props) {
                 >
                   <path d="M11.645 20.91l-.007-.003-.022-.01a15.247 15.247 0 01-.383-.173 25.18 25.18 0 01-4.244-2.673C4.688 16.357 2.25 13.852 2.25 10.5A5.25 5.25 0 017.5 5.25a5.23 5.23 0 014.5 2.508 5.23 5.23 0 014.5-2.508 5.25 5.25 0 015.25 5.25c0 3.352-2.438 5.857-4.739 7.551a25.175 25.175 0 01-4.244 2.673 15.247 15.247 0 01-.383.173l-.022.01-.007.003a.752.752 0 01-.614 0z" />
                 </svg>
-                {route.likesThisWeek} Likes
+                {route.likes?.length ?? 0} Likes
               </span>
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
               <h3 className="text-lg font-semibold text-foreground-1">Description</h3>
               <p className="text-foreground-1/80 leading-relaxed line-clamp-4">
-                {route.bio}
+                {route.description}
               </p>
             </div>
 

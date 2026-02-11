@@ -1,30 +1,78 @@
-import { get } from "http";
-import { Search } from "lucide-react";
+import { getPrisma } from "@/lib/config/server";
 
 export const routesService = {
-    getRoutesbyParams: async (search_params: any) => {
-        const where: any = {
-            visibility: "PUBLIC", // 基本的に公開されているものだけ
-            limit: 20, // デフォルト20件
-        };
+  getRoutes: async () => {
+    const prisma = getPrisma();
+    return await prisma.route.findMany({
+      take: 20,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        category: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        thumbnail: true,
+        routeNodes: {
+          orderBy: {
+            order: "asc",
+          },
+          include: {
+            spot: true,
+            transitSteps: true,
+            images: true,
+          },
+        },
+      },
+    });
+  },
+  getRoutesByParams: async (params: any) => {
+    const prisma = getPrisma();
+    const { q, category, visibility, authorId, limit = 20 } = params;
 
-        if (search_params.q) {
-            where.OR = [
-                { title: { contains: search_params.q, mode: "insensitive" } },
-                { description: { contains: search_params.q, mode: "insensitive" } },
-            ];
-        }
-        if (search_params.category) {
-            where.category = search_params.category;
-        }
+    const where: any = {};
 
-        switch (search_params.visibility) {
-            case "public":
-                where.visibility = "PUBLIC";
-                break;
-            case "private":
-                where.visibility = "PRIVATE";
-                break;
-        }
+    if (q) {
+      where.OR = [
+        { title: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
+      ];
     }
-}
+
+    if (category) {
+      where.category = {
+        name: category,
+      };
+    }
+
+    if (visibility) {
+      where.visibility = visibility.toUpperCase();
+    }
+
+    if (authorId) {
+      where.authorId = authorId;
+    }
+
+    return await prisma.route.findMany({
+      where,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        category: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        thumbnail: true,
+      },
+    });
+  },
+};

@@ -27,7 +27,7 @@ export default function ClientRoot() {
 
     // ルート全体のメタ情報
     const [title, setTitle] = useState("");
-    const [bio, setBio] = useState("");
+    const [description, setDescription] = useState("");
     const [category, setCategory] = useState("General");
     const [visibility, setVisibility] = useState<'public' | 'private'>('private');
     const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(undefined);
@@ -112,12 +112,12 @@ export default function ClientRoot() {
 
     // 各バリデーション項目の個別判定
     const isTitleSet = title.trim() !== "";
-    const isBioSet = bio.trim() !== "";
+    const isDescriptionSet = description.trim() !== "";
     const isThumbnailSet = thumbnailImageSrc !== undefined;
     const isWaypointsSet = items.filter(it => it.type === 'waypoint').length >= 2;
 
     // 公開設定が完了しているか確認
-    const isSettingsComplete = isTitleSet && isBioSet && isThumbnailSet && isWaypointsSet;
+    const isSettingsComplete = isTitleSet && isDescriptionSet && isThumbnailSet && isWaypointsSet;
 
     // 画像アップロード処理
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,12 +175,12 @@ export default function ClientRoot() {
         try {
             // order を振り直す（配列順を優先）
             const normalizedItems = items.map((it, idx) => ({ ...it, order: idx }));
-            const res = await fetch('/api/v1/routems', {
+            const res = await fetch('/api/v1/routes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title,
-                    bio,
+                    description,
                     category,
                     visibility,
                     thumbnailImageSrc,
@@ -310,26 +310,6 @@ export default function ClientRoot() {
         setSelectedItemId(newWaypointId);
     };
 
-    // 指定したアイテムの後に交通手段を追加する（直接呼び出し用）
-    const addTransportation = (afterId: string) => {
-        const index = items.findIndex(item => item.id === afterId);
-        if (index === -1) return;
-
-        const newId = Math.random().toString(36).substr(2, 9);
-        const newTransport: Transportation = {
-            id: newId,
-            type: 'transportation',
-            method: 'walk',
-            memo: "",
-            order: 0,
-        };
-
-        const newItems = [...items];
-        newItems.splice(index + 1, 0, newTransport);
-        setItems(newItems);
-        setSelectedItemId(newId);
-    };
-
     return (
         <div className="relative w-full h-full flex flex-row bg-background-0">
             {/* 左側：ルート構成の可視化と操作 */}
@@ -364,7 +344,7 @@ export default function ClientRoot() {
                 <ActionBar
                     isSettingsComplete={isSettingsComplete}
                     isTitleSet={isTitleSet}
-                    isBioSet={isBioSet}
+                    isDescriptionSet={isDescriptionSet}
                     isThumbnailSet={isThumbnailSet}
                     isWaypointsSet={isWaypointsSet}
                     activeSection={activeSection}
@@ -391,8 +371,8 @@ export default function ClientRoot() {
                             <RouteSettingsSection
                                 title={title}
                                 setTitle={setTitle}
-                                bio={bio}
-                                setBio={setBio}
+                                description={description}
+                                setDescription={setDescription}
                                 category={category}
                                 setCategory={setCategory}
                                 visibility={visibility}
@@ -451,8 +431,8 @@ export default function ClientRoot() {
                         <RouteSettingsSection
                             title={title}
                             setTitle={setTitle}
-                            bio={bio}
-                            setBio={setBio}
+                            description={description}
+                            setDescription={setDescription}
                             category={category}
                             setCategory={setCategory}
                             visibility={visibility}

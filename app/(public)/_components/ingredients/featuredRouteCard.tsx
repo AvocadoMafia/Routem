@@ -41,13 +41,13 @@ export default function FeaturedRouteCard(props: Props) {
         <div className="flex flex-col items-end absolute bottom-4 right-4 max-w-full">
           <p className="text-xl text-gray-300 font-bold flex items-center gap-2">
             <HiHeart className="w-5 h-5" />
-            <span className="tabular-nums">{props.route.likesThisWeek}</span>
-            <span className="opacity-80">likes this week</span>
+            <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
+            <span className="opacity-80">likes</span>
           </p>
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-end">
               <h3 className="md:text-4xl text-2xl text-white font-bold">{props.route.title}</h3>
-              <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category}</p>
+              <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name || props.route.category}</p>
             </div>
           </div>
         </div>

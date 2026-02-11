@@ -2,13 +2,18 @@
 
 import { PrismaClient } from "@prisma/client";
 import { S3Client } from "@aws-sdk/client-s3";
+import { PrismaPg } from '@prisma/adapter-pg';
+
 
 let prisma: PrismaClient | null = null;
 let s3Client: S3Client | null = null;
 
 export function getPrisma() {
     if (prisma) return prisma;
-    prisma = new PrismaClient();
+    const adapter = new PrismaPg({
+        connectionString: process.env.DATABASE_URL,
+    });
+    prisma = new PrismaClient({ adapter });
     return prisma;
 }
 

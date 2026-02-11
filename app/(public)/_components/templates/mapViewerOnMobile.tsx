@@ -22,7 +22,11 @@ function MobileMap({ route }: { route: Route }) {
     useEffect(() => {
         if (!route || !route.routeNodes || route.routeNodes.length === 0 || !mapRef.current) return;
 
-        const coords = route.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
+        const coords = route.routeNodes
+            .filter(node => node.spot)
+            .map(node => [node.spot.longitude, node.spot.latitude]);
+
+        if (coords.length === 0) return;
 
         if (coords.length === 1) {
             mapRef.current.flyTo({
@@ -47,7 +51,12 @@ function MobileMap({ route }: { route: Route }) {
 
     const lineData = useMemo(() => {
         if (!route || !route.routeNodes || route.routeNodes.length < 2) return null;
-        const coordinates = route.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
+        const coordinates = route.routeNodes
+            .filter(node => node.spot)
+            .map(node => [node.spot.longitude, node.spot.latitude]);
+
+        if (coordinates.length < 2) return null;
+
         return {
             type: 'Feature',
             properties: {},
@@ -72,15 +81,15 @@ function MobileMap({ route }: { route: Route }) {
         <Map
             ref={mapRef}
             initialViewState={{
-                latitude: route.routeNodes?.[0]?.spot.latitude ?? 35.6804,
-                longitude: route.routeNodes?.[0]?.spot.longitude ?? 139.7690,
+                latitude: route.routeNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,
+                longitude: route.routeNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,
                 zoom: 11,
             }}
             mapStyle="mapbox://styles/mapbox/streets-v12"
             mapboxAccessToken={mapboxAccessToken}
             style={{ width: "100%", height: "100%" }}
         >
-            {route.routeNodes?.map((node, idx) => (
+            {route.routeNodes?.filter(node => node.spot).map((node, idx) => (
                 <Marker
                     key={node.id}
                     longitude={node.spot.longitude}
@@ -165,13 +174,13 @@ export default function MapViewerOnMobile(props: Props) {
                                         />
                                     </div>
                                     <span>{route.author.name}</span>
-                                    <span>・ {route.category}</span>
+                                    <span>・ {route.category?.name}</span>
                                 </div>
 
                                 <div className="w-fit flex items-center px-2 py-1 gap-2 text-rose-500 bg-rose-500/10 rounded-full">
                                     <HiHeart />
                                     <span className="text-nowrap">
-                                    {route.likesThisWeek} likes
+                                    {route.likes?.length ?? 0} likes
                                 </span>
                                 </div>
 
@@ -180,7 +189,7 @@ export default function MapViewerOnMobile(props: Props) {
                                         Description
                                     </h3>
                                     <p className="text-foreground-1/80 leading-relaxed line-clamp-3">
-                                        {route.bio}
+                                        {route.description}
                                     </p>
                                 </div>
 
@@ -202,7 +211,7 @@ export default function MapViewerOnMobile(props: Props) {
                                             Waypoints
                                         </span>
                                             <span className="font-medium text-foreground-1">
-                                            {route.RouteNode.length} stops
+                                            {route.routeNodes.length} stops
                                         </span>
                                         </div>
                                     </div>

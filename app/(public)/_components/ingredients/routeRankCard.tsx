@@ -41,14 +41,14 @@ export default function RouteRankCard(props: Props) {
             </div>
             <div className="mt-1 flex items-center gap-2 text-foreground-1">
               <HiHeart className="w-4 h-4" />
-              <span className="text-xs tabular-nums">{props.route.likesThisWeek} likes</span>
+              <span className="text-xs tabular-nums">{props.route.likes?.length ?? 0} likes</span>
             </div>
           </div>
         </div>
 
         {/* Bottom section: meta info (author & category) */}
         <div className="flex-1 bg-background-1 p-3">
-          <p className="text-xs text-foreground-1 truncate">@{props.route.author.name} ・ {props.route.category}</p>
+          <p className="text-xs text-foreground-1 truncate">@{props.route.author.name} ・ {props.route.category.name}</p>
         </div>
       </div>
     </button>

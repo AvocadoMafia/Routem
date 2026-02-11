@@ -13,16 +13,12 @@ export default async function RouteDetailPage({ params }: { params: { id: string
         include: { profileImage: true }
       },
       thumbnail: true,
-      RouteNode: {
+      routeNodes: {
         orderBy: { order: 'asc' },
         include: {
           spot: true,
           images: true,
-          outgoing: {
-            include: {
-              steps: { orderBy: { order: 'asc' } }
-            }
-          }
+          transitSteps: true
         }
       }
     }
@@ -45,7 +41,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
           <span className="text-sm text-foreground-1">{new Date(route.createdAt).toLocaleDateString()}</span>
         </div>
         <h1 className="text-5xl font-black text-foreground-0 mb-4">{route.title}</h1>
-        <p className="text-lg text-foreground-1 leading-relaxed">{route.bio}</p>
+        <p className="text-lg text-foreground-1 leading-relaxed">{route.description}</p>
       </header>
 
       {route.thumbnail && (
@@ -68,7 +64,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
               <div className="flex-1 pt-2">
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin size={18} className="text-accent-0" />
-                  <h3 className="text-2xl font-bold text-foreground-0">{node.spot.name}</h3>
+                  <h3 className="text-2xl font-bold text-foreground-0">{node.spot?.name || "Unknown Location"}</h3>
                 </div>
                 <p className="text-foreground-1 mb-4">{node.details}</p>
 
@@ -85,10 +81,10 @@ export default async function RouteDetailPage({ params }: { params: { id: string
             </div>
 
             {/* Segment / Transportation */}
-            {node.outgoing && node.outgoing.steps.length > 0 && (
+            {node.transitSteps && node.transitSteps.length > 0 && (
               <div className="flex gap-8 mb-12 ml-6 pl-10 border-l-0">
                 <div className="flex-1 bg-background-1/50 rounded-2xl p-6 border border-grass space-y-4">
-                  {node.outgoing.steps.map(step => (
+                  {node.transitSteps.map(step => (
                     <div key={step.id} className="flex items-center gap-6">
                       <div className="flex items-center gap-2 px-3 py-1 bg-accent-0/10 text-accent-0 rounded-full text-xs font-bold uppercase">
                         {step.mode === 'WALK' && <Footprints size={14} />}
@@ -98,7 +94,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
                         {step.mode === 'BIKE' && <Sparkles size={14} />}
                         {step.mode}
                       </div>
-                      <p className="text-sm font-medium text-foreground-0">{step.details}</p>
+                      <p className="text-sm font-medium text-foreground-0">{step.memo}</p>
                       {(step.duration || step.distance) && (
                         <div className="flex gap-4 ml-auto text-xs text-foreground-1">
                           {step.duration && <span className="flex items-center gap-1"><Clock size={12}/>{step.duration}m</span>}

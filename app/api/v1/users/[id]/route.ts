@@ -1,4 +1,4 @@
-import { handleRequest } from "@/lib/server/handleReques";
+import { handleRequest } from "@/lib/server/handleRequest";
 import { validateParams } from "@/lib/server/validateParams";
 import { UserIdSchema } from "@/features/users/schema";
 import { usersService } from "@/features/users/service";

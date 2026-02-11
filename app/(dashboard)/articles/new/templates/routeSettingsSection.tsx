@@ -6,8 +6,8 @@ import Image from "next/image";
 interface RouteSettingsSectionProps {
     title: string;
     setTitle: (val: string) => void;
-    bio: string;
-    setBio: (val: string) => void;
+    description: string;
+    setDescription: (val: string) => void;
     category: string;
     setCategory: (val: string) => void;
     visibility: 'public' | 'private';
@@ -19,7 +19,7 @@ interface RouteSettingsSectionProps {
 
 export default function RouteSettingsSection({
     title, setTitle,
-    bio, setBio,
+    description, setDescription,
     category, setCategory,
     visibility, setVisibility,
     thumbnailImageSrc,
@@ -64,8 +64,8 @@ export default function RouteSettingsSection({
                             <MessageSquare size={16} /> Description
                         </label>
                         <textarea
-                            value={bio}
-                            onChange={(e) => setBio(e.target.value)}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl h-32 focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base leading-relaxed resize-none"
                             placeholder="Short description of your route..."
                         />
