@@ -23,9 +23,9 @@ export default function MapViewerOnLaptop(props: Props) {
     const focusedRoute = props.routes[focusedRouteIndex];
 
     useEffect(() => {
-        if (!focusedRoute || !focusedRoute.RouteNode || focusedRoute.RouteNode.length === 0 || !mapRef.current) return;
+        if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length === 0 || !mapRef.current) return;
 
-        const coords = focusedRoute.RouteNode.map(node => [node.spot.longitude, node.spot.latitude]);
+        const coords = focusedRoute.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
 
         if (coords.length === 1) {
             mapRef.current.flyTo({
@@ -49,9 +49,8 @@ export default function MapViewerOnLaptop(props: Props) {
     }, [focusedRoute]);
 
     const lineData = useMemo(() => {
-        if (!focusedRoute || !focusedRoute.RouteNode || focusedRoute.RouteNode.length < 2) return null;
-
-        const coordinates = focusedRoute.RouteNode.map(node => [node.spot.longitude, node.spot.latitude]);
+        if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length < 2) return null;
+        const coordinates = focusedRoute.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
 
         return {
             type: 'Feature',
@@ -84,7 +83,7 @@ export default function MapViewerOnLaptop(props: Props) {
                         mapboxAccessToken={mapboxAccessToken}
                         style={{ width: "100%", height: "100%" }}
                     >
-                        {focusedRoute?.RouteNode?.map((node, idx) => (
+                        {focusedRoute?.routeNodes?.map((node, idx) => (
                             <Marker
                                 key={node.id}
                                 longitude={node.spot.longitude}

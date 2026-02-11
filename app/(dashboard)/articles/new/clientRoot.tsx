@@ -5,11 +5,9 @@ import NodeLinkDiagram from "@/app/(dashboard)/articles/new/templates/nodeLinkDi
 import RouteEditingSection from "@/app/(dashboard)/articles/new/templates/routeEditingSection";
 import RouteSettingsSection from "@/app/(dashboard)/articles/new/templates/routeSettingsSection";
 import ActionBar from "@/app/(dashboard)/articles/new/ingredients/actionBar";
-import {Transportation, Waypoint, RouteItem} from "@/lib/client/types";
+import { Transportation, Waypoint, RouteItem } from "@/lib/client/types";
 import { CheckCircle2, AlertCircle, X, Settings as SettingsIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {useAtomValue} from "jotai";
-import {headerHeightAtom} from "@/lib/client/atoms";
 
 
 export default function ClientRoot() {
@@ -25,9 +23,6 @@ export default function ClientRoot() {
     const [isMobile, setIsMobile] = useState(false);
     const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-
-    //ヘッダー高さの取得
-    const headerHeight = useAtomValue(headerHeightAtom)
 
 
     // ルート全体のメタ情報
@@ -418,7 +413,7 @@ export default function ClientRoot() {
                     {/* Full-screen panel */}
                     <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
                         {/* Header */}
-                        <div className="sticky z-10 bg-background-1 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between" style={{ top: `${headerHeight}px` }}>
+                        <div className="sticky z-10 bg-background-1 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between top-0">
                             <div className="text-base font-bold text-foreground-0">{selectedItem.type === 'waypoint' ? 'Edit Waypoint' : 'Edit Transportation'}</div>
                             <button
                                 className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95"
@@ -443,7 +438,7 @@ export default function ClientRoot() {
                     {/* Full-screen panel */}
                     <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
                         {/* Header */}
-                        <div className="sticky z-10 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between" style={{ top: `${headerHeight}px` }}>
+                        <div className="sticky z-10 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between top-0">
                             <div className="text-base font-bold text-foreground-0">Publication Settings</div>
                             <button
                                 className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95"

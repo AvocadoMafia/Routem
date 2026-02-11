@@ -54,7 +54,7 @@ export default function RouteCardBasic(props: Props) {
                 <div className="w-full grid grid-cols-2 gap-3 md:text-sm text-xs">
                     <div className="rounded-lg bg-background-0 border border-grass/10 p-1 flex flex-col justify-center px-2">
                         <span className="block text-foreground-1/40 text-[10px]">Stops</span>
-                        <span className="font-medium text-foreground-1 truncate">{props.route.RouteNode.length} pts</span>
+                        <span className="font-medium text-foreground-1 truncate">{props.route.routeNodes.length} pts</span>
                     </div>
                     <div className="rounded-lg bg-background-0 border border-grass/10 p-1 flex flex-col justify-center px-2">
                         <span className="block text-foreground-1/40 text-[10px]">Category</span>

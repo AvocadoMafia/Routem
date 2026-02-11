@@ -58,7 +58,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
         {/* Vertical line connecting nodes */}
         <div className="absolute left-[23px] top-8 bottom-8 w-0.5 bg-accent-0/20" />
 
-        {route.RouteNode.map((node, index) => (
+        {route.routeNodes.map((node, index) => (
           <div key={node.id} className="relative">
             {/* Node */}
             <div className="flex gap-8 mb-12 relative z-10">

@@ -1,103 +1,102 @@
 "use client";
 
 import { Waypoint } from "@/lib/client/types";
-import { Image as ImageIcon, Loader2, X, CheckCircle2 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Image as ImageIcon, Loader2, X, CheckCircle2, MapPin, Search, Home } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface WaypointEditorProps {
     item: Waypoint;
     onUpdate: (updates: Partial<Waypoint>) => void;
 }
 
-type MapboxFeature = {
-    id: string;
-    place_name: string;
-    text: string;
-    center?: [number, number]; // [lng, lat]
-};
+interface MapboxSuggestion {
+    name: string;
+    full_address: string;
+    mapbox_id: string;
+    feature_type: string;
+}
 
 export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // --- 追加: 地点検索の状態 ---
+    // --- 地点検索の状態 ---
     const [query, setQuery] = useState(item.name ?? "");
-    const [searching, setSearching] = useState(false);
-    const [suggestions, setSuggestions] = useState<MapboxFeature[]>([]);
-    const [searchError, setSearchError] = useState<string | null>(null);
-
-    // 追加: 候補の開閉
-    const [isOpen, setIsOpen] = useState(false);
+    const [suggestions, setSuggestions] = useState<MapboxSuggestion[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const searchContainerRef = useRef<HTMLDivElement>(null);
 
     // item.name が外から更新された場合に追従（例: 選択切り替え時）
     useEffect(() => {
         setQuery(item.name ?? "");
-        setSuggestions([]);
-        setSearchError(null);
-        setSearching(false);
-        setIsOpen(false);
     }, [item.id, item.name]);
 
-    const canSearch = useMemo(() => query.trim().length >= 2, [query]);
-
-    // 入力→少し待って→検索（簡易 debounce）
+    // クリックアウトで候補を閉じる
     useEffect(() => {
-        if (!canSearch) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // デバウンス検索
+    useEffect(() => {
+        if (!query.trim() || query === item.name) {
             setSuggestions([]);
-            setSearchError(null);
-            setSearching(false);
             return;
         }
 
-        let cancelled = false;
-        const t = window.setTimeout(async () => {
+        const timer = setTimeout(async () => {
+            setIsSearching(true);
             try {
-                setSearching(true);
-                setSearchError(null);
-
-                const res = await fetch(`/api/v1/mapbox/geocode?q=${encodeURIComponent(query.trim())}`, {
-                    method: "GET",
-                });
-
+                const res = await fetch(`/api/v1/mapbox/geocode?q=${encodeURIComponent(query)}`);
                 const data = await res.json();
-                if (!res.ok) {
-                    throw new Error(data?.error || "検索に失敗しました");
+                if (data.suggestions) {
+                    setSuggestions(data.suggestions);
+                    setShowSuggestions(true);
                 }
-
-                const features = (data?.features ?? []) as MapboxFeature[];
-                if (!cancelled) setSuggestions(features);
-            } catch (e: any) {
-                if (!cancelled) {
-                    setSuggestions([]);
-                    setSearchError(e?.message ?? "検索に失敗しました");
-                }
+            } catch (err) {
+                console.error("Search error:", err);
             } finally {
-                if (!cancelled) setSearching(false);
+                setIsSearching(false);
             }
-        }, 250);
+        }, 500);
 
-        return () => {
-            cancelled = true;
-            window.clearTimeout(t);
-        };
-    }, [query, canSearch]);
+        return () => clearTimeout(timer);
+    }, [query, item.name]);
 
-    const handleSelectSuggestion = (f: MapboxFeature) => {
-        const center = f.center;
-        const lng = center?.[0];
-        const lat = center?.[1];
+    const handleSelect = async (suggestion: MapboxSuggestion) => {
+        setQuery(suggestion.name);
+        setShowSuggestions(false);
+        setIsSearching(true);
 
-        setQuery(f.place_name);
-        setSuggestions([]);
-        setIsOpen(false);
+        try {
+            const res = await fetch(`/api/v1/mapbox/geocode?mapbox_id=${suggestion.mapbox_id}`);
+            const data = await res.json();
+            const feature = data.features[0];
+            if (feature) {
+                const { coordinates } = feature.geometry;
+                const [lng, lat] = coordinates;
+                const name = feature.properties.name || feature.properties.full_address;
 
-        onUpdate({
-            name: f.place_name,
-            lat,
-            lng,
-            mapboxId: f.id,
-        });
+                setQuery(name);
+                onUpdate({
+                    name,
+                    lat,
+                    lng,
+                    mapboxId: feature.properties.mapbox_id,
+                });
+            }
+        } catch (err) {
+            console.error("Retrieve error:", err);
+        } finally {
+            setIsSearching(false);
+        }
     };
 
     const images = item.images ?? [];
@@ -236,61 +235,63 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
 
     return (
         <div className="grid grid-cols-1 gap-10">
-            {/* --- 変更: 経由地名入力 → 地点検索 --- */}
-            <div className="space-y-3 relative">
+            {/* --- カスタム地点検索 --- */}
+            <div className="space-y-3 relative" ref={searchContainerRef}>
                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                     Waypoint Search
                 </label>
 
-                <input
-                    type="text"
-                    value={query}
-                    onFocus={() => setIsOpen(true)}
-                    onBlur={() => {
-                        // 候補クリックの onMouseDown が先に走るように少し遅延
-                        window.setTimeout(() => setIsOpen(false), 120);
-                    }}
-                    onChange={(e) => {
-                        setQuery(e.target.value);
-                        setIsOpen(true);
-                    }}
-                    className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-lg font-medium"
-                    placeholder="Search a place (e.g. 東京タワー)"
-                />
+                <div className="relative group/search">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground-1 group-focus-within/search:text-accent-0 transition-colors">
+                        {isSearching ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
+                    </div>
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => {
+                            setQuery(e.target.value);
+                            setShowSuggestions(true);
+                        }}
+                        onFocus={() => setShowSuggestions(true)}
+                        placeholder="Search a place (e.g. 東京タワー)"
+                        className="w-full pl-14 pr-6 py-5 bg-background-0 border-2 border-grass rounded-[1.5rem] focus:outline-none focus:bg-background-1 focus:border-accent-0 focus:ring-4 focus:ring-accent-0/5 transition-all text-base font-semibold text-foreground-0 placeholder:text-foreground-1/40"
+                    />
+
+                    {/* 検索候補リスト */}
+                    {showSuggestions && suggestions.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-3 bg-background-1 border border-grass rounded-2xl shadow-2xl shadow-black/10 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="p-2">
+                                {suggestions.map((s) => (
+                                    <button
+                                        key={s.mapbox_id}
+                                        onClick={() => handleSelect(s)}
+                                        className="w-full flex items-start gap-4 p-4 hover:bg-background-0 rounded-xl transition-colors text-left group/item"
+                                    >
+                                        <div className="mt-1 p-2 bg-accent-0/5 text-accent-0 rounded-lg group-hover/item:bg-accent-0 group-hover/item:text-white transition-colors">
+                                            {s.feature_type === "poi" ? (
+                                                <Home size={18} />
+                                            ) : (
+                                                <MapPin size={18} />
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-foreground-0 truncate">{s.name}</div>
+                                            <div className="text-xs text-foreground-1 truncate mt-0.5">{s.full_address}</div>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 <div className="flex items-center gap-3 text-xs text-foreground-1/70">
-                    <span>{searching ? "Searching..." : (query.length > 0 && !canSearch) ? "Enter 2+ characters" : ""}</span>
                     {typeof item.lat === "number" && typeof item.lng === "number" && (
                         <span className="text-accent-2 font-bold flex items-center gap-1">
                             <CheckCircle2 size={12} /> Location Selected
                         </span>
                     )}
                 </div>
-
-                {searchError && <p className="text-sm text-red-500 font-medium bg-red-50 p-2 rounded-lg border border-red-100">{searchError}</p>}
-
-                {isOpen && suggestions.length > 0 && (
-                    <div className="absolute z-20 mt-2 w-full rounded-2xl border border-grass bg-background-0 shadow-lg overflow-hidden">
-                        <ul className="max-h-72 overflow-auto" onWheel={(e) => e.stopPropagation()}>
-                            {suggestions.map((f) => (
-                                <li key={f.id}>
-                                    <button
-                                        type="button"
-                                        onMouseDown={(e) => {
-                                            // blur より先に確定
-                                            e.preventDefault();
-                                            handleSelectSuggestion(f);
-                                        }}
-                                        className="w-full text-left px-4 py-3 hover:bg-background-1/40 transition-colors"
-                                    >
-                                        <div className="text-sm font-semibold text-foreground-0">{f.text}</div>
-                                        <div className="text-xs text-foreground-1/70">{f.place_name}</div>
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
             </div>
 
             {/* 画像アップロード・表示エリア（既存） */}

@@ -20,9 +20,9 @@ function MobileMap({ route }: { route: Route }) {
     const mapRef = useRef<MapRef>(null);
 
     useEffect(() => {
-        if (!route || !route.RouteNode || route.RouteNode.length === 0 || !mapRef.current) return;
+        if (!route || !route.routeNodes || route.routeNodes.length === 0 || !mapRef.current) return;
 
-        const coords = route.RouteNode.map(node => [node.spot.longitude, node.spot.latitude]);
+        const coords = route.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
 
         if (coords.length === 1) {
             mapRef.current.flyTo({
@@ -46,8 +46,8 @@ function MobileMap({ route }: { route: Route }) {
     }, [route]);
 
     const lineData = useMemo(() => {
-        if (!route || !route.RouteNode || route.RouteNode.length < 2) return null;
-        const coordinates = route.RouteNode.map(node => [node.spot.longitude, node.spot.latitude]);
+        if (!route || !route.routeNodes || route.routeNodes.length < 2) return null;
+        const coordinates = route.routeNodes.map(node => [node.spot.longitude, node.spot.latitude]);
         return {
             type: 'Feature',
             properties: {},
@@ -72,15 +72,15 @@ function MobileMap({ route }: { route: Route }) {
         <Map
             ref={mapRef}
             initialViewState={{
-                latitude: route.RouteNode?.[0]?.spot.latitude ?? 35.6804,
-                longitude: route.RouteNode?.[0]?.spot.longitude ?? 139.7690,
+                latitude: route.routeNodes?.[0]?.spot.latitude ?? 35.6804,
+                longitude: route.routeNodes?.[0]?.spot.longitude ?? 139.7690,
                 zoom: 11,
             }}
             mapStyle="mapbox://styles/mapbox/streets-v12"
             mapboxAccessToken={mapboxAccessToken}
             style={{ width: "100%", height: "100%" }}
         >
-            {route.RouteNode?.map((node, idx) => (
+            {route.routeNodes?.map((node, idx) => (
                 <Marker
                     key={node.id}
                     longitude={node.spot.longitude}

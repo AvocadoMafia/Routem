@@ -6,7 +6,7 @@ export type Route = Prisma.RouteGetPayload<{
         thumbnail: true,
         likes: true,
         views: true,
-        RouteNode: {include: {spot: true}}
+        routeNodes: {include: {spot: true}}
     }
 }> & {
     likesThisWeek: number;

@@ -99,14 +99,21 @@ model RouteNode {
   spot   Spot   @relation(fields: [spotId], references: [id])
 
   // edge情報
-  // ! 次の行先に行くまでの移動手段であることに注意 最後のNodeはnullになる
-  transportMode  TransportMode?
-  duration       Int? // 分
-  distance       Float? // m
-  transitDetails Json? // 移動手段に関する説明
-  memo           String? // 任意のメモ
+  // transitionがない場合は空配列になる
+  transitSteps TransitStep[]
 
   @@unique([routeId, order]) // 同一Route内での順序は一意
+}
+
+model TransitStep {
+  id       String      @id @default(cuid())
+  mode     TransitMode
+  duration Int? // 分
+  distance Float? // m
+  memo     String? // 任意のメモ
+
+  routeNodeId String
+  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id])
 }
 
 model Category {
@@ -167,7 +174,7 @@ enum ImageStatus {
 }
 
 // 移動モードの列挙。描画スタイルやアイコン分岐に利用
-enum TransportMode {
+enum TransitMode {
   WALK // 徒歩
   TRAIN // 電車
   BUS // バス

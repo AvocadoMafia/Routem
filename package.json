@@ -16,6 +16,7 @@
     "@aws-sdk/s3-request-presigner": "^3.686.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@mapbox/search-js-react": "^1.5.1",
     "@mui/material": "^6.1.0",
     "@prisma/client": "^7.3.0",
     "@supabase/ssr": "^0.8.0",

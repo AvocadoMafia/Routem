@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
         thumbnail: true,
         likes: true,
         views: true,
-        RouteNode: {
+        routeNodes: {
           include: {
             spot: true
           },
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
       likesThisWeek: r.likes.length,
       viewsThisWeek: r.views.length,
       thumbnail: r.thumbnail,
-      RouteNode: r.RouteNode,
+      routeNodes: r.routeNodes,
     }));
 
     return NextResponse.json({ routes: mapped }, { status: 200 });

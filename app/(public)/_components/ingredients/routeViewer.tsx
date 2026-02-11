@@ -69,7 +69,7 @@ export default function RouteViewer(props: Props) {
                 </div>
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
                   <span className="block text-foreground-1/40 text-xs">Waypoints</span>
-                  <span className="font-medium text-foreground-1">{route.RouteNode.length} stops</span>
+                  <span className="font-medium text-foreground-1">{route.routeNodes.length} stops</span>
                 </div>
               </div>
             </div>
