@@ -2,66 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPrisma } from "@/lib/config/server";
 import { Prisma, TransportMode, ImageType, ImageStatus, RouteVisibility } from "@prisma/client";
 import { getMockUser } from "@/lib/mockAuth";
+import { z } from "zod";
+import { handleRequest } from "@/lib/server/handleReques";
+import { routesService } from "@/features/routes/service";
+import { validateParams } from "@/lib/server/validateParams";
+import { getRoutesSchema } from "@/features/routes/schema";
+
 
 // GET /api/v1/routems
 // 最近作成されたルートを一覧返却します
 export async function GET(req: NextRequest) {
-  try {
-    const prisma = getPrisma();
-    const url = new URL(req.url);
-    const takeParam = url.searchParams.get('take');
-    const take = Math.min(Math.max(parseInt(takeParam || '12', 10) || 12, 1), 50);
-
-    const routes = await prisma.route.findMany({
-      orderBy: { createdAt: 'desc' },
-      take,
-      include: {
-        author: {
-          include: {
-            profileImage: true
-          }
-        },
-        thumbnail: true,
-        likes: true,
-        views: true,
-        routeNodes: {
-          include: {
-            spot: true
-          },
-          orderBy: {
-            order: 'asc'
-          }
-        }
-      }
-    });
-
-    // UIが必要とする形にマッピング
-    const mapped = routes.map((r) => ({
-      id: r.id,
-      title: r.title,
-      bio: r.bio,
-      category: r.category,
-      visibility: r.visibility,
-      createdAt: r.createdAt.toISOString(),
-      author: {
-        id: r.author.id,
-        name: r.author.name,
-        likesThisWeek: 0,
-        viewsThisWeek: 0,
-        bio: r.author.bio,
-        profileImage: r.author.profileImage?.url,
-      },
-      likesThisWeek: r.likes.length,
-      viewsThisWeek: r.views.length,
-      thumbnail: r.thumbnail,
-      routeNodes: r.routeNodes,
-    }));
-
-    return NextResponse.json({ routes: mapped }, { status: 200 });
-  } catch (e: any) {
-    console.error('/api/v1/routems GET error', e);
-    return NextResponse.json({ error: e?.message ?? 'Internal Server Error' }, { status: 500 });
-  }
+  const search_params = new URL(req.url).searchParams;
+  const parsed_params = validateParams(getRoutesSchema, search_params);
+  handleRequest(routesService.getRoutes);
 }
 
 // POST /api/v1/routems
