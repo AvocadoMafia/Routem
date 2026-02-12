@@ -33,9 +33,11 @@ export default async function RouteDetailPage({ params }: { params: { id: string
   }
 
   return (
-    <div className="w-full min-h-screen relative">
+    <div className="w-full min-h-screen relative bg-background-0">
       <InitialModal route={route} />
-      <RouteViewer route={route} />
+      <main className="w-full h-full">
+        <RouteViewer route={route} />
+      </main>
     </div>
   );
 }

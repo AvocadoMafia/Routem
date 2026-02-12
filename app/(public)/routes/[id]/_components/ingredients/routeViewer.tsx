@@ -2,7 +2,7 @@
 
 import { Route } from "@/lib/client/types";
 import { useState, useRef, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   Navigation,
@@ -11,9 +11,11 @@ import {
   TrainFront,
   Bus,
   Car,
-  ArrowDown,
+  List,
+  Map as MapIcon,
 } from "lucide-react";
 import Image from "next/image";
+import MapView from "./mapView";
 
 type Props = {
   route: Route;
@@ -49,6 +51,7 @@ function getFlattenedItems(route: Route) {
 export default function RouteViewer({ route }: Props) {
   const items = useMemo(() => getFlattenedItems(route), [route]);
   const [focusIndex, setFocusIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<"details" | "map">("details");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isManualScrolling = useRef(false);
@@ -58,12 +61,29 @@ export default function RouteViewer({ route }: Props) {
     setFocusIndex(index);
     isManualScrolling.current = true;
     const targetElement = itemRefs.current[index];
-    if (targetElement && scrollContainerRef.current) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    const container = scrollContainerRef.current;
+    
+    if (targetElement && container) {
+      // ターゲット要素のコンテナ内での位置を計算
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = targetElement.getBoundingClientRect();
+      
+      // コンテナの上端からの相対位置 + 現在のスクロール量
+      const relativeTop = targetRect.top - containerRect.top + container.scrollTop;
+      
+      // 画面中央と上部の間（上から1/4の位置）に要素の「上端」が来るように調整
+      // targetTop - (containerHeight / 4)
+      const scrollToTop = relativeTop - (containerRect.height / 4);
+      
+      container.scrollTo({
+        top: Math.max(0, scrollToTop),
+        behavior: "smooth"
+      });
+
       // スムーズスクロール終了後にフラグを戻す（簡易的）
       setTimeout(() => {
         isManualScrolling.current = false;
-      }, 1000);
+      }, 600);
     }
   };
 
@@ -73,7 +93,7 @@ export default function RouteViewer({ route }: Props) {
     if (!container) return;
 
     const handleScroll = () => {
-      if (isManualScrolling.current) return;
+      if (isManualScrolling.current || viewMode !== "details") return;
 
       const scrollTop = container.scrollTop;
       if (scrollTop <= 10) {
@@ -84,7 +104,7 @@ export default function RouteViewer({ route }: Props) {
       }
 
       const containerRect = container.getBoundingClientRect();
-      const containerCenter = containerRect.top + containerRect.height / 3;
+      const containerReferencePoint = containerRect.top + containerRect.height / 4;
 
       let closestIndex = 0;
       let minDistance = Infinity;
@@ -92,7 +112,7 @@ export default function RouteViewer({ route }: Props) {
       itemRefs.current.forEach((ref, index) => {
         if (ref) {
           const rect = ref.getBoundingClientRect();
-          const distance = Math.abs(rect.top - containerCenter);
+          const distance = Math.abs(rect.top - containerReferencePoint);
           if (distance < minDistance) {
             minDistance = distance;
             closestIndex = index;
@@ -107,7 +127,9 @@ export default function RouteViewer({ route }: Props) {
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [focusIndex]);
+  }, [focusIndex, viewMode]);
+
+  // モード切り替え時にスクロール位置を復元（削除済み：常時マウントにより不要）
 
   const getTransitIcon = (mode: string) => {
     switch (mode) {
@@ -125,141 +147,209 @@ export default function RouteViewer({ route }: Props) {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      {/* 左側：ダイアグラム (w-1/3 or fixed width) */}
-      <div className="w-1/4 min-w-[300px] border-r border-black/5 p-6 overflow-y-auto no-scrollbar flex flex-col items-center bg-background-1">
-        <div className="space-y-4 w-full max-w-xs">
+    <div className={`flex h-screen w-full overflow-hidden bg-background-0 relative transition-all duration-500 ${viewMode === 'map' ? 'flex-row-reverse' : 'flex-row'}`}>
+      {/* 画面上部の切り替えボタン */}
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 flex items-center bg-background-1/80 backdrop-blur-xl border border-foreground-0/5 rounded-full p-1 shadow-2xl shadow-black/5">
+        <button
+          onClick={() => setViewMode("details")}
+          className={`flex items-center gap-2 px-6 py-2 rounded-full text-xs font-bold transition-all ${
+            viewMode === "details"
+              ? "bg-accent-0 text-white shadow-lg shadow-accent-0/20"
+              : "text-foreground-1 hover:text-foreground-0"
+          }`}
+        >
+          <List className="w-3.5 h-3.5" />
+          <span>DETAILS</span>
+        </button>
+        <button
+          onClick={() => setViewMode("map")}
+          className={`flex items-center gap-2 px-6 py-2 rounded-full text-xs font-bold transition-all ${
+            viewMode === "map"
+              ? "bg-accent-0 text-white shadow-lg shadow-accent-0/20"
+              : "text-foreground-1 hover:text-foreground-0"
+          }`}
+        >
+          <MapIcon className="w-3.5 h-3.5" />
+          <span>MAP VIEW</span>
+        </button>
+      </div>
+
+      {/* ダイアグラム (w-1/4 or fixed width) */}
+      <motion.div 
+        layout
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className={`w-1/4 min-w-[320px] p-6 overflow-y-auto no-scrollbar bg-background-1/30 backdrop-blur-2xl z-10 ${
+          viewMode === "map" ? "border-l border-foreground-0/5" : "border-r border-foreground-0/5"
+        }`}
+      >
+        <div className="relative space-y-4">
+          {/* 背景の垂直線 */}
+          <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-accent-0/20 pointer-events-none" />
+
           {items.map((item, idx) => (
-            <div key={item.id} className="flex flex-col items-center w-full">
+            <div key={item.id} className="relative z-10 flex items-center gap-4">
+              {/* アイコン部分 (Node風) */}
+              <div className="relative flex-shrink-0">
+                <div
+                  className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
+                    focusIndex === idx
+                      ? "bg-accent-0 border-accent-0 text-white shadow-lg shadow-accent-0/20 scale-110"
+                      : "bg-background-1 border-accent-0/20 text-accent-0/40"
+                  }`}
+                >
+                  {item.type === "node" ? (
+                    <MapPin className="w-5 h-5" />
+                  ) : (
+                    getTransitIcon(item.data.mode)
+                  )}
+                </div>
+              </div>
+
+              {/* カード部分 */}
               <motion.button
                 onClick={() => handleDiagramClick(idx)}
-                animate={{
-                  scale: focusIndex === idx ? 1.05 : 1,
-                  boxShadow:
-                    focusIndex === idx
-                      ? "0 4px 20px rgba(0,0,0,0.1)"
-                      : "0 2px 4px rgba(0,0,0,0.05)",
-                }}
-                className={`w-full p-4 rounded-xl border transition-all text-left ${
+                whileHover={{ x: 4 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className={`flex-1 p-4 rounded-2xl transition-all text-left relative overflow-hidden group ${
                   focusIndex === idx
-                    ? "bg-background-1 border-accent-0 border-2"
-                    : "bg-background-1 border-transparent"
+                    ? "bg-background-1 border border-accent-0 shadow-md"
+                    : "bg-background-1/50 border border-foreground-0/5 hover:border-accent-0/30 hover:bg-background-1"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`p-2 rounded-lg shrink-0 ${focusIndex === idx ? "bg-accent-0 text-white" : "bg-grass text-foreground-1"}`}
+                <div className="flex flex-col min-w-0">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${
+                      focusIndex === idx ? "text-accent-0" : "text-foreground-1/60"
+                    }`}
                   >
-                    {item.type === "node" ? (
-                      <MapPin className="w-5 h-5" />
-                    ) : (
-                      getTransitIcon(item.data.mode)
-                    )}
+                    {item.type === "node" ? `Waypoint ${Math.floor(idx / 2) + 1}` : item.data.mode}
+                  </span>
+                  <p
+                    className={`font-bold truncate text-sm tracking-tight ${
+                      focusIndex === idx ? "text-foreground-0" : "text-foreground-1"
+                    }`}
+                  >
+                    {item.type === "node"
+                      ? item.data.spot?.name || "Waypoint"
+                      : `${item.data.duration || "0"} min`}
+                  </p>
+                </div>
+              </motion.button>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* 詳細コンテンツ または マップ */}
+      <motion.div 
+        layout
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="flex-1 relative overflow-hidden"
+      >
+        {/* DETAILS VIEW */}
+        <div
+          ref={scrollContainerRef}
+          className={`absolute inset-0 overflow-y-auto p-8 md:p-16 lg:p-24 space-y-40 scroll-smooth bg-background-0 transition-all duration-500 ease-[0.22, 1, 0.36, 1] ${
+            viewMode === "details" ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none invisible"
+          }`}
+        >
+          {items.map((item, idx) => (
+            <div
+              key={item.id}
+              ref={(el) => {
+                itemRefs.current[idx] = el;
+              }}
+              className={`transition-all duration-500 ease-[0.22, 1, 0.36, 1] transform ${
+                focusIndex === idx
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-40 translate-y-12"
+              }`}
+            >
+              {item.type === "node" ? (
+                <div className="max-w-4xl">
+                  <div className="flex flex-col gap-4 mb-16">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-4 h-4 text-accent-0" />
+                      <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">
+                        Waypoint {Math.floor(idx / 2) + 1}
+                      </span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-medium text-foreground-0 tracking-[0.05em] uppercase leading-tight">
+                      {item.data.spot?.name || "Waypoint"}
+                    </h2>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className={`font-bold truncate text-sm md:text-base ${focusIndex === idx ? "text-accent-0" : "text-foreground-0"}`}
-                    >
-                      {item.type === "node"
-                        ? item.data.spot?.name || "Waypoint"
-                        : item.data.mode}
+
+                  {item.data.images && item.data.images.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+                      {item.data.images.map((img: any, i: number) => (
+                        <motion.div
+                          key={img.id}
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6, delay: i * 0.1 }}
+                          className="relative aspect-[16/10] overflow-hidden"
+                        >
+                          <Image
+                            src={img.url}
+                            alt="spot image"
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="max-w-2xl">
+                    <p className="text-lg md:text-xl leading-relaxed text-foreground-0/80 font-normal whitespace-pre-wrap">
+                      {item.data.details || "No description provided."}
                     </p>
-                    {item.type === "transit" && item.data.duration && (
-                      <p className="text-xs text-foreground-1">
-                        {item.data.duration} min
+                  </div>
+                </div>
+              ) : (
+                <div className="max-w-4xl">
+                  <div className="flex items-center gap-12 py-12 border-y border-foreground-0/10">
+                    <div className="flex items-center gap-4">
+                      <div className="text-accent-0">
+                        {getTransitIcon(item.data.mode)}
+                      </div>
+                      <h2 className="text-xl font-bold text-foreground-0 tracking-widest uppercase">
+                        {item.data.mode}
+                      </h2>
+                    </div>
+                    {item.data.duration && (
+                      <div className="flex items-center gap-3 text-foreground-1">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span className="text-xs font-bold tracking-tighter">
+                          {item.data.duration} min
+                        </span>
+                      </div>
+                    )}
+                    {item.data.memo && (
+                      <p className="flex-1 text-sm text-foreground-1 font-medium italic text-right">
+                        {item.data.memo}
                       </p>
                     )}
                   </div>
                 </div>
-              </motion.button>
-
-              {/* アイテム間の矢印/線 */}
-              {idx < items.length - 1 && (
-                <div className="h-4 w-px bg-black/10 my-1" />
               )}
             </div>
           ))}
+          {/* 最後の余白 */}
+          <div className="h-[50vh]" />
         </div>
-      </div>
 
-      {/* 右側：詳細コンテンツ (メモ、画像) */}
-      <div
-        ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-12 space-y-24 scroll-smooth"
-      >
-        {items.map((item, idx) => (
-          <div
-            key={item.id}
-            ref={(el) => {
-              itemRefs.current[idx] = el;
-            }}
-            className={`transition-opacity duration-500 ${focusIndex === idx ? "opacity-100" : "opacity-40"}`}
-          >
-            {item.type === "node" ? (
-              <div className="max-w-2xl mx-auto">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 bg-accent-0/10 text-accent-0 rounded-2xl">
-                    <MapPin className="w-8 h-8" />
-                  </div>
-                  <h2 className="text-4xl font-bold text-foreground-0">
-                    {item.data.spot?.name || "Waypoint"}
-                  </h2>
-                </div>
-
-                {item.data.images && item.data.images.length > 0 && (
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    {item.data.images.map((img: any) => (
-                      <div
-                        key={img.id}
-                        className="relative aspect-video rounded-2xl overflow-hidden shadow-lg"
-                      >
-                        <Image
-                          src={img.url}
-                          alt="spot image"
-                          fill
-                          className="object-cover"
-                          unoptimized
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="bg-background-1 p-8 rounded-3xl shadow-sm border border-black/5">
-                  <p className="text-xl leading-relaxed text-foreground-1 whitespace-pre-wrap">
-                    {item.data.details || "メモはありません"}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="max-w-2xl mx-auto">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="p-3 bg-accent-1/10 text-accent-1 rounded-2xl">
-                    {getTransitIcon(item.data.mode)}
-                  </div>
-                  <h2 className="text-4xl font-bold text-foreground-0">
-                    移動: {item.data.mode}
-                  </h2>
-                  {item.data.duration && (
-                    <div className="flex items-center gap-1.5 px-3 py-1 bg-grass rounded-full text-foreground-1 text-sm">
-                      <Clock className="w-4 h-4" />
-                      <span>{item.data.duration} min</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="bg-background-1 p-8 rounded-3xl shadow-sm border border-black/5 italic border-l-4 border-l-accent-1">
-                  <p className="text-xl leading-relaxed text-foreground-1 whitespace-pre-wrap">
-                    {item.data.memo || "移動メモはありません"}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-        {/* 最後の余白 */}
-        <div className="h-[50vh]" />
-      </div>
+        {/* MAP VIEW */}
+        <div 
+          className={`absolute inset-0 bg-background-1 transition-all duration-500 ease-[0.22, 1, 0.36, 1] ${
+            viewMode === "map" ? "opacity-100 scale-100" : "opacity-0 scale-105 pointer-events-none invisible"
+          }`}
+        >
+          <MapView route={route} focusIndex={focusIndex} items={items} />
+        </div>
+      </motion.div>
     </div>
   );
 }
