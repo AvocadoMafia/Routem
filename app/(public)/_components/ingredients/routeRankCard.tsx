@@ -2,6 +2,7 @@ import React from 'react'
 import { HiHeart, HiEye } from 'react-icons/hi2'
 import {Route} from "@/lib/client/types";
 import Image from 'next/image';
+import Link from "next/link";
 
 
 export type Props = {
@@ -13,7 +14,8 @@ export type Props = {
 export default function RouteRankCard(props: Props) {
 
   return (
-    <button
+    <Link
+        href={`/routes/${props.route.id}`}
       onClick={props.onClick}
       className="group relative w-full h-full text-left"
       aria-label={`Rank ${props.rank}: ${props.route.title}`}
@@ -51,6 +53,6 @@ export default function RouteRankCard(props: Props) {
           <p className="text-xs text-foreground-1 truncate">@{props.route.author.name} ・ {props.route.category.name}</p>
         </div>
       </div>
-    </button>
+    </Link>
   )
 }

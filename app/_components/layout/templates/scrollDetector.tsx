@@ -8,20 +8,33 @@ export default function ScrollDetector() {
     const [, setScrollDirection] = useAtom(scrollDirectionAtom)
     const touchStart = useRef<{ x: number, y: number } | null>(null)
     const lastScrollY = useRef(0)
+    const lastScrollDirection = useRef<'up' | 'down' | 'left' | 'right'>('up')
+    const lastToggleTime = useRef(0)
+    const COOLDOWN_MS = 500
 
     useEffect(() => {
+        const canToggle = (nextDirection: 'up' | 'down') => {
+            if (nextDirection === lastScrollDirection.current) return true
+
+            const now = Date.now()
+            if (now - lastToggleTime.current > COOLDOWN_MS) {
+                lastToggleTime.current = now
+                lastScrollDirection.current = nextDirection
+                return true
+            }
+            return false
+        }
+
         const handleScroll = () => {
             const currentScrollY = window.scrollY
-            const maxScroll = document.documentElement.scrollHeight - window.innerHeight
-
             const diff = currentScrollY - lastScrollY.current
             const threshold = 5 // 微小なスクロールでのチャタリング防止
 
             if (Math.abs(diff) > threshold) {
                 if (diff > 0) {
-                    setScrollDirection('down')
+                    if (canToggle('down')) setScrollDirection('down')
                 } else {
-                    setScrollDirection('up')
+                    if (canToggle('up')) setScrollDirection('up')
                 }
                 lastScrollY.current = currentScrollY
             }
@@ -32,16 +45,18 @@ export default function ScrollDetector() {
             if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
                 if (e.deltaX > 0) {
                     setScrollDirection('right')
+                    lastScrollDirection.current = 'right'
                 } else if (e.deltaX < 0) {
                     setScrollDirection('left')
+                    lastScrollDirection.current = 'left'
                 }
                 return
             }
 
             if (e.deltaY > 0) {
-                setScrollDirection('down')
+                if (canToggle('down')) setScrollDirection('down')
             } else if (e.deltaY < 0) {
-                setScrollDirection('up')
+                if (canToggle('up')) setScrollDirection('up')
             }
         }
 
@@ -70,16 +85,18 @@ export default function ScrollDetector() {
                 if (Math.abs(dx) > threshold) {
                     if (dx > 0) {
                         setScrollDirection('right')
+                        lastScrollDirection.current = 'right'
                     } else {
                         setScrollDirection('left')
+                        lastScrollDirection.current = 'left'
                     }
                 }
             } else {
                 if (Math.abs(dy) > threshold) {
                     if (dy > 0) {
-                        setScrollDirection('up') // 下にスワイプ = 上にスクロール
+                        if (canToggle('up')) setScrollDirection('up') // 下にスワイプ = 上にスクロール
                     } else {
-                        setScrollDirection('down') // 上にスワイプ = 下にスクロール
+                        if (canToggle('down')) setScrollDirection('down') // 上にスワイプ = 下にスクロール
                     }
                 }
             }

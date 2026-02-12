@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react'
 import { BiHash } from 'react-icons/bi'
 import {HiHeart} from 'react-icons/hi2'
@@ -12,9 +13,10 @@ export type Props = {
 export default function FeaturedRouteCard(props: Props) {
 
   return (
-    <button
+    <Link
+      href={`/routes/${props.route.id}`}
       onClick={props.onClick}
-      className="group relative w-full h-full rounded-2xl shadow-md hover:shadow-lg overflow-hidden"
+      className="group relative block w-full h-full rounded-2xl shadow-md hover:shadow-lg overflow-hidden"
       aria-label={`Top route: ${props.route.title}`}
     >
       {/* Background image */}
@@ -47,11 +49,11 @@ export default function FeaturedRouteCard(props: Props) {
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-end">
               <h3 className="md:text-4xl text-2xl text-white font-bold">{props.route.title}</h3>
-              <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name || props.route.category}</p>
+              <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name}</p>
             </div>
           </div>
         </div>
       </div>
-    </button>
+    </Link>
   )
 }

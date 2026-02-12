@@ -23,7 +23,7 @@ export default function RouteCardBasic(props: Props) {
                 />
                 <div className={'absolute left-0 bottom-0 w-full p-3 flex flex-col items-end gap-3 z-15'}>
                     <h2 className={'text-3xl font-bold text-white text-right'}>{props.route.title}</h2>
-                    <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name || props.route.category}</p>
+                    <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name}</p>
                 </div>
             </div>
             <div className={'w-1/2 h-full min-w-[120px] flex flex-col gap-3 p-5'}>
@@ -58,7 +58,7 @@ export default function RouteCardBasic(props: Props) {
                     </div>
                     <div className="rounded-lg bg-background-0 border border-grass/10 p-1 flex flex-col justify-center px-2">
                         <span className="block text-foreground-1/40 text-[10px]">Category</span>
-                        <span className="font-medium text-foreground-1 truncate">{props.route.category?.name || props.route.category}</span>
+                        <span className="font-medium text-foreground-1 truncate">{props.route.category?.name}</span>
                     </div>
                 </div>
                 <div className={'w-full text-foreground-1 line-clamp-7 md:text-sm text-xs whitespace-pre-wrap'}>

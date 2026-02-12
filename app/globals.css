@@ -44,6 +44,56 @@
   }
 }
 
+/* macOS-style floating scrollbar */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25));
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35));
+    background-clip: content-box;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.25));
+    background-clip: content-box;
+    box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.35));
+    background-clip: content-box;
+  }
+
+  /* Overlay scrollbar behavior for browsers that support it */
+  html {
+    overflow-y: auto;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  /* Support for browsers that support overflow: overlay */
+  @supports (overflow: overlay) {
+    html {
+      overflow: overlay;
+      scrollbar-gutter: auto;
+    }
+  }
+}
+
 /* Light mode (明示的にlightクラスが付いたとき) */
 .light {
   --background-0: #f8f9ff;
@@ -79,6 +129,7 @@
   --color-accent-2: var(--accent-2);
   --color-grass: var(--grass);
   --color-accent-warning: var(--accent-warning);
+  --z-200: 200;
 }
 
 body {
