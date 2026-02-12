@@ -75,4 +75,9 @@ export const routesService = {
       },
     });
   },
+
+  postRoute: async (body: any) => {
+    // Implement route creation logic here
+
+  }
 };
