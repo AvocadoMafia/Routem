@@ -173,8 +173,6 @@ export default function ClientRoot() {
         setPublishing(true);
         setMessage(null);
         try {
-            // order を振り直す（配列順を優先）
-            const normalizedItems = items.map((it, idx) => ({ ...it, order: idx }));
             const res = await fetch('/api/v1/routes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -184,7 +182,7 @@ export default function ClientRoot() {
                     category,
                     visibility,
                     thumbnailImageSrc,
-                    items: normalizedItems
+                    items
                 })
             });
             const data = await res.json();
