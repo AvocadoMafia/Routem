@@ -1,4 +1,5 @@
 import { getPrisma } from "@/lib/config/server";
+import { RouteVisibility } from "@prisma/client";
 
 export const routesRepository = {
     findByQuery: async (query: any) => {
@@ -7,12 +8,11 @@ export const routesRepository = {
     },
 
     createRoute: async (data: any) => {
-        // DB接続
         const prisma = getPrisma();
+        const { title, description, category, visibility, userId, nodes, thumbnail } = data;
 
-        const result = await prisma.$transaction(async (tx) => {
+        return prisma.$transaction(async (tx) => {
             // 1) Route を作成
-            //トランザクションの最初ではRouteNode抜きのRouteを作成する。
             const route = await tx.route.create({
                 data: {
                     title,
@@ -23,23 +23,18 @@ export const routesRepository = {
                             create: { name: category },
                         },
                     },
-                    visibility: visibility.toUpperCase() as RouteVisibility,
+                    visibility: visibility as RouteVisibility,
                     author: {
-                        connect: { id: user.id },
+                        connect: { id: userId },
                     },
                 },
             });
 
             // サムネイル画像があれば作成
-            if (thumbnailImageSrc) {
+            if (thumbnail) {
                 await tx.image.create({
                     data: {
-                        url: thumbnailImageSrc,
-                        type: ImageType.ROUTE_THUMBNAIL,
-                        status: ImageStatus.ADOPTED,
-                        uploader: {
-                            connect: { id: user.id },
-                        },
+                        ...thumbnail,
                         routeThumb: {
                             connect: { id: route.id },
                         },
@@ -47,81 +42,44 @@ export const routesRepository = {
                 });
             }
 
-            // 2) RouteNode とその TransitSteps を順序付きで作成
-            // waypointItemsの各要素、つまり各経由地について以下の処理を実行する。
-            for (let order = 0; order < waypointItems.length; order++) {
-                const w = waypointItems[order];
-                const spotId = w.mapboxId ?? String(w.id);
-                const name = w.name ?? `Waypoint ${order + 1}`;
-                const lat = typeof w.lat === "number" ? w.lat : 0;
-                const lng = typeof w.lng === "number" ? w.lng : 0;
-                const details = w.memo ?? "";
-
-                //spotを更新、ない場合は作成
+            // 2) RouteNode とその TransitSteps, Spot, Images を作成
+            for (const n of nodes) {
+                // spotを更新、ない場合は作成
                 await tx.spot.upsert({
-                    where: { id: spotId },
-                    update: { name, latitude: lat, longitude: lng },
+                    where: { id: n.spot.id },
+                    update: {
+                        name: n.spot.name,
+                        latitude: n.spot.latitude,
+                        longitude: n.spot.longitude,
+                    },
                     create: {
-                        id: spotId,
-                        name,
-                        latitude: lat,
-                        longitude: lng,
-                        source: w.mapboxId ? "mapbox" : "user",
+                        ...n.spot,
                     },
                 });
 
-                // 該当するwaypointの後のTransportationアイテムを取得
-                const waypointIndexInItems = items.findIndex((it: any) => it.id === w.id);
-                let transitStepsData: any[] = [];
-
-                //経由地のindexが0以下、もしくは最後ではないとき
-                if (waypointIndexInItems !== -1 && order < waypointItems.length - 1) {
-                    //処理中の経由地要素Aの次の経由地要素Bを取得し、itemsでのindexを取得する。
-                    const nextWaypoint = waypointItems[order + 1];
-                    const nextWaypointIndexInItems = items.findIndex((it: any) => it.id === nextWaypoint.id);
-
-                    //経由地Aと経由地Bの間にあるべきTransportationを取得。念のためさらにfilterをかけてtransItemsに格納
-                    const between = items.slice(waypointIndexInItems + 1, nextWaypointIndexInItems);
-                    const transItems = between.filter((it: any) => it.type === "transportation");
-
-                    //さらにmethodが存在するもので絞り込みをかける。フィルター後のものに、さらにmemoのバリデーション、modeのTransitModeへのキャストを行う。
-                    transitStepsData = transItems
-                        .filter((trans: any) => trans.method)
-                        .map((trans: any, idx: number) => ({
-                            mode: mapMethodToTransitMode(trans.method),
-                            memo: trans.memo ?? "",
-                            order: idx,
-                        }));
-                }
-
-                //事前に作成したrouteのidを用いて処理中の要素についてのrouteNodeを作成する。
+                // RouteNodeを作成
                 const node = await tx.routeNode.create({
                     data: {
-                        order,
+                        order: n.order,
                         route: {
                             connect: { id: route.id },
                         },
                         spot: {
-                            connect: { id: spotId },
+                            connect: { id: n.spot.id },
                         },
-                        details: details,
+                        details: n.details,
                         transitSteps: {
-                            create: transitStepsData,
+                            create: n.transitSteps,
                         },
                     },
                 });
 
-                // waypoint の画像があれば作成
-                if (Array.isArray(w.images)) {
-                    for (const imageUrl of w.images) {
+                // RouteNodeの画像があれば作成
+                if (n.images && n.images.length > 0) {
+                    for (const img of n.images) {
                         await tx.image.create({
                             data: {
-                                url: imageUrl,
-                                type: ImageType.NODE_IMAGE,
-                                status: ImageStatus.ADOPTED,
-                                uploader: {
-                                    connect: { id: user.id },
-                                },
+                                ...img,
                                 routeNode: {
                                     connect: { id: node.id },
                                 },
@@ -131,7 +89,6 @@ export const routesRepository = {
                 }
             }
 
-            //このトランザクションは最終的にrouteIdを返す。別にこれはなくてもいい。下のresultにこの返却値が代入される
             return { routeId: route.id };
         });
     }

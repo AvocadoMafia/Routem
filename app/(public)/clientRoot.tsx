@@ -86,7 +86,6 @@ export default function ClientRoot() {
             routeNodes: [
                 {
                     id: `node-${i}-1`,
-                    order: 0,
                     routeId: `placeholder-${i}`,
                     spotId: 'kyoto-station',
                     details: 'Start from Kyoto Station',
@@ -100,7 +99,6 @@ export default function ClientRoot() {
                 },
                 {
                     id: `node-${i}-2`,
-                    order: 1,
                     routeId: `placeholder-${i}`,
                     spotId: 'nara-park',
                     details: 'Visit Nara Park',
