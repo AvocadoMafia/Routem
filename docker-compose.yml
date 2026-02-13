@@ -1,6 +1,5 @@
 #開発用dockerファイル
 
-version: '1.0-dev'
 services:
   #データベース(postgres)
   postgres:
