@@ -134,6 +134,8 @@ model Like {
   userId String
   user   User   @relation(fields: [userId], references: [id])
   // ユーザーとのリレーション（必要に応じて）
+
+  @@unique([userId, routeId])
 }
 
 // 閲覧数モデル
