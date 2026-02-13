@@ -1,12 +1,12 @@
-import {Prisma} from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export type Route = Prisma.RouteGetPayload<{
     include: {
-        author: {include: {profileImage: true}},
+        author: { include: { profileImage: true } },
         thumbnail: true,
         likes: true,
         views: true,
-        routeNodes: {include: {spot: true}},
+        routeNodes: { include: { spot: true } },
         category: true,
         transitSteps: true
     }
@@ -41,6 +41,8 @@ export type Transportation = {
     method: 'walk' | 'train' | 'bus' | 'car' | 'other'; // 移動手段
     memo: string; // 移動に関するメモ（乗り換え情報など）
     order: number;
+    duration?: number; // 移動時間（分）
+    distance?: number; // 移動距離（km）
 };
 
 /**

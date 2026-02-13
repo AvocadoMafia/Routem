@@ -87,9 +87,10 @@ export const routesRepository = {
                     //さらにmethodが存在するもので絞り込みをかける。フィルター後のものに、さらにmemoのバリデーション、modeのTransitModeへのキャストを行う。
                     transitStepsData = transItems
                         .filter((trans: any) => trans.method)
-                        .map((trans: any) => ({
+                        .map((trans: any, idx: number) => ({
                             mode: mapMethodToTransitMode(trans.method),
                             memo: trans.memo ?? "",
+                            order: idx,
                         }));
                 }
 

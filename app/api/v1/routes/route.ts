@@ -11,7 +11,6 @@ import { Transportation, Waypoint } from "@/lib/client/types";
 import { createClient } from "@/lib/auth/supabase/server";
 import { PostRouteSchema } from "@/features/routes/schema";
 
-
 // GET /api/v1/routems
 // 最近作成されたルートを一覧返却します
 // export async function GET(req: NextRequest) {
@@ -64,7 +63,8 @@ export async function POST(req: NextRequest) {
     //バリデーション処理
     const parsed = await validateParams(PostRouteSchema, body);
 
-    const result = 
+    // service層へ移行
+    const result = await routesService.postRoute(parsed);
 
     return NextResponse.json(result, { status: 201 });
   } catch (e: any) {

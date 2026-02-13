@@ -1,4 +1,9 @@
 import { getPrisma } from "@/lib/config/server";
+import { postRouteSchema } from "@/features/routes/schema";
+import { RouteNode } from "@/lib/server/types";
+import { cuid, number } from "zod";
+import { Prisma } from "@prisma/client";
+
 
 export const routesService = {
   getRoutes: async () => {
@@ -76,8 +81,35 @@ export const routesService = {
     });
   },
 
-  postRoute: async (body: any) => {
-    // Implement route creation logic here
+  postRoute: async (body: postRouteSchema) => {
+    type NodeInput = Prisma.RouteNodeCreateWithoutRouteInput;
 
-  }
+
+    const nestedNodes: NodeInput[] = [];
+
+    let current_node: NodeInput | null = null;
+
+    for (const item of body.items) {
+      if (item.type === 'waypoint') {
+        current_node = {
+          order: nestedNodes.length,
+          details: item.memo,
+          spot: { connect: { id: item.id } },
+          transitSteps: { create: [] },
+        };
+        nestedNodes.push(current_node);
+      } else if (item.type === 'transportation') {
+        if (current_node) {
+          current_node.transitSteps.push({
+            id: cuid(),
+            order: current_node.transitSteps.length,
+            mode: item.method,
+            duration: item.duration ?? null,
+            distance: item.distance ?? null,
+            memo: item.memo ?? null,
+          });
+        }
+      }
+    }
+  },
 };

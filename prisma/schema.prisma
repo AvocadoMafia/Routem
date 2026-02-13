@@ -106,14 +106,14 @@ model RouteNode {
 }
 
 model TransitStep {
-  id       String      @id @default(cuid())
-  mode     TransitMode
-  duration Int? // 分
-  distance Float? // m
-  memo     String? // 任意のメモ
-
+  id          String      @id @default(cuid())
+  mode        TransitMode
+  duration    Int? // 分
+  distance    Float? // m
+  memo        String? // 任意のメモ
+  order       Int // RouteNode内での順序
   routeNodeId String
-  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id])
+  routeNode   RouteNode   @relation(fields: [routeNodeId], references: [id])
 }
 
 model Category {
