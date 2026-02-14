@@ -1,5 +1,7 @@
 import { Prisma } from '@prisma/client';
 
+
+
 export type Route = Prisma.RouteGetPayload<{
     include: {
         author: { include: { profileImage: true } },

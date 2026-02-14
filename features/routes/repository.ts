@@ -2,9 +2,33 @@ import { getPrisma } from "@/lib/config/server";
 import { RouteVisibility } from "@prisma/client";
 
 export const routesRepository = {
-    findByQuery: async (query: any) => {
-        // DBからクエリでルートを取得する処理（仮実装）
-        return { id: "123", name: "Sample Route" };
+    findRoutes: async (query: any, where: any) => {
+        const prisma = getPrisma();
+        return prisma.route.findMany({
+            where: where,
+            take: query.limit,
+            orderBy: {
+                createdAt: "asc",
+            },
+            include: {
+                category: true,
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profileImage: true,
+                    },
+                },
+                thumbnail: true,
+                routeNodes: {
+                    include: {
+                        spot: true,
+                        transitSteps: true,
+                        images: true,
+                    },
+                },
+            },
+        });
     },
 
     createRoute: async (data: any) => {

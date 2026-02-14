@@ -7,40 +7,41 @@ import { handleRequest } from "@/lib/server/handleRequest";
 import { routesService } from "@/features/routes/service";
 import { validateParams } from "@/lib/server/validateParams";
 import { GetRoutesSchema } from "@/features/routes/schema";
-import { Transportation, Waypoint } from "@/lib/client/types";
 import { createClient } from "@/lib/auth/supabase/server";
 import { PostRouteSchema } from "@/features/routes/schema";
 
 // GET /api/v1/routems
 // 最近作成されたルートを一覧返却します
-// export async function GET(req: NextRequest) {
-//   return handleRequest(async () => {
-//     const search_params = Object.fromEntries(new URL(req.url).searchParams);
-//     const parsed_params = await validateParams(getRoutesSchema, search_params);
-//     const data = await routesService.getRoutesByParams(parsed_params);
-//     return NextResponse.json(data);
-//   });
-// }
-
 export async function GET(req: NextRequest) {
-  const routes = await getPrisma().route.findMany({
-    take: 12,
-    include: {
-      routeNodes: {
-        include: {
-          spot: true,
-        },
-      },
-      author: true,
-      category: true,
-      likes: true,
-      views: true,
-      thumbnail: true,
-    }
-  })
-
-  return NextResponse.json({ routes }, { status: 200 });
+  return handleRequest(async () => {
+    const supabase = await createClient();
+    const { data: { session }, error } = await supabase.auth.getSession();
+    const search_params = Object.fromEntries(new URL(req.url).searchParams);
+    const parsed_params = await validateParams(GetRoutesSchema, search_params);
+    const data = await routesService.getRoutes(session?.user ?? null, parsed_params);
+    return NextResponse.json(data);
+  });
 }
+
+// export async function GET(req: NextRequest) {
+//   const routes = await getPrisma().route.findMany({
+//     take: 12,
+//     include: {
+//       routeNodes: {
+//         include: {
+//           spot: true,
+//         },
+//       },
+//       author: true,
+//       category: true,
+//       likes: true,
+//       views: true,
+//       thumbnail: true,
+//     }
+//   })
+
+//   return NextResponse.json({ routes }, { status: 200 });
+// }
 
 // POST /api/v1/routems
 // ルート作成用のAPI。

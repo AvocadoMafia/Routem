@@ -1,53 +1,41 @@
-import {getPrisma} from "@/lib/config/server";
-import {postRouteSchema} from "@/features/routes/schema";
-import {RouteNode} from "@/lib/server/types";
-import {cuid, number} from "zod";
-import {ImageStatus, ImageType, Prisma, RouteVisibility} from "@prisma/client";
-import {routesRepository} from "@/features/routes/repository";
-import {User} from "@supabase/supabase-js";
-import {mapMethodToTransitMode} from "@/features/routes/utils";
+import { getPrisma } from "@/lib/config/server";
+import { postRouteSchema } from "@/features/routes/schema";
+import { RouteNode } from "@/lib/server/types";
+import { cuid, number } from "zod";
+import { ImageStatus, ImageType, Prisma, RouteVisibility } from "@prisma/client";
+import { routesRepository } from "@/features/routes/repository";
+import { User } from "@supabase/supabase-js";
+import { mapMethodToTransitMode } from "@/features/routes/utils";
+import { GetRoutesSchema } from "@/features/routes/schema";
+
 
 
 export const routesService = {
-    getRoutes: async () => {
-        const prisma = getPrisma();
-        return prisma.route.findMany({
-            take: 20,
-            orderBy: {
-                createdAt: "desc",
-            },
-            include: {
-                category: true,
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
-                thumbnail: true,
-                routeNodes: {
-                    orderBy: {
-                        order: "asc",
-                    },
-                    include: {
-                        spot: true,
-                        transitSteps: true,
-                        images: true,
-                    },
-                },
-            },
-        });
+    getRoutes: async (user: User | null, query: GetRoutesSchema) => {
+        const isOwner = user?.id === query.authorId;
+
+        const where = {
+            authorId: query.authorId,
+            createdAt: { gt: query.createdAfter },
+            ...(isOwner ? {} : { visibility: "PUBLIC" }),
+        };
+
+        return routesRepository.findRoutes(
+            query,
+            where,
+        );
     },
+
     getRoutesByParams: async (params: any) => {
         const prisma = getPrisma();
-        const {q, category, visibility, authorId, limit = 20} = params;
+        const { q, category, visibility, authorId, limit = 20 } = params;
 
         const where: any = {};
 
         if (q) {
             where.OR = [
-                {title: {contains: q, mode: "insensitive"}},
-                {description: {contains: q, mode: "insensitive"}},
+                { title: { contains: q, mode: "insensitive" } },
+                { description: { contains: q, mode: "insensitive" } },
             ];
         }
 
@@ -86,7 +74,7 @@ export const routesService = {
     },
 
     postRoute: async (body: postRouteSchema, user: User) => {
-        const {items, title, description, category, visibility, thumbnailImageSrc} = body;
+        const { items, title, description, category, visibility, thumbnailImageSrc } = body;
 
         // 1) waypointのみを抽出
         const waypointItems = items.filter((item) => item.type === 'waypoint');
