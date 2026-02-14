@@ -30,3 +30,7 @@ docker-compose.ymlファイルで読み込む.env系ファイルを切り替え�
 また、クライアントサイドで用いる変数はこの命名規則に加えて最前部にNEXT_PUBLICが付く。
 
 例:NEXT_PUBLIC_DEV_S3URL
+
+**CORDING　STANDARD**
+DBカラム名：キャメルケース
+クエリパラメータ：キャメルケース
