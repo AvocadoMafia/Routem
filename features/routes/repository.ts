@@ -1,8 +1,9 @@
 import { getPrisma } from "@/lib/config/server";
 import { RouteVisibility } from "@prisma/client";
+import { GetRoutesSchema } from "./schema";
 
 export const routesRepository = {
-    findRoutes: async (query: any, where: any) => {
+    findRoutes: async (query: GetRoutesSchema, where: any) => {
         const prisma = getPrisma();
         return prisma.route.findMany({
             where: where,
@@ -117,3 +118,5 @@ export const routesRepository = {
         });
     }
 }
+
+export type FindRoutes = Awaited<ReturnType<typeof routesRepository.findRoutes>>;

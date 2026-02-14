@@ -7,11 +7,12 @@ import { routesRepository } from "@/features/routes/repository";
 import { User } from "@supabase/supabase-js";
 import { mapMethodToTransitMode } from "@/features/routes/utils";
 import { GetRoutesSchema } from "@/features/routes/schema";
+import { FindRoutes } from "@/features/routes/repository";
 
 
 
 export const routesService = {
-    getRoutes: async (user: User | null, query: GetRoutesSchema) => {
+    getRoutes: async (user: User | null, query: GetRoutesSchema): Promise<FindRoutes> => {
         const isOwner = user?.id === query.authorId;
 
         const where = {
