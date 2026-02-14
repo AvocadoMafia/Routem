@@ -31,6 +31,11 @@ docker-compose.ymlファイルで読み込む.env系ファイルを切り替え�
 
 例:NEXT_PUBLIC_DEV_S3URL
 
-**CORDING　STANDARD**
+# CORDING　STANDARD
+**命名規則**
 DBカラム名：キャメルケース
 クエリパラメータ：キャメルケース
+**宣言の並び順**
+- できるだけ使用する直前で宣言
+- 型なども同じであるが、特に理由がない場合は、アルファベット順で並べる
+→ctrl shift P　でコマンドパレットを開き、sort ascendingで選択範囲を並び替えることができる
