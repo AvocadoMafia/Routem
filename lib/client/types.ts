@@ -6,9 +6,8 @@ export type Route = Prisma.RouteGetPayload<{
         thumbnail: true,
         likes: true,
         views: true,
-        routeNodes: { include: { spot: true } },
+        routeNodes: { include: { spot: true, transitSteps: true } },
         category: true,
-        transitSteps: true
     }
 }>
 
@@ -38,7 +37,7 @@ export type Waypoint = {
 export type Transportation = {
     id: string;
     type: 'transportation';
-    method: 'walk' | 'train' | 'bus' | 'car' | 'other'; // 移動手段
+    method: 'WALK' | 'TRAIN' | 'BUS' | 'CAR' | 'OTHER'; // 移動手段
     memo: string; // 移動に関するメモ（乗り換え情報など）
     order: number;
     duration?: number; // 移動時間（分）

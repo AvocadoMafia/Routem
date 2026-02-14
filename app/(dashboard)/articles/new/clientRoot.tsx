@@ -29,7 +29,7 @@ export default function ClientRoot() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("General");
-    const [visibility, setVisibility] = useState<'public' | 'private'>('private');
+    const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
     const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(undefined);
 
     // ルートを構成するアイテム（経由地・交通手段）のリスト
@@ -263,7 +263,7 @@ export default function ClientRoot() {
             newItem = {
                 id: newId,
                 type: 'transportation',
-                method: 'walk',
+                method: 'WALK',
                 memo: '',
                 order: 0
             };
@@ -296,7 +296,7 @@ export default function ClientRoot() {
             const newTransport: Transportation = {
                 id: newTransportId,
                 type: 'transportation',
-                method: 'walk',
+                method: 'WALK',
                 memo: "",
                 order: 0,
             };

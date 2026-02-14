@@ -92,6 +92,10 @@
       scrollbar-gutter: auto;
     }
   }
+
+  body {
+    overflow-x: hidden;
+  }
 }
 
 /* Light mode (明示的にlightクラスが付いたとき) */

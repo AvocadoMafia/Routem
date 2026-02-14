@@ -12,7 +12,7 @@ type Props = {
   items: any[]; // Flattened items from RouteViewer
 };
 
-export default function MapView({ route, focusIndex, items }: Props) {
+export default function MapViewer({ route, focusIndex, items }: Props) {
   const mapRef = useRef<MapRef>(null);
   const mapboxAccessToken = getClientMapboxAccessToken();
   const hasFitOnceRef = useRef(false);
@@ -94,7 +94,7 @@ export default function MapView({ route, focusIndex, items }: Props) {
 
   if (!mapboxAccessToken) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-background-1">
+      <div className="w-full h-full flex items-center justify-center">
         <p className="text-foreground-1">Mapbox access token is missing.</p>
       </div>
     );
@@ -130,7 +130,7 @@ export default function MapView({ route, focusIndex, items }: Props) {
               <div className="flex flex-col items-center group cursor-pointer">
                 {/* ツールチップ風の名称表示（フォーカス時のみ） */}
                 {isFocused && (
-                  <div className="mb-2 px-3 py-1 bg-background-1 border border-accent-0 rounded-lg shadow-xl text-[10px] font-bold text-accent-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                  <div className="mb-2 px-3 py-1 border border-accent-0 rounded-lg shadow-xl text-[10px] font-bold text-accent-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
                     {coord.name}
                   </div>
                 )}
@@ -145,7 +145,7 @@ export default function MapView({ route, focusIndex, items }: Props) {
                     }`}
                   />
                   {/* 中央のドット */}
-                  <div className={`absolute rounded-full bg-white transition-all duration-300 ${
+                  <div className={`absolute rounded-full transition-all duration-300 ${
                     isFocused ? "w-2 h-2 translate-y-[-6px]" : "w-1.5 h-1.5 translate-y-[-4px]"
                   }`} />
                 </div>

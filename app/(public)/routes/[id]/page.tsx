@@ -1,8 +1,7 @@
 import { getPrisma } from "@/lib/config/server";
 import { notFound } from "next/navigation";
-import InitialModal from "@/app/(public)/routes/[id]/_components/templates/initialModal";
-import RouteViewer from "@/app/(public)/routes/[id]/_components/ingredients/routeViewer";
 import { Route } from "@/lib/client/types";
+import RootClient from "./rootClient";
 
 export default async function RouteDetailPage({ params }: { params: { id: string } }) {
   const resolvedParams = await params
@@ -32,12 +31,5 @@ export default async function RouteDetailPage({ params }: { params: { id: string
     notFound();
   }
 
-  return (
-    <div className="w-full min-h-screen relative bg-background-0">
-      <InitialModal route={route} />
-      <main className="w-full h-full">
-        <RouteViewer route={route} />
-      </main>
-    </div>
-  );
+  return <RootClient route={route} />;
 }

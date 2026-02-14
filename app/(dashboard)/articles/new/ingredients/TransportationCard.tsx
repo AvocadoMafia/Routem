@@ -21,11 +21,11 @@ export default function TransportationCard({ item, isSelected, onSelect, onDelet
         >
             <div className="flex flex-col min-w-0">
                 <span className={`text-xs font-bold ${isSelected ? 'text-accent-0' : 'text-foreground-1'}`}>
-                    {item.method === 'walk' && 'Walk'}
-                    {item.method === 'train' && 'Train'}
-                    {item.method === 'bus' && 'Bus'}
-                    {item.method === 'car' && 'Car'}
-                    {item.method === 'other' && 'Other'}
+                    {item.method === 'WALK' && 'Walk'}
+                    {item.method === 'TRAIN' && 'Train'}
+                    {item.method === 'BUS' && 'Bus'}
+                    {item.method === 'CAR' && 'Car'}
+                    {item.method === 'OTHER' && 'Other'}
                 </span>
                 {/* メモがある場合、プレビューを表示 */}
                 {item.memo && <div className="text-[10px] text-foreground-1/70 truncate mt-0.5">{item.memo}</div>}

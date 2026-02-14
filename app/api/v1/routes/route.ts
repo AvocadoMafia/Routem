@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     const parsed = await validateParams(PostRouteSchema, body);
 
     // service層へ移行
-    const result = await routesService.postRoute(parsed);
+    const result = await routesService.postRoute(parsed, user);
 
     return NextResponse.json(result, { status: 201 });
   } catch (e: any) {
@@ -75,22 +75,22 @@ export async function POST(req: NextRequest) {
 
 //stringからTransitModeへのキャスト関数
 function mapMethodToTransitMode(method: string): TransitMode {
-  switch (method) {
-    case "walk":
+  switch (method.toUpperCase()) {
+    case "WALK":
       return TransitMode.WALK;
-    case "train":
+    case "TRAIN":
       return TransitMode.TRAIN;
-    case "bus":
+    case "BUS":
       return TransitMode.BUS;
-    case "car":
+    case "CAR":
       return TransitMode.CAR;
-    case "bike":
+    case "BIKE":
       return TransitMode.BIKE;
-    case "flight":
+    case "FLIGHT":
       return TransitMode.FLIGHT;
-    case "ship":
+    case "SHIP":
       return TransitMode.SHIP;
-    case "other":
+    case "OTHER":
       return TransitMode.OTHER;
     default:
       return TransitMode.WALK;

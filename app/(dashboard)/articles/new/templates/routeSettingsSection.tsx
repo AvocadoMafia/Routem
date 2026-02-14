@@ -10,8 +10,8 @@ interface RouteSettingsSectionProps {
     setDescription: (val: string) => void;
     category: string;
     setCategory: (val: string) => void;
-    visibility: 'public' | 'private';
-    setVisibility: (val: 'public' | 'private') => void;
+    visibility: 'PUBLIC' | 'PRIVATE';
+    setVisibility: (val: 'PUBLIC' | 'PRIVATE') => void;
     thumbnailImageSrc?: string;
     handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     uploading: boolean;
@@ -94,18 +94,18 @@ export default function RouteSettingsSection({
                         {/* Visibility */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                {visibility === 'public' ? <Globe size={16} /> : <Lock size={16} />} Visibility
+                                {visibility === 'PUBLIC' ? <Globe size={16} /> : <Lock size={16} />} Visibility
                             </label>
                             <div className="flex bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
-                                    onClick={() => setVisibility('private')}
-                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'private' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setVisibility('PRIVATE')}
+                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PRIVATE' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     Private
                                 </button>
                                 <button
-                                    onClick={() => setVisibility('public')}
-                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'public' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setVisibility('PUBLIC')}
+                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PUBLIC' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     Public
                                 </button>

@@ -5,22 +5,22 @@ import { TransitMode } from "@prisma/client";
  * @param method
  */
 export function mapMethodToTransitMode(method: string): TransitMode {
-    switch (method.toLowerCase()) {
-        case "walk":
+    switch (method.toUpperCase()) {
+        case "WALK":
             return TransitMode.WALK;
-        case "train":
+        case "TRAIN":
             return TransitMode.TRAIN;
-        case "bus":
+        case "BUS":
             return TransitMode.BUS;
-        case "car":
+        case "CAR":
             return TransitMode.CAR;
-        case "bike":
+        case "BIKE":
             return TransitMode.BIKE;
-        case "flight":
+        case "FLIGHT":
             return TransitMode.FLIGHT;
-        case "ship":
+        case "SHIP":
             return TransitMode.SHIP;
-        case "other":
+        case "OTHER":
             return TransitMode.OTHER;
         default:
             return TransitMode.WALK;
