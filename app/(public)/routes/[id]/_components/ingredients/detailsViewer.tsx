@@ -26,10 +26,10 @@ export default function DetailsViewer({
   return (
     <div
       ref={scrollContainerRef}
-      className={`w-full h-full overflow-y-scroll px-4 pt-4 pb-40 flex flex-col gap-16 ${
+      className={`w-full h-full overflow-y-scroll px-4 pt-4 pb-40 flex flex-col gap-16 transition-all duration-500 ${
         viewMode === "details"
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-12 pointer-events-none invisible max-md:hidden"
+          : "opacity-0 translate-y-12 pointer-events-none invisible max-md:hidden max-md:h-0 max-md:overflow-hidden"
       }`}
     >
       {items.map((item, idx) => (
@@ -40,7 +40,7 @@ export default function DetailsViewer({
               itemRefs.current[idx] = el;
             }
           }}
-          className={`transition-all duration-500 ease-[0.22, 1, 0.36, 1] ${
+          className={`transition-all duration-700 ease-[0.22, 1, 0.36, 1] ${
             focusIndex === idx
               ? "opacity-100"
               : "opacity-40"

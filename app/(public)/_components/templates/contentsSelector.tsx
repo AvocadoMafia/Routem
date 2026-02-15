@@ -1,7 +1,7 @@
 'use client'
 
 import { HiMap, HiSparkles, HiFlag, HiClock, HiFire } from "react-icons/hi2";
-import {selectedType} from "@/app/(public)/clientRoot";
+import {selectedType} from "@/app/(public)/rootClient";
 import {HiHome} from "react-icons/hi";
 
 const SELECTOR_ITEMS = [

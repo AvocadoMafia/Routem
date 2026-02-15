@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { scrollDirectionAtom } from "@/lib/client/atoms";
 import { useEffect, useState } from "react";
 import { Route } from "@/lib/client/types";
@@ -10,16 +10,19 @@ import Image from "next/image";
 export default function InitialModal({ route }: { route: Route }) {
     const [isVisible, setIsVisible] = useState(true);
     const [canClose, setCanClose] = useState(false);
-    const scrollDirection = useAtomValue(scrollDirectionAtom);
+    const [scrollDirection, setScrollDirection] = useAtom(scrollDirectionAtom);
 
     useEffect(() => {
+        // マウント時にスクロール方向をリセット
+        setScrollDirection('up');
+
         // マウント時に少し待ってからスクロール検知を開始する
         // または、マウント直後の scrollDirection === 'down' を無視する
         const timer = setTimeout(() => {
             setCanClose(true);
-        }, 100); // 500msだと少し長すぎるかもしれないので100msに調整
+        }, 500); // 500ms程度に短縮（リセットしているのでこれくらいで十分なはず）
         return () => clearTimeout(timer);
-    }, []);
+    }, [setScrollDirection]);
 
     useEffect(() => {
         if (canClose && scrollDirection === 'down' && isVisible) {

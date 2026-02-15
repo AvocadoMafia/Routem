@@ -95,84 +95,70 @@ export default function RootClient({ route }: Props) {
     const targetElement = itemRefs.current[index];
     const container = scrollContainerRef.current;
     
-    if (targetElement) {
+    if (targetElement && container) {
       // ダイアグラムをクリックしたとき、モバイルなら詳細ビューに切り替える
       if (isMobile) {
         setViewMode("details");
       }
 
-      // レイアウトが反映されるのを少し待ってからスクロールを実行
+      // レイアウトが反映されるのを待ってからスクロールを実行
+      // viewModeの切り替えによる再レンダリング時間を考慮
       setTimeout(() => {
-        const targetRect = targetElement.getBoundingClientRect();
+        const rect = targetElement.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
         
-        if (isMobile) {
-          // モバイル（windowスクロール）の場合
-          // ヘッダーの高さを考慮（概算で60px程度だが、余裕を持って調整）
-          // また、DetailsViewerが表示される際のアニメーション（translate-y-12）の影響を避けるため、
-          // getBoundingClientRectのタイミングを遅らせるか、オフセットを慎重に計算する。
-          const headerOffset = 100;
-          const scrollTarget = window.scrollY + targetRect.top - headerOffset;
-          
-          window.scrollTo({
-            top: Math.max(0, scrollTarget),
-            behavior: "smooth"
-          });
-        } else {
-          // デスクトップ（コンテナスクロール）の場合
-          const container = scrollContainerRef.current;
-          if (container) {
-            const containerRect = container.getBoundingClientRect();
-            const relativeTop = targetRect.top - containerRect.top + container.scrollTop;
-            const scrollToTop = relativeTop - (containerRect.height / 4);
-            
-            container.scrollTo({
-              top: Math.max(0, scrollToTop),
-              behavior: "smooth"
-            });
-          }
-        }
+        // コンテナ内での相対位置を計算
+        const relativeTop = rect.top - containerRect.top + container.scrollTop;
+        // 画面中央付近にくるように調整（コンテナの高さの1/4程度をオフセット）
+        const scrollToTop = relativeTop - (containerRect.height / 4);
+        
+        container.scrollTo({
+          top: Math.max(0, scrollToTop),
+          behavior: "smooth"
+        });
 
         // スムーズスクロール終了後にフラグを戻す
         setTimeout(() => {
           isManualScrolling.current = false;
         }, 800);
-      }, isMobile ? 100 : 0);
+      }, isMobile ? 150 : 50); // アニメーション完了を待つために少し長めに設定
     }
   };
 
   // 右側のスクロールを検知してfocusIndexを更新
   useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
     const handleScroll = () => {
       // detailsモード以外、または手動スクロール中は無視
-      if (isManualScrolling.current || (isMobile && viewMode !== "details")) return;
-      if (!isMobile && viewMode === "map") return;
+      if (isManualScrolling.current) return;
+      if (viewMode !== "details") return;
 
-      const container = isMobile ? window : scrollContainerRef.current;
-      if (!container) return;
-
-      const scrollTop = isMobile ? window.scrollY : (container as HTMLDivElement).scrollTop;
+      const scrollTop = container.scrollTop;
       
-      // モバイルの場合、ヘッダー分などのオフセットを考慮する必要があるかもしれないが、
       // 基本的には上端付近なら0番目をフォーカスする
-      if (scrollTop <= 20) {
+      if (scrollTop <= 50) {
         if (focusIndex !== 0) {
           setFocusIndex(0);
         }
         return;
       }
 
-      const containerRect = isMobile 
-        ? { top: 0, height: window.innerHeight } 
-        : (container as HTMLDivElement).getBoundingClientRect();
-      const containerReferencePoint = containerRect.top + containerRect.height / 4;
+      const containerRect = container.getBoundingClientRect();
+      // 判定基準点：コンテナ内の上から1/3の位置
+      const containerReferencePoint = containerRect.height / 3;
 
-      let closestIndex = 0;
+      let closestIndex = -1;
       let minDistance = Infinity;
 
       itemRefs.current.forEach((ref, index) => {
         if (ref) {
           const rect = ref.getBoundingClientRect();
-          const distance = Math.abs(rect.top - containerReferencePoint);
+          // rect.top はビューポート上端からの距離。コンテナの上端からの距離に変換する
+          const elementPoint = rect.top - containerRect.top;
+
+          const distance = Math.abs(elementPoint - containerReferencePoint);
           if (distance < minDistance) {
             minDistance = distance;
             closestIndex = index;
@@ -180,21 +166,13 @@ export default function RootClient({ route }: Props) {
         }
       });
 
-      if (closestIndex !== focusIndex) {
+      if (closestIndex !== -1 && closestIndex !== focusIndex) {
         setFocusIndex(closestIndex);
       }
     };
 
-    if (isMobile) {
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    } else {
-      const container = scrollContainerRef.current;
-      if (container) {
-        container.addEventListener("scroll", handleScroll);
-        return () => container.removeEventListener("scroll", handleScroll);
-      }
-    }
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, [focusIndex, viewMode, isMobile]);
 
   const getTransitIcon = (mode: string): ReactNode => {
@@ -213,10 +191,10 @@ export default function RootClient({ route }: Props) {
   };
 
   return (
-    <div className="w-full md:h-screen h-fit relative overflow-x-hidden max-w-full">
+    <div className="w-full h-[100svh] relative overflow-hidden">
       <InitialModal route={route} />
       
-      <div className={`flex md:h-full h-fit w-full md:overflow-hidden relative flex-col md:flex-row overflow-x-hidden max-w-full`}>
+      <div className={`flex h-full w-full overflow-hidden relative flex-col md:flex-row`}>
         {/* 画面上部の切り替えボタン */}
         <motion.div
           animate={{

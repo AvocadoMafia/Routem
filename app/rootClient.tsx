@@ -29,7 +29,7 @@ export default function RootClient({children}: Readonly<{children: React.ReactNo
     }, [updateOffset])
 
     return (
-        <div className={'w-full h-[100svh] overflow-hidden overscroll-none'}>
+        <div className={'w-full h-[100svh] overflow-hidden overscroll-none bg-background-1'}>
             <motion.div
                 className={[
                     "w-full flex flex-col overflow-hidden text-foreground will-change-transform",

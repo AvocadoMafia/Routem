@@ -103,6 +103,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
   return (
     <div
       className="w-full h-full relative"
+      data-ignore-scroll-detector
       onWheel={(e) => e.stopPropagation()}
       onScroll={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
