@@ -1,8 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/config/server";
 import { supabaseAdmin } from "@/lib/auth/supabase/admin";
 
 // devのみでSupabaseのユーザをPrismaのUserテーブルに同期するスクリプト
 export async function syncAllUsers() {
+
+    const prisma = getPrisma();
+
     let page = 1;
     const perPage = 1000;
 
