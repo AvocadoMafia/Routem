@@ -1,7 +1,7 @@
 "use client";
 
 import { Route } from "@/lib/client/types";
-import { useState, useRef, useEffect, useMemo, ReactNode } from "react";
+import { useState, useRef, useEffect, useMemo, ReactNode, useCallback } from "react";
 import {
   MapPin,
   Navigation,
@@ -19,6 +19,8 @@ import DiagramViewer from "./_components/ingredients/diagramViewer";
 import DetailsViewer from "./_components/ingredients/detailsViewer";
 import InitialModal from "./_components/templates/initialModal";
 import { motion } from "framer-motion";
+import { useAtomValue } from "jotai";
+import { scrollDirectionAtom } from "@/lib/client/atoms";
 
 type Props = {
   route: Route;
@@ -56,6 +58,22 @@ export default function RootClient({ route }: Props) {
   const [focusIndex, setFocusIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"diagram" | "details" | "map">("details");
   const [isMobile, setIsMobile] = useState(false);
+  const scrollDirection = useAtomValue(scrollDirectionAtom);
+  const [yOffset, setYOffset] = useState(0);
+
+  const updateOffset = useCallback(() => {
+    if (window.innerWidth >= 768) {
+      setYOffset(0);
+    } else {
+      setYOffset(50);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateOffset();
+    window.addEventListener("resize", updateOffset);
+    return () => window.removeEventListener("resize", updateOffset);
+  }, [updateOffset]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -200,7 +218,17 @@ export default function RootClient({ route }: Props) {
       
       <div className={`flex md:h-full h-fit w-full md:overflow-hidden relative flex-col md:flex-row overflow-x-hidden max-w-full`}>
         {/* 画面上部の切り替えボタン */}
-        <div className="md:absolute fixed w-fit h-fit md:top-6 bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center backdrop-blur-xl border border-foreground-0/5 rounded-full p-1 shadow-2xl shadow-black/5 max-w-[95vw] overflow-x-auto no-scrollbar overflow-y-hidden">
+        <motion.div
+          animate={{
+            bottom: isMobile ? (scrollDirection === 'down' ? 24 : yOffset + 24) : 'auto',
+            top: !isMobile ? 24 : 'auto'
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeOut"
+          }}
+          className="md:absolute fixed w-fit h-fit left-1/2 -translate-x-1/2 z-50 flex items-center backdrop-blur-xl border border-foreground-0/5 rounded-full p-1 shadow-2xl shadow-black/5 max-w-[95vw] overflow-x-auto no-scrollbar overflow-y-hidden"
+        >
           <button
             onClick={() => setViewMode("diagram")}
             className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
@@ -234,7 +262,7 @@ export default function RootClient({ route }: Props) {
             <MapIcon className="w-3.5 h-3.5" />
             <span>MAP VIEW</span>
           </button>
-        </div>
+        </motion.div>
 
         {/* ダイアグラム (w-1/4 or fixed width) */}
         <motion.div

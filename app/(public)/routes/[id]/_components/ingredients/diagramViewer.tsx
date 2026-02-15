@@ -30,7 +30,7 @@ export default function DiagramViewer({
 }: Props) {
   return (
     <div
-      className={`w-full h-full p-6 md:overflow-y-auto no-scrollbar backdrop-blur-2xl z-10 transition-all duration-500 ${
+      className={`w-full h-full overflow-y-scroll p-6  backdrop-blur-2xl z-10 transition-all duration-500 ${
         viewMode === "diagram"
           ? "opacity-100 translate-x-0"
           : "max-md:hidden max-md:opacity-0 max-md:-translate-x-full"
