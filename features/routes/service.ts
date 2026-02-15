@@ -59,53 +59,6 @@ export const routesService = {
         );
     },
 
-    getRoutesByParams: async (params: any) => {
-        const prisma = getPrisma();
-        const { q, category, visibility, authorId, limit = 20 } = params;
-
-        const where: any = {};
-
-        if (q) {
-            where.OR = [
-                { title: { contains: q, mode: "insensitive" } },
-                { description: { contains: q, mode: "insensitive" } },
-            ];
-        }
-
-        if (category) {
-            where.category = {
-                name: category,
-            };
-        }
-
-        if (visibility) {
-            where.visibility = visibility.toUpperCase();
-        }
-
-        if (authorId) {
-            where.authorId = authorId;
-        }
-
-
-        return prisma.route.findMany({
-            where,
-            take: limit,
-            orderBy: {
-                createdAt: "desc",
-            },
-            include: {
-                category: true,
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
-                thumbnail: true,
-            },
-        });
-    },
-
     postRoute: async (body: postRouteSchema, user: User) => {
         const { items, title, description, category, visibility, thumbnailImageSrc } = body;
 
