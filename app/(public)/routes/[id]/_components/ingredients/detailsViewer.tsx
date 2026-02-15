@@ -26,7 +26,7 @@ export default function DetailsViewer({
   return (
     <div
       ref={scrollContainerRef}
-      className={`w-full px-4 pt-4 pb-12 md:h-screen md:overflow-y-scroll ${
+      className={`w-full px-4 pt-4 pb-40 md:h-screen md:overflow-y-scroll flex flex-col gap-16 ${
         viewMode === "details"
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-12 pointer-events-none invisible max-md:hidden"
@@ -91,25 +91,27 @@ export default function DetailsViewer({
             </div>
           ) : (
             <div className="max-w-4xl overflow-x-hidden">
-              <div className="flex items-center gap-6 md:gap-12 py-12 border-y border-foreground-0/10 flex-wrap">
-                <div className="flex items-center gap-4">
-                  <div className="text-accent-0">
-                    {getTransitIcon(item.data.mode)}
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-6 md:gap-12 flex-wrap">
+                  <div className="flex items-center gap-4">
+                    <div className="text-accent-0">
+                      {getTransitIcon(item.data.mode)}
+                    </div>
+                    <h2 className="text-xl font-bold text-foreground-0 tracking-widest uppercase">
+                      {item.data.mode}
+                    </h2>
                   </div>
-                  <h2 className="text-xl font-bold text-foreground-0 tracking-widest uppercase">
-                    {item.data.mode}
-                  </h2>
+                  {item.data.duration && (
+                    <div className="flex items-center gap-3 text-foreground-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span className="text-xs font-bold tracking-tighter">
+                        {item.data.duration} min
+                      </span>
+                    </div>
+                  )}
                 </div>
-                {item.data.duration && (
-                  <div className="flex items-center gap-3 text-foreground-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span className="text-xs font-bold tracking-tighter">
-                      {item.data.duration} min
-                    </span>
-                  </div>
-                )}
                 {item.data.memo && (
-                  <p className="w-full md:flex-1 text-sm text-foreground-1 font-medium italic md:text-right">
+                  <p className="text-sm text-foreground-1 font-medium italic">
                     {item.data.memo}
                   </p>
                 )}

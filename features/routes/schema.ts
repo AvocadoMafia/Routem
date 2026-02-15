@@ -5,9 +5,9 @@ import { create } from "domain";
 export type postRouteSchema = z.infer<typeof PostRouteSchema>;
 
 export const GetRoutesSchema = z.object({
-    authorId: z.string().optional(),
+    authorId: z.string().uuid().optional(),
     category: z.string().optional(),
-    createdAfter: z.iso.datetime().optional(),
+    createdAfter: z.string().datetime().optional(),
     limit: z.string().regex(/^\d+$/).transform(Number),
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
 });

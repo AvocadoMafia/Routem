@@ -11,46 +11,44 @@ datasource db {
   provider = "postgresql"
 }
 
-// 簡易ユーザモデル（検証用）
 model User {
-  id             String  @id @default(cuid()) // ユーザID
-  name           String  @unique // 表示名（ユニーク）]
+  id             String  @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
+  name           String  @unique
   gender         String?
   age            Int?
   bio            String?
   profileImage   Image?  @relation("UserProfileImage")
-  uploadedImages Image[] @relation("UserUploads") // ユーザがアップロードした画像一覧
+  uploadedImages Image[] @relation("UserUploads")
   routes         Route[]
   likes          Like[]
 }
 
 // 画像モデル：RouteNodeの地点写真や、ユーザーのプロフィール画像などで利用
 model Image {
-  id        String      @id @default(cuid())
-  url       String // 画像の保存先URL（S3やCloudinaryなど）
-  status    ImageStatus @default(DRAFT) // 画像の採用状態
-  type      ImageType // 画像の利用目的
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url       String
+  status    ImageStatus @default(DRAFT)
+  type      ImageType
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
   // リレーション
-  uploaderId String? // アップロードしたユーザー
+  uploaderId String? @db.Uuid
   uploader   User?   @relation("UserUploads", fields: [uploaderId], references: [id])
 
-  // 各目的別のリレーション。外部キーをこちらに集約
-  routeNodeId String? // 紐づくルート上の地点（NODE_IMAGE用）
+  routeNodeId String?    @db.Uuid
   routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id])
 
-  userProfileId String? @unique // ユーザーのプロフィール画像としての利用
+  userProfileId String? @unique @db.Uuid
   userProfile   User?   @relation("UserProfileImage", fields: [userProfileId], references: [id])
 
-  routeThumbId String? @unique // ルートのサムネイルとしての利用
+  routeThumbId String? @unique @db.Uuid
   routeThumb   Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id])
 }
 
 // 地図上の地点（POI）。OSMやMapbox等の出典を保持
 model Spot {
-  id        String @id // スポットID（OSM IDなど外部IDを流用想定）
+  id        String @id
   name      String // 名称
   longitude Float // 経度（EPSG:4326）
   latitude  Float // 緯度（EPSG:4326）
@@ -62,58 +60,53 @@ model Spot {
 
 // 1つの旅行ルート（全体）。可視化・並び順・区間などの単位となる
 model Route {
-  id          String          @id @default(cuid()) // ルートID
-  updatedAt   DateTime        @updatedAt
-  createdAt   DateTime        @default(now()) // 作成日時
-  title       String          @db.VarChar(100) // タイトル
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  title       String   @db.VarChar(100)
   description String
   categoryId  Int
-  category    Category        @relation(fields: [categoryId], references: [id])
-  thumbnail   Image?          @relation("RouteThumbnail")
-  authorId    String
-  author      User            @relation(references: [id], fields: [authorId])
-  visibility  RouteVisibility @default(PRIVATE)
+  category    Category @relation(fields: [categoryId], references: [id])
+  thumbnail   Image?   @relation("RouteThumbnail")
 
-  // 表示・経路構成に使う関連モデル
-  routeNodes RouteNode[] // 新設のノード表現（順序＋区間表現と連携）
+  authorId String @db.Uuid
+  author   User   @relation(references: [id], fields: [authorId])
 
-  likes Like[]
-  views View[]
+  visibility RouteVisibility @default(PRIVATE)
+  routeNodes RouteNode[]
+  likes      Like[]
+  views      View[]
 
   @@index([authorId])
 }
 
-// ルート上の地点ノード。順序付きでRouteに紐づく
 model RouteNode {
-  // Node情報
-  id      String  @id @default(cuid()) // ノードID
-  order   Int // ルート内の並び順（0,1,2,...）
-  // ノードに紐づく画像
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order   Int
   images  Image[] @relation("NodeImages")
-  details String? // その地点に関する説明。
+  details String?
 
-  routeId String // 所属するRouteのID
+  routeId String @db.Uuid
   route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
-  spotId String // 対応する地点(Spot)のID
+  spotId String
   spot   Spot   @relation(fields: [spotId], references: [id])
 
-  // edge情報
-  // transitionがない場合は空配列になる
   transitSteps TransitStep[]
 
-  @@unique([routeId, order]) // 同一Route内での順序は一意
+  @@unique([routeId, order])
 }
 
 model TransitStep {
-  id          String      @id @default(cuid())
-  mode        TransitMode
-  duration    Int? // 分
-  distance    Float? // m
-  memo        String? // 任意のメモ
-  order       Int // RouteNode内での順序
-  routeNodeId String
-  routeNode   RouteNode   @relation(fields: [routeNodeId], references: [id])
+  id       String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mode     TransitMode
+  duration Int?
+  distance Float?
+  memo     String?
+  order    Int
+
+  routeNodeId String    @db.Uuid
+  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id])
 }
 
 model Category {
@@ -124,30 +117,29 @@ model Category {
 
 // いいねモデル
 model Like {
-  id        String         @id @default(cuid())
+  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime       @default(now())
   target    LikeViewTarget
 
-  routeId String?
+  routeId String? @db.Uuid
   route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
-  userId String
+  userId String @db.Uuid
   user   User   @relation(fields: [userId], references: [id])
-  // ユーザーとのリレーション（必要に応じて）
 
   @@unique([userId, routeId])
 }
 
 // 閲覧数モデル
 model View {
-  id        String         @id @default(cuid())
+  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime       @default(now())
   target    LikeViewTarget
 
-  routeId String?
+  routeId String? @db.Uuid
   route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
-  userId String? // 未ログイン閲覧も考慮して任意
+  userId String? @db.Uuid
 }
 
 enum LikeViewTarget {

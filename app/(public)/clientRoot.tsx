@@ -44,10 +44,10 @@ export default function ClientRoot() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch('/api/v1/routes?take=12', { cache: 'no-store' });
+                const res = await fetch('/api/v1/routes?limit=12', { cache: 'no-store' });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data?.error || 'Failed to load routes');
-                if (!cancelled) setRoutes(data.routes as Route[]);
+                if (!cancelled) setRoutes(data as Route[]);
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load');
             } finally {

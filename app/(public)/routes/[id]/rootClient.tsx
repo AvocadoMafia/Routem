@@ -198,7 +198,7 @@ export default function RootClient({ route }: Props) {
     <div className="w-full md:h-screen h-fit relative overflow-x-hidden max-w-full">
       <InitialModal route={route} />
       
-      <div className={`flex md:h-full h-fit w-full md:overflow-hidden relative transition-all duration-500 ${viewMode === 'map' ? 'md:flex-row-reverse' : 'md:flex-row'} flex-col overflow-x-hidden max-w-full`}>
+      <div className={`flex md:h-full h-fit w-full md:overflow-hidden relative flex-col md:flex-row overflow-x-hidden max-w-full`}>
         {/* 画面上部の切り替えボタン */}
         <div className="md:absolute fixed w-fit h-fit md:top-6 bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center backdrop-blur-xl border border-foreground-0/5 rounded-full p-1 shadow-2xl shadow-black/5 max-w-[95vw] overflow-x-auto no-scrollbar overflow-y-hidden">
           <button
@@ -237,20 +237,26 @@ export default function RootClient({ route }: Props) {
         </div>
 
         {/* ダイアグラム (w-1/4 or fixed width) */}
-        <DiagramViewer 
-          items={items}
-          focusIndex={focusIndex}
-          viewMode={viewMode}
-          isMobile={isMobile}
-          onItemClick={handleDiagramClick}
-          getTransitIcon={getTransitIcon}
-        />
+        <motion.div
+          layout
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className={`w-full md:w-1/4 md:min-w-[320px] h-full ${viewMode === 'map' ? 'md:order-2' : 'md:order-1'}`}
+        >
+          <DiagramViewer 
+            items={items}
+            focusIndex={focusIndex}
+            viewMode={viewMode}
+            isMobile={isMobile}
+            onItemClick={handleDiagramClick}
+            getTransitIcon={getTransitIcon}
+          />
+        </motion.div>
 
         {/* 詳細コンテンツ または マップ */}
         <motion.div 
           layout
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className={`flex-1 relative md:overflow-hidden min-h-screen ${viewMode === "diagram" ? "max-md:hidden" : ""}`}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className={`flex-1 relative md:overflow-hidden min-h-screen ${viewMode === "diagram" ? "max-md:hidden" : ""} ${viewMode === 'map' ? 'md:order-1' : 'md:order-2'}`}
         >
           {/* DETAILS VIEW */}
           <DetailsViewer 

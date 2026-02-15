@@ -10,7 +10,7 @@ export type User = z.infer<typeof UserSchema>;
  * GET、POSTのresponse
  */
 export const UserSchema = z.object({
-  id: z.string().cuid(),
+  id: z.string().uuid(),
   name: z.string().min(1),
 });
 

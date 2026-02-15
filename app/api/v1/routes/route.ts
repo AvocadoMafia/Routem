@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPrisma } from "@/lib/config/server";
 import { Prisma, TransitMode, ImageType, ImageStatus, RouteVisibility } from "@prisma/client";
-import { getMockUser } from "@/lib/mockAuth";
-import { z } from "zod";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { routesService } from "@/features/routes/service";
 import { validateParams } from "@/lib/server/validateParams";
