@@ -1,7 +1,7 @@
-//仮置きのprismaの設定ファイル。別のORMを用いる場合は削除。
-//prismaを用いた処理について、clientを最初生成する必要があり、dev環境ではnextの起動前に以下二つのコマンドの実行が必要となる。prod、stageでは自動実行させる予定。
-//npx prisma generate
-//npx prisma migrate dev
+// 仮置きのprismaの設定ファイル。別のORMを用いる場合は削除。
+// prismaを用いた処理について、clientを最初生成する必要があり、dev環境ではnextの起動前に以下二つのコマンドの実行が必要となる。prod、stageでは自動実行させる予定。
+// npx prisma generate
+// npx prisma migrate dev
 
 generator client {
   provider = "prisma-client-js"
@@ -9,12 +9,180 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  //ここは開発環境によって自動で切り替わらないため、prod、stageそれぞれで参照先を変える必要がある
-  url      = env("DATABASE_URL")
 }
 
-//テストモデルUSER
+// 簡易ユーザモデル（検証用）
 model User {
-  id   String @id @default(cuid())
-  name String @unique
+  id             String  @id @default(cuid()) // ユーザID
+  name           String  @unique // 表示名（ユニーク）]
+  gender         String?
+  age            Int?
+  bio            String?
+  profileImage   Image?  @relation("UserProfileImage")
+  uploadedImages Image[] @relation("UserUploads") // ユーザがアップロードした画像一覧
+  routes         Route[]
+  likes          Like[]
+}
+
+// 画像モデル：RouteNodeの地点写真や、ユーザーのプロフィール画像などで利用
+model Image {
+  id        String      @id @default(cuid())
+  url       String // 画像の保存先URL（S3やCloudinaryなど）
+  status    ImageStatus @default(DRAFT) // 画像の採用状態
+  type      ImageType // 画像の利用目的
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // リレーション
+  uploaderId String? // アップロードしたユーザー
+  uploader   User?   @relation("UserUploads", fields: [uploaderId], references: [id])
+
+  // 各目的別のリレーション。外部キーをこちらに集約
+  routeNodeId String? // 紐づくルート上の地点（NODE_IMAGE用）
+  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id])
+
+  userProfileId String? @unique // ユーザーのプロフィール画像としての利用
+  userProfile   User?   @relation("UserProfileImage", fields: [userProfileId], references: [id])
+
+  routeThumbId String? @unique // ルートのサムネイルとしての利用
+  routeThumb   Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id])
+}
+
+// 地図上の地点（POI）。OSMやMapbox等の出典を保持
+model Spot {
+  id        String @id // スポットID（OSM IDなど外部IDを流用想定）
+  name      String // 名称
+  longitude Float // 経度（EPSG:4326）
+  latitude  Float // 緯度（EPSG:4326）
+  source    String // 由来（例: "osm", "mapbox"）
+
+  // リレーション
+  routeNodes RouteNode[] // 表示用のノード（順序付き）
+}
+
+// 1つの旅行ルート（全体）。可視化・並び順・区間などの単位となる
+model Route {
+  id          String          @id @default(cuid()) // ルートID
+  updatedAt   DateTime        @updatedAt
+  createdAt   DateTime        @default(now()) // 作成日時
+  title       String          @db.VarChar(100) // タイトル
+  description String
+  categoryId  Int
+  category    Category        @relation(fields: [categoryId], references: [id])
+  thumbnail   Image?          @relation("RouteThumbnail")
+  authorId    String
+  author      User            @relation(references: [id], fields: [authorId])
+  visibility  RouteVisibility @default(PRIVATE)
+
+  // 表示・経路構成に使う関連モデル
+  routeNodes RouteNode[] // 新設のノード表現（順序＋区間表現と連携）
+
+  likes Like[]
+  views View[]
+
+  @@index([authorId])
+}
+
+// ルート上の地点ノード。順序付きでRouteに紐づく
+model RouteNode {
+  // Node情報
+  id      String  @id @default(cuid()) // ノードID
+  order   Int // ルート内の並び順（0,1,2,...）
+  // ノードに紐づく画像
+  images  Image[] @relation("NodeImages")
+  details String? // その地点に関する説明。
+
+  routeId String // 所属するRouteのID
+  route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  spotId String // 対応する地点(Spot)のID
+  spot   Spot   @relation(fields: [spotId], references: [id])
+
+  // edge情報
+  // transitionがない場合は空配列になる
+  transitSteps TransitStep[]
+
+  @@unique([routeId, order]) // 同一Route内での順序は一意
+}
+
+model TransitStep {
+  id          String      @id @default(cuid())
+  mode        TransitMode
+  duration    Int? // 分
+  distance    Float? // m
+  memo        String? // 任意のメモ
+  order       Int // RouteNode内での順序
+  routeNodeId String
+  routeNode   RouteNode   @relation(fields: [routeNodeId], references: [id])
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  routes Route[]
+}
+
+// いいねモデル
+model Like {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  target    LikeViewTarget
+
+  routeId String?
+  route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  // ユーザーとのリレーション（必要に応じて）
+
+  @@unique([userId, routeId])
+}
+
+// 閲覧数モデル
+model View {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now())
+  target    LikeViewTarget
+
+  routeId String?
+  route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  userId String? // 未ログイン閲覧も考慮して任意
+}
+
+enum LikeViewTarget {
+  ROUTE
+}
+
+// ルートの可視性。publicかprivateか
+enum RouteVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+// 画像の利用目的
+enum ImageType {
+  USER_PROFILE // ユーザーアイコン
+  ROUTE_THUMBNAIL // ルートのサムネイル
+  NODE_IMAGE // 地点（経由地）の写真
+  OTHER // その他
+}
+
+// 画像の採用ステータス
+enum ImageStatus {
+  ADOPTED // 正式に採用された
+  DRAFT // 一次保存・下書き状態
+  UNUSED // 利用されなかった（削除候補など）
+}
+
+// 移動モードの列挙。描画スタイルやアイコン分岐に利用
+enum TransitMode {
+  WALK // 徒歩
+  TRAIN // 電車
+  BUS // バス
+  CAR // 車
+  BIKE // 自転車
+  FLIGHT // 飛行機
+  SHIP // 船
+  OTHER // その他
 }

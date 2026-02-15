@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image';
+import Link from 'next/link';
 import {Route} from "@/lib/client/types";
 
 type Props = {
@@ -15,21 +16,26 @@ export default function RouteViewer(props: Props) {
     <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll bg-background-1/50 p-6 border-l border-grass/20'}>
       {route ? (
         <>
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg">
-            <Image
-              src={route.thumbnailImageSrc ?? '/map.png'}
-              alt={route.title}
-              fill
-              className="object-cover"
-            />
-          </div>
+          <Link href={`/routes/${route.id}`} className="block group">
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
+              <Image
+                src={route.thumbnail?.url ?? '/map.png'}
+                alt={route.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                unoptimized
+              />
+            </div>
+          </Link>
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-foreground-1 leading-tight">
-                {route.title}
-              </h2>
+              <Link href={`/routes/${route.id}`} className="hover:text-accent-0 transition-colors">
+                <h2 className="text-2xl font-bold text-foreground-1 leading-tight">
+                  {route.title}
+                </h2>
+              </Link>
               <p className="text-foreground-1/60 mt-1">
-                by @{route.user.name} • {route.category}
+                by @{route.author.name} • {route.category.name}
               </p>
             </div>
 
@@ -43,28 +49,27 @@ export default function RouteViewer(props: Props) {
                 >
                   <path d="M11.645 20.91l-.007-.003-.022-.01a15.247 15.247 0 01-.383-.173 25.18 25.18 0 01-4.244-2.673C4.688 16.357 2.25 13.852 2.25 10.5A5.25 5.25 0 017.5 5.25a5.23 5.23 0 014.5 2.508 5.23 5.23 0 014.5-2.508 5.25 5.25 0 015.25 5.25c0 3.352-2.438 5.857-4.739 7.551a25.175 25.175 0 01-4.244 2.673 15.247 15.247 0 01-.383.173l-.022.01-.007.003a.752.752 0 01-.614 0z" />
                 </svg>
-                {route.likesThisWeek} Likes
+                {route.likes?.length ?? 0} Likes
               </span>
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
               <h3 className="text-lg font-semibold text-foreground-1">Description</h3>
-              <p className="text-foreground-1/80 leading-relaxed">
-                This is a beautiful route through {route.category} focused spots.
-                Enjoy the amazing views and local culture curated by @{route.user.name}.
+              <p className="text-foreground-1/80 leading-relaxed line-clamp-4">
+                {route.description}
               </p>
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
-              <h3 className="text-lg font-semibold text-foreground-1">Route Details</h3>
+              <h3 className="text-lg font-semibold text-foreground-1">Route Info</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-1/40">Distance</span>
-                  <span className="font-medium text-foreground-1">5.2 km</span>
+                  <span className="block text-foreground-1/40 text-xs">Created</span>
+                  <span className="font-medium text-foreground-1">{new Date(route.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-1/40">Duration</span>
-                  <span className="font-medium text-foreground-1">2.5 hours</span>
+                  <span className="block text-foreground-1/40 text-xs">Waypoints</span>
+                  <span className="font-medium text-foreground-1">{route.routeNodes.length} stops</span>
                 </div>
               </div>
             </div>

@@ -12,7 +12,7 @@ export default function WaypointCard({ item, isSelected, onSelect, onDelete }: W
     return (
         <div
             className={`
-                flex-1 p-5 pr-12 my-1 rounded-2xl cursor-pointer transition-all duration-300 border relative
+                flex-1 p-5 pr-12 my-1 rounded-2xl cursor-pointer transition-all duration-300 border relative min-w-0
                 ${isSelected 
                     ? 'bg-background-1 border-accent-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] -translate-y-0.5' 
                     : 'bg-background-1/40 border-grass hover:border-accent-0/30 hover:bg-background-1 hover:shadow-sm'}
@@ -30,17 +30,17 @@ export default function WaypointCard({ item, isSelected, onSelect, onDelete }: W
                         {item.memo || "Enter details..."}
                     </div>
                 </div>
-                {/* 画像が設定されている場合のみ表示 */}
-                {item.image && (
+                {/* 画像が設定されている場合のみ表示（先頭のサムネイルを使用） */}
+                {item.images && item.images.length > 0 && (
                     <div className="ml-3 shrink-0">
                         <div className="w-12 h-12 rounded-lg bg-grass overflow-hidden">
-                            <img src={item.image} alt="" className="w-full h-full object-cover" />
+                            <img src={item.images[0]} alt="" className="w-full h-full object-cover" />
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* 
+            {/*
               削除ボタン:
               - 常に右側の固定位置（中央）に配置
               - 親要素（group/item）にホバーした時のみ表示される

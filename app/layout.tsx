@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "./globals.css";
 import Header from "@/app/_components/layout/templates/header";
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
@@ -35,7 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/*この階層でHeaderとMainを定義する。モバイルでのoverflowの制御もここで行う。このwrapperのrefが必要な場合は別コンポーネントとして切り分ける可能性もある。*/}
-        <div className={'w-[100svw] h-[100svh] overflow-y-scroll bg-background-1'}>
+        <div className={'min-h-[100dvh] bg-background-1'}>
           <ScrollDetector/>
           <Header/>
           <Main>{children}</Main>

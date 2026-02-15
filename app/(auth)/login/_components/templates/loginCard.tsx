@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import {FaGoogle} from "react-icons/fa";
 import {useState} from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/auth/supabase/client";
 
 export default function LoginCard() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,20 @@ export default function LoginCard() {
   const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {}
+
+  const handleGoogleLogin = async () => {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+    }
+  };
 
   return (
       <motion.div
@@ -21,7 +36,7 @@ export default function LoginCard() {
             stiffness: 200, // バネの硬さ
             damping: 20, // 減衰（大きいと揺れが少ない）
           }}
-          className="w-full h-full flex flex-col-reverse md:flex-row rounded-2xl items-center text-foreground-0 relative"
+          className="w-full h-full flex flex-col md:flex-row rounded-2xl items-center justify-center text-foreground-0 relative"
       >
         {/* 左側：画像 + ロゴ + 見出し */}
         <div className="w-full md:w-1/2 md:min-w-[500px] h-full md:h-auto p-3 overflow-hidden flex flex-col justify-center items-center gap-6 md:block hidden @container relative z-10 opacity-100 backdrop-blur-xs">
@@ -117,6 +132,7 @@ export default function LoginCard() {
 
                 <button
                     type="button"
+                    onClick={handleGoogleLogin}
                     className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-foreground-1/30 rounded-md shadow-sm text-sm font-medium text-foreground-0 bg-background-1 hover:bg-background-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
                 >
                   <FaGoogle className="w-5 h-5 text-accent-warning" />

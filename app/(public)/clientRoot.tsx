@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import ContentsSelector from "@/app/(public)/_components/templates/contentsSelector";
 import MapViewerOnLaptop from "@/app/(public)/_components/templates/mapViewerOnLaptop";
 import TopUsersList from "@/app/(public)/_components/templates/topUsersList";
@@ -8,13 +8,14 @@ import TopRoutesList from "@/app/(public)/_components/templates/topRoutesList";
 import RecommendedRoutesList from "@/app/(public)/_components/templates/recommendedRoutesList";
 import PhotoViewer from "@/app/(public)/_components/templates/photoViewer";
 import RouteListBasic from "@/app/(public)/_components/templates/routeListBasic";
-import {GiGreekTemple, GiPaintBrush} from "react-icons/gi";
+import {GiGreekTemple} from "react-icons/gi";
 import {PiForkKnife, PiMountains} from "react-icons/pi";
 import {LuPalette} from "react-icons/lu";
 import {FaRunning} from "react-icons/fa";
 import {IoIosArrowForward} from "react-icons/io";
 import {Route, User} from "@/lib/client/types";
 import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
+import {RouteVisibility} from "@prisma/client";
 
 export type selectedType = 'home' | 'photos' | 'interests' | 'recent' | 'trending'
 
@@ -22,25 +23,97 @@ export default function ClientRoot() {
 
     // Mock users for demo (this week)
     const mockUsers: User[] = [
-        { id: 'u1', name: 'Aki Tanaka', likesThisWeek: 1240, viewsThisWeek: 28120, location: 'Tokyo, JP', bio: 'City explorer and coffee lover.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Nara.jpg' },
-        { id: 'u2', name: 'Kenji Sato', likesThisWeek: 980, viewsThisWeek: 19230, location: 'Osaka, JP', bio: 'Runner and ramen hunter in Kansai.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Tokyo.jpg' },
-        { id: 'u3', name: 'Serene Jane', likesThisWeek: 1570, viewsThisWeek: 32010, location: 'Kyoto, JP', bio: 'History routes and hidden shrines.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/userProfile.jpg' },
-        { id: 'u4', name: 'Yuta Mori', likesThisWeek: 870, viewsThisWeek: 16800, location: 'Sapporo, JP', bio: 'Snowy trails and craft beer enthusiast.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Fuji.jpg' },
-        { id: 'u5', name: 'Hana Suzuki', likesThisWeek: 1430, viewsThisWeek: 29990, location: 'Fukuoka, JP', bio: 'Weekend cyclist and bakery map maker from Japan. And Ive Lived in French since last year. Its great and I love here.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Kyoto.jpg' },
-        { id: 'u6', name: 'Ren Nakamura', likesThisWeek: 760, viewsThisWeek: 14550, location: 'Nagoya, JP', bio: 'Techie who loves riverfront jogs.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
-        { id: 'u7', name: 'Sara Ito', likesThisWeek: 1110, viewsThisWeek: 25040, location: 'Nara, JP', bio: 'Nature walks and deer lover in Nara.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
+        { id: 'u1', name: 'Aki Tanaka', location: 'Tokyo, JP', bio: 'City explorer and coffee lover.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Nara.jpg' },
+        { id: 'u2', name: 'Kenji Sato', location: 'Osaka, JP', bio: 'Runner and ramen hunter in Kansai.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Tokyo.jpg' },
+        { id: 'u3', name: 'Serene Jane', location: 'Kyoto, JP', bio: 'History routes and hidden shrines.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/userProfile.jpg' },
+        { id: 'u4', name: 'Yuta Mori', location: 'Sapporo, JP', bio: 'Snowy trails and craft beer enthusiast.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Fuji.jpg' },
+        { id: 'u5', name: 'Hana Suzuki', location: 'Fukuoka, JP', bio: 'Weekend cyclist and bakery map maker from Japan. And Ive Lived in French since last year. Its great and I love here.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Kyoto.jpg' },
+        { id: 'u6', name: 'Ren Nakamura', location: 'Nagoya, JP', bio: 'Techie who loves riverfront jogs.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
+        { id: 'u7', name: 'Sara Ito', location: 'Nara, JP', bio: 'Nature walks and deer lover in Nara.', profileImage: '/mockImages/userIcon_1.jpg', profileBackgroundImage: '/mockImages/Hokkaido.jpg' },
     ]
 
+    // Fetch routes from API
+    const [routes, setRoutes] = useState<Route[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    // Mock routes for demo (this week)
-    const mockTopRoutes: Route[] = [
-        { id: 'r1', title: 'Kyoto Old Town Walk', user: mockUsers[0], likesThisWeek: 1280, viewsThisWeek: 18200, category: 'History', thumbnailImageSrc: '/mockImages/Kyoto.jpg' },
-        { id: 'r2', title: 'Okinawa Beach Hopping', user: mockUsers[1], likesThisWeek: 990, viewsThisWeek: 15420, category: 'Beach', thumbnailImageSrc: '/mockImages/Okinawa.jpg' },
-        { id: 'r3', title: 'Hokkaido Food Trip', user: mockUsers[2], likesThisWeek: 1570, viewsThisWeek: 21030, category: 'Food', thumbnailImageSrc: '/mockImages/Hokkaido.jpg' },
-        { id: 'r4', title: 'Tokyo Night Lights', user: mockUsers[3], likesThisWeek: 870, viewsThisWeek: 16800, category: 'City', thumbnailImageSrc: '/mockImages/Tokyo.jpg' },
-        { id: 'r5', title: 'Nara Temple Circuit', user: mockUsers[4], likesThisWeek: 1430, viewsThisWeek: 19990, category: 'Culture', thumbnailImageSrc: '/mockImages/Nara.jpg' },
-        { id: 'r6', title: 'Mount Fuji Scenic Drive', user: mockUsers[5], likesThisWeek: 760, viewsThisWeek: 14550, category: 'Nature', thumbnailImageSrc: '/mockImages/Fuji.jpg' },
-    ]
+    //記事のfetch処理。fetch関数のwrapperやエラー等のハンドリングについては後ほど実行する。
+    useEffect(() => {
+        let cancelled = false;
+        async function load() {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch('/api/v1/routes?take=12', { cache: 'no-store' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data?.error || 'Failed to load routes');
+                if (!cancelled) setRoutes(data.routes as Route[]);
+            } catch (e: any) {
+                if (!cancelled) setError(e?.message ?? 'Failed to load');
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        }
+        load();
+        return () => { cancelled = true };
+    }, []);
+
+    // UIのエラーを回避するためにモック記事をfetchしたroutesに追加する
+    const paddedRoutes = useMemo<Route[]>(() => {
+        const base: Route[] = routes ?? [];
+        if (base.length >= 6) return base;
+        // pad with placeholders
+        const placeholdersNeeded = 6 - base.length;
+        const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => ({
+            id: `placeholder-${i}`,
+            title: `Sample Route ${i + 1}`,
+            description: 'This is a sample description for the placeholder route.',
+            visibility: RouteVisibility.PUBLIC,
+            authorId: mockUsers[i % mockUsers.length].id,
+            author: {
+                ...mockUsers[i % mockUsers.length],
+                profileImage: mockUsers[i % mockUsers.length].profileImage ? { id: `img-u-${i}`, url: mockUsers[i % mockUsers.length].profileImage, type: 'USER_PROFILE', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: mockUsers[i % mockUsers.length].id, routeThumbId: null } : null,
+                gender: null,
+                age: null,
+            } as any,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            categoryId: 1,
+            category: { id: 1, name: 'General' },
+            thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: `placeholder-${i}` } as any,
+            likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ id: `like-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: `u${(j % 7) + 1}` })),
+            views: Array.from({ length: 100 + i * 20 }).map((_, j) => ({ id: `view-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: null })),
+            routeNodes: [
+                {
+                    id: `node-${i}-1`,
+                    routeId: `placeholder-${i}`,
+                    spotId: 'kyoto-station',
+                    details: 'Start from Kyoto Station',
+                    spot: {
+                        id: 'kyoto-station',
+                        name: 'Kyoto Station',
+                        longitude: 135.7588,
+                        latitude: 34.9858,
+                        source: 'mock'
+                    }
+                },
+                {
+                    id: `node-${i}-2`,
+                    routeId: `placeholder-${i}`,
+                    spotId: 'nara-park',
+                    details: 'Visit Nara Park',
+                    spot: {
+                        id: 'nara-park',
+                        name: 'Nara Park',
+                        longitude: 135.8430,
+                        latitude: 34.6851,
+                        source: 'mock'
+                    }
+                }
+            ] as any
+        }));
+        return [...base, ...placeholders];
+    }, [routes]);
 
     const [selected, setSelected] = useState<selectedType>('home')
     return (
@@ -50,11 +123,18 @@ export default function ClientRoot() {
                 switch (selected) {
                     case 'home': return (
                         <div className={'w-full h-fit flex flex-col items-center gap-8'}>
-                            <MapViewerOnLaptop routes={mockTopRoutes}/>
-                            <MapViewerOnMobile routes={mockTopRoutes}/>
-                            <TopRoutesList routes={mockTopRoutes} />
-                            <TopUsersList users={mockUsers}/>
-                            <RecommendedRoutesList routes={mockTopRoutes}/>
+                            {error && <div className={'w-full text-red-500 text-sm'}>{error}</div>}
+                            {loading ? (
+                                <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>
+                            ) : (
+                                <>
+                                    <MapViewerOnLaptop routes={paddedRoutes}/>
+                                    <MapViewerOnMobile routes={paddedRoutes}/>
+                                    <TopRoutesList routes={paddedRoutes} />
+                                    <TopUsersList users={mockUsers}/>
+                                    <RecommendedRoutesList routes={paddedRoutes}/>
+                                </>
+                            )}
                         </div>
                     )
                     case 'photos': return (
@@ -73,7 +153,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
@@ -86,7 +166,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
@@ -99,7 +179,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
@@ -112,11 +192,11 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-2'}>
                                 <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-0 font-bold'}>
+                                    <div className={'flex flex-row items中心 gap-2 text-foreground-0 font-bold'}>
                                         <FaRunning className={'text-3xl'}/>
                                         <h2 className={'text-2xl'}>Activity</h2>
                                     </div>
@@ -125,7 +205,7 @@ export default function ClientRoot() {
                                         <IoIosArrowForward className={'text-xl'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={mockTopRoutes}/>
+                                <RouteListBasic routes={paddedRoutes}/>
                             </div>
                         </div>
                     )

@@ -35,7 +35,6 @@ export default function FeaturedUserCard(props: Props) {
       {/* Content */}
         <div className={'w-full h-full absolute top-0 left-0 z-10 p-4'}>
             <div className={'flex flex-col items-end absolute bottom-4 right-4 max-w-full'}>
-                <p className={'text-xl text-gray-300 font-bold'}>{props.user.likesThisWeek} new followers</p>
                 <div className={'flex items-center gap-2'}>
                     <div className={'flex flex-col items-end'}>
                         <h3 className={'md:text-4xl text-2xl text-white font-bold'}>

@@ -41,7 +41,7 @@ export function UserCard(props: Props) {
             </div>
             <div className="mt-1 flex items-center gap-2 text-foreground-1">
               <HiHeart className="w-4 h-4" />
-              <span className="text-xs">{props.user.likesThisWeek} new followers</span>
+              <span className="text-xs">Followers: 17k</span>
             </div>
           </div>
         </div>

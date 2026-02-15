@@ -1,7 +1,9 @@
+import Link from 'next/link';
 import React from 'react'
 import { BiHash } from 'react-icons/bi'
 import {HiHeart} from 'react-icons/hi2'
 import {Route} from "@/lib/client/types";
+import Image from 'next/image';
 
 export type Props = {
   route: Route
@@ -11,16 +13,19 @@ export type Props = {
 export default function FeaturedRouteCard(props: Props) {
 
   return (
-    <button
+    <Link
+      href={`/routes/${props.route.id}`}
       onClick={props.onClick}
-      className="group relative w-full h-full rounded-2xl shadow-md hover:shadow-lg overflow-hidden"
+      className="group relative block w-full h-full rounded-2xl shadow-md hover:shadow-lg overflow-hidden"
       aria-label={`Top route: ${props.route.title}`}
     >
       {/* Background image */}
-      <img
-        src={props.route.thumbnailImageSrc || '/mockImages/Kyoto.jpg'}
+      <Image
+        src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
         alt={`${props.route.title} background`}
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 duration-300 ease-out"
+        fill
+        className="object-cover group-hover:scale-105 duration-300 ease-out"
+        unoptimized
       />
       {/* Black overlay */}
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
@@ -38,17 +43,17 @@ export default function FeaturedRouteCard(props: Props) {
         <div className="flex flex-col items-end absolute bottom-4 right-4 max-w-full">
           <p className="text-xl text-gray-300 font-bold flex items-center gap-2">
             <HiHeart className="w-5 h-5" />
-            <span className="tabular-nums">{props.route.likesThisWeek}</span>
-            <span className="opacity-80">likes this week</span>
+            <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
+            <span className="opacity-80">likes</span>
           </p>
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-end">
               <h3 className="md:text-4xl text-2xl text-white font-bold">{props.route.title}</h3>
-              <p className="text-sm text-gray-300">by @{props.route.user.name} ・ {props.route.category}</p>
+              <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name}</p>
             </div>
           </div>
         </div>
       </div>
-    </button>
+    </Link>
   )
 }
