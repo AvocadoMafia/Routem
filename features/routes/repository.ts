@@ -1,37 +1,12 @@
 import { getPrisma } from "@/lib/config/server";
 import { RouteVisibility } from "@prisma/client";
-import { GetRoutesSchema } from "./schema";
+import { Prisma } from "@prisma/client";
 
 export const routesRepository = {
-    findRoutes: async (query: GetRoutesSchema, where: any) => {
+    findRoutes: async (args: Prisma.RouteFindManyArgs) => {
         const prisma = getPrisma();
-        return prisma.route.findMany({
-            where: where,
-            take: query.limit,
-            orderBy: {
-                createdAt: "asc",
-            },
-            include: {
-                category: true,
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                        profileImage: true,
-                    },
-                },
-                thumbnail: true,
-                routeNodes: {
-                    include: {
-                        spot: true,
-                        transitSteps: true,
-                        images: true,
-                    },
-                },
-            },
-        });
+        return prisma.route.findMany(args);
     },
-
     createRoute: async (data: any) => {
         const prisma = getPrisma();
         const { title, description, category, visibility, userId, nodes, thumbnail } = data;

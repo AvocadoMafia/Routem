@@ -15,10 +15,11 @@ import { PostRouteSchema } from "@/features/routes/schema";
 export async function GET(req: NextRequest) {
   return handleRequest(async () => {
     const supabase = await createClient();
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const safe_user = error ? null : user;
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
-    const data = await routesService.getRoutes(session?.user ?? null, parsed_params);
+    const data = await routesService.getRoutes(safe_user, parsed_params);
     return NextResponse.json(data);
   });
 }

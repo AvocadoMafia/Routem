@@ -15,15 +15,47 @@ export const routesService = {
     getRoutes: async (user: User | null, query: GetRoutesSchema): Promise<FindRoutes> => {
         const isOwner = user?.id === query.authorId;
 
-        const where = {
+        // Prismaのネストの中にundefinedを入れるとエラーになるため、visibilityの条件を分岐させて、防いでいる。
+        let visibility_condition: Prisma.RouteWhereInput = {};
+        if (!isOwner) {
+            visibility_condition = { visibility: RouteVisibility.PUBLIC };
+        } else if (query.visibility) {
+            visibility_condition = { visibility: query.visibility };
+        }
+
+        const where: Prisma.RouteWhereInput = {
             authorId: query.authorId,
-            createdAt: { gt: query.createdAfter },
-            ...(isOwner ? {} : { visibility: "PUBLIC" }),
+            // ここも同様に、createdAfterがない場合はundefinedが入るとエラーになるため、条件分岐させている。
+            ...(query.createdAfter && { createdAt: { gte: query.createdAfter } }),
+            ...visibility_condition,
         };
 
         return routesRepository.findRoutes(
-            query,
-            where,
+            {
+                where,
+                take: query.limit,
+                orderBy: {
+                    createdAt: "asc",
+                },
+                include: {
+                    category: true,
+                    author: {
+                        select: {
+                            id: true,
+                            name: true,
+                            profileImage: true,
+                        },
+                    },
+                    thumbnail: true,
+                    routeNodes: {
+                        include: {
+                            spot: true,
+                            transitSteps: true,
+                            images: true,
+                        },
+                    },
+                },
+            }
         );
     },
 
