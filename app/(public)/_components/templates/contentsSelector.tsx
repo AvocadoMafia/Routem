@@ -1,7 +1,5 @@
 'use client'
 
-import {headerHeightAtom} from "@/lib/client/atoms";
-import {useAtomValue} from "jotai";
 import { HiMap, HiSparkles, HiFlag, HiClock, HiFire } from "react-icons/hi2";
 import {selectedType} from "@/app/(public)/clientRoot";
 import {HiHome} from "react-icons/hi";
@@ -20,10 +18,9 @@ type Props = {
 }
 
 export default function ContentsSelector(props: Props) {
-    const headerHeight = useAtomValue(headerHeightAtom)
 
     return (
-        <div className={'w-[100svw] h-14 sticky z-40 bg-background-1 flex items-center justify-start md:justify-center gap-2 md:gap-8 px-4 border-b border-grass/20 overflow-x-auto no-scrollbar'} style={{ top: `${headerHeight}px` }}>
+        <div className={'w-[100svw] h-14 sticky top-0 z-40 bg-background-1 flex items-center justify-start md:justify-center gap-2 md:gap-8 px-4 border-b border-grass/20 overflow-x-auto no-scrollbar'}>
             {SELECTOR_ITEMS.map((item) => (
                 <button
                     key={item.label}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { RouteItem } from "@/lib/client/types";
 import { Plus, Settings as SettingsIcon, Loader2 } from "lucide-react";
 import WaypointCard from "../ingredients/WaypointCard";
@@ -6,7 +6,8 @@ import TransportationCard from "../ingredients/TransportationCard";
 import RouteNode from "../ingredients/RouteNode";
 import InlineAddMenu from "../ingredients/InlineAddMenu";
 import { useAtomValue } from "jotai";
-import { headerHeightAtom } from "@/lib/client/atoms";
+import { scrollDirectionAtom } from "@/lib/client/atoms";
+import { motion } from "framer-motion";
 
 interface NodeLinkDiagramProps {
     items: RouteItem[];
@@ -40,8 +41,23 @@ export default function NodeLinkDiagram({
     const [addingAfterId, setAddingAfterId] = useState<string | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // グローバルヘッダーの高さ（ページ共通ヘッダー分のオフセット）
-    const headerHeight = useAtomValue(headerHeightAtom);
+    const scrollDirection = useAtomValue(scrollDirectionAtom);
+    const [yOffset, setYOffset] = useState(0);
+
+    const updateOffset = useCallback(() => {
+        if (window.innerWidth >= 768) {
+            setYOffset(60);
+        } else {
+            setYOffset(50);
+        }
+    }, []);
+
+    useEffect(() => {
+        updateOffset();
+        window.addEventListener('resize', updateOffset);
+        return () => window.removeEventListener('resize', updateOffset);
+    }, [updateOffset]);
+
 
     // メニューの外側をクリックした時にメニューを閉じる
     useEffect(() => {
@@ -55,7 +71,7 @@ export default function NodeLinkDiagram({
     }, []);
 
     return (
-        <div className="w-full md:w-[450px] h-full bg-background-0/50 backdrop-blur-md border-b md:border-b-0 md:border-r border-grass flex flex-col no-scrollbar overflow-y-auto">
+        <div className="w-full md:w-[450px] h-full bg-background-0/50 backdrop-blur-md border-b md:border-b-0 md:border-r border-grass flex flex-col no-scrollbar overflow-y-scroll">
             {/* Sticky header for diagram actions */}
             <div
                 className="sticky top-0 z-20 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 md:hidden flex items-center justify-between"
@@ -182,7 +198,16 @@ export default function NodeLinkDiagram({
             </div>
 
             {/* 下部の「経由地を追加」ボタン */}
-            <div className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky mt-auto z-50" style={{ bottom: `${headerHeight}px` }}>
+            <motion.div
+                className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky bottom-0 mt-auto z-50"
+                animate={{
+                    bottom: scrollDirection === 'down' ? 0 : yOffset
+                }}
+                transition={{
+                    duration: 0.3,
+                    ease: "easeOut"
+                }}
+            >
                 <button
                     onClick={onAddWaypoint}
                     className="w-full py-4 bg-accent-0 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-0/90 active:scale-[0.98] transition-all shadow-[0_10px_20px_rgba(45,31,246,0.2)]"
@@ -190,7 +215,7 @@ export default function NodeLinkDiagram({
                     <Plus size={20} strokeWidth={3} />
                     <span>Add Waypoint</span>
                 </button>
-            </div>
+            </motion.div>
         </div>
     )
 }

@@ -3,7 +3,7 @@
 
 export default function DashBoardRootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <div className={'w-full h-fit'}>
+        <div className={'w-full h-full'}>
             {children}
         </div>
     );

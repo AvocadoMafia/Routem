@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/app/_components/layout/templates/header";
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
 import Main from "@/app/_components/layout/templates/main";
+import RootClient from "@/app/rootClient";
 
 //uxo
 
@@ -35,12 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/*この階層でHeaderとMainを定義する。モバイルでのoverflowの制御もここで行う。このwrapperのrefが必要な場合は別コンポーネントとして切り分ける可能性もある。*/}
-        <div className={'min-h-[100dvh] bg-background-1'}>
-          <ScrollDetector/>
-          <Header/>
-          <Main>{children}</Main>
-        </div>
+      <RootClient>{children}</RootClient>
       </body>
     </html>
   );
