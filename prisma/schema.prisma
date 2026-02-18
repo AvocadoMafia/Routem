@@ -165,7 +165,8 @@ enum RouteVisibility {
 
 // 画像の利用目的
 enum ImageType {
-  USER_PROFILE // ユーザーアイコン
+  USER_ICON // ユーザーアイコン
+  USER_BG //ユーザー背景画像
   ROUTE_THUMBNAIL // ルートのサムネイル
   NODE_IMAGE // 地点（経由地）の写真
   OTHER // その他

@@ -7,13 +7,13 @@ const initialUser: User = {
     bio: '',
     age: 20,
     gender: 'NON_BINARY',
-    profileImage: {
+    profileIcon: {
         id: 'initial_user',
         url: '/images/next.svg',
         status: 'ADOPTED',
         type: 'USER_PROFILE',
-        createdAt: Date,
-        updatedAt: Date,
+        createdAt: new Date(),
+        updatedAt: new Date(),
         uploaderId: string | null,
         routeNodeId: string | null,
         userProfileId: string | null,
