@@ -36,6 +36,9 @@ export default function NavigatorList() {
                 <MdEdit className={'text-xl'}/>
                 <span className={'md:block hidden'}>Edit Route</span>
             </motion.button>
+            <motion.button>
+                {/*<img className={'text-xl'} src={}*/}
+            </motion.button>
         </div>
     )
 }

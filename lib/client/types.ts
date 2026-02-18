@@ -11,16 +11,18 @@ export type Route = Prisma.RouteGetPayload<{
     }
 }>
 
-export type User = {
-    id: string;
-    name: string;
-    bio?: string;
-    location?: string;
-    /** URL of the user's profile icon image */
-    profileImage?: string;
-    /** URL of the user's profile background image */
-    profileBackgroundImage?: string;
-};
+export type User = Prisma.UserGetPayload<{
+    include: {
+        bio: true,
+        icon: true,
+        background: true,
+        gender: true,
+        age: true,
+        uploadedImages: true,
+        routes: true,
+        likes: true,
+    }
+}>
 
 export type Waypoint = {
     id: string;
