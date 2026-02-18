@@ -23,6 +23,8 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/auth/auth-code-error`)
       }
 
+      console.log(userData)
+
       const supabaseUser = userData.user
 
       // 初回ログイン時のみ作成（ただし upsert なので冪等）
@@ -31,18 +33,40 @@ export async function GET(request: Request) {
         (supabaseUser.user_metadata?.full_name as string | undefined) ??
         (supabaseUser.email ? supabaseUser.email.split('@')[0] : 'user')
 
-      await getPrisma().user.upsert({
+      const iconUrl =
+          userData.user.user_metadata.avatar_url ||
+          userData.user.user_metadata.picture
+
+      console.log(iconUrl)
+
+      const user = await getPrisma().user.upsert({
         where: { id: supabaseUser.id },
         create: {
           id: supabaseUser.id,
           name: displayName,
           bio: undefined,
+          icon: {
+            create: {
+              url: iconUrl,
+              status: 'ADOPTED',
+              type: 'USER_ICON',
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              uploaderId: supabaseUser.id,
+            }
+          },
           // location/profileImage 等も必要ならここで user_metadata から埋める
         },
         update: {
           // 初回以降に同期したい項目だけ更新する（例：nameを毎回上書きしたくないなら空でOK）
+          //すでにユーザーを登録済みの場合は、アイコンがアップデートされないので注意
         },
+        include: {
+          icon: true
+        }
       })
+
+      console.log(user)
 
       const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development'

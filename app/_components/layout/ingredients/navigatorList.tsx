@@ -3,9 +3,12 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {MdEdit, MdExplore, MdInfo, MdLogin} from "react-icons/md";
+import {userStore} from "@/lib/client/stores/userStore";
 
 
 export default function NavigatorList() {
+
+    const user = userStore(store => store.user);
 
     const router = useRouter();
 
@@ -36,9 +39,13 @@ export default function NavigatorList() {
                 <MdEdit className={'text-xl'}/>
                 <span className={'md:block hidden'}>Edit Route</span>
             </motion.button>
-            <motion.button>
-                {/*<img className={'text-xl'} src={}*/}
-            </motion.button>
+
+            {!!user && (
+                <motion.button className={'bg-background-1 text-foreground-0 py-1 px-2 box-border rounded-full flex gap-2 text-lg items-center hover:theme-reversed transition-colors duration-150 cursor-pointer'}>
+                    <img className={'w-6 h-6 rounded-full'} src={user.icon?.url}/>
+                    <span className={'md:block hidden'}>{user.name}</span>
+                </motion.button>
+            )}
         </div>
     )
 }

@@ -6,6 +6,7 @@ import Header from "@/app/_components/layout/templates/header";
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
 import Main from "@/app/_components/layout/templates/main";
 import RootClient from "@/app/rootClient";
+import UserInitializer from "@/app/_components/layout/templates/userInitializer";
 
 //uxo
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
       <RootClient>{children}</RootClient>
+      <UserInitializer/>
       </body>
     </html>
   );
