@@ -124,6 +124,7 @@ export const routesService = {
             uploaderId: user.id,
         } : null;
 
+
         // repository層のcreateRouteを呼び出す
         return await routesRepository.createRoute({
             title,

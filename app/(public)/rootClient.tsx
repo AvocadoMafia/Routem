@@ -19,7 +19,7 @@ import {RouteVisibility} from "@prisma/client";
 
 export type selectedType = 'home' | 'photos' | 'interests' | 'recent' | 'trending'
 
-export default function ClientRoot() {
+export default function RootClient() {
 
     // Mock users for demo (this week)
     const mockUsers: User[] = [
@@ -44,10 +44,10 @@ export default function ClientRoot() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch('/api/v1/routes?take=12', { cache: 'no-store' });
+                const res = await fetch('/api/v1/routes?limit=12', { cache: 'no-store' });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data?.error || 'Failed to load routes');
-                if (!cancelled) setRoutes(data.routes as Route[]);
+                if (!cancelled) setRoutes(data as Route[]);
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load');
             } finally {
@@ -117,7 +117,7 @@ export default function ClientRoot() {
 
     const [selected, setSelected] = useState<selectedType>('home')
     return (
-        <div className={'w-full max-w-[1600px] h-fit flex flex-col items-center md:px-8 px-4 md:pb-8 pb-4 gap-8 relative'}>
+        <div className={'w-full max-w-[1600px] h-full flex flex-col items-center md:px-8 px-4 md:pb-8 pb-4 gap-8 relative'}>
             <ContentsSelector selected={selected} setSelected={setSelected}/>
             {(() => {
                 switch (selected) {

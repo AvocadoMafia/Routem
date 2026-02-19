@@ -41,6 +41,11 @@ export default function ScrollDetector() {
         }
 
         const handleWheel = (e: WheelEvent) => {
+            // 特定の要素内（マップなど）でのスクロールは無視する
+            if (e.target instanceof Element && e.target.closest('[data-ignore-scroll-detector]')) {
+                return;
+            }
+
             // 水平スクロールの優先判定
             if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
                 if (e.deltaX > 0) {
@@ -61,6 +66,12 @@ export default function ScrollDetector() {
         }
 
         const handleTouchStart = (e: TouchEvent) => {
+            // 特定の要素内（マップなど）でのタッチは無視する
+            if (e.target instanceof Element && e.target.closest('[data-ignore-scroll-detector]')) {
+                touchStart.current = null;
+                return;
+            }
+
             touchStart.current = {
                 x: e.touches[0].clientX,
                 y: e.touches[0].clientY

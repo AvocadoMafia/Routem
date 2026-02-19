@@ -4,8 +4,9 @@ import { Prisma } from "@prisma/client";
 
 export const routesRepository = {
     findRoutes: async (args: Prisma.RouteFindManyArgs) => {
-        const prisma = getPrisma();
-        return prisma.route.findMany(args);
+        const returned = await getPrisma().route.findMany(args);
+        console.log(returned)
+        return returned
     },
     createRoute: async (data: any) => {
         const prisma = getPrisma();
@@ -34,7 +35,12 @@ export const routesRepository = {
             if (thumbnail) {
                 await tx.image.create({
                     data: {
-                        ...thumbnail,
+                        url: thumbnail.url,
+                        type: 'ROUTE_THUMBNAIL',
+                        status: 'ADOPTED',
+                        uploader: {
+                            connect: { id: userId },
+                        },
                         routeThumb: {
                             connect: { id: route.id },
                         },
@@ -79,7 +85,12 @@ export const routesRepository = {
                     for (const img of n.images) {
                         await tx.image.create({
                             data: {
-                                ...img,
+                                url: img.url,
+                                type: 'NODE_IMAGE',
+                                status: 'ADOPTED',
+                                uploader: {
+                                    connect: { id: userId },
+                                },
                                 routeNode: {
                                     connect: { id: node.id },
                                 },
