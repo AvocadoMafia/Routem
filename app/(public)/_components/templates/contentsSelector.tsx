@@ -20,7 +20,7 @@ type Props = {
 export default function ContentsSelector(props: Props) {
 
     return (
-        <div className={'w-fit h-fit sticky top-2 z-40 bg-background-1/60 backdrop-blur-sm flex items-center justify-start md:justify-center gap-2 md:gap-8 px-8 py-2 border-1 border-background-1 overflow-x-auto no-scrollbar rounded-full'}>
+        <div className={'w-fit h-fit sticky top-2 z-40 bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-2 md:gap-8 px-8 py-2 border-2 border-background-1 overflow-x-auto no-scrollbar rounded-full'}>
             {SELECTOR_ITEMS.map((item) => (
                 <button
                     key={item.label}
