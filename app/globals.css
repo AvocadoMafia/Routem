@@ -1,18 +1,19 @@
 @import "tailwindcss";
 
-:root {
+/* Light mode (明示的にlightクラスが付いたとき) */
+.light {
   --background-0: #f8f9ff;
   --background-1: #ffffff;
   --foreground-0: #48484e;
   --foreground-1: #63636e;
-  --accent-0: #2d1ff6;
-  --accent-1: #ff7dd8;
+  --accent-0: #ff6363;
+  --accent-1: #41DFE1;
   --accent-2: #55d2c3;
   --grass: #e6e8ed;
   --accent-warning: #fb123e;
 }
 
-@utility theme-reversed {
+.light .theme-reversed {
   --background-1: #232323;
   --background-0: #292929;
   --foreground-0: #ededed;
@@ -22,18 +23,73 @@
   --accent-2: #55d2c3;
   --grass: #474747;
   --accent-warning: #fb123e;
+}
 
-  @variant dark {
-    --background-0: #f8f9ff;
-    --background-1: #ffffff;
-    --foreground-0: #48484e;
-    --foreground-1: #63636e;
-    --accent-0: #2d1ff6;
-    --accent-1: #ff7dd8;
-    --accent-2: #55d2c3;
-    --grass: #e6e8ed;
-    --accent-warning: #fb123e;
-  }
+.light .hover-theme-reversed {
+}
+
+.light .hover-theme-reversed:hover {
+  --background-1: #232323;
+  --background-0: #292929;
+  --foreground-0: #ededed;
+  --foreground-1: #aeaeae;
+  --accent-0: #7b56ff;
+  --accent-1: #ff5999;
+  --accent-2: #55d2c3;
+  --grass: #474747;
+  --accent-warning: #fb123e;
+}
+
+/* Dark mode */
+.dark {
+  --background-1: #232323;
+  --background-0: #292929;
+  --foreground-0: #ededed;
+  --foreground-1: #aeaeae;
+  --accent-0: #7b56ff;
+  --accent-1: #ff5999;
+  --accent-2: #55d2c3;
+  --grass: #474747;
+  --accent-warning: #fb123e;
+}
+
+.dark .theme-reversed {
+  --background-0: #f8f9ff;
+  --background-1: #ffffff;
+  --foreground-0: #48484e;
+  --foreground-1: #63636e;
+  --accent-0: #ff6363;
+  --accent-1: #41DFE1;
+  --accent-2: #55d2c3;
+  --grass: #e6e8ed;
+  --accent-warning: #fb123e;
+}
+
+.dark .hover-theme-reversed {
+}
+
+.dark .hover-theme-reversed:hover {
+  --background-0: #f8f9ff;
+  --background-1: #ffffff;
+  --foreground-0: #48484e;
+  --foreground-1: #63636e;
+  --accent-0: #ff6363;
+  --accent-1: #41DFE1;
+  --accent-2: #55d2c3;
+  --grass: #e6e8ed;
+  --accent-warning: #fb123e;
+}
+
+@theme inline {
+  --color-background-0: var(--background-0);
+  --color-background-1: var(--background-1);
+  --color-foreground-0: var(--foreground-0);
+  --color-foreground-1: var(--foreground-1);
+  --color-accent-0: var(--accent-0);
+  --color-accent-1: var(--accent-1);
+  --color-accent-2: var(--accent-2);
+  --color-grass: var(--grass);
+  --color-accent-warning: var(--accent-warning);
 }
 
 @utility no-scrollbar {
@@ -105,8 +161,8 @@
   --background-1: #ffffff;
   --foreground-0: #48484e;
   --foreground-1: #63636e;
-  --accent-0: #2d1ff6;
-  --accent-1: #ff7dd8;
+  --accent-0: #ff6363;
+  --accent-1: #41DFE1;
   --accent-2: #55d2c3;
   --grass: #e6e8ed;
   --accent-warning: #fb123e;

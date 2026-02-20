@@ -20,15 +20,15 @@ type Props = {
 export default function ContentsSelector(props: Props) {
 
     return (
-        <div className={'w-[100svw] h-14 sticky top-0 z-40 bg-background-1 flex items-center justify-start md:justify-center gap-2 md:gap-8 px-4 border-b border-grass/20 overflow-x-auto no-scrollbar'}>
+        <div className={'w-[100svw] h-fit sticky top-0 z-40 bg-background-0 backdrop-blur-sm flex items-center justify-start md:justify-center gap-2 md:gap-8 px-4 py-2 border-b border-grass/20 overflow-x-auto no-scrollbar'}>
             {SELECTOR_ITEMS.map((item) => (
                 <button
                     key={item.label}
-                    className={`flex items-center justify-center md:w-28 gap-1.5 px-3 py-2 hover:bg-background-0 transition-colors cursor-pointer group whitespace-nowrap border-b-2 border-background-1 ${props.selected === item.selected ? 'border-foreground-1' : ''}`}
+                    className={`flex items-center justify-center md:w-28 gap-1.5 px-3 py-2 transition-colors cursor-pointer group whitespace-nowrap rounded-full  ${props.selected === item.selected ? 'bg-accent-1' : ''}`}
                     onClick={() => {props.setSelected(item.selected as selectedType)}}
                 >
-                    <item.icon className={'w-5 h-5 text-foreground-1'} />
-                    <span className={'text-sm font-medium text-foreground-1 group-hover:text-foreground-0 transition-colors'}>
+                    <item.icon className={`w-5 h-5 text-accent-0`} />
+                    <span className={`text-sm font-bold text-foreground-0 transition-colors ${props.selected === item.selected ? 'theme-reversed' : ''}`}>
                         {item.label}
                     </span>
                 </button>
