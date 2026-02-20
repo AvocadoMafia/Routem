@@ -3,12 +3,11 @@ import {useRouter} from "next/navigation";
 export default function PageTitle() {
   const router = useRouter()
   return (
-      <div className={'w-fit h-fit flex flex-row items-center'}>
-        <img className={'h-12'} src={'/logo.svg'} alt={'Routem'}/>
-        <h1 className={'text-3xl text-foreground-0 font-bold cursor-pointer'} onClick={() => router.push('/')}>
+      <div className={'w-fit h-fit flex flex-row items-center gap-2 cursor-pointer'} onClick={() => router.push('/')}>
+        <img className={'h-8 w-8'} src={'/logo.svg'} alt={'Routem'}/>
+        <h1 className={'text-xl text-foreground-0 font-bold tracking-tight'}>
           Routem
         </h1>
       </div>
   )
-
 }

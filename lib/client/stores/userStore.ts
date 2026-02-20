@@ -6,7 +6,7 @@ const initialUser: User = {
     name: '',
     bio: '',
     age: 20,
-    gender: 'NON_BINARY',
+    gender: 'NON_BINARY' as any,
     icon: {
         id: 'initial_user',
         url: '/images/next.svg',

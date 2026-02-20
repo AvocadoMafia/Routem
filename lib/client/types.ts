@@ -13,11 +13,8 @@ export type Route = Prisma.RouteGetPayload<{
 
 export type User = Prisma.UserGetPayload<{
     include: {
-        bio: true,
         icon: true,
         background: true,
-        gender: true,
-        age: true,
         uploadedImages: true,
         routes: true,
         likes: true,
