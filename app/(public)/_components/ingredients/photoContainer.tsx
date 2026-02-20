@@ -61,7 +61,7 @@ export default function PhotoContainer(props: { test: number }) {
         "
             >
                 <div className={'flex items-center gap-2 text-white text-md sm:text-lg md:text-3xl font-bold'}>
-                    <LuMapPin/>
+                    <LuMapPin className={'text-accent-0'}/>
                     <span>Kyoto, Japan</span>
                 </div>
                 <p className={'text-gray-200 text-sm sm:text-md md:text-2xl font-bold line-clamp-2'}>from Kyoto Old Town Walk</p>
