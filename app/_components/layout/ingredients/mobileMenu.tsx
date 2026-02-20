@@ -34,6 +34,7 @@ const MENU_ITEMS = {
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const user = userStore(store => store.user)
+    const isLoggedIn = user && user.id !== ''
     const router = useRouter()
     const [openAccordion, setOpenAccordion] = useState<string | null>(null)
 
@@ -58,6 +59,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                         onClick={onClose}
                         className={'fixed inset-0 bg-black/50 z-[200]'}
                         onWheel={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
                     />
                     {/* Sidebar */}
                     <motion.div
@@ -67,6 +71,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                         className={'fixed top-0 left-0 bottom-0 w-[85%] max-w-[320px] bg-background-1 z-[201] shadow-xl flex flex-col h-[100svh]'}
                         onWheel={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
                     >
                         <div className={'p-4 flex items-center justify-between border-b border-grass flex-shrink-0'}>
                             <div className={'flex items-center gap-2'}>
@@ -84,7 +91,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                         <div className={'flex-1 overflow-y-auto p-4 space-y-8 no-scrollbar overscroll-contain'}>
                             {/* User Info Card */}
                             <div className={'bg-transparent rounded-2xl p-0'}>
-                                {user ? (
+                                {isLoggedIn ? (
                                     <div className={'space-y-4'}>
                                         <div 
                                             className={'flex items-center gap-4 cursor-pointer hover:bg-background-0 rounded-xl p-2 transition-colors'}
@@ -189,7 +196,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             </div>
                         </div>
 
-                        {user && (
+                        {isLoggedIn && (
                             <div className={'p-4 border-t border-grass flex-shrink-0'}>
                                 <button 
                                     className={'w-full flex items-center justify-center gap-2 py-3 text-foreground-1 hover:text-accent-warning font-medium transition-colors cursor-pointer'}

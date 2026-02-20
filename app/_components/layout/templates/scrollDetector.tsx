@@ -3,14 +3,21 @@
 import {useEffect, useRef} from "react";
 import {useAtom} from "jotai";
 import {scrollDirectionAtom} from "@/lib/client/atoms";
+import {usePathname} from "next/navigation";
 
 export default function ScrollDetector() {
     const [, setScrollDirection] = useAtom(scrollDirectionAtom)
+    const pathname = usePathname()
     const touchStart = useRef<{ x: number, y: number } | null>(null)
     const lastScrollY = useRef(0)
     const lastScrollDirection = useRef<'up' | 'down' | 'left' | 'right'>('up')
     const lastToggleTime = useRef(0)
     const COOLDOWN_MS = 500
+
+    useEffect(() => {
+        setScrollDirection('up')
+        lastScrollDirection.current = 'up'
+    }, [pathname, setScrollDirection])
 
     useEffect(() => {
         const canToggle = (nextDirection: 'up' | 'down') => {

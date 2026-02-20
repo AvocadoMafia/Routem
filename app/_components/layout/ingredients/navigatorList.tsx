@@ -11,6 +11,7 @@ import { userStore } from "@/lib/client/stores/userStore";
 export default function NavigatorList() {
 
     const user = userStore(store => store.user);
+    const isLoggedIn = user && user.id !== '';
     const router = useRouter();
 
     const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -71,20 +72,22 @@ export default function NavigatorList() {
             </div>
 
             <div className={'flex items-center gap-6 ml-auto'}>
-                <motion.button 
-                    onClick={() => router.push('/articles/new')} 
-                    className={'bg-accent-1 text-white py-2.5 px-5 lg:px-5 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2'}
-                    whileHover={{scale:1.02}}
-                    whileTap={{scale:0.98}}
-                >
-                    <span className={'lg:block hidden'}>Edit Route</span>
-                    <AiOutlineEdit className={'text-xl'}/>
-                </motion.button>
+                {isLoggedIn && (
+                    <motion.button 
+                        onClick={() => router.push('/articles/new')} 
+                        className={'bg-accent-1 text-white py-1.5 px-4 lg:px-4 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2'}
+                        whileHover={{scale:1.02}}
+                        whileTap={{scale:0.98}}
+                    >
+                        <span className={'lg:block hidden'}>Edit Route</span>
+                        <AiOutlineEdit className={'text-xl'}/>
+                    </motion.button>
+                )}
 
-                {!user ? (
+                {!isLoggedIn ? (
                     <motion.button 
                         onClick={() => router.push('/login')} 
-                        className={'bg-background-1 text-foreground-0 py-2.5 px-5 border border-grass rounded-lg font-medium hover:bg-grass transition-colors cursor-pointer hidden lg:block'}
+                        className={'bg-background-1 text-foreground-0 py-1.5 px-4 border border-grass rounded-lg font-medium hover:bg-grass transition-colors cursor-pointer'}
                         whileHover={{scale:1.02}}
                         whileTap={{scale:0.98}}
                     >
@@ -93,7 +96,7 @@ export default function NavigatorList() {
                 ) : (
                     <motion.button 
                         onClick={() => router.push('/users/me')}
-                        className={'flex items-center gap-2 py-1 px-1 lg:pr-3 rounded-full hover:bg-grass transition-colors cursor-pointer hidden lg:flex'}
+                        className={'flex items-center gap-2 py-1 px-1 lg:pr-3 rounded-full hover:bg-grass transition-colors cursor-pointer'}
                         whileHover={{scale:1.02}}
                     >
                         <img className={'w-8 h-8 rounded-full object-cover'} src={user.icon?.url} alt={user.name}/>

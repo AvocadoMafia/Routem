@@ -15,7 +15,7 @@ export default function UserInitializer() {
 
             console.log(user)
 
-            if (user) {
+            if (user && 'id' in user) {
                 setUser(user)
             }
         }
