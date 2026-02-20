@@ -28,7 +28,7 @@ export default function ContentsSelector(props: Props) {
                     onClick={() => {props.setSelected(item.selected as selectedType)}}
                 >
                     <item.icon className={`w-5 h-5 ${props.selected === item.selected ? 'text-white' : 'text-accent-0'}`}/>
-                    <span className={`text-sm font-semibold text-foreground-0 transition-colors md:block ${props.selected === item.selected ? 'text-white block' : 'hidden'}`}>
+                    <span className={`text-sm font-semibold text-foreground-1 transition-colors md:block ${props.selected === item.selected ? 'text-white block' : 'hidden'}`}>
                         {item.label}
                     </span>
                 </button>

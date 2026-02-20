@@ -40,7 +40,7 @@ export default function RouteViewer(props: Props) {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 px-3 py-1 text-sm font-medium text-rose-500">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-0/15 px-3 py-1 text-sm font-medium text-accent-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
