@@ -33,7 +33,6 @@ export default function ContentsSelector(props: Props) {
                         {isSelected && (
                             <motion.div
                                 layoutId="active-pill"
-                                layout="x"
                                 className="absolute inset-0 bg-accent-1 rounded-full shadow-sm z-0"
                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                             />

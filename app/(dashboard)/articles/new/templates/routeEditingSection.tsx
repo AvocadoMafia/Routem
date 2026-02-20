@@ -24,7 +24,7 @@ export default function RouteEditingSection({ selectedItem, onUpdateItem }: Rout
     const isWaypoint = selectedItem.type === 'waypoint';
 
     return (
-        <div className="w-full h-full flex-1 bg-background-1 p-10">
+        <div className="w-full h-full md:min-h-0 min-h-[100svh] flex-1 bg-background-1 p-10 ">
             <div className="max-w-3xl mx-auto space-y-12 pb-20">
                 {/* ヘッダーセクション: 現在編集中のアイテムの種類を表示 */}
                 <div className="flex items-end justify-between border-b border-grass pb-6">

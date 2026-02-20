@@ -10,7 +10,7 @@ export default async function RouteDetailPage({ params }: { params: { id: string
     where: { id: resolvedParams.id },
     include: {
       author: {
-        include: { profileImage: true }
+        include: { icon: true }
       },
       thumbnail: true,
       category: true,

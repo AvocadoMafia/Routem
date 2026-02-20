@@ -7,7 +7,7 @@ export default function UserAvatar({ url, name }: { url?: string; name?: string 
       animate={{ scale: 1, opacity: 1 }}
       className="w-32 h-32 md:w-40 md:h-40 rounded-full p-[4px] bg-linear-to-r from-accent-0 to-accent-1"
     >
-      <div className="w-full h-full rounded-full bg-background-1 p-0.5">
+      <div className="w-full h-full rounded-full bg-background-1">
         <img 
           src={url || 'https://i.pravatar.cc/150?u=fallback'} 
           alt={name || 'user'} 

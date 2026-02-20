@@ -7,6 +7,7 @@ import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
 import Main from "@/app/_components/layout/templates/main";
 import RootClient from "@/app/rootClient";
 import UserInitializer from "@/app/_components/layout/templates/userInitializer";
+import { ThemeProvider } from "@/app/_components/providers/themeProvider";
 
 //uxo
 
@@ -29,12 +30,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${roboto.variable} font-sans antialiased`}
       >
-      <RootClient>{children}</RootClient>
-      <UserInitializer/>
+      <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+      >
+        <RootClient>{children}</RootClient>
+        <UserInitializer/>
+      </ThemeProvider>
       </body>
     </html>
   );

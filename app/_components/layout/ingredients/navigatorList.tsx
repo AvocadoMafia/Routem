@@ -73,7 +73,7 @@ export default function NavigatorList() {
             <div className={'flex items-center gap-6 ml-auto'}>
                 <motion.button 
                     onClick={() => router.push('/articles/new')} 
-                    className={'bg-accent-1 text-background-1 py-2.5 px-5 lg:px-5 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2'}
+                    className={'bg-accent-1 text-white py-2.5 px-5 lg:px-5 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2'}
                     whileHover={{scale:1.02}}
                     whileTap={{scale:0.98}}
                 >
