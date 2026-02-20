@@ -21,7 +21,7 @@ export default function SignupCard() {
             stiffness: 200,
             damping: 20,
           }}
-          className="w-full h-full flex flex-col md:flex-row-reverse items-center justify-center rounded-2xl text-foreground-0 relative"
+          className="w-full h-full flex flex-col md:flex-row-reverse items-center justify-center rounded-2xl text-white relative"
       >
         {/* 右側（入れ替え後：左側）：画像 + ロゴ + 見出し */}
         <div className="w-full md:w-1/2 md:min-w-[500px] h-full md:h-auto p-3 overflow-hidden flex flex-col justify-center items-center gap-6 md:block hidden @container relative z-10 opacity-100 backdrop-blur-xs">
