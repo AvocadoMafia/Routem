@@ -11,8 +11,8 @@ export default function RouteCardHorizontal(props: Props){
   const bgSrc = props.route.thumbnail?.url  ?? '/map.png';
   return (
     <div
-      className={`relative w-full max-w-2xl overflow-hidden rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all cursor-pointer ${
-        props.isFocused ? 'ring-2 ring-primary border-transparent' : 'bg-background-1'
+      className={`relative w-full max-w-2xl overflow-hidden rounded-lg border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
+        props.isFocused ? 'border-accent-0/50' : 'bg-background-1 border-transparent'
       }`}
       style={{ minHeight: '96px' }}
       onClick={props.onClick}

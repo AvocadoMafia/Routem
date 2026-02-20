@@ -31,7 +31,7 @@ export default function RouteCardBasic(props: Props) {
                     <div className="flex items-center gap-2">
                         <div className="relative w-8 h-8">
                             <Image
-                                src={props.route.author.profileImage?.url || "/mockImages/userIcon_2.jpg"}
+                                src={props.route.author.icon?.url || "/mockImages/userIcon_2.jpg"}
                                 alt={props.route.author.name}
                                 fill
                                 className="rounded-full object-cover bg-accent-0/10"
@@ -40,14 +40,14 @@ export default function RouteCardBasic(props: Props) {
                         </div>
                         <h4 className="text-sm font-semibold truncate text-foreground-0">{props.route.author.name}</h4>
                     </div>
-                    <div className="flex items-center gap-2 text-foreground-1">
-                        <div className="flex items-center gap-2">
-                            <HiHeart className="w-4 h-4" />
-                            <span className="text-xs">{props.route.likes?.length ?? 0} likes</span>
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                            <HiHeart className="w-4 h-4 text-accent-0" />
+                            <span className="text-xs text-foreground-1">{props.route.likes?.length ?? 0} likes</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <HiEye className="w-4 h-4" />
-                            <span className="text-xs">{props.route.views?.length ?? 0} views</span>
+                        <div className="flex items-center gap-1">
+                            <HiEye className="w-4 h-4 text-accent-1" />
+                            <span className="text-xs text-foreground-1">{props.route.views?.length ?? 0} views</span>
                         </div>
                     </div>
                 </div>

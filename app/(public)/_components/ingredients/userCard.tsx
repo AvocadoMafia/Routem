@@ -1,6 +1,7 @@
 import React from 'react';
 import { HiHeart, HiEye } from 'react-icons/hi2';
 import {User} from "@/lib/client/types";
+import {IoPersonAdd, IoPersonAddOutline} from "react-icons/io5";
 
 
 export type Props = {
@@ -21,7 +22,7 @@ export function UserCard(props: Props) {
         {/* Top section: profile background image only */}
         <div className="relative h-32 overflow-hidden">
           <img
-            src={props.user.profileBackgroundImage || "/mockImages/userProfile.jpg"}
+            src={props.user.background?.url || "/mockImages/userProfile.jpg"}
             alt="user header background"
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 duration-300 ease-out"
           />
@@ -30,7 +31,7 @@ export function UserCard(props: Props) {
         {/* Middle section: icon, rank, name, metric */}
         <div className="md:p-3 p-1.5 flex items-center md:gap-3 gap-1.5">
           <img
-            src={props.user.profileImage || "/mockImages/userIcon_1.jpg"}
+            src={props.user.icon?.url || "/mockImages/userIcon_1.jpg"}
             alt={`${props.user.name} icon`}
             className="md:w-11 w-8 md:h-11 h-8 rounded-full object-cover bg-accent-0/10"
           />
@@ -39,9 +40,9 @@ export function UserCard(props: Props) {
               <span className="text-xs px-1.5 py-0.5 rounded-md bg-grass/20 text-foreground-1">#{props.rank}</span>
               <h4 className="text-sm font-semibold truncate text-foreground-0">{props.user.name}</h4>
             </div>
-            <div className="mt-1 flex items-center gap-2 text-foreground-1">
-              <HiHeart className="w-4 h-4" />
-              <span className="text-xs">Followers: 17k</span>
+            <div className="mt-1 flex items-center gap-1">
+              <IoPersonAdd className="w-4 h-4 text-accent-1" />
+              <span className="text-xs text-foreground-1">Followers: 17k</span>
             </div>
           </div>
         </div>

@@ -41,9 +41,9 @@ export default function RouteRankCard(props: Props) {
               <span className="text-xs px-1.5 py-0.5 rounded-md bg-grass/20 text-foreground-1">#{props.rank}</span>
               <h4 className="text-sm font-semibold truncate text-foreground-0">{props.route.title}</h4>
             </div>
-            <div className="mt-1 flex items-center gap-2 text-foreground-1">
-              <HiHeart className="w-4 h-4" />
-              <span className="text-xs tabular-nums">{props.route.likes?.length ?? 0} likes</span>
+            <div className="mt-1 flex items-center gap-1">
+              <HiHeart className="w-4 h-4 text-accent-0" />
+              <span className="text-xs tabular-nums text-foreground-1">{props.route.likes?.length ?? 0} likes</span>
             </div>
           </div>
         </div>

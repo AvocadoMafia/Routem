@@ -13,7 +13,7 @@ export default function RouteViewer(props: Props) {
   const route = props.focusedIndex !== null ? props.routes[props.focusedIndex] : null;
 
   return (
-    <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll bg-background-1/50 p-6 border-l border-grass/20'}>
+    <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll bg-background-1/50 p-6 border-l border-grass/20 no-scrollbar'}>
       {route ? (
         <>
           <Link href={`/routes/${route.id}`} className="block group">
@@ -63,12 +63,12 @@ export default function RouteViewer(props: Props) {
             <div className="mt-4 flex flex-col gap-3">
               <h3 className="text-lg font-semibold text-foreground-1">Route Info</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-1/40 text-xs">Created</span>
+                <div className="p-3 rounded-lg bg-accent-1/10 border border-grass/10">
+                  <span className="block text-accent-1 text-xs">Created</span>
                   <span className="font-medium text-foreground-1">{new Date(route.createdAt).toLocaleDateString()}</span>
                 </div>
-                <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-1/40 text-xs">Waypoints</span>
+                <div className="p-3 rounded-lg bg-accent-1/10 border border-grass/10">
+                  <span className="block text-accent-1 text-xs">Waypoints</span>
                   <span className="font-medium text-foreground-1">{route.routeNodes.length} stops</span>
                 </div>
               </div>
