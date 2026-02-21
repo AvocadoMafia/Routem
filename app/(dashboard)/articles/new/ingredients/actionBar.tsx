@@ -29,7 +29,7 @@ export default function ActionBar({
                 <div className="flex items-center gap-3">
                     {!isSettingsComplete ? (
                             <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2 text-red-500 bg-red-50 px-3 py-1.5 rounded-full border border-red-200 animate-pulse w-fit">
+                                <div className="flex items-center gap-2 text-accent-0 px-3 py-1.5 rounded-full border animate-pulse w-fit">
                                     <AlertCircle size={16} />
                                     <span className="text-xs font-bold tracking-tight italic">Publication Requirements Not Met</span>
                                 </div>

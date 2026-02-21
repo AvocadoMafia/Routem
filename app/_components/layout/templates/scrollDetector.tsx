@@ -3,14 +3,23 @@
 import {useEffect, useRef} from "react";
 import {useAtom} from "jotai";
 import {scrollDirectionAtom} from "@/lib/client/atoms";
+import {usePathname} from "next/navigation";
 
 export default function ScrollDetector() {
     const [, setScrollDirection] = useAtom(scrollDirectionAtom)
+    const pathname = usePathname()
     const touchStart = useRef<{ x: number, y: number } | null>(null)
     const lastScrollY = useRef(0)
     const lastScrollDirection = useRef<'up' | 'down' | 'left' | 'right'>('up')
     const lastToggleTime = useRef(0)
     const COOLDOWN_MS = 500
+
+    useEffect(() => {
+        setScrollDirection('up')
+        lastScrollDirection.current = 'up'
+        lastScrollY.current = 0
+        lastToggleTime.current = Date.now() // 遷移直後のクールダウンを強制
+    }, [pathname, setScrollDirection])
 
     useEffect(() => {
         const canToggle = (nextDirection: 'up' | 'down') => {
@@ -25,8 +34,23 @@ export default function ScrollDetector() {
             return false
         }
 
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY
+        const handleScroll = (e: Event) => {
+            // 特定の要素内（メニューなど）でのスクロールは無視する
+            if (e.target instanceof Element && e.target.closest('[data-ignore-scroll-detector]')) {
+                return;
+            }
+
+            const target = e.target;
+            let currentScrollY = 0;
+
+            if (target instanceof HTMLElement) {
+                currentScrollY = target.scrollTop;
+            } else if (target === document) {
+                currentScrollY = window.scrollY;
+            } else {
+                return;
+            }
+
             const diff = currentScrollY - lastScrollY.current
             const threshold = 5 // 微小なスクロールでのチャタリング防止
 
@@ -115,13 +139,13 @@ export default function ScrollDetector() {
             touchStart.current = null
         }
 
-        window.addEventListener('scroll', handleScroll, { passive: true })
+        window.addEventListener('scroll', handleScroll, { passive: true, capture: true })
         window.addEventListener('wheel', handleWheel, { passive: true })
         window.addEventListener('touchstart', handleTouchStart, { passive: true })
         window.addEventListener('touchend', handleTouchEnd, { passive: true })
 
         return () => {
-            window.removeEventListener('scroll', handleScroll)
+            window.removeEventListener('scroll', handleScroll, { capture: true })
             window.removeEventListener('wheel', handleWheel)
             window.removeEventListener('touchstart', handleTouchStart)
             window.removeEventListener('touchend', handleTouchEnd)

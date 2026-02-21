@@ -115,7 +115,7 @@ export default function MapViewerOnLaptop(props: Props) {
                                         "line-cap": "round"
                                     }}
                                     paint={{
-                                        "line-color": "#2D1FF6",
+                                        "line-color": "red",
                                         "line-width": 4,
                                         "line-opacity": 0.6
                                     }}

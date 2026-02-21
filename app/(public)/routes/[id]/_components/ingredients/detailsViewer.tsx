@@ -26,7 +26,7 @@ export default function DetailsViewer({
   return (
     <div
       ref={scrollContainerRef}
-      className={`w-full h-full overflow-y-scroll px-4 pt-4 pb-40 flex flex-col gap-16 transition-all duration-500 ${
+      className={`w-full h-full overflow-y-scroll px-8 pt-4 pb-40 flex flex-col gap-16 transition-all duration-500 ${
         viewMode === "details"
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-12 pointer-events-none invisible max-md:hidden max-md:h-0 max-md:overflow-hidden"

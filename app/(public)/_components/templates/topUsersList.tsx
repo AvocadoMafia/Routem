@@ -2,8 +2,8 @@
 
 import FeaturedUserCard from '@/app/(public)/_components/ingredients/featuredUserCard'
 import { User } from "@/lib/client/types"
-import RouteRankCard from "@/app/(public)/_components/ingredients/routeRankCard";
-import {UserCard} from "@/app/(public)/_components/ingredients/userCard";
+import RouteCardGraphical from "@/app/_components/common/templates/routeCardGraphical";
+import {UserCardGraphical} from "@/app/_components/common/templates/userCardGraphical";
 
 
 type Props = {
@@ -22,16 +22,16 @@ export default function TopUsersList(props: Props) {
           <FeaturedUserCard user={props.users[0]}/>
         </div>
         <div className="col-span-1 block order-2 md:order-4">
-          <UserCard user={props.users[1]} rank={2}/>
+          <UserCardGraphical user={props.users[1]} rank={2}/>
         </div>
         <div className="col-span-1 block order-3 md:order-3">
-          <UserCard user={props.users[2]} rank={3}/>
+          <UserCardGraphical user={props.users[2]} rank={3}/>
         </div>
         <div className="col-span-1 block md:hidden lg:block order-4 md:order-2">
-          <UserCard user={props.users[3]} rank={4}/>
+          <UserCardGraphical user={props.users[3]} rank={4}/>
         </div>
         <div className="col-span-1 block md:hidden xl:block order-5 md:order-1">
-          <UserCard user={props.users[4]} rank={5}/>
+          <UserCardGraphical user={props.users[4]} rank={5}/>
         </div>
       </div>
     </div>

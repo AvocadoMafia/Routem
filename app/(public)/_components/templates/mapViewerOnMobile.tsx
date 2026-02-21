@@ -167,7 +167,7 @@ export default function MapViewerOnMobile(props: Props) {
                                     <div className="relative w-8 h-8">
                                         <Image
                                             className="rounded-full"
-                                            src={route.author.profileImage?.url || "/mockImages/userIcon_1.jpg"}
+                                            src={route.author.icon?.url || "/mockImages/userIcon_1.jpg"}
                                             alt=""
                                             fill
                                             unoptimized
@@ -177,7 +177,7 @@ export default function MapViewerOnMobile(props: Props) {
                                     <span>・ {route.category?.name}</span>
                                 </div>
 
-                                <div className="w-fit flex items-center px-2 py-1 gap-2 text-rose-500 bg-rose-500/10 rounded-full">
+                                <div className="w-fit flex items-center px-2 py-1 gap-2 text-accent-0 bg-accent-0/10 rounded-full">
                                     <HiHeart />
                                     <span className="text-nowrap">
                                     {route.likes?.length ?? 0} likes

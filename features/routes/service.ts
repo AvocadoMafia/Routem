@@ -43,7 +43,7 @@ export const routesService = {
                         select: {
                             id: true,
                             name: true,
-                            profileImage: true,
+                            icon: true,
                         },
                     },
                     thumbnail: true,

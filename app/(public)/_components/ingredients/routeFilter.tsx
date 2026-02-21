@@ -28,17 +28,32 @@ export default function RouteFilter() {
                                 width: { xs: 200, md: 220 },
                                 '& .MuiOutlinedInput-root': {
                                     backgroundColor: 'var(--background-0)',
-                                    borderRadius: 1,
+                                    borderRadius: '8px',
                                     '& fieldset': { border: 'none' },
                                     '&:hover fieldset': { border: 'none' },
                                     '&.Mui-focused fieldset': { border: 'none' }
+                                },
+                                '& .MuiInputBase-input': {
+                                    color: 'var(--foreground-0)'
+                                },
+                                '& .MuiInputBase-input::placeholder': {
+                                    color: 'var(--foreground-1)'
+                                },
+                                '& .MuiInputAdornment-root': {
+                                    color: 'var(--foreground-1)'
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: 'var(--foreground-1)'
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: 'var(--foreground-1)'
                                 }
                             }}
                             InputLabelProps={{ shrink: true }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <HiMapPin className={'w-4 h-4 text-foreground-1/70'} />
+                                        <HiMapPin className={'w-4 h-4'} style={{ color: 'var(--foreground-1)', opacity: 0.7 }} />
                                     </InputAdornment>
                                 )
                             }}
@@ -47,26 +62,38 @@ export default function RouteFilter() {
 
                     {/* カテゴリ */}
                     <FormControl size="small" sx={{ width: { xs: 200, md: 220 } }}>
-                        <InputLabel id="category-label" shrink>Category</InputLabel>
+                        <InputLabel id="category-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>Category</InputLabel>
                         <Select
                             labelId="category-label"
                             value={category}
                             label="Category"
                             onChange={(e) => setCategory(e.target.value as string)}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        backgroundColor: 'var(--background-1)',
+                                        color: 'var(--foreground-0)',
+                                        border: '1px solid var(--grass)'
+                                    }
+                                }
+                            }}
                             input={
                                 <OutlinedInput
                                     notched
                                     sx={{
                                         backgroundColor: 'var(--background-0)',
-                                        borderRadius: 1,
+                                        borderRadius: '8px',
                                         '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                                         '& fieldset': { border: 'none' },
                                         '&:hover fieldset': { border: 'none' },
-                                        '&.Mui-focused fieldset': { border: 'none' }
+                                        '&.Mui-focused fieldset': { border: 'none' },
+                                        '& .MuiSelect-select': { color: 'var(--foreground-0)' },
+                                        '& .MuiSelect-icon': { color: 'var(--foreground-1)' },
+                                        '& .MuiInputAdornment-root': { color: 'var(--foreground-1)' }
                                     }}
                                     startAdornment={
                                         <InputAdornment position="start">
-                                            <HiTag className={'w-4 h-4 text-foreground-1/70'} />
+                                            <HiTag className={'w-4 h-4'} style={{ color: 'var(--foreground-1)', opacity: 0.7 }} />
                                         </InputAdornment>
                                     }
                                 />
@@ -93,16 +120,34 @@ export default function RouteFilter() {
                             width: { xs: 200, md: 220 },
                             '& .MuiOutlinedInput-root': {
                                 backgroundColor: 'var(--background-0)',
-                                borderRadius: 1,
+                                borderRadius: '8px',
                                 '& fieldset': { border: 'none' },
                                 '&:hover fieldset': { border: 'none' },
                                 '&.Mui-focused fieldset': { border: 'none' }
+                            },
+                            '& .MuiInputBase-input': {
+                                color: 'var(--foreground-0)'
+                            },
+                            '& .MuiInputBase-input::placeholder': {
+                                color: 'var(--foreground-1)'
+                            },
+                            '& .MuiInputAdornment-root': {
+                                color: 'var(--foreground-1)'
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: 'var(--foreground-1)'
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: 'var(--foreground-1)'
+                            },
+                            '& .MuiInputAdornment-root .MuiTypography-root': {
+                                color: 'var(--foreground-1)'
                             }
                         }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <HiArrowsRightLeft className={'w-4 h-4 text-foreground-1/70'} />
+                                    <HiArrowsRightLeft className={'w-4 h-4'} style={{ color: 'var(--foreground-1)', opacity: 0.7 }} />
                                 </InputAdornment>
                             ),
                             endAdornment: <InputAdornment position="end">km</InputAdornment>
@@ -112,26 +157,38 @@ export default function RouteFilter() {
 
                     {/* 居住地・国フィルター */}
                     <FormControl size="small" sx={{ width: { xs: 200, md: 220 } }}>
-                        <InputLabel id="resident-label" shrink>Resident Area</InputLabel>
+                        <InputLabel id="resident-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>Resident Area</InputLabel>
                         <Select
                             labelId="resident-label"
                             value={resident}
                             label="Resident Area"
                             onChange={(e) => setResident(e.target.value as string)}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        backgroundColor: 'var(--background-1)',
+                                        color: 'var(--foreground-0)',
+                                        border: '1px solid var(--grass)'
+                                    }
+                                }
+                            }}
                             input={
                                 <OutlinedInput
                                     notched
                                     sx={{
                                         backgroundColor: 'var(--background-0)',
-                                        borderRadius: 4,
+                                        borderRadius: '8px',
                                         '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                                         '& fieldset': { border: 'none' },
                                         '&:hover fieldset': { border: 'none' },
-                                        '&.Mui-focused fieldset': { border: 'none' }
+                                        '&.Mui-focused fieldset': { border: 'none' },
+                                        '& .MuiSelect-select': { color: 'var(--foreground-0)' },
+                                        '& .MuiSelect-icon': { color: 'var(--foreground-1)' },
+                                        '& .MuiInputAdornment-root': { color: 'var(--foreground-1)' }
                                     }}
                                     startAdornment={
                                         <InputAdornment position="start">
-                                            <HiGlobeAsiaAustralia className={'w-4 h-4 text-foreground-1/70'} />
+                                            <HiGlobeAsiaAustralia className={'w-4 h-4'} style={{ color: 'var(--foreground-1)', opacity: 0.7 }} />
                                         </InputAdornment>
                                     }
                                 />
@@ -145,26 +202,38 @@ export default function RouteFilter() {
 
                     {/* 並べ替え */}
                     <FormControl size="small" sx={{ minWidth: { xs: 200, md: 220 }, marginLeft: 'auto' }}>
-                        <InputLabel id="sort-label" shrink>Sort by</InputLabel>
+                        <InputLabel id="sort-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>Sort by</InputLabel>
                         <Select
                             labelId="sort-label"
                             value={sort}
                             label="Sort by"
                             onChange={(e) => setSort(e.target.value as string)}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        backgroundColor: 'var(--background-1)',
+                                        color: 'var(--foreground-0)',
+                                        border: '1px solid var(--grass)'
+                                    }
+                                }
+                            }}
                             input={
                                 <OutlinedInput
                                     notched
                                     sx={{
                                         backgroundColor: 'var(--background-0)',
-                                        borderRadius: 1,
+                                        borderRadius: '8px',
                                         '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                                         '& fieldset': { border: 'none' },
                                         '&:hover fieldset': { border: 'none' },
-                                        '&.Mui-focused fieldset': { border: 'none' }
+                                        '&.Mui-focused fieldset': { border: 'none' },
+                                        '& .MuiSelect-select': { color: 'var(--foreground-0)' },
+                                        '& .MuiSelect-icon': { color: 'var(--foreground-1)' },
+                                        '& .MuiInputAdornment-root': { color: 'var(--foreground-1)' }
                                     }}
                                     startAdornment={
                                         <InputAdornment position="start">
-                                            <HiArrowsUpDown className={'w-4 h-4 text-foreground-1/70'} />
+                                            <HiArrowsUpDown className={'w-4 h-4'} style={{ color: 'var(--foreground-1)', opacity: 0.7 }} />
                                         </InputAdornment>
                                     }
                                 />

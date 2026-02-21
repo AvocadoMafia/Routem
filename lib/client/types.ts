@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 
 export type Route = Prisma.RouteGetPayload<{
     include: {
-        author: { include: { profileImage: true } },
+        author: { include: { icon: true } },
         thumbnail: true,
         likes: true,
         views: true,
@@ -11,16 +11,15 @@ export type Route = Prisma.RouteGetPayload<{
     }
 }>
 
-export type User = {
-    id: string;
-    name: string;
-    bio?: string;
-    location?: string;
-    /** URL of the user's profile icon image */
-    profileImage?: string;
-    /** URL of the user's profile background image */
-    profileBackgroundImage?: string;
-};
+export type User = Prisma.UserGetPayload<{
+    include: {
+        icon: true,
+        background: true,
+        uploadedImages: true,
+        routes: true,
+        likes: true,
+    }
+}>
 
 export type Waypoint = {
     id: string;
@@ -43,6 +42,11 @@ export type Transportation = {
     duration?: number; // 移動時間（分）
     distance?: number; // 移動距離（km）
 };
+
+export interface ErrorScheme {
+    message: string;
+    code: string;
+}
 
 /**
  * ルートを構成する各要素（経由地または交通手段）の共通型
