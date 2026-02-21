@@ -1,6 +1,6 @@
 import TabNavigation from '../ingredients/tabNavigation'
 import ProfileStats from '../ingredients/profileStats'
-import RouteCard, { RouteItem } from '../ingredients/routeCard'
+import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import { MdFavoriteBorder } from 'react-icons/md'
 import React from 'react'
 
@@ -15,16 +15,18 @@ export default function UserProfileContent({
   activeTab: Tab
   onChangeTab: (t: Tab) => void
   stats: { routes: number; followers: number | string; following: number | string }
-  routes: RouteItem[]
+  routes: any[]
 }) {
   return (
-    <div className="max-w-[1200px] mx-auto px-6">
+    <div className="w-full h-fit max-w-[1200px] mx-auto px-6">
       <ProfileStats routes={stats.routes} followers={stats.followers} following={stats.following} />
       <TabNavigation activeTab={activeTab} onChange={onChangeTab} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {activeTab === 'routes' && routes.map((route) => (
-          <RouteCard key={route.id} route={route} />
+          <div key={route.id} className="aspect-[4/5]">
+            <RouteCardGraphical route={route} />
+          </div>
         ))}
 
         {activeTab === 'likes' && (

@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${roboto.variable} font-sans antialiased`}
+        className={`${roboto.variable} font-sans`}
       >
       <ThemeProvider
           attribute="class"

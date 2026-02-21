@@ -1,6 +1,8 @@
 import React from 'react'
 import {BiHash} from "react-icons/bi";
 import {User} from "@/lib/client/types";
+import Image from 'next/image';
+import {IoPersonAdd} from "react-icons/io5";
 
 export type Props = {
   user: User
@@ -12,43 +14,65 @@ export default function FeaturedUserCard(props: Props) {
   return (
     <button
       onClick={props.onClick}
-      className="group relative w-full h-full rounded-2xl shadow-md hover:shadow-lg overflow-hidden"
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-background-0 p-2 text-left"
       aria-label={`Top user: ${props.user.name}`}
     >
-      {/* Background image */}
-      <img
-        src={props.user.profileBackgroundImage || "/mockImages/userProfile.jpg"}
-        alt="featured background"
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 duration-300 ease-out"
-      />
-      {/* Black overlay */}
-      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+      {/* Background Image with Margin (via container padding) */}
+      <div className="relative w-full h-full rounded-lg overflow-hidden">
+        <Image
+          src={props.user.background?.url || "/mockImages/userProfile.jpg"}
+          alt={`${props.user.name} background`}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          unoptimized
+        />
 
-        {/* Rank badge */}
-        <div className="absolute top-4 left-4 z-10">
-            <div className="flex items-center gap-1 px-2.5 py-1.5 text-white text-sm font-medium rounded-full backdrop-blur-md bg-white/10 ring-1 ring-white/15 shadow-sm">
-                <BiHash className="opacity-90" />
-                <span>1st</span>
+        {/* Gradient Mask Overlay (Top to Bottom) with Smooth Blur - Inside the image container */}
+        <div className="absolute inset-0 rounded-lg
+      backdrop-blur-2xl bg-black/50
+      [mask-image:linear-gradient(to_bottom,transparent_10%,black_90%)]
+      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_90%)]" />
+
+        {/* Content Container (Padding around edges) - Inside the image container */}
+        <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
+          {/* Top section: Rank on the right */}
+          <div className="flex justify-end items-start">
+            <div className="theme-reversed flex items-center justify-center w-10 h-10 bg-background-1 text-foreground-0 text-xs font-bold rounded-full border border-black/10 shadow-sm">
+              1st
             </div>
-        </div>
+          </div>
 
-      {/* Content */}
-        <div className={'w-full h-full absolute top-0 left-0 z-10 p-4'}>
-            <div className={'flex flex-col items-end absolute bottom-4 right-4 max-w-full'}>
-                <div className={'flex items-center gap-2'}>
-                    <div className={'flex flex-col items-end'}>
-                        <h3 className={'md:text-4xl text-2xl text-white font-bold'}>
-                            {props.user.name}
-                        </h3>
-                        <p className={'text-sm text-gray-300'}>
-                            from US・17k followers
-                        </p>
-                    </div>
-                    <img src={props.user.profileImage || '/mockImages/userIcon_1.jpg'} alt={`${props.user.name} icon`} className={'w-11 h-11 rounded-full'}/>
-                </div>
+          {/* Bottom section: User Info */}
+          <div className="flex items-end justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm truncate">
+                {props.user.name}
+              </h3>
+              <div className="flex items-center gap-2 mt-1 text-white/80">
+                <IoPersonAdd className="w-4 h-4 text-accent-0" />
+                <span className="text-sm">17k followers</span>
+                <span className="opacity-60">・</span>
+                <span className="text-sm">from US</span>
+              </div>
+              {props.user.bio && (
+                <p className="text-xs text-white/60 line-clamp-2 mt-2 leading-relaxed max-w-md">
+                  {props.user.bio}
+                </p>
+              )}
             </div>
-        </div>
 
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-black/10 shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+              <Image
+                src={props.user.icon?.url || "/mockImages/userIcon_1.jpg"}
+                alt={`${props.user.name} icon`}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </button>
   )
 }

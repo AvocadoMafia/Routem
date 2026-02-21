@@ -1,7 +1,7 @@
 "use client"
 
 import FeaturedRouteCard from '@/app/(public)/_components/ingredients/featuredRouteCard'
-import RouteRankCard from '@/app/(public)/_components/ingredients/routeRankCard'
+import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import {Route} from "@/lib/client/types";
 
 type Props = {
@@ -20,16 +20,16 @@ export default function TopRoutesList(props: Props) {
           <FeaturedRouteCard route={props.routes[0]}/>
         </div>
         <div className="col-span-1 block">
-          <RouteRankCard route={props.routes[1]} rank={2}/>
+          <RouteCardGraphical route={props.routes[1]} rank={2}/>
         </div>
         <div className="col-span-1 block">
-          <RouteRankCard route={props.routes[2]} rank={3}/>
+          <RouteCardGraphical route={props.routes[2]} rank={3}/>
         </div>
         <div className="col-span-1 block md:hidden lg:block">
-          <RouteRankCard route={props.routes[3]} rank={4}/>
+          <RouteCardGraphical route={props.routes[3]} rank={4}/>
         </div>
         <div className="col-span-1 block md:hidden xl:block">
-          <RouteRankCard route={props.routes[4]} rank={5}/>
+          <RouteCardGraphical route={props.routes[4]} rank={5}/>
         </div>
       </div>
     </div>

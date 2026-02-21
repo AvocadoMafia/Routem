@@ -95,7 +95,7 @@ export default function NavigatorList() {
                     </motion.button>
                 ) : (
                     <motion.button 
-                        onClick={() => router.push('/users/me')}
+                        onClick={() => router.push(`/users/${user.id}`)}
                         className={'flex items-center gap-2 py-1 px-1 lg:pr-3 rounded-full hover:bg-grass transition-colors cursor-pointer'}
                         whileHover={{scale:1.02}}
                     >

@@ -72,7 +72,7 @@ export default function RootClient() {
             authorId: mockUsers[i % mockUsers.length].id,
             author: {
                 ...mockUsers[i % mockUsers.length],
-                profileImage: mockUsers[i % mockUsers.length].profileImage ? { id: `img-u-${i}`, url: mockUsers[i % mockUsers.length].profileImage, type: 'USER_PROFILE', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: mockUsers[i % mockUsers.length].id, routeThumbId: null } : null,
+                profileImage: mockUsers[i % mockUsers.length].icon ? { id: `img-u-${i}`, url: mockUsers[i % mockUsers.length].icon, type: 'USER_PROFILE', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: mockUsers[i % mockUsers.length].id, routeThumbId: null } : null,
                 gender: null,
                 age: null,
             } as any,

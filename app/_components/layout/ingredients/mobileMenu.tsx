@@ -92,16 +92,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             {/* User Info Card */}
                             <div className={'bg-transparent rounded-2xl p-0'}>
                                 {isLoggedIn ? (
-                                    <div className={'space-y-4'}>
+                                    <div className={'space-y-4'} onClick={() => router.push(`/users/${user.id}`)}>
                                         <div 
                                             className={'flex items-center gap-4 cursor-pointer hover:bg-background-0 rounded-xl p-2 transition-colors'}
-                                            onClick={() => handleNavigate('/users/me')}
                                         >
                                             <img className={'w-16 h-16 rounded-full object-cover'} src={user.icon?.url} alt={user.name}/>
                                             <div className={'flex flex-col'}>
                                                 <span className={'font-bold text-xl text-foreground-0'}>{user.name}</span>
-                                                <button 
-                                                    onClick={() => handleNavigate('/users/me')}
+                                                <button
                                                     className={'text-sm text-accent-1 text-left hover:underline'}
                                                 >
                                                     View Profile
