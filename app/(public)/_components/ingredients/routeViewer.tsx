@@ -13,7 +13,7 @@ export default function RouteViewer(props: Props) {
   const route = props.focusedIndex !== null ? props.routes[props.focusedIndex] : null;
 
   return (
-    <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-y-scroll bg-background-1/50 p-6 border-l border-grass/20 no-scrollbar'}>
+    <div className={'flex w-[400px] h-full flex-col gap-6 backdrop-blur-xs overflow-hidden bg-background-1/50 px-6 border-l border-grass/20'}>
       {route ? (
         <>
           <Link href={`/routes/${route.id}`} className="block group">

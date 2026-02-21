@@ -49,7 +49,7 @@ export default function FeaturedUserCard(props: Props) {
                 {props.user.name}
               </h3>
               <div className="flex items-center gap-2 mt-1 text-white/80">
-                <IoPersonAdd className="w-4 h-4 text-accent-0" />
+                <IoPersonAdd className="w-4 h-4 text-accent-1" />
                 <span className="text-sm">17k followers</span>
                 <span className="opacity-60">・</span>
                 <span className="text-sm">from US</span>
