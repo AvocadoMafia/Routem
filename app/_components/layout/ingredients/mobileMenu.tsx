@@ -77,7 +77,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     >
                         <div className={'p-4 flex items-center justify-between border-b border-grass flex-shrink-0'}>
                             <div className={'flex items-center gap-2'}>
-                                <img className={'h-8 w-8'} src={'/logo.svg'} alt={'Routem'}/>
+                                <img className={'h-11 w-11'} src={'/logo.png'} alt={'Routem'}/>
                                 <div className={'w-fit h-fit flex flex-col'}>
                                     <span className={'text-xl font-bold'}>Routem</span>
                                     <span className={'text-xs text-foreground-1/80'}>ver. 1.0β</span>
