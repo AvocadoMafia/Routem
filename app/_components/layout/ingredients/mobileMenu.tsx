@@ -88,7 +88,10 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             </button>
                         </div>
 
-                        <div className={'flex-1 overflow-y-auto p-4 space-y-8 no-scrollbar overscroll-contain'}>
+                        <div 
+                            className={'flex-1 overflow-y-auto p-4 space-y-8 no-scrollbar overscroll-contain'}
+                            data-ignore-scroll-detector
+                        >
                             {/* User Info Card */}
                             <div className={'bg-transparent rounded-2xl p-0'}>
                                 {isLoggedIn ? (
