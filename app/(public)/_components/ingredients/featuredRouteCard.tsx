@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react'
 import { BiHash } from 'react-icons/bi'
-import {HiHeart} from 'react-icons/hi2'
+import {HiHeart, HiClock, HiBanknotes} from 'react-icons/hi2'
 import {Route} from "@/lib/client/types";
 import Image from 'next/image';
 
@@ -31,9 +31,9 @@ export default function FeaturedRouteCard(props: Props) {
 
         {/* Gradient Mask Overlay (Top to Bottom) with Smooth Blur - Inside the image container */}
         <div className="absolute inset-0 rounded-lg
-      backdrop-blur-2xl bg-black/20
-      [mask-image:linear-gradient(to_bottom,transparent_10%,black_90%)]
-      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_90%)]" />
+      backdrop-blur-2xl bg-black/50
+      [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
+      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
 
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
@@ -44,21 +44,34 @@ export default function FeaturedRouteCard(props: Props) {
             </div>
           </div>
 
-          {/* Bottom section: Title and Meta Info */}
-          <div className="space-y-2 flex flex-col items-end">
-            <div className="flex items-center gap-2 drop-shadow-sm">
-              <HiHeart className="w-5 h-5 text-accent-0" />
-              <span className="text-xl font-bold tabular-nums">{props.route.likes?.length ?? 0}</span>
-              <span className="text-sm text-white/80">likes</span>
-            </div>
-            
-            <div className="text-right">
+          {/* Bottom section: Title, Meta, and Detail Chips (styled like RouteCardGraphical) */}
+          <div className="space-y-3">
+            <div className="space-y-1">
               <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-2 text-white">
                 {props.route.title}
               </h3>
-              <p className="text-sm text-white/70 mt-1">
-                by @{props.route.author.name} <span className="opacity-60">・</span> {props.route.category?.name}
-              </p>
+              <div className="flex items-center gap-1.5 truncate mr-2 text-sm text-white/90">
+                <span className="truncate">@{props.route.author.name}</span>
+                <span className="opacity-60">•</span>
+                <span className="truncate">{props.route.category?.name}</span>
+              </div>
+              <div className="flex items-center gap-1 shrink-0 text-xs text-white/80">
+                <HiHeart className="w-4 h-4 text-accent-0" />
+                <span className="tabular-nums font-semibold">{props.route.likes?.length ?? 0}</span>
+                <span className="truncate">new likes</span>
+              </div>
+            </div>
+
+            {/* Duration and Cost area (Button-like) */}
+            <div className="flex gap-2">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
+                <HiClock className="w-4 h-4 text-accent-1" />
+                <span className="text-[11px] font-bold tracking-tight">2.5h</span>
+              </div>
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
+                <HiBanknotes className="w-4 h-4 text-accent-0" />
+                <span className="text-[11px] font-bold tracking-tight">¥3,500</span>
+              </div>
             </div>
           </div>
         </div>

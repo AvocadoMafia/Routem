@@ -53,28 +53,26 @@ export default function RouteCardGraphical(props: Props) {
               <h4 className="text-lg font-bold leading-tight drop-shadow-sm line-clamp-2">
                 {props.route.title}
               </h4>
-              
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 truncate mr-2">
-                  <span className="truncate">@{props.route.author.name}</span>
-                  <span className="opacity-60">•</span>
-                  <span className="truncate">{props.route.category.name}</span>
-                </div>
-                
-                <div className="flex items-center gap-1 shrink-0">
-                  <HiHeart className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums font-semibold">{props.route.likes?.length ?? 0}</span>
-                </div>
+              <div className="flex items-center gap-1.5 truncate mr-2 text-sm text-white/90">
+                <span className="truncate">@{props.route.author.name}</span>
+                <span className="opacity-60">•</span>
+                <span className="truncate">{props.route.category.name}</span>
               </div>
+              <div className="flex items-center gap-1 shrink-0 text-xs text-white/80">
+                <HiHeart className="w-4 h-4 text-accent-0" />
+                <span className="tabular-nums font-semibold">{props.route.likes?.length ?? 0}</span>
+                <span className="truncate">new likes</span>
+              </div>
+
             </div>
 
             {/* Duration and Cost area (Button-like) */}
             <div className="flex gap-2">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner bg-foreground-0/95 text-background-0 group-hover:bg-background-1 group-hover:text-foreground-1 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
                 <HiClock className="w-4 h-4 text-accent-1" />
                 <span className="text-[11px] font-bold tracking-tight">2.5h</span>
               </div>
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner bg-foreground-0/95 text-background-0 group-hover:bg-background-1 group-hover:text-foreground-1 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-accent-0" />
                 <span className="text-[11px] font-bold tracking-tight">¥3,500</span>
               </div>

@@ -35,8 +35,19 @@ export default function FeaturedUserCard(props: Props) {
 
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
-          {/* Top section: Rank on the right */}
-          <div className="flex justify-end items-start">
+          {/* Top section: Follow button on the left, Rank on the right */}
+          <div className="flex justify-between items-start">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Follow logic here
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 text-[#232323] backdrop-blur-md rounded-full hover:bg-accent-1 hover:text-white hover:border-accent-1 transition-all duration-300"
+            >
+              <IoPersonAdd className="w-5 h-5 transition-transform" />
+              <span className="text-sm font-bold tracking-tight">Click to Follow</span>
+            </button>
+
             <div className="theme-reversed flex items-center justify-center w-10 h-10 bg-background-1 text-foreground-0 text-xs font-bold rounded-full border border-black/10 shadow-sm">
               1st
             </div>
