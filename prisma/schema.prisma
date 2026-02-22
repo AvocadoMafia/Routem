@@ -45,16 +45,16 @@ model Image {
   uploader   User?   @relation("UserUploads", fields: [uploaderId], references: [id])
 
   routeNodeId String?    @db.Uuid
-  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id])
+  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id], onDelete: SetNull)
 
   userIconId String? @unique @db.Uuid
   userIcon   User?   @relation("UserIcon", fields: [userIconId], references: [id])
 
   userBackgroundId String? @unique @db.Uuid
   userBackground   User?   @relation("UserBackground", fields: [userBackgroundId], references: [id])
-
-  routeThumbId String? @unique @db.Uuid
-  routeThumb   Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id])
+  // ! s3のクリーンアップをクーロンで行う為に、setNullにしてる
+  routeThumbId     String? @unique @db.Uuid
+  routeThumb       Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id], onDelete: SetNull)
 }
 
 // 地図上の地点（POI）。OSMやMapbox等の出典を保持
@@ -117,7 +117,7 @@ model TransitStep {
   order    Int
 
   routeNodeId String    @db.Uuid
-  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id])
+  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id], onDelete: Cascade)
 }
 
 model Category {
