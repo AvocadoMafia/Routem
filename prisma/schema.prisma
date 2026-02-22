@@ -59,11 +59,11 @@ model Image {
 
 // 地図上の地点（POI）。OSMやMapbox等の出典を保持
 model Spot {
-  id        String @id
+  id        String  @id
   name      String // 名称
-  longitude Float // 経度（EPSG:4326）
-  latitude  Float // 緯度（EPSG:4326）
-  source    String // 由来（例: "osm", "mapbox"）
+  longitude Float? // 経度（EPSG:4326）
+  latitude  Float? // 緯度（EPSG:4326）
+  source    String? // 由来（例: "osm", "mapbox"）
 
   // リレーション
   routeNodes RouteNode[] // 表示用のノード（順序付き）
