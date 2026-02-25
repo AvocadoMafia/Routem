@@ -1,22 +1,43 @@
 import {createServerClient} from "@supabase/ssr";
-import {NextResponse} from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import {getPrisma} from "@/lib/config/server";
 import {createClient} from "@/lib/auth/supabase/server";
+import {handleRequest} from "@/lib/server/handleRequest";
+import {usersService} from "@/features/users/service";
+import {validateParams} from "@/lib/server/validateParams";
+import {UpdateUserSchema, UpdateUserType} from "@/features/users/schema";
 
-export async function GET() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+export async function GET(req: NextRequest) {
+    await handleRequest(async () => {
+        //クライアント生成の過程でユーザー認証も行ってくれる
+        const supabase = await createClient(req);
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+            throw new Error("Unauthorized");
+        }
+        //bodyを含ませる予定はないためとりあえずvalidateなし。いいねしたルートや作成したルート等は別APIからとってくるよてい
+        //prismaからユーザー問い合わせ
+        const prismaUser = await usersService.getUserById(user.id);
 
-    //認証
-    if (!user) {
-        return NextResponse.json({ user: null })
-    }
-
-    //prismaからユーザー問い合わせ
-    const prismaUser = await getPrisma().user.findUnique({
-        where: { id: user.id },
-        include: {icon: true}
+        return NextResponse.json(prismaUser, {status: 200})
     })
+}
 
-    return NextResponse.json({ ...prismaUser })
+
+
+export async function PATCH(req: NextRequest) {
+    await handleRequest(async () => {
+        const supabase = await createClient(req);
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+            throw new Error("Unauthorized");
+        }
+        const body = await req.json();
+        const parsed_body = await validateParams(UpdateUserSchema, body)
+
+        const updatedUser = await usersService.updateUser(user.id, parsed_body)
+
+        return NextResponse.json(updatedUser, {status: 200})
+
+    })
 }
