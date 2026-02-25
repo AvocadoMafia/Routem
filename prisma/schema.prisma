@@ -101,7 +101,7 @@ model RouteNode {
   routeId String @db.Uuid
   route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
-  spotId String
+  spotId String @db.Uuid
   spot   Spot   @relation(fields: [spotId], references: [id])
 
   transitSteps TransitStep[]
