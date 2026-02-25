@@ -15,6 +15,192 @@ datasource db {
 
 //テストモデルUSER
 model User {
+<<<<<<< Updated upstream
   id   String @id @default(cuid())
   name String @unique
+=======
+  id             String  @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
+  name           String  @unique
+  gender         String?
+  age            Int?
+  bio            String?
+  icon           Image?  @relation("UserIcon")
+  background     Image?  @relation("UserBackground")
+  uploadedImages Image[] @relation("UserUploads")
+  routes         Route[]
+  likes          Like[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  UNSPECIFIED
+}
+
+// 画像モデル：RouteNodeの地点写真や、ユーザーのプロフィール画像などで利用
+model Image {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url       String
+  status    ImageStatus @default(DRAFT)
+  type      ImageType
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // リレーション
+  uploaderId String? @db.Uuid
+  uploader   User?   @relation("UserUploads", fields: [uploaderId], references: [id])
+
+  routeNodeId String?    @db.Uuid
+  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id], onDelete: SetNull)
+
+  userIconId String? @unique @db.Uuid
+  userIcon   User?   @relation("UserIcon", fields: [userIconId], references: [id])
+
+  userBackgroundId String? @unique @db.Uuid
+  userBackground   User?   @relation("UserBackground", fields: [userBackgroundId], references: [id])
+  // ! s3のクリーンアップをクーロンで行う為に、setNullにしてる
+  routeThumbId     String? @unique @db.Uuid
+  routeThumb       Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id], onDelete: SetNull)
+}
+
+// 地図上の地点（POI）。OSMやMapbox等の出典を保持
+model Spot {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String // 名称
+  longitude Float? // 経度（EPSG:4326）
+  latitude  Float? // 緯度（EPSG:4326）
+  source    SpotSource? // 由来（例: "osm", "mapbox"）
+  sourceId  String? // 由来元のID（例: OSMのノードID）
+
+  // リレーション
+  routeNodes RouteNode[] // 表示用のノード（順序付き）
+}
+
+// 1つの旅行ルート（全体）。可視化・並び順・区間などの単位となる
+model Route {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  title       String   @db.VarChar(100)
+  description String
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+  thumbnail   Image?   @relation("RouteThumbnail")
+
+  authorId String @db.Uuid
+  author   User   @relation(references: [id], fields: [authorId])
+
+  visibility RouteVisibility @default(PRIVATE)
+  routeNodes RouteNode[]
+  likes      Like[]
+  views      View[]
+
+  @@index([authorId])
+}
+
+model RouteNode {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order   Int
+  images  Image[] @relation("NodeImages")
+  details String?
+
+  routeId String @db.Uuid
+  route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  spotId String
+  spot   Spot   @relation(fields: [spotId], references: [id])
+
+  transitSteps TransitStep[]
+
+  @@unique([routeId, order])
+}
+
+model TransitStep {
+  id       String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  mode     TransitMode
+  duration Int?
+  distance Float?
+  memo     String?
+  order    Int
+
+  routeNodeId String    @db.Uuid
+  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  routes Route[]
+}
+
+// いいねモデル
+model Like {
+  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime       @default(now())
+  target    LikeViewTarget
+
+  routeId String? @db.Uuid
+  route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, routeId])
+}
+
+// 閲覧数モデル
+model View {
+  id        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime       @default(now())
+  target    LikeViewTarget
+
+  routeId String? @db.Uuid
+  route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  userId String? @db.Uuid
+}
+
+enum LikeViewTarget {
+  ROUTE
+}
+
+// ルートの可視性。publicかprivateか
+enum RouteVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+// 画像の利用目的
+enum ImageType {
+  USER_ICON // ユーザーアイコン
+  USER_BG //ユーザー背景画像
+  ROUTE_THUMBNAIL // ルートのサムネイル
+  NODE_IMAGE // 地点（経由地）の写真
+  OTHER // その他
+}
+
+// 画像の採用ステータス
+enum ImageStatus {
+  ADOPTED // 正式に採用された
+  DRAFT // 一次保存・下書き状態
+  UNUSED // 利用されなかった（削除候補など）
+}
+
+// 移動モードの列挙。描画スタイルやアイコン分岐に利用
+enum TransitMode {
+  WALK // 徒歩
+  TRAIN // 電車
+  BUS // バス
+  CAR // 車
+  BIKE // 自転車
+  FLIGHT // 飛行機
+  SHIP // 船
+  OTHER // その他
+>>>>>>> Stashed changes
+}
+
+enum SpotSource {
+  MAPBOX
+  USER
 }
