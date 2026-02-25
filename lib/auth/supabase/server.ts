@@ -12,7 +12,7 @@ export async function createClient(request: NextRequest) {
     
     return createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
       {
         cookies: {
           getAll() { return [] }, // クッキーは無視
@@ -31,7 +31,7 @@ export async function createClient(request: NextRequest) {
   // 2. ヘッダーがないなら、いつもの「クッキー」を確認する（Webからのアクセス）
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
         getAll() {

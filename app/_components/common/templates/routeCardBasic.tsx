@@ -46,7 +46,7 @@ export default function RouteCardBasic(props: Props) {
                             </div>
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <h4 className="text-sm font-bold truncate text-foreground-0">@{props.route.author.name}</h4>
+                            <h4 className="text-sm font-bold truncate text-foreground-0">{props.route.author.name}</h4>
                             <span className="text-[10px] font-bold text-foreground-1 uppercase tracking-[0.2em]">{props.route.category?.name}</span>
                         </div>
                     </div>
