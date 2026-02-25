@@ -68,6 +68,8 @@ model Spot {
 
   // リレーション
   routeNodes RouteNode[] // 表示用のノード（順序付き）
+
+  @@unique([source, sourceId])
 }
 
 // 1つの旅行ルート（全体）。可視化・並び順・区間などの単位となる

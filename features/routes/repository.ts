@@ -52,7 +52,7 @@ export const routesRepository = {
             for (const n of nodes) {
                 // spotを更新、ない場合は作成
                 await tx.spot.upsert({
-                    where: { id: n.spot.id },
+                    where: {source_sourceId: { sourceId: n.spot.sourceId as string, source: 'MAPBOX'}},
                     update: {
                         name: n.spot.name,
                         latitude: n.spot.latitude,
