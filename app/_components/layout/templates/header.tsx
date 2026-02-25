@@ -1,38 +1,58 @@
 'use client'
 
-import {useAtom} from "jotai";
-import {scrollDirectionAtom} from "@/lib/client/atoms";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { MdMenu, MdSearch } from "react-icons/md";
 import PageTitle from "@/app/_components/layout/ingredients/pageTitle";
 import NavigatorList from "@/app/_components/layout/ingredients/navigatorList";
-import {useHeaderHeight} from "@/app/_components/common/hooks/useHeaderHeight";
-import {useEffect, useState} from "react";
+import SearchBar from "@/app/_components/layout/ingredients/searchBar";
+import MobileMenu from "@/app/_components/layout/ingredients/mobileMenu";
 
 export default function Header () {
-    const [scrollDirection, _] = useAtom(scrollDirectionAtom)
-    const headerRef = useHeaderHeight()
-    const [isMobile, setIsMobile] = useState(false)
-
-    useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768)
-        checkMobile()
-        window.addEventListener('resize', checkMobile)
-        return () => window.removeEventListener('resize', checkMobile)
-    }, [])
-
-    const height = scrollDirection === 'up' ? (isMobile ? 50 : 60) : 0
-    const y = scrollDirection === 'up' ? 0 : (isMobile ? -50 : -60)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchMode, setIsSearchMode] = useState(false);
 
     return (
-        <motion.header className={`block sticky top-0 w-full bg-background-1 box-border z-100`}
-                       ref={headerRef}
-                       animate={{ y, height }}
-                       transition={{duration: 0.2, ease: 'easeInOut'}}
+        <header
+            className={`block sticky top-0 w-full h-[50px] lg:h-[60px] bg-background-1 border-b border-grass box-border z-[100]`}
         >
-            <div className={'px-4 w-full h-full flex md:justify-around justify-between items-center'}>
-                <PageTitle />
-                <NavigatorList/>
+            <div className={'px-6 w-full h-full flex items-center max-w-[1440px] mx-auto gap-1 sm:gap-2 md:gap-4 lg:gap-8'}>
+                {!isSearchMode ? (
+                    <>
+                        <button 
+                            className={'lg:hidden p-2 -ml-2 hover:bg-grass rounded-full transition-colors cursor-pointer'}
+                            onClick={() => setIsMobileMenuOpen(true)}
+                        >
+                            <MdMenu size={24} className={'text-foreground-0'} />
+                        </button>
+
+                        <PageTitle />
+
+                        <div className={'hidden lg:block'}>
+                            <SearchBar />
+                        </div>
+
+                        <div className={'flex items-center gap-8 flex-1'}>
+                            <NavigatorList />
+                        </div>
+
+                        <button 
+                            className={'lg:hidden p-2 hover:bg-grass rounded-full transition-colors cursor-pointer'}
+                            onClick={() => setIsSearchMode(true)}
+                        >
+                            <MdSearch size={24} className={'text-foreground-0'} />
+                        </button>
+                    </>
+                ) : (
+                    <div className="w-full flex items-center lg:hidden">
+                        <SearchBar onBack={() => setIsSearchMode(false)} isMobileOnly />
+                    </div>
+                )}
             </div>
-        </motion.header>
+
+            <MobileMenu 
+                isOpen={isMobileMenuOpen} 
+                onClose={() => setIsMobileMenuOpen(false)} 
+            />
+        </header>
     )
 }

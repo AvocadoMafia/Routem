@@ -15,11 +15,11 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
             {/* 交通手段を選択するボタングリッド */}
             <div className="grid grid-cols-5 gap-3">
                 {[
-                    { id: 'walk', label: 'Walk', icon: <Footprints size={20} /> },
-                    { id: 'train', label: 'Train', icon: <TrainFront size={20} /> },
-                    { id: 'bus', label: 'Bus', icon: <Bus size={20} /> },
-                    { id: 'car', label: 'Car', icon: <Car size={20} /> },
-                    { id: 'other', label: 'Other', icon: <Sparkles size={20} /> },
+                    { id: 'WALK', label: 'Walk', icon: <Footprints size={20} /> },
+                    { id: 'TRAIN', label: 'Train', icon: <TrainFront size={20} /> },
+                    { id: 'BUS', label: 'Bus', icon: <Bus size={20} /> },
+                    { id: 'CAR', label: 'Car', icon: <Car size={20} /> },
+                    { id: 'OTHER', label: 'Other', icon: <Sparkles size={20} /> },
                 ].map((m) => (
                     <button
                         key={m.id}

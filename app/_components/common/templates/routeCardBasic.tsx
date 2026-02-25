@@ -2,64 +2,80 @@ import { Route } from "@/lib/client/types"
 import React from "react";
 import {Icon} from "@mui/material";
 import {HiEye, HiHeart} from "react-icons/hi2";
+import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
     route: Route
 }
 export default function RouteCardBasic(props: Props) {
     return (
-        <div className={'group w-full h-[300px] overflow-hidden rounded-xl flex shadow-sm hover:shadow-md'}>
+        <Link href={`/routes/${props.route.id}`} className={'group w-full h-[320px] overflow-hidden rounded-2xl flex shadow-sm hover:shadow-2xl transition-shadow duration-700 bg-background-1'}>
             <div className={'flex-1 h-full relative overflow-hidden'}>
-                {/* オーバーレイ（視認性向上） */}
-                <div className="absolute inset-0 bg-black/40 z-10"/>
-                <img src={props.route.thumbnailImageSrc} alt={props.route.title} className={'w-full h-full object-cover group-hover:scale-105 duration-300 ease-out'}/>
-                <div className={'absolute left-0 bottom-0 w-full p-3 flex flex-col items-end gap-3 z-15'}>
-                    <h2 className={'text-3xl font-bold text-white text-right'}>{props.route.title}</h2>
-                    <p className="text-sm text-gray-300">by @{props.route.user.name} ・ {props.route.category}</p>
+                {/* オーバーレイ（視認性向上） - Smoother blur gradient with masked blur to avoid sharp boundary */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 z-10">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 via-black/10 to-transparent" />
+                    <div className="absolute inset-0 backdrop-blur-[4px] [mask-image:linear-gradient(to_top,black_40%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_top,black_40%,transparent_100%)]" />
+                </div>
+                <Image
+                    src={props.route.thumbnail?.url ?? '/map.png'}
+                    alt={props.route.title}
+                    fill
+                    className={'object-cover group-hover:scale-110 duration-700 ease-out'}
+                    unoptimized
+                />
+                <div className={'absolute left-0 bottom-0 w-full p-6 flex flex-col items-start gap-2 z-15'}>
+                    <h2 className={'text-3xl font-bold text-white text-left leading-tight drop-shadow-md'}>{props.route.title}</h2>
+                    <div className="flex items-center gap-2 text-white/80">
+                        <span className="text-xs font-bold bg-white/10 backdrop-blur-md px-2 py-0.5 rounded-full">by @{props.route.author.name}</span>
+                    </div>
                 </div>
             </div>
-            <div className={'w-1/2 h-full min-w-[120px] flex flex-col gap-3 p-5'}>
-                <div className="w-full flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <img
-                            src={"/mockImages/userIcon_2.jpg"}
-                            alt={`user icon`}
-                            className="w-8 h-8 rounded-full object-cover bg-accent-0/10"
-                        />
-                        <h4 className="text-sm font-semibold truncate text-foreground-0">{'lychee'}</h4>
-                    </div>
-                    <div className="flex items-center gap-2 text-foreground-1">
-                        <div className="flex items-center gap-2">
-                            <HiHeart className="w-4 h-4" />
-                            <span className="text-xs">{'102 likes'}</span>
+            <div className={'w-[45%] h-full min-w-[160px] flex flex-col gap-4 p-6 bg-background-1'}>
+                <div className="w-full flex flex-col gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10 rounded-full">
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={props.route.author.icon?.url || "/mockImages/userIcon_2.jpg"}
+                                    alt={props.route.author.name}
+                                    fill
+                                    className="rounded-full object-cover"
+                                    unoptimized
+                                />
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <HiEye className="w-4 h-4" />
-                            <span className="text-xs">{'562 views'}</span>
+                        <div className="flex flex-col min-w-0">
+                            <h4 className="text-sm font-bold truncate text-foreground-0">@{props.route.author.name}</h4>
+                            <span className="text-[10px] font-bold text-foreground-1 uppercase tracking-[0.2em]">{props.route.category?.name}</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1.5">
+                            <HiHeart className="w-4 h-4 text-accent-0" />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{props.route.likes?.length ?? 0}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <HiEye className="w-4 h-4 text-accent-1" />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{props.route.views?.length ?? 0}</span>
                         </div>
                     </div>
                 </div>
-                <div className="w-full grid grid-cols-2 gap-3 md:text-sm text-xs">
-                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1">
-                        <span className="block text-foreground-1/40">Duration</span>
-                        <span className="font-medium text-foreground-1">2.5 hours</span>
+                <div className="w-full grid grid-cols-2 gap-2">
+                    <div className="rounded-lg bg-accent-1/10 border border-accent-1/20 p-2 flex flex-col justify-center">
+                        <span className="block text-accent-1 text-[9px] font-bold uppercase tracking-[0.2em] mb-0.5">Stops</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.routeNodes.length} pts</span>
                     </div>
-                    <div className="rounded-lg bg-background-0 border border-grass/10 p-1">
-                        <span className="block text-foreground-1/40">Expenses</span>
-                        <span className="font-medium text-foreground-1">＄200</span>
+                    <div className="rounded-lg bg-accent-0/10 border border-accent-0/20 p-2 flex flex-col justify-center">
+                        <span className="block text-accent-0 text-[9px] font-bold uppercase tracking-[0.2em] mb-0.5">Category</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.category?.name}</span>
                     </div>
                 </div>
-                <div className={'w-full text-foreground-1 line-clamp-7 md:text-sm text-xs'}>
-                    This is a one-day travel route in Kyoto.
-                    In the morning, start at Fushimi Inari Shrine and walk through the famous red torii gates.
-                    Next, go to Kiyomizu-dera Temple and enjoy the view of the city.
-                    In the afternoon, visit Gion, a traditional area with old streets and shops.
-                    You may see people wearing kimono or geisha on the street.
-                    In the evening, go to Arashiyama and walk through the bamboo forest.
-                    You can relax and enjoy the beautiful nature before the end of the day.
+                <div className={'w-full text-foreground-1 line-clamp-5 md:text-sm text-xs leading-relaxed'}>
+                    "{props.route.description}"
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 

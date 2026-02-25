@@ -43,11 +43,11 @@ export default function RouteNode({ item, isSelected, onSelect }: RouteNodeProps
                     `}
                     onClick={onSelect}
                 >
-                    {item.method === 'walk' && <Footprints size={16} />}
-                    {item.method === 'train' && <TrainFront size={16} />}
-                    {item.method === 'bus' && <Bus size={16} />}
-                    {item.method === 'car' && <Car size={16} />}
-                    {item.method === 'other' && <Sparkles size={16} />}
+                    {item.method === 'WALK' && <Footprints size={16} />}
+                    {item.method === 'TRAIN' && <TrainFront size={16} />}
+                    {item.method === 'BUS' && <Bus size={16} />}
+                    {item.method === 'CAR' && <Car size={16} />}
+                    {item.method === 'OTHER' && <Sparkles size={16} />}
                 </div>
             )}
         </div>

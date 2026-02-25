@@ -1,7 +1,7 @@
-//仮置きのprismaの設定ファイル。別のORMを用いる場合は削除。
-//prismaを用いた処理について、clientを最初生成する必要があり、dev環境ではnextの起動前に以下二つのコマンドの実行が必要となる。prod、stageでは自動実行させる予定。
-//npx prisma generate
-//npx prisma migrate dev
+// 仮置きのprismaの設定ファイル。別のORMを用いる場合は削除。
+// prismaを用いた処理について、clientを最初生成する必要があり、dev環境ではnextの起動前に以下二つのコマンドの実行が必要となる。prod、stageでは自動実行させる予定。
+// npx prisma generate
+// npx prisma migrate dev
 
 generator client {
   provider = "prisma-client-js"
@@ -9,16 +9,11 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  //ここは開発環境によって自動で切り替わらないため、prod、stageそれぞれで参照先を変える必要がある
-  url      = env("DATABASE_URL")
 }
 
-//テストモデルUSER
 model User {
-<<<<<<< Updated upstream
   id   String @id @default(cuid())
   name String @unique
-=======
   id             String  @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
   name           String  @unique
   gender         String?
@@ -197,7 +192,7 @@ enum TransitMode {
   FLIGHT // 飛行機
   SHIP // 船
   OTHER // その他
->>>>>>> Stashed changes
+
 }
 
 enum SpotSource {

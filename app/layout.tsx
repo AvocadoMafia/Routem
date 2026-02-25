@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto } from "next/font/google";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "./globals.css";
 import Header from "@/app/_components/layout/templates/header";
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
 import Main from "@/app/_components/layout/templates/main";
+import RootClient from "@/app/rootClient";
+import UserInitializer from "@/app/_components/layout/templates/userInitializer";
+import { ThemeProvider } from "@/app/_components/providers/themeProvider";
 
 //uxo
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-roboto",
 });
 
 export const metadata: Metadata = {
@@ -30,16 +30,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${roboto.variable} font-sans`}
       >
-        {/*この階層でHeaderとMainを定義する。モバイルでのoverflowの制御もここで行う。このwrapperのrefが必要な場合は別コンポーネントとして切り分ける可能性もある。*/}
-        <div className={'w-[100svw] h-[100svh] overflow-y-scroll bg-background-1'}>
-          <ScrollDetector/>
-          <Header/>
-          <Main>{children}</Main>
-        </div>
+      <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+      >
+        <RootClient>{children}</RootClient>
+        <UserInitializer/>
+      </ThemeProvider>
       </body>
     </html>
   );

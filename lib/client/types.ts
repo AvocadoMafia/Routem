@@ -1,43 +1,52 @@
-export type Route = {
-    id: string
-    title: string
-    user: User
-    likesThisWeek: number
-    viewsThisWeek?: number
-    category: string
-    /** URL of the route thumbnail image */
-    thumbnailImageSrc?: string
-}
+import { Prisma } from "@prisma/client";
 
-export type User = {
-    id: string;
-    name: string;
-    likesThisWeek: number;
-    viewsThisWeek: number;
-    bio?: string;
-    location?: string;
-    /** URL of the user's profile icon image */
-    profileImage?: string;
-    /** URL of the user's profile background image */
-    profileBackgroundImage?: string;
-};
+export type Route = Prisma.RouteGetPayload<{
+    include: {
+        author: { include: { icon: true } },
+        thumbnail: true,
+        likes: true,
+        views: true,
+        routeNodes: { include: { spot: true, transitSteps: true } },
+        category: true,
+    }
+}>
+
+export type User = Prisma.UserGetPayload<{
+    include: {
+        icon: true,
+        background: true,
+        uploadedImages: true,
+        routes: true,
+        likes: true,
+    }
+}>
 
 export type Waypoint = {
     id: string;
     type: 'waypoint';
     name: string;
-    image?: string; // 経由地の画像URL
-    memo: string;  // 経由地に関するメモ
-    order: number; // 並び順（現在は配列のインデックスを優先）
+    images?: string[]; // 経由地の画像URL（最大3枚）
+    memo: string;  // 経由地に関するメモ (RouteNode.details)
+    order: number; // 並び順
+    lat?: number;
+    lng?: number;
+    mapboxId?: string;
 };
 
 export type Transportation = {
     id: string;
     type: 'transportation';
-    method: 'walk' | 'train' | 'bus' | 'car' | 'other'; // 移動手段
+    method: 'WALK' | 'TRAIN' | 'BUS' | 'CAR' | 'OTHER'; // 移動手段
     memo: string; // 移動に関するメモ（乗り換え情報など）
     order: number;
+    duration?: number; // 移動時間（分）
+    distance?: number; // 移動距離（km）
 };
+
+export interface ErrorScheme {
+    message: string;
+    code: string;
+}
 
 /**
  * ルートを構成する各要素（経由地または交通手段）の共通型
