@@ -35,6 +35,11 @@ export default function ScrollDetector() {
         }
 
         const handleScroll = (e: Event) => {
+            // 特定の要素内（メニューなど）でのスクロールは無視する
+            if (e.target instanceof Element && e.target.closest('[data-ignore-scroll-detector]')) {
+                return;
+            }
+
             const target = e.target;
             let currentScrollY = 0;
 

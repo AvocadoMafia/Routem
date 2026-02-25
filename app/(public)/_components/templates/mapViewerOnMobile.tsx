@@ -73,7 +73,6 @@ function MobileMap({ route }: { route: Route }) {
             src="/map.png"
             alt=""
             fill
-            unoptimized
         />
     );
 
@@ -152,7 +151,6 @@ export default function MapViewerOnMobile(props: Props) {
                                         src={route.thumbnail?.url ?? '/map.png'}
                                         alt=""
                                         fill
-                                        unoptimized
                                     />
                                 </div>
                             </div>
@@ -170,7 +168,6 @@ export default function MapViewerOnMobile(props: Props) {
                                             src={route.author.icon?.url || "/mockImages/userIcon_1.jpg"}
                                             alt=""
                                             fill
-                                            unoptimized
                                         />
                                     </div>
                                     <span>{route.author.name}</span>

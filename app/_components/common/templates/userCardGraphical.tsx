@@ -3,6 +3,7 @@ import {User} from "@/lib/client/types";
 import {IoPersonAdd} from "react-icons/io5";
 import { HiUserGroup, HiBookOpen } from 'react-icons/hi2';
 import Image from 'next/image';
+import Link from "next/link";
 
 export type Props = {
   user: User;
@@ -12,9 +13,9 @@ export type Props = {
 
 export function UserCardGraphical(props: Props) {
   return (
-    <button
-      onClick={props.onClick}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-background-0 p-2 text-left"
+    <Link
+      href={`/users/${props.user.id}`}
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2 text-left"
       aria-label={props.rank ? `Rank ${props.rank}: ${props.user.name}` : props.user.name}
     >
       {/* Background Image with Margin (via container padding) */}
@@ -56,31 +57,23 @@ export function UserCardGraphical(props: Props) {
                   unoptimized
                 />
               </div>
-              <div className="min-w-0">
+              <div className="space-y-1">
                 <h4 className="text-lg font-bold leading-tight drop-shadow-sm truncate">
                   {props.user.name}
                 </h4>
                 <div className="flex items-center gap-1.5 text-xs text-white/80">
-                  <IoPersonAdd className="w-3.5 h-3.5 text-accent-0" />
-                  <span className="font-medium">17k followers</span>
+                  <IoPersonAdd className="w-3.5 h-3.5 text-accent-1" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
                 </div>
               </div>
             </div>
-
             {/* Profile info area (Button-like) */}
-            <div className="flex gap-2">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-accent-1/40 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner group-hover:bg-accent-1/20 transition-colors">
-                <HiUserGroup className="w-4 h-4 text-accent-1 shrink-0" />
-                <span className="text-[11px] font-bold tracking-tight truncate">Follow</span>
-              </div>
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-accent-0/40 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner group-hover:bg-accent-0/20 transition-colors">
-                <HiBookOpen className="w-4 h-4 text-accent-0 shrink-0" />
-                <span className="text-[11px] font-bold tracking-tight truncate">Bio</span>
-              </div>
+            <div className="bg-background-1 text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em] rounded-full w-full h-fit py-2 hover-theme-reversed flex justify-center items-center">
+                Follow
             </div>
           </div>
         </div>
       </div>
-    </button>
+    </Link>
   );
 }

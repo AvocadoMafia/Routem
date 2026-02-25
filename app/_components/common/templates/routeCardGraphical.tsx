@@ -17,7 +17,7 @@ export default function RouteCardGraphical(props: Props) {
     <Link
       href={`/routes/${props.route.id}`}
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-background-0 p-2"
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2"
       aria-label={props.rank ? `Rank ${props.rank}: ${props.route.title}` : props.route.title}
     >
       {/* Background Thumbnail Image with Margin (via container padding) */}
@@ -53,30 +53,33 @@ export default function RouteCardGraphical(props: Props) {
               <h4 className="text-lg font-bold leading-tight drop-shadow-sm line-clamp-2">
                 {props.route.title}
               </h4>
-              
-              <div className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1.5 truncate mr-2">
-                  <span className="truncate">@{props.route.author.name}</span>
-                  <span className="opacity-60">•</span>
-                  <span className="truncate">{props.route.category.name}</span>
-                </div>
-                
-                <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
+                <span className="text-xs font-bold normal-case tracking-normal">@{props.route.author.name}</span>
+                <span className="opacity-60">•</span>
+                <span className="truncate">{props.route.category.name}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                   <HiHeart className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums font-semibold">{props.route.likes?.length ?? 0}</span>
+                  <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
+                </div>
+                <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
+                  <HiEye className="w-4 h-4 text-accent-1" />
+                  <span className="tabular-nums">{props.route.views?.length ?? 0}</span>
                 </div>
               </div>
+
             </div>
 
             {/* Duration and Cost area (Button-like) */}
             <div className="flex gap-2">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-accent-1/40 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner group-hover:bg-accent-1/20 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
                 <HiClock className="w-4 h-4 text-accent-1" />
-                <span className="text-[11px] font-bold tracking-tight">2.5h</span>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">2.5h</span>
               </div>
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 bg-accent-0/40 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner group-hover:bg-accent-0/20 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-accent-0" />
-                <span className="text-[11px] font-bold tracking-tight">¥3,500</span>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">¥3,500</span>
               </div>
             </div>
           </div>

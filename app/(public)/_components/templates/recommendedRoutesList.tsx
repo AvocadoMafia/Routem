@@ -8,7 +8,7 @@ type Props = {
 export default function RecommendedRoutesList(props: Props) {
   return (
       <div className={'w-full h-fit flex flex-col gap-3'}>
-          <h2 className="text-sm font-semibold text-foreground-0">Recommended For You</h2>
+          <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Recommended For You</h2>
           <div className={'w-full grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3'}>
               {props.routes.map((r, idx) => (
                   <RouteCardBasic route={r} key={idx}/>
