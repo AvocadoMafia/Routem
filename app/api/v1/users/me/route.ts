@@ -8,7 +8,7 @@ import {validateParams} from "@/lib/server/validateParams";
 import {UpdateUserSchema, UpdateUserType} from "@/features/users/schema";
 
 export async function GET(req: NextRequest) {
-    await handleRequest(async () => {
+    return handleRequest(async () => {
         //クライアント生成の過程でユーザー認証も行ってくれる
         const supabase = await createClient(req);
         const { data: { user }, error } = await supabase.auth.getUser();
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 
 
 export async function PATCH(req: NextRequest) {
-    await handleRequest(async () => {
+    return handleRequest(async () => {
         const supabase = await createClient(req);
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error || !user) {
