@@ -17,10 +17,18 @@ model User {
   gender         String?
   age            Int?
   bio            String?
-  profileImage   Image?  @relation("UserProfileImage")
+  icon           Image?  @relation("UserIcon")
+  background     Image?  @relation("UserBackground")
   uploadedImages Image[] @relation("UserUploads")
   routes         Route[]
   likes          Like[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  UNSPECIFIED
 }
 
 // 画像モデル：RouteNodeの地点写真や、ユーザーのプロフィール画像などで利用
@@ -39,8 +47,11 @@ model Image {
   routeNodeId String?    @db.Uuid
   routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id])
 
-  userProfileId String? @unique @db.Uuid
-  userProfile   User?   @relation("UserProfileImage", fields: [userProfileId], references: [id])
+  userIconId String? @unique @db.Uuid
+  userIcon   User?   @relation("UserIcon", fields: [userIconId], references: [id])
+
+  userBackgroundId String? @unique @db.Uuid
+  userBackground   User?   @relation("UserBackground", fields: [userBackgroundId], references: [id])
 
   routeThumbId String? @unique @db.Uuid
   routeThumb   Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id])
@@ -154,7 +165,8 @@ enum RouteVisibility {
 
 // 画像の利用目的
 enum ImageType {
-  USER_PROFILE // ユーザーアイコン
+  USER_ICON // ユーザーアイコン
+  USER_BG //ユーザー背景画像
   ROUTE_THUMBNAIL // ルートのサムネイル
   NODE_IMAGE // 地点（経由地）の写真
   OTHER // その他

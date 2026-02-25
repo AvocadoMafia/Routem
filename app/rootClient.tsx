@@ -3,51 +3,65 @@
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
 import Header from "@/app/_components/layout/templates/header";
 import Main from "@/app/_components/layout/templates/main";
-import {scrollDirectionAtom} from "@/lib/client/atoms";
-import {useAtomValue} from "jotai";
-import {motion} from "framer-motion";
-import {useCallback, useEffect, useState} from "react";
+import { scrollDirectionAtom } from "@/lib/client/atoms";
+import { useAtomValue } from "jotai";
+import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
 
-
-export default function RootClient({children}: Readonly<{children: React.ReactNode}>) {
+export default function RootClient({ children }: Readonly<{ children: React.ReactNode }>) {
 
     const scrollDirection = useAtomValue(scrollDirectionAtom)
-    const [yOffset, setYOffset] = useState(0)
+    const [headerHeight, setHeaderHeight] = useState(50)
 
-    const updateOffset = useCallback(() => {
+    const updateHeight = useCallback(() => {
         if (window.innerWidth >= 768) {
-            setYOffset(-60)
+            setHeaderHeight(60)
         } else {
-            setYOffset(-50)
+            setHeaderHeight(50)
         }
     }, [])
 
     useEffect(() => {
-        updateOffset()
-        window.addEventListener('resize', updateOffset)
-        return () => window.removeEventListener('resize', updateOffset)
-    }, [updateOffset])
+        updateHeight()
+        window.addEventListener('resize', updateHeight)
+        return () => window.removeEventListener('resize', updateHeight)
+    }, [updateHeight])
 
     return (
-        <div className={'w-full h-[100svh] overflow-hidden overscroll-none bg-background-1'}>
+        <main className="w-full min-h-dvh overflow-hidden overscroll-none bg-background-1">
+
+            <ScrollDetector />
+
+            {/* ✅ fixed header */}
             <motion.div
-                className={[
-                    "w-full flex flex-col overflow-hidden text-foreground will-change-transform",
-                    "h-[calc(100svh+50px)] md:h-[calc(100svh+60px)]",
-                ].join(" ")}
+                initial={false}
                 animate={{
-                    y: scrollDirection === 'down' ? yOffset : 0
+                    y: scrollDirection === 'down' ? -headerHeight : 0,
                 }}
                 transition={{
                     duration: 0.3,
                     ease: "easeOut"
                 }}
+                className="fixed top-0 left-0 w-full z-50"
             >
-                <ScrollDetector/>
-                <Header/>
+                <Header />
+            </motion.div>
+
+            {/* ✅ content */}
+            <motion.div
+                initial={false}
+                animate={{
+                    paddingTop: scrollDirection === 'down' ? 0 : headerHeight,
+                }}
+                transition={{
+                    duration: 0.3,
+                    ease: "easeOut"
+                }}
+                className="w-full h-[100svh] text-foreground"
+            >
                 <Main>{children}</Main>
             </motion.div>
-        </div>
 
+        </main>
     )
 }

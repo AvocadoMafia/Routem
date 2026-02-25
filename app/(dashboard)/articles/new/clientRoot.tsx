@@ -309,7 +309,7 @@ export default function ClientRoot() {
     };
 
     return (
-        <div className="relative w-full h-full flex flex-row bg-background-0">
+        <div className="relative w-full h-full flex flex-row ">
             {/* 左側：ルート構成の可視化と操作 */}
             <NodeLinkDiagram
                 items={items}
@@ -350,7 +350,7 @@ export default function ClientRoot() {
                     handlePublish={handlePublish}
                     publishing={publishing}
                 />
-                <div className="h-fit">
+                <div className="w-full flex-1">
                     {message && (
                         <div className={`mx-10 mt-4 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300 ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-accent-2/10 text-accent-2 border border-accent-2/20'}`}>
                             {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}

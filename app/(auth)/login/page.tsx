@@ -8,7 +8,7 @@ import LoginCard from "@/app/(auth)/login/_components/templates/loginCard";
 
 export default function Page() {
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center bg-background-0">
       <LoginCard />
     </div>
   );

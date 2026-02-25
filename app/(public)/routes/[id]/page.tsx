@@ -3,14 +3,14 @@ import { notFound } from "next/navigation";
 import { Route } from "@/lib/client/types";
 import RootClient from "./rootClient";
 
-export default async function RouteDetailPage({ params }: { params: { id: string } }) {
+export default async function RoutePage({ params }: { params: { id: string } }) {
   const resolvedParams = await params
   const prisma = getPrisma();
   const route = await prisma.route.findUnique({
     where: { id: resolvedParams.id },
     include: {
       author: {
-        include: { profileImage: true }
+        include: { icon: true }
       },
       thumbnail: true,
       category: true,

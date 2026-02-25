@@ -1,45 +1,12 @@
 'use client'
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useAtom } from "jotai";
-import { scrollDirectionAtom } from "@/lib/client/atoms";
-import { useEffect, useState } from "react";
 import { Route } from "@/lib/client/types";
 import Image from "next/image";
+import { useInitialModal } from "../hooks/useInitialModal";
 
 export default function InitialModal({ route }: { route: Route }) {
-    const [isVisible, setIsVisible] = useState(true);
-    const [canClose, setCanClose] = useState(false);
-    const [scrollDirection, setScrollDirection] = useAtom(scrollDirectionAtom);
-
-    useEffect(() => {
-        // マウント時にスクロール方向をリセット
-        setScrollDirection('up');
-
-        // マウント時に少し待ってからスクロール検知を開始する
-        // または、マウント直後の scrollDirection === 'down' を無視する
-        const timer = setTimeout(() => {
-            setCanClose(true);
-        }, 500); // 500ms程度に短縮（リセットしているのでこれくらいで十分なはず）
-        return () => clearTimeout(timer);
-    }, [setScrollDirection]);
-
-    useEffect(() => {
-        if (canClose && scrollDirection === 'down' && isVisible) {
-            setIsVisible(false);
-        }
-    }, [scrollDirection, isVisible, canClose]);
-
-    useEffect(() => {
-        if (isVisible) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isVisible]);
+    const { isVisible } = useInitialModal();
 
     return (
         <AnimatePresence>
@@ -81,7 +48,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                             className="max-w-4xl"
                         >
-                            <span className="inline-block px-3 py-1 mb-8 border border-white/20 rounded-sm text-[10px] font-medium tracking-[0.4em] uppercase backdrop-blur-md">
+                            <span className="inline-block px-3 py-1 mb-8 border border-white/20 rounded-sm text-[10px] font-bold tracking-[0.4em] uppercase backdrop-blur-md">
                                 {route.category?.name || "Travel Route"}
                             </span>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-10 tracking-[0.1em] leading-tight uppercase">
@@ -89,7 +56,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             </h1>
                             <div className="flex items-center justify-center gap-6">
                                 <div className="h-px w-12 bg-white/20" />
-                                <p className="text-sm md:text-base font-normal tracking-widest text-white/80 uppercase">
+                                <p className="text-[10px] font-bold tracking-[0.3em] text-white/80 uppercase">
                                     Curated by {route.author.name}
                                 </p>
                                 <div className="h-px w-12 bg-white/20" />

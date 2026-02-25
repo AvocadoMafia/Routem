@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react'
 import { BiHash } from 'react-icons/bi'
-import {HiHeart} from 'react-icons/hi2'
+import {HiHeart, HiClock, HiBanknotes} from 'react-icons/hi2'
 import {Route} from "@/lib/client/types";
 import Image from 'next/image';
 
@@ -16,40 +16,62 @@ export default function FeaturedRouteCard(props: Props) {
     <Link
       href={`/routes/${props.route.id}`}
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-2xl shadow-md hover:shadow-lg overflow-hidden"
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2"
       aria-label={`Top route: ${props.route.title}`}
     >
-      {/* Background image */}
-      <Image
-        src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
-        alt={`${props.route.title} background`}
-        fill
-        className="object-cover group-hover:scale-105 duration-300 ease-out"
-        unoptimized
-      />
-      {/* Black overlay */}
-      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+      {/* Background Image with Margin (via container padding) */}
+      <div className="relative w-full h-full rounded-lg overflow-hidden">
+        <Image
+          src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
+          alt={`${props.route.title} background`}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          unoptimized
+        />
 
-      {/* Rank badge */}
-      <div className="absolute top-4 left-4 z-10">
-        <div className="flex items-center gap-1 px-2.5 py-1.5 text-white text-sm font-medium rounded-full backdrop-blur-md bg-white/10 ring-1 ring-white/15 shadow-sm">
-          <BiHash className="opacity-90" />
-          <span>1st</span>
-        </div>
-      </div>
+        {/* Gradient Mask Overlay (Top to Bottom) with Smooth Blur - Inside the image container */}
+        <div className="absolute inset-0 rounded-lg
+      backdrop-blur-2xl bg-black/50
+      [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
+      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
 
-      {/* Content */}
-      <div className="w-full h-full absolute top-0 left-0 z-10 p-4">
-        <div className="flex flex-col items-end absolute bottom-4 right-4 max-w-full">
-          <p className="text-xl text-gray-300 font-bold flex items-center gap-2">
-            <HiHeart className="w-5 h-5" />
-            <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
-            <span className="opacity-80">likes</span>
-          </p>
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col items-end">
-              <h3 className="md:text-4xl text-2xl text-white font-bold">{props.route.title}</h3>
-              <p className="text-sm text-gray-300">by @{props.route.author.name} ・ {props.route.category?.name}</p>
+        {/* Content Container (Padding around edges) - Inside the image container */}
+        <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
+          {/* Top section: Rank on the right */}
+          <div className="flex justify-end items-start">
+            <div className="theme-reversed flex items-center justify-center w-10 h-10 bg-background-1 text-foreground-0 text-xs font-bold rounded-full border border-black/10 shadow-sm">
+              1st
+            </div>
+          </div>
+
+          {/* Bottom section: Title, Meta, and Detail Chips (styled like RouteCardGraphical) */}
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-2 text-white">
+                {props.route.title}
+              </h3>
+              <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
+                <span className="text-xs font-bold normal-case tracking-normal">@{props.route.author.name}</span>
+                <span className="opacity-60">•</span>
+                <span className="truncate">{props.route.category?.name}</span>
+              </div>
+              <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
+                <HiHeart className="w-4 h-4 text-accent-0" />
+                <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
+                <span className="truncate">new likes</span>
+              </div>
+            </div>
+
+            {/* Duration and Cost area (Button-like) */}
+            <div className="flex gap-2">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
+                <HiClock className="w-4 h-4 text-accent-1" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">2.5h</span>
+              </div>
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
+                <HiBanknotes className="w-4 h-4 text-accent-0" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">¥3,500</span>
+              </div>
             </div>
           </div>
         </div>

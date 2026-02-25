@@ -1,4 +1,4 @@
-import RouteCardHorizontal from '@/app/_components/common/templates/routeCardHorizontal';
+import RouteCardHorizontal from '@/app/(public)/_components/ingredients/routeCardHorizontal';
 import {Route} from "@/lib/client/types";
 
 
@@ -11,7 +11,7 @@ type Props = {
 export default function RouteList(props: Props) {
   return (
     <div
-      className="flex w-[400px] h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3"
+      className="flex w-[400px] h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
       tabIndex={0}
       role="region"
       aria-label="Route list"
