@@ -102,7 +102,13 @@ export const routesRepository = {
 
             return { routeId: route.id };
         });
-    }
+    },
+    updateRoute: async (data: Prisma.RouteUpdateArgs) => {
+        const prisma = getPrisma();
+        return prisma.$transaction(async (tx) => {
+            tx.route.update(data);
+        })
+    },
 }
 
 export type FindRoutes = Awaited<ReturnType<typeof routesRepository.findRoutes>>;

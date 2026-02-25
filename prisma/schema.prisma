@@ -12,6 +12,8 @@ datasource db {
 }
 
 model User {
+  id   String @id @default(cuid())
+  name String @unique
   id             String  @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
   name           String  @unique
   gender         String?
@@ -45,25 +47,26 @@ model Image {
   uploader   User?   @relation("UserUploads", fields: [uploaderId], references: [id])
 
   routeNodeId String?    @db.Uuid
-  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id])
+  routeNode   RouteNode? @relation("NodeImages", fields: [routeNodeId], references: [id], onDelete: SetNull)
 
   userIconId String? @unique @db.Uuid
   userIcon   User?   @relation("UserIcon", fields: [userIconId], references: [id])
 
   userBackgroundId String? @unique @db.Uuid
   userBackground   User?   @relation("UserBackground", fields: [userBackgroundId], references: [id])
-
-  routeThumbId String? @unique @db.Uuid
-  routeThumb   Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id])
+  // ! s3のクリーンアップをクーロンで行う為に、setNullにしてる
+  routeThumbId     String? @unique @db.Uuid
+  routeThumb       Route?  @relation("RouteThumbnail", fields: [routeThumbId], references: [id], onDelete: SetNull)
 }
 
 // 地図上の地点（POI）。OSMやMapbox等の出典を保持
 model Spot {
-  id        String @id
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String // 名称
-  longitude Float // 経度（EPSG:4326）
-  latitude  Float // 緯度（EPSG:4326）
-  source    String // 由来（例: "osm", "mapbox"）
+  longitude Float? // 経度（EPSG:4326）
+  latitude  Float? // 緯度（EPSG:4326）
+  source    SpotSource? // 由来（例: "osm", "mapbox"）
+  sourceId  String? // 由来元のID（例: OSMのノードID）
 
   // リレーション
   routeNodes RouteNode[] // 表示用のノード（順序付き）
@@ -117,7 +120,7 @@ model TransitStep {
   order    Int
 
   routeNodeId String    @db.Uuid
-  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id])
+  routeNode   RouteNode @relation(fields: [routeNodeId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -189,4 +192,10 @@ enum TransitMode {
   FLIGHT // 飛行機
   SHIP // 船
   OTHER // その他
+
+}
+
+enum SpotSource {
+  MAPBOX
+  USER
 }
