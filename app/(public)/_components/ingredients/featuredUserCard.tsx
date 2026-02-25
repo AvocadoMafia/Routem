@@ -12,10 +12,17 @@ export type Props = {
 export default function FeaturedUserCard(props: Props) {
 
   return (
-    <button
+    <div
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-background-0 p-2 text-left"
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2 text-left cursor-pointer"
       aria-label={`Top user: ${props.user.name}`}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          props.onClick?.();
+        }
+      }}
     >
       {/* Background Image with Margin (via container padding) */}
       <div className="relative w-full h-full rounded-lg overflow-hidden">
@@ -45,7 +52,7 @@ export default function FeaturedUserCard(props: Props) {
               className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 text-[#232323] backdrop-blur-md rounded-full hover:bg-accent-1 hover:text-white hover:border-accent-1 transition-all duration-300"
             >
               <IoPersonAdd className="w-5 h-5 transition-transform" />
-              <span className="text-sm font-bold tracking-tight">Click to Follow</span>
+              <span className="text-[10px] font-bold tracking-[0.3em] uppercase">Follow</span>
             </button>
 
             <div className="theme-reversed flex items-center justify-center w-10 h-10 bg-background-1 text-foreground-0 text-xs font-bold rounded-full border border-black/10 shadow-sm">
@@ -61,9 +68,9 @@ export default function FeaturedUserCard(props: Props) {
               </h3>
               <div className="flex items-center gap-2 mt-1 text-white/80">
                 <IoPersonAdd className="w-4 h-4 text-accent-1" />
-                <span className="text-sm">17k followers</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
                 <span className="opacity-60">・</span>
-                <span className="text-sm">from US</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">from US</span>
               </div>
               {props.user.bio && (
                 <p className="text-xs text-white/60 line-clamp-2 mt-2 leading-relaxed max-w-md">
@@ -84,6 +91,6 @@ export default function FeaturedUserCard(props: Props) {
           </div>
         </div>
       </div>
-    </button>
+    </div>
   )
 }

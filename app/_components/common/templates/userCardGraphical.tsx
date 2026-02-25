@@ -15,7 +15,7 @@ export function UserCardGraphical(props: Props) {
   return (
     <Link
       href={`/users/${props.user.id}`}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-background-0 p-2 text-left"
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2 text-left"
       aria-label={props.rank ? `Rank ${props.rank}: ${props.user.name}` : props.user.name}
     >
       {/* Background Image with Margin (via container padding) */}
@@ -63,14 +63,14 @@ export function UserCardGraphical(props: Props) {
                 </h4>
                 <div className="flex items-center gap-1.5 text-xs text-white/80">
                   <IoPersonAdd className="w-3.5 h-3.5 text-accent-1" />
-                  <span className="font-medium">17k followers</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
                 </div>
               </div>
             </div>
             {/* Profile info area (Button-like) */}
-            <button className="bg-background-1 text-foreground-0 text-sm font-semibold rounded-full w-full h-fit py-1 hover-theme-reversed">
+            <div className="bg-background-1 text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em] rounded-full w-full h-fit py-2 hover-theme-reversed flex justify-center items-center">
                 Follow
-            </button>
+            </div>
           </div>
         </div>
       </div>

@@ -102,21 +102,21 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                             <img className={'w-16 h-16 rounded-full object-cover'} src={user.icon?.url} alt={user.name}/>
                                             <div className={'flex flex-col'}>
                                                 <span className={'font-bold text-xl text-foreground-0'}>{user.name}</span>
-                                                <button
+                                                <span
                                                     className={'text-sm text-accent-1 text-left hover:underline'}
                                                 >
                                                     View Profile
-                                                </button>
+                                                </span>
                                             </div>
                                         </div>
                                         <div className={'flex gap-6 pt-2'}>
                                             <div className={'flex items-center gap-1.5'}>
                                                 <span className={'font-bold text-foreground-0'}>124</span>
-                                                <span className={'text-sm text-foreground-1'}>Following</span>
+                                                <span className={'text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1'}>Following</span>
                                             </div>
                                             <div className={'flex items-center gap-1.5'}>
                                                 <span className={'font-bold text-foreground-0'}>850</span>
-                                                <span className={'text-sm text-foreground-1'}>Followers</span>
+                                                <span className={'text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1'}>Followers</span>
                                             </div>
                                         </div>
                                     </div>
@@ -174,7 +174,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             {/* Following Users List */}
                             <div className={'space-y-4 pt-4'}>
                                 <div className={'flex items-center justify-between px-1'}>
-                                    <h3 className={'font-bold text-foreground-0 uppercase text-xs tracking-wider'}>Following</h3>
+                                    <h3 className={'text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-0'}>Following</h3>
                                     <button className={'text-accent-1 text-xs font-bold hover:underline'}>View All</button>
                                 </div>
                                 <div className={'space-y-1'}>

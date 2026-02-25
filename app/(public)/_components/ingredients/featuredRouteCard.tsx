@@ -16,7 +16,7 @@ export default function FeaturedRouteCard(props: Props) {
     <Link
       href={`/routes/${props.route.id}`}
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 bg-background-0 p-2"
+      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2"
       aria-label={`Top route: ${props.route.title}`}
     >
       {/* Background Image with Margin (via container padding) */}
@@ -50,14 +50,14 @@ export default function FeaturedRouteCard(props: Props) {
               <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-2 text-white">
                 {props.route.title}
               </h3>
-              <div className="flex items-center gap-1.5 truncate mr-2 text-sm text-white/90">
-                <span className="truncate">@{props.route.author.name}</span>
+              <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
+                <span className="text-xs font-bold normal-case tracking-normal">@{props.route.author.name}</span>
                 <span className="opacity-60">•</span>
                 <span className="truncate">{props.route.category?.name}</span>
               </div>
-              <div className="flex items-center gap-1 shrink-0 text-xs text-white/80">
+              <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                 <HiHeart className="w-4 h-4 text-accent-0" />
-                <span className="tabular-nums font-semibold">{props.route.likes?.length ?? 0}</span>
+                <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
                 <span className="truncate">new likes</span>
               </div>
             </div>
@@ -66,11 +66,11 @@ export default function FeaturedRouteCard(props: Props) {
             <div className="flex gap-2">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-1/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
                 <HiClock className="w-4 h-4 text-accent-1" />
-                <span className="text-[11px] font-bold tracking-tight">2.5h</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">2.5h</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full border border-accent-0/60 shadow-inner bg-[#232323] text-white/90 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-accent-0" />
-                <span className="text-[11px] font-bold tracking-tight">¥3,500</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">¥3,500</span>
               </div>
             </div>
           </div>

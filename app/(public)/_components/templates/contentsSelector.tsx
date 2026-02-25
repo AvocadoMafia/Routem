@@ -42,7 +42,7 @@ export default function ContentsSelector(props: Props) {
                             <item.icon 
                                 className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-white' : 'text-accent-0 group-hover:text-accent-1'}`}
                             />
-                            <span className={`text-sm font-bold transition-colors duration-300 md:block ${isSelected ? 'text-white block' : 'hidden text-foreground-1 group-hover:text-foreground-0'}`}>
+                            <span className={`text-[10px] font-bold uppercase tracking-[0.3em] transition-colors duration-300 md:block ${isSelected ? 'text-white block' : 'hidden text-foreground-1 group-hover:text-foreground-0'}`}>
                                 {item.label}
                             </span>
                         </div>

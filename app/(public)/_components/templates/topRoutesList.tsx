@@ -12,7 +12,7 @@ export default function TopRoutesList(props: Props) {
   return (
     <div className="w-full h-fit">
       <div className="w-full mb-3 flex items-center gap-2">
-        <h2 className="text-sm font-semibold text-foreground-0">Top Routes — This week</h2>
+        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Routes — This week</h2>
       </div>
 
       <div className="w-full md:h-[300px] sm:h-[800px] h-[900px] grid grid-rows-3 md:grid-rows-1 grid-cols-1 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 grid-cols-2 gap-3">
