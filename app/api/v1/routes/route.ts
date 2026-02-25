@@ -11,14 +11,14 @@ import { PatchRouteSchema } from "@/features/routes/schema";
 // GET /api/v1/routems
 // 最近作成されたルートを一覧返却します
 export async function GET(req: NextRequest) {
-  return handleRequest(async () => {
-    const supabase = await createClient();
+  await handleRequest(async () => {
+    const supabase = await createClient(req);
     const { data: { user }, error } = await supabase.auth.getUser();
     const safe_user = error ? null : user;
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
     const data = await routesService.getRoutes(safe_user, parsed_params);
-    return NextResponse.json(data);
+    return NextResponse.json(data, {status: 200});
   });
 }
 
@@ -27,13 +27,15 @@ export async function GET(req: NextRequest) {
 // ルート作成用のAPI。
 
 export async function POST(req: NextRequest) {
-  handleRequest(async () => {
-    const supabase = await createClient();
+  await handleRequest(async () => {
+    const supabase = await createClient(req);
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error || !user) {
       throw new Error("Unauthorized");
     }
     const body = await req.json();
+
+    //TODO:近藤 bodyのバリデーション書いてない
     if (!body || !Array.isArray(body.items)) {
       throw new Error("Invalid body: items[] is required");
     }
@@ -46,14 +48,14 @@ export async function POST(req: NextRequest) {
 
 
 export async function PATCH(req: NextRequest) {
-  handleRequest(async () => {
+  await handleRequest(async () => {
     const body = await req.json();
     if (!body || !Array.isArray(body.items)) {
       throw new Error("Invalid body: items[] is required");
     }
     const parsed_body = await validateParams(PatchRouteSchema, body);
     const result = await routesService.patchRoute(parsed_body);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: 200 });
   });
 }
 

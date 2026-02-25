@@ -12,10 +12,8 @@ datasource db {
 }
 
 model User {
-  id   String @id @default(cuid())
-  name String @unique
   id             String  @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
-  name           String  @unique
+  name           String
   gender         String?
   age            Int?
   bio            String?
@@ -192,7 +190,6 @@ enum TransitMode {
   FLIGHT // 飛行機
   SHIP // 船
   OTHER // その他
-
 }
 
 enum SpotSource {

@@ -11,5 +11,15 @@ export const usersService = {
     }
     return user;
     },
-  
+
+  //ユーザー情報の更新処理
+  updateUser: async (id: string, data: any) => {
+    const user = await usersRepository.updateUser(id, data);
+    if(!user) {
+      throw new Error("Update failed");
+    }
+    return user;
+  }
+
 }
+
