@@ -11,7 +11,7 @@ import { PatchRouteSchema } from "@/features/routes/schema";
 // GET /api/v1/routems
 // 最近作成されたルートを一覧返却します
 export async function GET(req: NextRequest) {
-  await handleRequest(async () => {
+  return handleRequest(async () => {
     const supabase = await createClient(req);
     const { data: { user }, error } = await supabase.auth.getUser();
     const safe_user = error ? null : user;
