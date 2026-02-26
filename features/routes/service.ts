@@ -14,8 +14,7 @@ import { mapMethodToTransitMode } from "@/features/routes/utils";
 import { GetRoutesType } from "@/features/routes/schema";
 import { FindRoutes } from "@/features/routes/repository";
 import { PatchRouteType } from "@/features/routes/schema";
-import { th } from "zod/v4/locales";
-import { parse } from "path";
+import { DeleteRouteType } from "@/features/routes/schema";
 
 export const routesService = {
   getRoutes: async (
@@ -233,4 +232,18 @@ export const routesService = {
       },
     });
   },
+
+  deleteRoute :async(parsed_body:DeleteRouteType, user_id:string) =>{
+    const deleted = await routesRepository.deleteRoute({
+      where:{id:parsed_body.id,
+             authorId:user_id
+            }
+    });
+
+    if(deleted.count === 0){
+      throw new Error("Notfound or Unauthorized");
+    }
+
+    return deleted;
+  }
 };
