@@ -15,7 +15,6 @@ import {FaRunning} from "react-icons/fa";
 import {IoIosArrowForward} from "react-icons/io";
 import {Route, User} from "@/lib/client/types";
 import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
-import {RouteVisibility} from "@prisma/client";
 
 export type selectedType = 'home' | 'photos' | 'interests' | 'recent' | 'trending'
 
@@ -68,7 +67,7 @@ export default function RootClient() {
             id: `placeholder-${i}`,
             title: `Sample Route ${i + 1}`,
             description: 'This is a sample description for the placeholder route.',
-            visibility: RouteVisibility.PUBLIC,
+            visibility: 'PUBLIC',
             authorId: mockUsers[i % mockUsers.length].id,
             author: {
                 ...mockUsers[i % mockUsers.length],

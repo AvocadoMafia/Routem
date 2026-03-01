@@ -137,16 +137,17 @@ model Like {
   createdAt DateTime       @default(now())
   target    LikeViewTarget
 
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   routeId String? @db.Uuid
   route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
   commentId String?  @db.Uuid
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
-  userId String @db.Uuid
-  user   User   @relation(fields: [userId], references: [id])
-
   @@unique([userId, routeId])
+  @@unique([userId, commentId])
 }
 
 model Comment {

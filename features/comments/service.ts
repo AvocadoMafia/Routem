@@ -25,7 +25,7 @@ export const commentsService = {
 
         // take が未指定なら「自分 + その他全部」を返す（重複排除）
         if (take == null) {
-            const others = await commentsRepository.getOtherComments(userId, undefined, allWithout);
+            const others = await commentsRepository.getComments(undefined, allWithout);
             return [...myComments, ...others];
         }
 
@@ -34,8 +34,25 @@ export const commentsService = {
         if (remaining <= 0) return myComments.slice(0, take);
 
         // 2) 残り枠を、ランキング順で「自分以外」から埋める
-        const otherComments = await commentsRepository.getOtherComments(userId, remaining, allWithout);
+        const otherComments = await commentsRepository.getComments(remaining, allWithout);
 
         return [...myComments, ...otherComments];
+    },
+
+    createComment: async (userId: string, routeId: string, text: string) => {
+        return commentsRepository.createComment(userId, routeId, text);
+    },
+
+    deleteComment: async (userId: string, commentId: string) => {
+        const comment = await commentsRepository.findById(commentId);
+        if (!comment) {
+            throw new Error("Comment not found");
+        }
+
+        if (comment.userId !== userId) {
+            throw new Error("Unauthorized");
+        }
+
+        return commentsRepository.deleteComment(commentId);
     },
 };
