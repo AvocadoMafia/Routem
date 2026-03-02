@@ -39,11 +39,11 @@ export const routesService = {
       ...visibility_condition,
     };
 
-    return routesRepository.findRoutes({
+    const result = await routesRepository.findRoutes({
       where,
       take: query.limit,
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
       include: {
         category: true,
@@ -64,6 +64,7 @@ export const routesService = {
         },
       },
     });
+    return result;
   },
 
   postRoute: async (body: postRouteType, user_id: string) => {

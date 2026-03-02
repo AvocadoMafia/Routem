@@ -37,7 +37,6 @@ export async function requestToServerWithJson<T>(
 
     try {
         const res = await fetch(url, params)
-
         let json: any
         try {
             json = await res.json()
