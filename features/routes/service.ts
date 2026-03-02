@@ -76,13 +76,15 @@ export const routesService = {
             order: current_nodes.length,
             details: item.memo,
             spot: {
-              create: {
-              name: item.name,
-              latitude: item.lat,
+              connectOrCreate: {
+                where: {id: item.id},
+                create: {
+                name: item.name,
+                latitude: item.lat,
                 longitude: item.lng,
                 source: item.source,
                 sourceId: item.sourceId,
-              },
+              }},
             },
             transitSteps: { create: [] },
             images: {
