@@ -1,152 +1,189 @@
 import {MdExplore} from "react-icons/md";
 import {InputAdornment, MenuItem, Stack, TextField} from "@mui/material";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
-export default function ExploreCard() {
+interface ExploreCardProps {
+    isSidebar?: boolean;
+}
+
+export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
+    const router = useRouter();
+
+    const handleSearch = () => {
+        router.push("/explore?where=chiba");
+    };
 
     const textFieldSx = {
         "& .MuiInputLabel-root": {
-            color: "var(--foreground-0)",
-        },
-        "& .MuiInputLabel-root.Mui-focused": {
-            color: "var(--accent-1)",
+            color: "var(--foreground-1)",
+            fontSize: "0.75rem",
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            transform: "translate(14px, -9px) scale(1)",
+            backgroundColor: "var(--background-1)",
+            padding: "0 8px",
+            borderRadius: "4px",
+            zIndex: 1,
+            "&.Mui-focused": {
+                color: "var(--accent-0)",
+            },
         },
 
         "& .MuiOutlinedInput-root": {
             borderRadius: "16px",
             color: "var(--foreground-0)",
+            backgroundColor: "var(--background-1)",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
 
             "& fieldset": {
-                borderColor: "var(--foreground-0)",
+                borderColor: "rgba(var(--foreground-0-rgb), 0.08)",
+                borderWidth: "1px",
             },
             "&:hover fieldset": {
-                borderColor: "var(--foreground-0)",
+                borderColor: "rgba(var(--foreground-0-rgb), 0.2)",
             },
             "&.Mui-focused fieldset": {
-                borderColor: "var(--accent-1)",
+                borderColor: "var(--accent-0)",
                 borderWidth: "2px",
-            },
+            }
         },
 
-        /* 入力文字 */
         "& input": {
             color: "var(--foreground-0)",
+            fontSize: "0.95rem",
+            padding: "16px",
+            fontWeight: 500,
         },
 
-        /* ¥ マーク（InputAdornment） */
-        "& .MuiInputAdornment-root": {
-            color: "var(--foreground-0)",
+        "& .MuiInputAdornment-root p": {
+            color: "var(--foreground-1) !important",
+            fontWeight: 600,
+            fontSize: "1rem",
         },
 
-        /* Selectの矢印 */
+        "& .MuiSelect-select": {
+            padding: "16px",
+        },
+
         "& .MuiSelect-icon": {
-            color: "var(--foreground-0)",
+            color: "var(--foreground-1) !important",
+            right: "12px",
+            transition: "all 0.3s ease",
         },
-
-
+        "& .Mui-focused .MuiSelect-icon": {
+            color: "var(--accent-0) !important",
+            transform: "rotate(180deg)",
+        },
     };
 
     return (
         <motion.div
-            className="w-full max-w-[600px] h-auto backdrop-blur-md border-2 border-background-1/90 rounded-xl px-8 py-6 shadow-2xl flex flex-col gap-6 bg-background-1/80"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{type: "spring", stiffness: 200, damping: 15}}
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className={`
+                w-full max-w-[480px] h-auto
+                px-10 py-12 flex flex-col gap-10 bg-background-1 backdrop-blur-xl
+                ${isSidebar ? "h-full border-r-2 border-grass/20 shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border border-white/10"}
+            `}
+            transition={{
+                layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                opacity: { duration: 0.5 },
+                x: { duration: 0.5 }
+            }}
         >
             {/* タイトル */}
-            <div className="flex flex-row items-center gap-3">
-                <MdExplore className="text-3xl" />
-                <div className={'flex flex-col gap-1'}>
-                    <h1 className="text-2xl font-bold">Explore Routes</h1>
-                    <p
-                        className="w-fit text-sm font-semibold bg-clip-text text-transparent"
-                        style={{
-                            backgroundImage:
-                                "linear-gradient(90deg, var(--accent-0), var(--accent-1))",
-                        }}
-                    >
-                        Clarify your ideas of journey
-                    </p>
+            <div className="flex flex-col items-start text-left gap-3">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-accent-0 flex items-center justify-center shadow-lg shadow-accent-0/20">
+                        <MdExplore className="text-white text-2xl" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground-0">Explore</h1>
+                        <p className="text-[10px] font-bold text-accent-0 tracking-[0.2em] uppercase">
+                            Find your next story
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <Stack spacing={3}>
-                <TextField
-                    label="What"
-                    placeholder="#富士山 #日帰り #温泉"
-                    fullWidth
-                    variant="outlined"
-                    InputLabelProps={{ shrink: true }}
-                    sx={textFieldSx}
-                />
+            <Stack spacing={6}>
+                <div className="grid grid-cols-1 gap-8">
+                    <TextField
+                        label="What"
+                        placeholder="Nature, Onsen, Driving..."
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={textFieldSx}
+                    />
 
-                <TextField
-                    label="Where"
-                    placeholder="Tokyo, Japan"
-                    fullWidth
-                    variant="outlined"
-                    InputLabelProps={{ shrink: true }}
-                    sx={textFieldSx}
-                />
+                    <TextField
+                        label="Where"
+                        placeholder="Nagano, Japan"
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        sx={textFieldSx}
+                    />
 
-                <TextField
-                    label="When"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    sx={textFieldSx}
-                />
+                    <div className="grid grid-cols-2 gap-8">
+                        <TextField
+                            label="When"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            fullWidth
+                            sx={textFieldSx}
+                        />
+                        <TextField
+                            select
+                            label="Who"
+                            fullWidth
+                            defaultValue="solo"
+                            sx={textFieldSx}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        >
+                            <MenuItem value="solo">Solo</MenuItem>
+                            <MenuItem value="friends">Friends</MenuItem>
+                            <MenuItem value="family">Family</MenuItem>
+                            <MenuItem value="couple">Couple</MenuItem>
+                        </TextField>
+                    </div>
 
-                <TextField
-                    select
-                    label="Who"
-                    fullWidth
-                    defaultValue="solo"
-                    sx={textFieldSx}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
+                    <TextField
+                        label="Budget"
+                        type="number"
+                        fullWidth
+                        sx={textFieldSx}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <span className="text-foreground-0 font-light mr-1">¥</span>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </div>
+
+                <button 
+                    onClick={handleSearch}
+                    className="group relative w-full py-5 mt-2 bg-foreground-0 text-background-0 rounded-2xl font-bold overflow-hidden transition-all duration-300 hover:bg-accent-1 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/10"
                 >
-                    <MenuItem value="solo">Solo</MenuItem>
-                    <MenuItem value="friends">Friends</MenuItem>
-                    <MenuItem value="family">Family</MenuItem>
-                    <MenuItem value="couple">Couple</MenuItem>
-                </TextField>
-
-                <TextField
-                    label="Max Budget"
-                    type="number"
-                    fullWidth
-                    sx={{
-                        ...textFieldSx,
-                        /* ¥ の色 */
-                        "& .MuiInputAdornment-root": {
-                            color: "var(--foreground-1)",
-                        },
-
-                        /* Chrome系スピナー（上下矢印） */
-                        "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-                            filter: "brightness(0) saturate(100%) invert(1)",
-                            /* ダークテーマ想定。
-                               ライトなら不要 or 調整してください */
-                        },
-
-                        /* Firefox対策 */
-                        "& input[type=number]": {
-                            MozAppearance: "textfield",
-                        },
-                    }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                ¥
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-
-                <button className={'w-full h-fit py-4 px-4 bg-accent-1 text-white rounded-xl font-bold hover:bg-accent-2'}>
-                    Search Routes
+                    <span className="relative z-10 tracking-widest uppercase text-sm">
+                        Search Routes
+                    </span>
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
+                        <motion.span
+                            animate={{ x: [0, 4, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                        >
+                            →
+                        </motion.span>
+                    </div>
                 </button>
             </Stack>
         </motion.div>

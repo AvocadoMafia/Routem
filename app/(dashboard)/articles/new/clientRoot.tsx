@@ -239,7 +239,7 @@ export default function ClientRoot() {
                 title={title}
             />
             {/* 右側：詳細情報の編集フォーム＋投稿アクション（モバイルでは非表示） */}
-            <div className="hidden md:flex flex-1 h-full overflow-y-auto no-scrollbar shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex-col">
+            <div className="hidden md:flex flex-1 h-full overflow-y-auto shadow-[-10px_0_30px_rgba(0,0,0,0.02)] z-10 flex-col">
                 <ActionBar
                     isSettingsComplete={isSettingsComplete}
                     isTitleSet={isTitleSet}
