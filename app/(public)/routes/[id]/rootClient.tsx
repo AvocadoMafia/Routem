@@ -89,7 +89,7 @@ export default function RootClient({ route, currentUser }: Props) {
   }, []);
 
   return (
-    <div className="w-full h-[100svh] relative overflow-hidden">
+    <div className="w-full h-full relative overflow-hidden">
       <InitialModal route={route} />
       
       <div className={`flex h-full w-full overflow-hidden relative flex-col md:flex-row`}>
