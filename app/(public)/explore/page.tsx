@@ -149,7 +149,7 @@ function ExploreContent() {
             {/* コンテンツレイアウト */}
             <motion.div 
                 layout
-                className={`relative w-full h-full flex ${hasParams ? 'justify-start' : 'items-center justify-center'}`}
+                className={`relative w-full h-full flex flex-col md:flex-row ${hasParams ? 'justify-start' : 'items-center justify-center'}`}
                 transition={{
                     layout: { duration: 0.8, ease: [0.32, 0.72, 0, 1] }
                 }}
@@ -166,21 +166,21 @@ function ExploreContent() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
                             transition={{ delay: 0.6, duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
-                            className="flex-1 h-full p-8 md:p-12 pt-24 overflow-y-auto bg-background-0"
+                            className="flex-1 h-full p-4 md:p-12 pt-24 overflow-y-auto bg-background-0"
                         >
-                            <div className="max-w-5xl mx-auto flex flex-col gap-16">
-                                <div className="flex flex-col gap-6">
+                            <div className="max-w-5xl mx-auto flex flex-col gap-8 md:gap-16">
+                                <div className="flex flex-col gap-4 md:gap-6">
                                     <div className="flex items-center gap-4">
-                                        <div className="h-10 w-1 bg-accent-0 rounded-full" />
-                                        <h2 className="text-5xl font-bold text-foreground-0 tracking-tight">
+                                        <div className="h-8 md:h-10 w-1 bg-accent-0 rounded-full" />
+                                        <h2 className="text-3xl md:text-5xl font-bold text-foreground-0 tracking-tight">
                                             Discovery
                                         </h2>
                                     </div>
-                                    <p className="text-foreground-1 text-sm tracking-[0.1em] font-medium ml-5">
+                                    <p className="text-foreground-1 text-xs md:text-sm tracking-[0.1em] font-medium ml-5">
                                         Showing results for <span className="text-accent-0 font-bold">"{searchParams.get('where')}"</span> — {MOCK_ROUTES.length} routes found
                                     </p>
                                 </div>
-                                <div className="grid grid-cols-1 gap-12">
+                                <div className="grid grid-cols-1 gap-6 md:gap-12 pb-24 md:pb-0">
                                     {MOCK_ROUTES.map((route, index) => (
                                         <motion.div
                                             key={route.id}
