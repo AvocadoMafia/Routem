@@ -1,8 +1,8 @@
 import {MdClose, MdExplore, MdSearch} from "react-icons/md";
-import {Box, Button, Drawer, InputAdornment, MenuItem, Stack, TextField, useMediaQuery, useTheme} from "@mui/material";
+import {InputAdornment, MenuItem, TextField} from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 interface ExploreCardProps {
     isSidebar?: boolean;
@@ -10,9 +10,17 @@ interface ExploreCardProps {
 
 export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     const router = useRouter();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [isMobile, setIsMobile] = useState(false);
     const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768); // md is 768px in tailwind
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleSearch = () => {
         setIsMobileModalOpen(false);
@@ -84,7 +92,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     };
 
     const cardContent = (
-        <Stack spacing={6}>
+        <div className="flex flex-col gap-10">
             <div className="flex flex-row items-start justify-between text-left gap-3">
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-2xl bg-accent-0 flex items-center justify-center shadow-lg shadow-accent-0/20">
@@ -183,7 +191,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                     </motion.span>
                 </div>
             </button>
-        </Stack>
+        </div>
     );
 
     if (isMobile && isSidebar) {
@@ -196,24 +204,31 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                     <MdExplore size={28} />
                 </button>
 
-                <Drawer
-                    anchor="bottom"
-                    open={isMobileModalOpen}
-                    onClose={() => setIsMobileModalOpen(false)}
-                    PaperProps={{
-                        sx: {
-                            borderRadius: "24px 24px 0 0",
-                            backgroundColor: "var(--background-1)",
-                            padding: "32px 24px 48px",
-                            maxHeight: "90vh",
-                        }
-                    }}
-                >
-                    <Box sx={{ width: '100%' }}>
-                        <div className="w-12 h-1 bg-grass rounded-full mx-auto mb-8 opacity-50" />
-                        {cardContent}
-                    </Box>
-                </Drawer>
+                <AnimatePresence>
+                    {isMobileModalOpen && (
+                        <>
+                            {/* Backdrop */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsMobileModalOpen(false)}
+                                className="fixed inset-0 bg-black/40 z-[110] backdrop-blur-sm"
+                            />
+                            {/* Drawer Content */}
+                            <motion.div
+                                initial={{ y: "100%" }}
+                                animate={{ y: 0 }}
+                                exit={{ y: "100%" }}
+                                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                className="fixed bottom-0 left-0 right-0 z-[120] bg-background-1 rounded-t-[24px] px-6 pt-8 pb-12 max-h-[90vh] overflow-y-auto"
+                            >
+                                <div className="w-12 h-1 bg-grass rounded-full mx-auto mb-8 opacity-50" />
+                                {cardContent}
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
             </>
         );
     }
@@ -225,8 +240,8 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
             animate={{ opacity: 1, x: 0 }}
             className={`
                 w-full max-w-[480px] h-auto
-                px-10 py-12 flex flex-col gap-10 bg-background-1 backdrop-blur-xl
-                ${isSidebar ? "hidden md:flex h-full border-r-2 border-grass/20 shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border border-white/10 mx-4"}
+                px-10 py-12 flex flex-col gap-10 backdrop-blur-xl bg-background-1
+                ${isSidebar ? "hidden md:flex h-full border-r-1 border-grass shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] mx-4"}
             `}
             transition={{
                 layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
