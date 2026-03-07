@@ -8,6 +8,10 @@ import { headers } from "next/headers";
 
 export default async function RoutePage({ params }: { params: { id: string } }) {
   const resolvedParams = await params
+  // Route.id は UUID なので、モック等から数値IDが来た場合は DB を引かず 404 にする
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(resolvedParams.id)) {
+    notFound();
+  }
   const prisma = getPrisma();
   
   // get headers to satisfy createClient requirement if needed, 

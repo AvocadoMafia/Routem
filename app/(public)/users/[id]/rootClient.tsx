@@ -11,7 +11,7 @@ import UserProfileContent from './_components/templates/userProfileContent'
 // モックデータ: 投稿されたルート用
 const MOCK_ROUTES = [
   { 
-    id: '1', 
+    id: '00000000-0000-4000-8000-000000000011', 
     title: 'Summer Coastal Drive', 
     thumbnail: { url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800' }, 
     likes: new Array(120).fill({}), 
@@ -19,7 +19,7 @@ const MOCK_ROUTES = [
     author: { name: 'Traveler' }
   },
   { 
-    id: '2', 
+    id: '00000000-0000-4000-8000-000000000012', 
     title: 'Kyoto Hidden Temples', 
     thumbnail: { url: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800' }, 
     likes: new Array(85).fill({}), 
@@ -27,7 +27,7 @@ const MOCK_ROUTES = [
     author: { name: 'Traveler' }
   },
   { 
-    id: '3', 
+    id: '00000000-0000-4000-8000-000000000013', 
     title: 'Nagano Mountain Pass', 
     thumbnail: { url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800' }, 
     likes: new Array(230).fill({}), 
@@ -35,7 +35,7 @@ const MOCK_ROUTES = [
     author: { name: 'Traveler' }
   },
   { 
-    id: '4', 
+    id: '00000000-0000-4000-8000-000000000014', 
     title: 'Tokyo Night Walk', 
     thumbnail: { url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800' }, 
     likes: new Array(45).fill({}), 
@@ -43,7 +43,7 @@ const MOCK_ROUTES = [
     author: { name: 'Traveler' }
   },
   { 
-    id: '5', 
+    id: '00000000-0000-4000-8000-000000000015', 
     title: 'Hokkaido Flower Fields', 
     thumbnail: { url: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800' }, 
     likes: new Array(310).fill({}), 
@@ -51,7 +51,7 @@ const MOCK_ROUTES = [
     author: { name: 'Traveler' }
   },
   { 
-    id: '6', 
+    id: '00000000-0000-4000-8000-000000000016', 
     title: 'Osaka Street Food Map', 
     thumbnail: { url: 'https://images.unsplash.com/photo-1590244921278-db049a2ef398?w=800' }, 
     likes: new Array(156).fill({}), 

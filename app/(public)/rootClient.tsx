@@ -63,8 +63,11 @@ export default function RootClient() {
         if (base.length >= 6) return base;
         // pad with placeholders
         const placeholdersNeeded = 6 - base.length;
-        const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => ({
-            id: `placeholder-${i}`,
+        const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => {
+            const placeholderId = `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`;
+            const placeholderCategoryId = "00000000-0000-4000-8000-999999999999";
+            return ({
+            id: placeholderId,
             title: `Sample Route ${i + 1}`,
             description: 'This is a sample description for the placeholder route.',
             visibility: "PUBLIC" as RouteVisibility,
@@ -77,22 +80,22 @@ export default function RootClient() {
             } as any,
             createdAt: new Date(),
             updatedAt: new Date(),
-            categoryId: 1,
-            category: { id: 1, name: 'General' },
-            thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: `placeholder-${i}` } as any,
+            categoryId: placeholderCategoryId,
+            category: { id: placeholderCategoryId, name: 'General' },
+            thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: placeholderId } as any,
             likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ 
                 id: `like-${i}-${j}`, 
                 createdAt: new Date(), 
                 target: 'ROUTE' as const, 
-                routeId: `placeholder-${i}`, 
+                routeId: placeholderId, 
                 userId: `u${(j % 7) + 1}`,
                 commentId: null
             })),
-            views: Array.from({ length: 100 + i * 20 }).map((_, j) => ({ id: `view-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: null })),
+            views: Array.from({ length: 100 + i * 20 }).map((_, j) => ({ id: `view-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: placeholderId, userId: null })),
             routeNodes: [
                 {
                     id: `node-${i}-1`,
-                    routeId: `placeholder-${i}`,
+                    routeId: placeholderId,
                     spotId: 'kyoto-station',
                     details: 'Start from Kyoto Station',
                     spot: {
@@ -105,7 +108,7 @@ export default function RootClient() {
                 },
                 {
                     id: `node-${i}-2`,
-                    routeId: `placeholder-${i}`,
+                    routeId: placeholderId,
                     spotId: 'nara-park',
                     details: 'Visit Nara Park',
                     spot: {
@@ -117,7 +120,7 @@ export default function RootClient() {
                     }
                 }
             ] as any
-        }));
+        })});
         return [...base, ...placeholders];
     }, [routes]);
 
