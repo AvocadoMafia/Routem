@@ -121,7 +121,7 @@ export const routesService = {
         title: body.title ?? undefined,
         description: body.description ?? undefined,
         visibility: body.visibility as RouteVisibility ?? undefined,
-        
+        author: {connect:{id:user_id}},
         category:{
           connect:{
             id:body.categoryId,
