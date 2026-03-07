@@ -65,6 +65,7 @@ export default function RootClient() {
         const placeholdersNeeded = 6 - base.length;
         const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => {
             const placeholderId = `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`;
+            const placeholderCategoryId = "00000000-0000-4000-8000-999999999999";
             return ({
             id: placeholderId,
             title: `Sample Route ${i + 1}`,
@@ -79,8 +80,8 @@ export default function RootClient() {
             } as any,
             createdAt: new Date(),
             updatedAt: new Date(),
-            categoryId: 1,
-            category: { id: 1, name: 'General' },
+            categoryId: placeholderCategoryId,
+            category: { id: placeholderCategoryId, name: 'General' },
             thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: placeholderId } as any,
             likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ 
                 id: `like-${i}-${j}`, 

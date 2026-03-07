@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { WaypointSchema, TransportationSchema } from "../database_schema";
-import { create } from "domain";
 
 export const GetRoutesSchema = z.object({
     authorId: z.string().uuid().optional(),
-    categoryId: z.number().optional(),
+    categoryId: z.string().uuid().optional(),
     createdAfter: z.string().datetime().optional(),
     limit: z.string().regex(/^\d+$/).transform(Number),
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
@@ -25,7 +24,7 @@ export type postRouteType = z.infer<typeof PostRouteSchema>;
 
 export const PatchRouteSchema = z.object({
     id: z.string().uuid("Invalid route ID"),
-    categoryId: z.number().optional(),
+    categoryId: z.string().uuid().optional(),
     description: z.string().optional(),
     items: z.array(z.union([WaypointSchema, TransportationSchema])).optional(),
     thumbnailImageSrc: z.string().startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL").optional(),

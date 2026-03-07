@@ -136,7 +136,7 @@ export const routesService = {
       // 呼び出し側が期待している routeId だけ返す
       select: { id: true },
     });
-    return { routeId: route.id };
+    return "id" in route ? { routeId: route.id } : route;
   },
   
   patchRoute: async (parsed_body: PatchRouteType) => {
