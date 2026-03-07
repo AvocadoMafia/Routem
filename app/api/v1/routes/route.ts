@@ -7,6 +7,7 @@ import { GetRoutesSchema } from "@/features/routes/schema";
 import { createClient } from "@/lib/auth/supabase/server";
 import { PostRouteSchema } from "@/features/routes/schema";
 import { PatchRouteSchema } from "@/features/routes/schema";
+import { meilisearch } from "@/lib/search/meilisearch"
 
 // GET /api/v1/routems
 // 最近作成されたルートを一覧返却します
@@ -39,6 +40,8 @@ export async function POST(req: NextRequest) {
     }
     const parsed_body = await validateParams(PostRouteSchema, body);
     const result = await routesService.postRoute(parsed_body, user.id);
+    const index = meilisearch.index("route");
+    const document = 
     return NextResponse.json(result, { status: 201 });
   });
 }
