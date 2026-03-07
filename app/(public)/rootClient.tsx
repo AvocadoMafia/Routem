@@ -123,12 +123,12 @@ export default function RootClient() {
 
     const [selected, setSelected] = useState<selectedType>('home')
     return (
-        <div className={'w-full max-w-[1600px] h-fit flex flex-col items-center md:px-8 px-4 md:pb-8 pb-4 gap-8 relative'}>
+        <div className={'w-full max-w-[1600px] h-fit flex flex-col items-center md:px-8 px-4 md:pb-12 pb-6 gap-12 relative'}>
             <ContentsSelector selected={selected} setSelected={setSelected}/>
             {(() => {
                 switch (selected) {
                     case 'home': return (
-                        <div className={'w-full h-fit flex flex-col items-center gap-8'}>
+                        <div className={'w-full h-fit flex flex-col items-center gap-20'}>
                             {error && <div className={'w-full text-red-500 text-sm'}>{error}</div>}
                             {loading ? (
                                 <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>
@@ -147,68 +147,68 @@ export default function RootClient() {
                         <PhotoViewer/>
                     )
                     case 'interests': return (
-                        <div className={'w-full h-fit flex flex-col gap-8'}>
-                            <div className={'w-full flex flex-col gap-2'}>
-                                <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-0 font-bold'}>
-                                        <GiGreekTemple className={'text-3xl'}/>
-                                        <h2 className={'text-2xl'}>History</h2>
+                        <div className={'w-full h-fit flex flex-col gap-12'}>
+                            <div className={'w-full flex flex-col gap-4'}>
+                                <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
+                                    <div className={'flex flex-row items-center gap-3 text-foreground-0 font-bold'}>
+                                        <GiGreekTemple className={'text-2xl'}/>
+                                        <h2 className={'text-xl tracking-tight'}>History</h2>
                                     </div>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-1 cursor-pointer'}>
-                                        <h2 className={'text-lg'}>View More</h2>
-                                        <IoIosArrowForward className={'text-xl'}/>
-                                    </div>
-                                </div>
-                                <RouteListBasic routes={paddedRoutes}/>
-                            </div>
-                            <div className={'w-full flex flex-col gap-2'}>
-                                <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-0 font-bold'}>
-                                        <PiMountains className={'text-3xl'}/>
-                                        <h2 className={'text-2xl'}>Nature</h2>
-                                    </div>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-1 cursor-pointer'}>
-                                        <h2 className={'text-lg'}>View More</h2>
-                                        <IoIosArrowForward className={'text-xl'}/>
+                                    <div className={'flex flex-row items-center gap-1.5 text-foreground-1/60 hover:text-accent-0 transition-colors cursor-pointer'}>
+                                        <span className={'text-sm font-bold uppercase tracking-widest'}>View More</span>
+                                        <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
                                 <RouteListBasic routes={paddedRoutes}/>
                             </div>
-                            <div className={'w-full flex flex-col gap-2'}>
-                                <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-0 font-bold'}>
-                                        <LuPalette className={'text-3xl'}/>
-                                        <h2 className={'text-2xl'}>Culture</h2>
+                            <div className={'w-full flex flex-col gap-4'}>
+                                <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
+                                    <div className={'flex flex-row items-center gap-3 text-foreground-0 font-bold'}>
+                                        <PiMountains className={'text-2xl'}/>
+                                        <h2 className={'text-xl tracking-tight'}>Nature</h2>
                                     </div>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-1 cursor-pointer'}>
-                                        <h2 className={'text-lg'}>View More</h2>
-                                        <IoIosArrowForward className={'text-xl'}/>
-                                    </div>
-                                </div>
-                                <RouteListBasic routes={paddedRoutes}/>
-                            </div>
-                            <div className={'w-full flex flex-col gap-2'}>
-                                <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-0 font-bold'}>
-                                        <PiForkKnife className={'text-3xl'}/>
-                                        <h2 className={'text-2xl'}>Food</h2>
-                                    </div>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-1 cursor-pointer'}>
-                                        <h2 className={'text-lg'}>View More</h2>
-                                        <IoIosArrowForward className={'text-xl'}/>
+                                    <div className={'flex flex-row items-center gap-1.5 text-foreground-1/60 hover:text-accent-0 transition-colors cursor-pointer'}>
+                                        <span className={'text-sm font-bold uppercase tracking-widest'}>View More</span>
+                                        <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
                                 <RouteListBasic routes={paddedRoutes}/>
                             </div>
-                            <div className={'w-full flex flex-col gap-2'}>
-                                <div className={'py-4 flex flex-row justify-between items-center'}>
-                                    <div className={'flex flex-row items中心 gap-2 text-foreground-0 font-bold'}>
-                                        <FaRunning className={'text-3xl'}/>
-                                        <h2 className={'text-2xl'}>Activity</h2>
+                            <div className={'w-full flex flex-col gap-4'}>
+                                <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
+                                    <div className={'flex flex-row items-center gap-3 text-foreground-0 font-bold'}>
+                                        <LuPalette className={'text-2xl'}/>
+                                        <h2 className={'text-xl tracking-tight'}>Culture</h2>
                                     </div>
-                                    <div className={'flex flex-row items-center gap-2 text-foreground-1 cursor-pointer'}>
-                                        <h2 className={'text-lg'}>View More</h2>
-                                        <IoIosArrowForward className={'text-xl'}/>
+                                    <div className={'flex flex-row items-center gap-1.5 text-foreground-1/60 hover:text-accent-0 transition-colors cursor-pointer'}>
+                                        <span className={'text-sm font-bold uppercase tracking-widest'}>View More</span>
+                                        <IoIosArrowForward className={'text-lg'}/>
+                                    </div>
+                                </div>
+                                <RouteListBasic routes={paddedRoutes}/>
+                            </div>
+                            <div className={'w-full flex flex-col gap-4'}>
+                                <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
+                                    <div className={'flex flex-row items-center gap-3 text-foreground-0 font-bold'}>
+                                        <PiForkKnife className={'text-2xl'}/>
+                                        <h2 className={'text-xl tracking-tight'}>Food</h2>
+                                    </div>
+                                    <div className={'flex flex-row items-center gap-1.5 text-foreground-1/60 hover:text-accent-0 transition-colors cursor-pointer'}>
+                                        <span className={'text-sm font-bold uppercase tracking-widest'}>View More</span>
+                                        <IoIosArrowForward className={'text-lg'}/>
+                                    </div>
+                                </div>
+                                <RouteListBasic routes={paddedRoutes}/>
+                            </div>
+                            <div className={'w-full flex flex-col gap-4'}>
+                                <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
+                                    <div className={'flex flex-row items-center gap-3 text-foreground-0 font-bold'}>
+                                        <FaRunning className={'text-2xl'}/>
+                                        <h2 className={'text-xl tracking-tight'}>Activity</h2>
+                                    </div>
+                                    <div className={'flex flex-row items-center gap-1.5 text-foreground-1/60 hover:text-accent-0 transition-colors cursor-pointer'}>
+                                        <span className={'text-sm font-bold uppercase tracking-widest'}>View More</span>
+                                        <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
                                 <RouteListBasic routes={paddedRoutes}/>
