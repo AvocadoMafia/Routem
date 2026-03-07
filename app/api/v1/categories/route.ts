@@ -7,6 +7,7 @@ import { categoriesService } from "@/features/categories/service";
 export async function GET(req:NextRequest){
     return handleRequest(
         async()=>{
-            return NextResponse.json(categoriesService.getCategories(), {status:200});}
+            const res = await categoriesService.getCategories();
+            return NextResponse.json(res, {status:200});}
     );
 }

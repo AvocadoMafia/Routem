@@ -2,14 +2,16 @@
 
 import { Image as ImageIcon, Loader2, MessageSquare, Tag, Globe, Lock } from "lucide-react";
 import Image from "next/image";
+import {Category} from "@/lib/client/types";
+import {categoryStore} from "@/lib/client/stores/categoryStore";
 
 interface RouteSettingsSectionProps {
     title: string;
     setTitle: (val: string) => void;
     description: string;
     setDescription: (val: string) => void;
-    category: string;
-    setCategory: (val: string) => void;
+    category: Category;
+    setCategory: (val: Category) => void;
     visibility: 'PUBLIC' | 'PRIVATE';
     setVisibility: (val: 'PUBLIC' | 'PRIVATE') => void;
     thumbnailImageSrc?: string;
@@ -26,6 +28,9 @@ export default function RouteSettingsSection({
     handleImageUpload,
     uploading
 }: RouteSettingsSectionProps) {
+
+    const categories = categoryStore((state) => state.categories);
+
     return (
         <div className="w-full h-full flex-1 bg-background-1 p-10">
             <div className="max-w-3xl mx-auto space-y-12 pb-20">
@@ -78,16 +83,13 @@ export default function RouteSettingsSection({
                                 <Tag size={16} /> Category
                             </label>
                             <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
+                                value={category.id}
+                                onChange={(e) => setCategory(categories.find((cat ) => cat.id === e.target.value) || { id: '', name: ''})}
                                 className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium appearance-none"
                             >
-                                <option value="General">General</option>
-                                <option value="History">History</option>
-                                <option value="Nature">Nature</option>
-                                <option value="Culture">Culture</option>
-                                <option value="Food">Food</option>
-                                <option value="Activity">Activity</option>
+                                {categories.map((cat, idx) => (
+                                    <option key={idx} value={cat.id}>{cat.name}</option>
+                                ))}
                             </select>
                         </div>
 

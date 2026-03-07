@@ -1,7 +1,4 @@
-import { getPrisma } from "@/lib/config/server";
 import { postRouteType } from "@/features/routes/schema";
-import { RouteNode } from "@/lib/server/types";
-import { cuid, number } from "zod";
 import {
   ImageStatus,
   ImageType,
@@ -10,7 +7,6 @@ import {
 } from "@prisma/client";
 import { routesRepository } from "@/features/routes/repository";
 import { User } from "@supabase/supabase-js";
-import { mapMethodToTransitMode } from "@/features/routes/utils";
 import { GetRoutesType } from "@/features/routes/schema";
 import { FindRoutes } from "@/features/routes/repository";
 import { PatchRouteType } from "@/features/routes/schema";
@@ -76,17 +72,42 @@ export const routesService = {
           current_node = {
             order: current_nodes.length,
             details: item.memo,
-            spot: {
-              connectOrCreate: {
-                where: {id: item.id},
-                create: {
-                name: item.name,
-                latitude: item.lat,
-                longitude: item.lng,
-                source: item.source,
-                sourceId: item.sourceId,
-              }},
-            },
+            spot: (() => {
+              //source,sourceIdが存在する時
+              if (item.source && item.sourceId) {
+                return {
+                  connectOrCreate: {
+                    where: { source_sourceId: { source: item.source, sourceId: item.sourceId } },
+                    create: {
+                      name: item.name,
+                      latitude: item.lat,
+                      longitude: item.lng,
+                      source: item.source,
+                      sourceId: item.sourceId,
+                    },
+                  },
+                };
+              } else if (!!item.id) {
+                return {
+                  connectOrCreate: {
+                    where: { id: item.id },
+                    create: {
+                      name: item.name,
+                      latitude: item.lat,
+                      longitude: item.lng,
+                    },
+                  },
+                };
+              } else {
+                return {
+                  create: {
+                    name: item.name,
+                    latitude: item.lat,
+                    longitude: item.lng,
+                  },
+                };
+              }
+            })(),
             transitSteps: { create: [] },
             images: {
               create: Array.isArray(item.images)

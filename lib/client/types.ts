@@ -21,6 +21,10 @@ export type User = Prisma.UserGetPayload<{
     }
 }>
 
+export type Category = Prisma.CategoryGetPayload<{
+}>
+
+
 export type Waypoint = {
     id?: string;
     type: 'waypoint';

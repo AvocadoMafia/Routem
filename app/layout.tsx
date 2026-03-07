@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./globals.css";
-import Header from "@/app/_components/layout/templates/header";
-import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
-import Main from "@/app/_components/layout/templates/main";
 import RootClient from "@/app/rootClient";
-import UserInitializer from "@/app/_components/layout/templates/userInitializer";
 import { ThemeProvider } from "@/app/_components/providers/themeProvider";
+import StateInitializer from "@/app/_components/layout/templates/stateInitializer";
 
 //uxo
 
@@ -41,7 +38,7 @@ export default function RootLayout({
           disableTransitionOnChange
       >
         <RootClient>{children}</RootClient>
-        <UserInitializer/>
+          <StateInitializer/>
       </ThemeProvider>
       </body>
     </html>

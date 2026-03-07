@@ -11,6 +11,7 @@ import { useAtomValue } from "jotai";
 import { isMobileAtom } from "@/lib/client/atoms";
 import { useRouteEditor } from "./hooks/useRouteEditor";
 import { getDataFromServerWithJson, postDataToServerWithJson } from "@/lib/client/helpers";
+import {Category} from "@/lib/client/types";
 
 
 export default function ClientRoot() {
@@ -31,7 +32,7 @@ export default function ClientRoot() {
     // ルート全体のメタ情報
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("General");
+    const [category, setCategory] = useState<Category>({id: '', name: ''});
     const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
     const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(undefined);
 
@@ -186,18 +187,18 @@ export default function ClientRoot() {
         setPublishing(true);
         setMessage(null);
         try {
-            const result = await postDataToServerWithJson<{ routeId: string }>('/api/v1/routes', {
+            const result = await postDataToServerWithJson<{ id: string }>('/api/v1/routes', {
                 title,
                 description,
-                category,
+                categoryId: category.id,
                 visibility,
                 thumbnailImageSrc,
                 items: normalizedItems
             });
 
-            if (result?.routeId) {
+            if (!!result) {
                 setMessage(`Published! Redirecting...`);
-                router.push(`/`);
+                router.push(`/routes/${result.id}`);
             } else {
                 throw new Error('Failed to publish');
             }
