@@ -6,19 +6,19 @@ import Image from "next/image";
 
 export const RELATED_ARTICLES_MOCK = [
   {
-    id: "1",
+    id: "00000000-0000-4000-8000-000000000001",
     title: "京都の隠れた名所を巡る旅",
     thumbnail: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=300",
     author: "TravelerA",
   },
   {
-    id: "2",
+    id: "00000000-0000-4000-8000-000000000002",
     title: "週末で行ける温泉街ガイド",
     thumbnail: "https://images.unsplash.com/photo-1540206395-6880f94933af?auto=format&fit=crop&q=80&w=300",
     author: "HotSpringLover",
   },
   {
-    id: "3",
+    id: "00000000-0000-4000-8000-000000000003",
     title: "カフェ好きに贈る都内散策ルート",
     thumbnail: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=300",
     author: "CafeMaster",
