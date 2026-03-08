@@ -162,6 +162,14 @@ export const routesService = {
             create: current_nodes,
           },
         }),
+      
+      include:{
+        visibility:true,
+        thumbnail:true,
+        category:true,
+        routeNodes:true,
+      }
+
       },
     });
   },
