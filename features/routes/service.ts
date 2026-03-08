@@ -163,14 +163,13 @@ export const routesService = {
           },
         }),
       
+
+      },
       include:{
-        visibility:true,
         thumbnail:true,
         category:true,
         routeNodes:true,
       }
-
-      },
     });
   },
   
