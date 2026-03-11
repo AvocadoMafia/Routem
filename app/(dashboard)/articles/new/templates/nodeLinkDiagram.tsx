@@ -71,7 +71,7 @@ export default function NodeLinkDiagram({
     }, []);
 
     return (
-        <div className="w-full md:w-[450px] h-full bg-background-0/50 backdrop-blur-md border-b md:border-b-0 md:border-r border-grass flex flex-col no-scrollbar overflow-y-scroll">
+        <div className="w-full md:w-[450px] h-full bg-background-0/50 backdrop-blur-md border-b md:border-b-0 md:border-r border-grass flex flex-col overflow-y-scroll">
             {/* Sticky header for diagram actions */}
             <div
                 className="sticky top-0 z-20 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 md:hidden flex items-center justify-between"
@@ -202,13 +202,6 @@ export default function NodeLinkDiagram({
             {/* 下部の「経由地を追加」ボタン */}
             <motion.div
                 className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky bottom-0 mt-auto z-50"
-                animate={{
-                    bottom: scrollDirection === 'down' ? 0 : yOffset
-                }}
-                transition={{
-                    duration: 0.3,
-                    ease: "easeOut"
-                }}
             >
                 <button
                     onClick={onAddWaypoint}

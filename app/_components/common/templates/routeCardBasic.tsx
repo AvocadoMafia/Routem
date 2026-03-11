@@ -1,6 +1,5 @@
 import { Route } from "@/lib/client/types"
 import React from "react";
-import {Icon} from "@mui/material";
 import {HiEye, HiHeart} from "react-icons/hi2";
 import Image from "next/image";
 import Link from "next/link";
