@@ -12,15 +12,16 @@ datasource db {
 }
 
 model User {
-  id             String    @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
+  id             String              @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
   name           String
   gender         String?
   age            Int?
   bio            String?
-  icon           Image?    @relation("UserIcon")
-  background     Image?    @relation("UserBackground")
-  uploadedImages Image[]   @relation("UserUploads")
+  icon           Image?              @relation("UserIcon")
+  background     Image?              @relation("UserBackground")
+  uploadedImages Image[]             @relation("UserUploads")
   routes         Route[]
+  collaborations RouteCollaborator[]
   likes          Like[]
   comments       Comment[]
 }
@@ -88,13 +89,42 @@ model Route {
   authorId String @db.Uuid
   author   User   @relation(references: [id], fields: [authorId])
 
-  visibility RouteVisibility @default(PRIVATE)
-  routeNodes RouteNode[]
-  likes      Like[]
-  comments   Comment[]
-  views      View[]
+  visibility    RouteVisibility     @default(PRIVATE)
+  routeNodes    RouteNode[]
+  likes         Like[]
+  comments      Comment[]
+  views         View[]
+  collaborators RouteCollaborator[]
+  invites       RouteInvite[]
+
+  collaboratorPolicy RouteCollaboratorPolicy @default(DISABLED)
 
   @@index([authorId])
+}
+
+model RouteCollaborator {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId   String   @db.Uuid
+  route     Route    @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([routeId, userId])
+}
+
+model RouteInvite {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId   String    @db.Uuid
+  route     Route     @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  revokedAt DateTime?
+  maxUses   Int?
+  usedCount Int       @default(0)
+
+  @@index([routeId])
 }
 
 model RouteNode {
@@ -216,4 +246,10 @@ enum TransitMode {
 enum SpotSource {
   MAPBOX
   USER
+}
+
+enum RouteCollaboratorPolicy {
+  DISABLED
+  VIEW_ONLY
+  CAN_EDIT
 }

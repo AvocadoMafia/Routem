@@ -34,6 +34,7 @@ export default async function RoutePage({ params }: { params: { id: string } }) 
       category: true,
       likes: true,
       views: true,
+      collaborators: true,
       routeNodes: {
         orderBy: { order: 'asc' },
         include: {
@@ -47,6 +48,15 @@ export default async function RoutePage({ params }: { params: { id: string } }) 
 
   if (!route) {
     notFound();
+  }
+
+  // 認可チェック
+  const isAuthor = !!user?.id && route.authorId === user.id;
+  const isCollaborator = !!user?.id && route.collaborators?.some(c => c.userId === user.id);
+  const isPublic = route.visibility === 'PUBLIC';
+
+  if (!isPublic && !isAuthor && !isCollaborator) {
+    notFound(); // または Unauthorized ページへ
   }
 
   return <RootClient route={route} currentUser={user} />;

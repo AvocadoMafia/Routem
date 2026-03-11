@@ -5,7 +5,8 @@ import {UpdateUserType} from "@/features/users/schema";
 
 
 export const usersRepository = {
-  findById: async (id: string) => {
+  findById: async (id: string, requesterId?: string) => {
+    const isOwner = !!requesterId && requesterId === id;
     const user = await getPrisma().user.findUnique({
       where: { id: id },
       include: {

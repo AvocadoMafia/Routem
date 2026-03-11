@@ -77,8 +77,9 @@ export default function RootClient() {
             } as any,
             createdAt: new Date(),
             updatedAt: new Date(),
-            categoryId: 1,
-            category: { id: 1, name: 'General' },
+            collaboratorPolicy: "DISABLED",
+            categoryId: `cat-${i}`,
+            category: { id: `cat-${i}`, name: 'General' },
             thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: `placeholder-${i}` } as any,
             likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ 
                 id: `like-${i}-${j}`, 
@@ -89,6 +90,7 @@ export default function RootClient() {
                 commentId: null
             })),
             views: Array.from({ length: 100 + i * 20 }).map((_, j) => ({ id: `view-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: null })),
+            collaborators: [],
             routeNodes: [
                 {
                     id: `node-${i}-1`,

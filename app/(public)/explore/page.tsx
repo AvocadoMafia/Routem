@@ -9,7 +9,7 @@ import RouteCardBasic from "@/app/_components/common/templates/routeCardBasic";
 import { Route } from "@/lib/client/types";
 
 // モックデータ
-const MOCK_ROUTES: Route[] = [
+const MOCK_ROUTES: any[] = [
     {
         id: "1",
         title: "富士山を望む絶景ドライブ",
@@ -18,25 +18,17 @@ const MOCK_ROUTES: Route[] = [
         author: {
             id: "user1",
             name: "YamaWalker",
-            email: "yama@example.com",
-            emailVerified: null,
-            password: null,
-            iconId: null,
-            backgroundId: null,
             icon: { id: "icon1", url: "/mockImages/userIcon_1.jpg", createdAt: new Date(), updatedAt: new Date() },
-            createdAt: new Date(),
-            updatedAt: new Date()
         },
-        thumbnailId: "thumb1",
         thumbnail: { id: "thumb1", url: "/mockImages/mountain.jpg", createdAt: new Date(), updatedAt: new Date() },
         categoryId: "cat1",
-        category: { id: "cat1", name: "Drive", createdAt: new Date(), updatedAt: new Date() },
+        category: { id: "cat1", name: "Drive" },
         createdAt: new Date(),
         updatedAt: new Date(),
         likes: [],
         views: [],
-        routeNodes: [{}, {}, {}] as any, // 簡易化
-        published: true,
+        routeNodes: [],
+        visibility: "PUBLIC",
     },
     {
         id: "2",
@@ -46,25 +38,17 @@ const MOCK_ROUTES: Route[] = [
         author: {
             id: "user2",
             name: "SeaLover",
-            email: "sea@example.com",
-            emailVerified: null,
-            password: null,
-            iconId: null,
-            backgroundId: null,
             icon: { id: "icon2", url: "/mockImages/userIcon_2.jpg", createdAt: new Date(), updatedAt: new Date() },
-            createdAt: new Date(),
-            updatedAt: new Date()
         },
-        thumbnailId: "thumb2",
         thumbnail: { id: "thumb2", url: "/mockImages/ocean.jpg", createdAt: new Date(), updatedAt: new Date() },
         categoryId: "cat2",
-        category: { id: "cat2", name: "Food", createdAt: new Date(), updatedAt: new Date() },
+        category: { id: "cat2", name: "Food" },
         createdAt: new Date(),
         updatedAt: new Date(),
         likes: [{}, {}] as any,
         views: [{}, {}, {}, {}] as any,
-        routeNodes: [{}, {}, {}, {}] as any,
-        published: true,
+        routeNodes: [],
+        visibility: "PUBLIC",
     }
 ];
 

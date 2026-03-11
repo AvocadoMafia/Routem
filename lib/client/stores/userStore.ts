@@ -37,7 +37,6 @@ const initialUser: User = {
         routeThumbId: null,
     },
     uploadedImages: [],
-    routes: [],
     likes: []
 }
 

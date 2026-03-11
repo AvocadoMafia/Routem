@@ -52,7 +52,7 @@ export default function DetailsViewer({
           : "opacity-0 translate-y-12 pointer-events-none invisible max-md:hidden max-md:h-0 max-md:overflow-hidden"
       }`}
     >
-      <RouteHeader route={route} />
+      <RouteHeader route={route} currentUser={currentUser} />
 
       {items.map((item, idx) => (
         <div key={item.id}>

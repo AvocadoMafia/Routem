@@ -57,6 +57,13 @@ export async function PATCH(req: NextRequest) {
       throw new Error("Invalid body: items[] is required");
     }
     const parsed_body = await validateParams(PatchRouteSchema, body);
+    
+    // 編集権限のチェック
+    const hasPermission = await routesService.checkUpdatePermission(parsed_body.id, user.id);
+    if (!hasPermission) {
+      return NextResponse.json({ message: "Unauthorized or Forbidden" }, { status: 403 });
+    }
+
     const result = await routesService.patchRoute(parsed_body);
     return NextResponse.json(result, { status: 200 });
   });

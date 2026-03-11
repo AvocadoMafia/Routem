@@ -34,6 +34,7 @@ export default function ClientRoot() {
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState<Category>({id: '', name: ''});
     const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>('PUBLIC');
+    const [collaboratorPolicy, setCollaboratorPolicy] = useState<'DISABLED' | 'VIEW_ONLY' | 'CAN_EDIT'>('DISABLED');
     const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(undefined);
 
     // ルート編集ロジック（カスタムフック）
@@ -192,6 +193,7 @@ export default function ClientRoot() {
                 description,
                 categoryId: category.id,
                 visibility,
+                collaboratorPolicy,
                 thumbnailImageSrc,
                 items: normalizedItems
             });
@@ -276,6 +278,8 @@ export default function ClientRoot() {
                                 setCategory={setCategory}
                                 visibility={visibility}
                                 setVisibility={setVisibility}
+                                collaboratorPolicy={collaboratorPolicy}
+                                setCollaboratorPolicy={setCollaboratorPolicy}
                                 thumbnailImageSrc={thumbnailImageSrc}
                                 handleImageUpload={handleImageUpload}
                                 uploading={uploading}
@@ -336,6 +340,8 @@ export default function ClientRoot() {
                             setCategory={setCategory}
                             visibility={visibility}
                             setVisibility={setVisibility}
+                            collaboratorPolicy={collaboratorPolicy}
+                            setCollaboratorPolicy={setCollaboratorPolicy}
                             thumbnailImageSrc={thumbnailImageSrc}
                             handleImageUpload={handleImageUpload}
                             uploading={uploading}
