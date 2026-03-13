@@ -182,6 +182,8 @@ export default function ClientRoot({ route }: { route: Route }) {
                     if (isMobile) {
                         setIsSettingsModalOpen(false);
                         setIsEditorModalOpen(true);
+                    } else {
+                        setActiveSection('edit');
                     }
                 }}
                 onAddWaypoint={addWaypoint}
@@ -195,6 +197,15 @@ export default function ClientRoot({ route }: { route: Route }) {
                         setActiveSection('settings');
                     }
                 }}
+                onOpenEdit={() => {
+                    if (isMobile) {
+                        setIsSettingsModalOpen(false);
+                        setIsEditorModalOpen(false); // エディタを開くときはダイアグラムに戻る
+                    } else {
+                        setActiveSection('edit');
+                    }
+                }}
+                activeSection={activeSection}
                 onPublish={handleUpdate}
                 publishing={publishing}
                 isSettingsComplete={isSettingsComplete}
@@ -211,14 +222,10 @@ export default function ClientRoot({ route }: { route: Route }) {
                     setActiveSection={setActiveSection}
                     handlePublish={handleUpdate}
                     publishing={publishing}
+                    message={message}
+                    onClearMessage={() => setMessage(null)}
                 />
                 <div className="w-full flex-1">
-                    {message && (
-                        <div className={`mx-10 mt-4 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300 ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-accent-2/10 text-accent-2 border border-accent-2/20'}`}>
-                            {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
-                            <span className="text-sm font-bold">{message}</span>
-                        </div>
-                    )}
                     {activeSection === 'edit' ? (
                         <div className="w-full h-full animate-in fade-in duration-300">
                             <RouteEditingSection

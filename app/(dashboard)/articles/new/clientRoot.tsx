@@ -142,7 +142,15 @@ export default function ClientRoot() {
 
     // 投稿処理: 現在の items を API に送信
     const handlePublish = async () => {
-        if (!isSettingsComplete) return;
+        if (!isSettingsComplete) {
+            if (isMobile) {
+                setIsSettingsModalOpen(true);
+            } else {
+                setActiveSection('settings');
+            }
+            setMessage("Please complete all required fields before publishing.");
+            return;
+        }
 
         // 追加バリデーション: 最初のアイテムと最後のアイテムがWaypointであること
         const waypoints = items.filter(it => it.type === 'waypoint');
@@ -222,6 +230,8 @@ export default function ClientRoot() {
                     if (isMobile) {
                         setIsSettingsModalOpen(false);
                         setIsEditorModalOpen(true);
+                    } else {
+                        setActiveSection('edit');
                     }
                 }}
                 onAddWaypoint={addWaypoint}
@@ -235,6 +245,15 @@ export default function ClientRoot() {
                         setActiveSection('settings');
                     }
                 }}
+                onOpenEdit={() => {
+                    if (isMobile) {
+                        setIsSettingsModalOpen(false);
+                        setIsEditorModalOpen(false); // エディタを開くときはダイアグラムに戻る
+                    } else {
+                        setActiveSection('edit');
+                    }
+                }}
+                activeSection={activeSection}
                 onPublish={handlePublish}
                 publishing={publishing}
                 isSettingsComplete={isSettingsComplete}
@@ -252,14 +271,10 @@ export default function ClientRoot() {
                     setActiveSection={setActiveSection}
                     handlePublish={handlePublish}
                     publishing={publishing}
+                    message={message}
+                    onClearMessage={() => setMessage(null)}
                 />
                 <div className="w-full flex-1">
-                    {message && (
-                        <div className={`mx-10 mt-4 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300 ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-accent-2/10 text-accent-2 border border-accent-2/20'}`}>
-                            {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
-                            <span className="text-sm font-bold">{message}</span>
-                        </div>
-                    )}
                     {activeSection === 'edit' ? (
                         <div className="w-full h-full animate-in fade-in duration-300">
                             <RouteEditingSection
@@ -291,7 +306,7 @@ export default function ClientRoot() {
 
             {/* モバイル用エディタモーダル（フルスクリーン） */}
             {isMobile && isEditorModalOpen && selectedItem && (
-                <div className="absolute inset-0 z-50 flex md:hidden" aria-modal="true" role="dialog">
+                <div className="absolute inset-0 z-25 flex md:hidden" aria-modal="true" role="dialog">
 
                     {/* Full-screen panel */}
                     <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
@@ -317,7 +332,7 @@ export default function ClientRoot() {
 
             {/* モバイル用設定モーダル（フルスクリーン） */}
             {isMobile && isSettingsModalOpen && (
-                <div className="absolute inset-0 z-50 flex md:hidden" aria-modal="true" role="dialog">
+                <div className="absolute inset-0 z-25 flex md:hidden" aria-modal="true" role="dialog">
                     {/* Full-screen panel */}
                     <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
                         {/* Header */}

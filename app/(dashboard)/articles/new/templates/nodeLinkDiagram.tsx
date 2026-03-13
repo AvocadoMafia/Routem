@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { RouteItem } from "@/lib/client/types";
-import { Plus, Settings as SettingsIcon, Loader2 } from "lucide-react";
+import { Plus, Settings as SettingsIcon, Loader2, Edit3, Rocket, ChevronRight } from "lucide-react";
 import WaypointCard from "../ingredients/WaypointCard";
 import TransportationCard from "../ingredients/TransportationCard";
 import RouteNode from "../ingredients/RouteNode";
@@ -22,6 +22,8 @@ interface NodeLinkDiagramProps {
     publishing: boolean;
     isSettingsComplete: boolean;
     title?: string;
+    activeSection?: 'edit' | 'settings';
+    onOpenEdit?: () => void;
 }
 
 export default function NodeLinkDiagram({
@@ -35,7 +37,9 @@ export default function NodeLinkDiagram({
     onPublish,
     publishing,
     isSettingsComplete,
-    title
+    title,
+    activeSection,
+    onOpenEdit
 }: NodeLinkDiagramProps) {
     // 挿入メニューを表示しているアイテムのインデックス
     const [addingAfterIndex, setAddingAfterIndex] = useState<number | null>(null);
@@ -76,33 +80,53 @@ export default function NodeLinkDiagram({
             <div
                 className="sticky top-0 z-20 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 md:hidden flex items-center justify-between"
             >
-                <div className="flex items-center gap-3 min-w-0">
-                    <h2 className="text-sm md:text-base font-bold text-foreground-0 truncate max-w-[180px] md:max-w-[220px]">
-                        {title?.trim() || "Untitled Route"}
-                    </h2>
-                    <span className="shrink-0 text-[10px] md:text-xs font-medium px-2 py-1 bg-grass rounded-full text-foreground-1">
-                        {items.filter(i => i.type === 'waypoint').length} Waypoints
-                    </span>
-                </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                    {/* Step 1: Edit */}
+                    <button
+                        onClick={onOpenEdit}
+                        className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all active:scale-90 bg-background-0 text-foreground-1 border-grass"
+                        aria-label="Edit Route"
+                    >
+                        <Edit3 size={18} />
+                    </button>
+
+                    <div className="shrink-0 text-grass">
+                        <ChevronRight size={14} />
+                    </div>
+
+                    {/* Step 2: Settings */}
                     <button
                         onClick={onOpenSettings}
-                        className="px-3 md:px-4 py-2 rounded-xl border border-grass bg-background-0 text-foreground-0 text-xs md:text-sm font-bold hover:bg-background-1 active:scale-95 flex items-center gap-2"
-                        aria-label="Open settings"
+                        className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all active:scale-90 bg-background-0 text-foreground-1 border-grass"
+                        aria-label="Route Settings"
                     >
-                        <SettingsIcon size={16} />
-                        <span className="hidden md:inline">Settings</span>
+                        <SettingsIcon size={18} />
                     </button>
+
+                    <div className="shrink-0 text-grass">
+                        <ChevronRight size={14} />
+                    </div>
+
+                    {/* Step 3: Publish */}
                     <button
                         onClick={onPublish}
-                        disabled={!isSettingsComplete || publishing}
-                        className={`px-3 md:px-4 py-2 rounded-xl text-white text-xs md:text-sm font-bold flex items-center gap-2 active:scale-95 shadow-[0_8px_20px_rgba(45,31,246,0.2)] ${(!isSettingsComplete || publishing) ? 'bg-accent-0/50 cursor-not-allowed' : 'bg-accent-0 hover:bg-accent-0/90'}`}
-                        aria-label="Publish route"
-                        title={!isSettingsComplete ? 'Complete settings to enable publish' : 'Publish'}
+                        disabled={publishing}
+                        className={`shrink-0 px-4 h-10 rounded-xl font-bold text-sm text-white flex items-center gap-2 active:scale-90 shadow-md transition-all ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale' : 'bg-accent-2 hover:bg-accent-2/90'}`}
+                        aria-label="Publish"
                     >
-                        {publishing ? <Loader2 className="animate-spin" size={16} /> : null}
-                        <span>{publishing ? 'Publishing...' : 'Publish'}</span>
+                        {publishing ? (
+                            <Loader2 className="animate-spin" size={16} />
+                        ) : (
+                            <Rocket size={16} className={isSettingsComplete ? 'animate-bounce' : ''} />
+                        )}
+                        <span>{publishing ? '...' : 'Publish'}</span>
                     </button>
+                </div>
+
+                <div className="flex items-center gap-2 pl-2 border-l border-grass/30 ml-2">
+                    <span className="shrink-0 text-[10px] font-black px-2 py-1 bg-accent-2/10 text-accent-2 rounded-lg border border-accent-2/20">
+                        {items.filter(i => i.type === 'waypoint').length}W
+                    </span>
                 </div>
             </div>
 

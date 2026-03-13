@@ -1,6 +1,20 @@
 "use client";
 
-import { Image as ImageIcon, Loader2, MessageSquare, Tag, Globe, Lock, Users, Link, Copy, Check, AlertCircle } from "lucide-react";
+import {
+    Image as ImageIcon,
+    Loader2,
+    MessageSquare,
+    Tag,
+    Globe,
+    Lock,
+    Users,
+    Link,
+    Copy,
+    Check,
+    AlertCircle,
+    Settings,
+    Heart
+} from "lucide-react";
 import Image from "next/image";
 import {Category} from "@/lib/client/types";
 import {categoryStore} from "@/lib/client/stores/categoryStore";
@@ -72,8 +86,8 @@ export default function RouteSettingsSection({
                 <div className="flex items-end justify-between border-b border-grass pb-6">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <Globe size={18} className="text-accent-0" />
-                            <span className="text-xs font-bold uppercase tracking-widest text-accent-0">
+                            <Settings size={18} className="text-accent-1" />
+                            <span className="text-xs font-bold uppercase tracking-widest text-accent-1">
                                 Route Settings
                             </span>
                         </div>
@@ -93,7 +107,7 @@ export default function RouteSettingsSection({
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-xl font-medium"
+                            className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-1/20 focus:border-accent-1 transition-all text-xl font-medium"
                             placeholder="Enter route title..."
                         />
                     </div>
@@ -106,21 +120,21 @@ export default function RouteSettingsSection({
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl h-32 focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base leading-relaxed resize-none"
+                            className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl h-32 focus:outline-none focus:ring-2 focus:ring-accent-1/20 focus:border-accent-1 transition-all text-base leading-relaxed resize-none"
                             placeholder="Short description of your route..."
                         />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {/* Category */}
+                        {/* Purpose (formerly Category) */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                <Tag size={16} /> Category
+                                <Tag size={16} /> Purpose
                             </label>
                             <select
                                 value={category.id}
                                 onChange={(e) => setCategory(categories.find((cat ) => cat.id === e.target.value) || { id: '', name: ''})}
-                                className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium appearance-none"
+                                className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-1/20 focus:border-accent-1 transition-all text-base font-medium appearance-none"
                             >
                                 {categories.map((cat, idx) => (
                                     <option key={idx} value={cat.id}>{cat.name}</option>
@@ -136,13 +150,13 @@ export default function RouteSettingsSection({
                             <div className="flex bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
                                     onClick={() => setVisibility('PRIVATE')}
-                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PRIVATE' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PRIVATE' ? 'bg-accent-1 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     Private
                                 </button>
                                 <button
                                     onClick={() => setVisibility('PUBLIC')}
-                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PUBLIC' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PUBLIC' ? 'bg-accent-1 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     Public
                                 </button>
@@ -159,19 +173,19 @@ export default function RouteSettingsSection({
                             <div className="grid grid-cols-3 bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
                                     onClick={() => setCollaboratorPolicy('DISABLED')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'DISABLED' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'DISABLED' ? 'bg-accent-1 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     Disabled
                                 </button>
                                 <button
                                     onClick={() => setCollaboratorPolicy('VIEW_ONLY')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'VIEW_ONLY' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'VIEW_ONLY' ? 'bg-accent-1 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     View Only
                                 </button>
                                 <button
                                     onClick={() => setCollaboratorPolicy('CAN_EDIT')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'CAN_EDIT' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'CAN_EDIT' ? 'bg-accent-1 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     Can Edit
                                 </button>
@@ -197,7 +211,7 @@ export default function RouteSettingsSection({
                                             </span>
                                             <button
                                                 onClick={copyToClipboard}
-                                                className="p-2 text-accent-0 hover:bg-accent-0/10 rounded-xl transition-colors"
+                                                className="p-2 text-accent-1 hover:bg-accent-1/10 rounded-xl transition-colors"
                                                 title="Copy to clipboard"
                                             >
                                                 {copied ? <Check size={20} /> : <Copy size={20} />}
@@ -207,7 +221,7 @@ export default function RouteSettingsSection({
                                         <button
                                             onClick={handleGenerateInvite}
                                             disabled={generating}
-                                            className="flex-1 px-5 py-4 bg-accent-0 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-0/90 transition-all disabled:opacity-50"
+                                            className="flex-1 px-5 py-4 bg-accent-1 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-1/90 transition-all disabled:opacity-50"
                                         >
                                             {generating ? <Loader2 size={20} className="animate-spin" /> : <Link size={20} />}
                                             Generate Invitation URL
@@ -244,7 +258,7 @@ export default function RouteSettingsSection({
                             onChange={handleImageUpload}
                         />
                         <div
-                            className="group relative border-2 border-dashed border-grass rounded-3xl p-10 flex flex-col items-center justify-center text-foreground-1 hover:bg-background-0 hover:border-accent-0/30 cursor-pointer transition-all min-h-[240px] overflow-hidden"
+                            className="group relative border-2 border-dashed border-grass rounded-3xl p-10 flex flex-col items-center justify-center text-foreground-1 hover:bg-background-0 hover:border-accent-1/30 cursor-pointer transition-all min-h-[240px] overflow-hidden"
                             onClick={() => document.getElementById('thumbnail-upload-section')?.click()}
                         >
                             {thumbnailImageSrc ? (

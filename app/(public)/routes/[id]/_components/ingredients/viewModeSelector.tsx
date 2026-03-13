@@ -7,8 +7,8 @@ type Props = {
   viewMode: "diagram" | "details" | "map";
   setViewMode: (mode: "diagram" | "details" | "map") => void;
   isMobile: boolean;
-  scrollDirection: "up" | "down" | "left" | "right";
-  yOffset: number;
+  scrollDirection?: "up" | "down" | "left" | "right";
+  yOffset?: number;
 };
 
 export default function ViewModeSelector({
@@ -21,14 +21,11 @@ export default function ViewModeSelector({
   return (
     <motion.div
       animate={{
-        bottom: isMobile ? (scrollDirection === "down" ? 24 : yOffset + 24) : "auto",
-        top: !isMobile ? 24 : "auto",
+        y: isMobile ? (scrollDirection === "down" ? 100 : 0) : 0,
+        opacity: isMobile ? (scrollDirection === "down" ? 0 : 1) : 1,
       }}
-      transition={{
-        duration: 0.3,
-        ease: "easeOut",
-      }}
-      className="md:absolute fixed w-fit h-fit left-1/2 -translate-x-1/2 z-50 flex items-center backdrop-blur-xl border border-foreground-0/5 rounded-full p-1 shadow-2xl shadow-black/5 max-w-[95vw] overflow-x-auto no-scrollbar overflow-y-hidden"
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className="md:absolute fixed bottom-6 md:top-6 w-fit h-fit left-1/2 -translate-x-1/2 z-50 flex items-center backdrop-blur-xl border border-foreground-0/5 rounded-full p-1 shadow-2xl shadow-black/5 max-w-[95vw] overflow-x-auto no-scrollbar overflow-y-hidden"
     >
       <button
         onClick={() => setViewMode("diagram")}
