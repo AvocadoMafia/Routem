@@ -45,22 +45,20 @@ export async function POST(req: NextRequest) {
 
     const index = meilisearch.index("route");
     const document = {
-      index:result.id,
+      index: result.id,
 
-      title:result.title,
-      discription:result.description,
+      title: result.title,
+      description: result.description,
 
-      authorId:result.authorId,
-      categoryId:result.categoryId,
-      visibility:result.visibility,
+      authorId: result.authorId,
+      categoryId: result.categoryId,
+      visibility: result.visibility,
 
-      createdAt:result.createdAt.getTime(),
-      updatedAt:result.updatedAt.getTime(),
+      createdAt: result.createdAt.getTime(),
+      updatedAt: result.updatedAt.getTime(),
 
-      category:result.category.catego
-
-
-    }
+      category: result.category.name,
+    };
 
     return NextResponse.json(result, { status: 201 });
   });
@@ -80,7 +78,7 @@ export async function PATCH(req: NextRequest) {
       throw new Error("Invalid body: items[] is required");
     }
     const parsed_body = await validateParams(PatchRouteSchema, body);
-    const result = await routesService.patchRoute(parsed_body);
+    const result = await routesService.patchRoute(parsed_body, user.id);
     return NextResponse.json(result, { status: 200 });
   });
 }

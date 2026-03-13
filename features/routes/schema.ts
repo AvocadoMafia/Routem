@@ -1,11 +1,10 @@
 import { z } from "zod";
 import { WaypointSchema, TransportationSchema } from "../database_schema";
-import { create } from "domain";
 
 export const GetRoutesSchema = z.object({
     authorId: z.string().uuid().optional(),
     categoryId: z.string().uuid().optional(),
-    createdAfter: z.string().datetime().optional(),
+    createdAfter: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
     limit: z.string().regex(/^\d+$/).transform(Number),
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
 });

@@ -1,26 +1,70 @@
 import { getPrisma } from "@/lib/config/server";
-import { RouteVisibility } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import { Prisma, RouteVisibility } from "@prisma/client";
+
+export const ROUTE_INCLUDE = {
+  category: true,
+  author: {
+    select: {
+      id: true,
+      name: true,
+      icon: true,
+    },
+  },
+  thumbnail: true,
+  routeNodes: {
+    include: {
+      spot: true,
+      transitSteps: true,
+      images: true,
+    },
+  },
+} as const;
+
+export type RouteWithRelations = Prisma.RouteGetPayload<{
+  include: typeof ROUTE_INCLUDE;
+}>;
 
 export const routesRepository = {
-    findRoutes: async (args: Prisma.RouteFindManyArgs) => {
-        const returned = await getPrisma().route.findMany(args);
-        return returned
-    },
-    createRoute: async (data:Prisma.RouteCreateArgs) => {
-        const prisma = getPrisma();
-        return prisma.route.create(data);
-    },
-    updateRoute: async (data: Prisma.RouteUpdateArgs) => {
-        const prisma = getPrisma();
-        return prisma.$transaction(async (tx) => {
-           return tx.route.update(data);
-        })
-    },
-    deleteRoute: async (data:Prisma.RouteDeleteManyArgs)=>{
-        const prisma = getPrisma();
-        return prisma.route.deleteMany(data);
-    }
-}
+  findMany: async (where: Prisma.RouteWhereInput, limit?: number): Promise<RouteWithRelations[]> => {
+    return (await getPrisma().route.findMany({
+      where,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: ROUTE_INCLUDE,
+    })) as RouteWithRelations[];
+  },
 
-export type FindRoutes = Awaited<ReturnType<typeof routesRepository.findRoutes>>;
+  create: async (data: Prisma.RouteCreateInput): Promise<RouteWithRelations> => {
+    return (await getPrisma().route.create({
+      data,
+      include: ROUTE_INCLUDE,
+    })) as RouteWithRelations;
+  },
+
+  update: async (id: string, authorId: string, data: Prisma.RouteUpdateInput): Promise<RouteWithRelations> => {
+    return getPrisma().$transaction(async (tx) => {
+      // 存在確認と所有者チェックを兼ねる
+      const existing = await tx.route.findFirst({
+        where: { id, authorId },
+      });
+
+      if (!existing) {
+        throw new Error("Notfound or Unauthorized");
+      }
+
+      return (await tx.route.update({
+        where: { id },
+        data,
+        include: ROUTE_INCLUDE,
+      })) as RouteWithRelations;
+    });
+  },
+
+  deleteMany: async (where: Prisma.RouteWhereInput) => {
+    return getPrisma().route.deleteMany({
+      where,
+    });
+  },
+};

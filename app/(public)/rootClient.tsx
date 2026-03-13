@@ -77,8 +77,8 @@ export default function RootClient() {
             } as any,
             createdAt: new Date(),
             updatedAt: new Date(),
-            categoryId: 1,
-            category: { id: 1, name: 'General' },
+            categoryId: `placeholder-cat-${i}`,
+            category: { id: `placeholder-cat-${i}`, name: 'General' },
             thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: `placeholder-${i}` } as any,
             likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ 
                 id: `like-${i}-${j}`, 
