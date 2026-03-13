@@ -9,9 +9,7 @@ export const routesRepository = {
     },
     createRoute: async (data:Prisma.RouteCreateArgs) => {
         const prisma = getPrisma();
-        return prisma.$transaction(async (tx) => {
-            return tx.route.create(data);
-        });
+        return prisma.route.create(data);
     },
     updateRoute: async (data: Prisma.RouteUpdateArgs) => {
         const prisma = getPrisma();
