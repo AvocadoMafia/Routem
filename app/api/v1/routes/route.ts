@@ -7,11 +7,12 @@ import { GetRoutesSchema } from "@/features/routes/schema";
 import { createClient } from "@/lib/auth/supabase/server";
 import { PostRouteSchema } from "@/features/routes/schema";
 import { PatchRouteSchema } from "@/features/routes/schema";
-import { meilisearch } from "@/lib/search/meilisearch"
-import { MdDescription } from "react-icons/md";
 
 
-// GET /api/v1/routems
+
+// /api/v1/routes
+// validationとauthenticationつまり処理に入る前段階の層
+
 // 最近作成されたルートを一覧返却します
 export async function GET(req: NextRequest) {
   return await handleRequest(async () => {
@@ -43,22 +44,6 @@ export async function POST(req: NextRequest) {
     const parsed_body = await validateParams(PostRouteSchema, body);
     const result = await routesService.postRoute(parsed_body, user.id);
 
-    const index = meilisearch.index("route");
-    const document = {
-      index: result.id,
-
-      title: result.title,
-      description: result.description,
-
-      authorId: result.authorId,
-      categoryId: result.categoryId,
-      visibility: result.visibility,
-
-      createdAt: result.createdAt.getTime(),
-      updatedAt: result.updatedAt.getTime(),
-
-      category: result.category.name,
-    };
 
     return NextResponse.json(result, { status: 201 });
   });

@@ -4,13 +4,30 @@ import { PrismaClient } from "@prisma/client";
 import { S3Client } from "@aws-sdk/client-s3";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { Meilisearch } from "meilisearch";
 
 
-let prisma: PrismaClient | null = null;
-let s3Client: S3Client | null = null;
+declare global{
+var meilisearch:Meilisearch;
+var prisma: PrismaClient;
+var  s3Client: S3Client;
+}
+
+export function getMeiliseach(){ 
+    // global変数として存在した場合のガード節
+    if(globalThis.meilisearch) return globalThis.meilisearch;
+
+    globalThis.meilisearch = new Meilisearch({
+     host: process.env.MEILISEARCH_URL!,
+     apiKey: process.env.MEILISEARCH_APIKEY!,
+    });
+    
+    return globalThis.meilisearch;
+}
+
 
 export function getPrisma() {
-    if (prisma) return prisma;
+    if (globalThis.prisma) return globalThis.prisma;
 
     const dbType = process.env.DB_TYPE || 'local';
     const connectionString = dbType === 'vercel' 
@@ -23,9 +40,9 @@ export function getPrisma() {
 
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);
-    prisma = new PrismaClient({ adapter });
-    
-    return prisma;
+    globalThis.prisma = new PrismaClient({ adapter });
+
+    return globalThis.prisma;
 }
 
 // MinIO を使った S3クライアントのゲッター
@@ -36,7 +53,7 @@ export function getPrisma() {
 // - MINIO_SECRET_KEY
 // - MINIO_USE_SSL ("true" or "false")
 export function getS3Client() {
-    if (s3Client) return s3Client;
+    if (globalThis.s3Client) return globalThis.s3Client;
 
     const rawEndpoint = process.env.MINIO_ENDPOINT || "localhost";
     const endpointPort = process.env.MINIO_PORT || "9000";
@@ -61,12 +78,12 @@ export function getS3Client() {
         endpoint = `${protocol}://${hostNoPort}:${port}`;
     }
 
-    s3Client = new S3Client({
+    globalThis.s3Client = new S3Client({
         region: "us-east-1", // MinIOは任意、S3互換のため固定でOK
         endpoint,
         forcePathStyle: true,
         credentials: { accessKeyId, secretAccessKey },
     });
 
-    return s3Client;
+    return globalThis.s3Client;
 }
