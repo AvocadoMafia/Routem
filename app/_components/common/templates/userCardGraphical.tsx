@@ -4,6 +4,7 @@ import {IoPersonAdd} from "react-icons/io5";
 import { HiUserGroup, HiBookOpen } from 'react-icons/hi2';
 import Image from 'next/image';
 import Link from "next/link";
+import { userStore } from '@/lib/client/stores/userStore';
 
 export type Props = {
   user: User;
@@ -12,9 +13,13 @@ export type Props = {
 };
 
 export function UserCardGraphical(props: Props) {
+  const currentUser = userStore(state => state.user);
+  const isMe = currentUser?.id === props.user.id;
+  const href = isMe ? '/me' : `/users/${props.user.id}`;
+
   return (
     <Link
-      href={`/users/${props.user.id}`}
+      href={href}
       className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2 text-left"
       aria-label={props.rank ? `Rank ${props.rank}: ${props.user.name}` : props.user.name}
     >

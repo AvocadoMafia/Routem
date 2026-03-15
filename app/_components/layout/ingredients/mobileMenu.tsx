@@ -95,7 +95,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             {/* User Info Card */}
                             <div className={'bg-transparent rounded-2xl p-0'}>
                                 {isLoggedIn ? (
-                                    <div className={'space-y-4'} onClick={() => router.push(`/users/${user.id}`)}>
+                                    <div className={'space-y-4'} onClick={() => router.push('/me')}>
                                         <div 
                                             className={'flex items-center gap-4 cursor-pointer hover:bg-background-0 rounded-xl p-2 transition-colors'}
                                         >

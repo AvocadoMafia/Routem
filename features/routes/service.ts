@@ -38,18 +38,32 @@ export const routesService = {
           visibility_condition = { visibility: query.visibility };
         }
       } else {
-        // 他人の場合は、PUBLIC または 自分がcollaboratorになっているPRIVATEのみ
-        visibility_condition = {
-          OR: [
-            { visibility: RouteVisibility.PUBLIC },
-            {
-              AND: [
-                { visibility: RouteVisibility.PRIVATE },
-                { collaborators: { some: { userId: user?.id ?? "" } } }
-              ]
-            }
-          ]
-        };
+        // 他人の場合は、指定された visibility があればそれを尊重しつつ、PRIVATE なら collaborator チェックを入れる
+        const requestedVisibility = query.visibility;
+
+        if (requestedVisibility === RouteVisibility.PUBLIC) {
+          visibility_condition = { visibility: RouteVisibility.PUBLIC };
+        } else if (requestedVisibility === RouteVisibility.PRIVATE) {
+          visibility_condition = {
+            AND: [
+              { visibility: RouteVisibility.PRIVATE },
+              { collaborators: { some: { userId: user?.id ?? "" } } }
+            ]
+          };
+        } else {
+          // visibility 指定がない場合は、PUBLIC または 自分が collaborator の PRIVATE
+          visibility_condition = {
+            OR: [
+              { visibility: RouteVisibility.PUBLIC },
+              {
+                AND: [
+                  { visibility: RouteVisibility.PRIVATE },
+                  { collaborators: { some: { userId: user?.id ?? "" } } }
+                ]
+              }
+            ]
+          };
+        }
       }
     }
 

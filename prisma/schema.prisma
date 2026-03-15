@@ -24,6 +24,9 @@ model User {
   collaborations RouteCollaborator[]
   likes          Like[]
   comments       Comment[]
+  //これは逆で正しい
+  followings     Follow[]            @relation("follower")
+  followers      Follow[]            @relation("following")
 }
 
 enum Gender {
@@ -202,6 +205,17 @@ model View {
   route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
 
   userId String? @db.Uuid
+}
+
+model Follow {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  followingId String   @db.Uuid
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  followerId  String   @db.Uuid
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followingId, followerId])
 }
 
 enum LikeViewTarget {

@@ -5,21 +5,25 @@ import { useState, useEffect } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { User } from '@/lib/client/types'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
-import UserProfileHeader from './_components/templates/userProfileHeader'
-import UserProfileContent from './_components/templates/userProfileContent'
+import UserProfileHeader from '@/features/users/components/templates/userProfileHeader'
+import UserProfileContent from '@/features/users/components/templates/userProfileContent'
+import { Tab } from '@/features/users/components/ingredients/tabNavigation'
 
 export default function RootClient({ id }: { id: string }) {
   const router = useRouter()
-  const currentUser = userStore(state => state.user)
+  const { user: currentUser } = userStore()
   const [targetUser, setTargetUser] = useState<User | null>(null)
   const [userRoutes, setUserRoutes] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
-  const [activeTab, setActiveTab] = useState<'routes' | 'likes'>('routes')
-
-  const isOwnPage = currentUser?.id === id
+  const [activeTab, setActiveTab] = useState<Tab>('routes')
 
   useEffect(() => {
+    if (currentUser?.id === id) {
+      router.replace('/me')
+      return
+    }
+
     const fetchUser = async () => {
       setIsLoading(true)
       try {
@@ -37,8 +41,7 @@ export default function RootClient({ id }: { id: string }) {
     const fetchRoutes = async () => {
       setIsLoadingRoutes(true)
       try {
-        // authorIdを指定して記事一覧を取得
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=50`)
+        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=50&visibility=PUBLIC`)
         if (res) {
           setUserRoutes(res)
         }
@@ -51,7 +54,7 @@ export default function RootClient({ id }: { id: string }) {
 
     fetchUser()
     fetchRoutes()
-  }, [id])
+  }, [id, currentUser, router])
 
   if (isLoading) {
     return (
@@ -71,13 +74,12 @@ export default function RootClient({ id }: { id: string }) {
 
   return (
     <div className="w-full h-fit">
-
       <UserProfileHeader
         name={targetUser.name}
         bio={targetUser.bio as string}
         iconUrl={targetUser.icon?.url}
         bgUrl={targetUser.background?.url}
-        isOwnPage={isOwnPage}
+        mode="public"
       />
 
       <UserProfileContent
@@ -89,8 +91,8 @@ export default function RootClient({ id }: { id: string }) {
           following: '0' 
         }}
         routes={userRoutes || []}
+        mode="public"
       />
-
     </div>
   )
 }
