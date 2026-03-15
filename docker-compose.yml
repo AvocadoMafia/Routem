@@ -61,6 +61,13 @@ services:
     volumes:
       - meili_data:/meili_data
 
+  # 翻訳エンジン（中身はArgos Translate）
+  libretranslate:
+    image: libretranslate/libretranslate
+    ports:
+      - "5000:5000"
+    command: ["--load-only", "en,ja"]
+
 volumes:
   postgres_data:
   meili_data:
