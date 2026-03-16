@@ -243,6 +243,7 @@ enum ImageStatus {
   ADOPTED // 正式に採用された
   DRAFT // 一次保存・下書き状態
   UNUSED // 利用されなかった（削除候補など）
+  EXTERNAL // 外部URLのみを保持（S3キーなし）
 }
 
 // 移動モードの列挙。描画スタイルやアイコン分岐に利用

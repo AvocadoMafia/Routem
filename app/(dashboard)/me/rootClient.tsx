@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from '@/features/users/components/templates/userProfileHeader'
@@ -15,6 +15,10 @@ export default function RootClient() {
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
   const [isInitialized, setIsInitialized] = useState(false)
+  const [likedRoutes, setLikedRoutes] = useState<any[]>([])
+  const [historyRoutes, setHistoryRoutes] = useState<any[]>([])
+  const [isLoadingLikes, setIsLoadingLikes] = useState(false)
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false)
 
   useEffect(() => {
     const init = async () => {
@@ -58,6 +62,41 @@ export default function RootClient() {
     }
   }, [isInitialized, currentUser])
 
+  const fetchLikes = useCallback(async () => {
+    if (!currentUser?.id) return
+    setIsLoadingLikes(true)
+    try {
+      const res = await getDataFromServerWithJson<any[]>(`/api/v1/me/likes`)
+      setLikedRoutes(res || [])
+    } catch (e) {
+      console.error('Failed to fetch liked routes', e)
+    } finally {
+      setIsLoadingLikes(false)
+    }
+  }, [currentUser?.id])
+
+  const fetchHistory = useCallback(async () => {
+    if (!currentUser?.id) return
+    setIsLoadingHistory(true)
+    try {
+      const res = await getDataFromServerWithJson<any[]>(`/api/v1/me/views`)
+      setHistoryRoutes(res || [])
+    } catch (e) {
+      console.error('Failed to fetch history routes', e)
+    } finally {
+      setIsLoadingHistory(false)
+    }
+  }, [currentUser?.id])
+
+  useEffect(() => {
+    if (!isInitialized || !currentUser?.id) return
+    if (activeTab === 'likes' && likedRoutes.length === 0 && !isLoadingLikes) {
+      fetchLikes()
+    } else if (activeTab === 'history' && historyRoutes.length === 0 && !isLoadingHistory) {
+      fetchHistory()
+    }
+  }, [activeTab, isInitialized, currentUser?.id, likedRoutes.length, historyRoutes.length, isLoadingLikes, isLoadingHistory, fetchLikes, fetchHistory])
+
   if (!isInitialized) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
@@ -85,6 +124,8 @@ export default function RootClient() {
           following: '0' 
         }}
         routes={userRoutes || []}
+        likedRoutes={likedRoutes}
+        historyRoutes={historyRoutes}
         mode="self"
       />
     </div>

@@ -4,27 +4,41 @@ import { createClient } from "@/lib/auth/supabase/server";
 import { validateParams } from "@/lib/server/validateParams";
 import { CreateLikeSchema } from "@/features/likes/schema";
 import { likesService } from "@/features/likes/service";
+import { getPrisma } from "@/lib/config/server";
+import { LikeViewTarget } from "@prisma/client";
 
-export function POST(req: NextRequest) {
-    return handleRequest(async () => {
-        const supabase = await createClient(req);
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error || !user) {
-            throw new Error("Unauthorized");
-        }
+// POST /api/v1/likes
+// Toggle like for route or comment. Requires authenticated user.
+export async function POST(req: NextRequest) {
+  return handleRequest(async () => {
+    const supabase = await createClient(req);
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) throw new Error("Unauthorized");
 
-        const body = await req.json();
-        const parsed_body = await validateParams(CreateLikeSchema, body);
+    const body = await req.json();
+    const parsed = await validateParams(CreateLikeSchema, body);
 
-        const result = await likesService.toggleLike(
-            user.id,
-            parsed_body.target,
-            parsed_body.routeId,
-            parsed_body.commentId
-        );
+    await likesService.toggleLike(user.id, parsed.target, parsed.routeId, parsed.commentId);
 
-        return NextResponse.json(result, { status: 200 });
-    });
+    // Determine current liked state and like count after toggle
+    const prisma = getPrisma();
+    let liked = false;
+    let like_count = 0;
+
+    if (parsed.target === LikeViewTarget.ROUTE && parsed.routeId) {
+      const existing = await prisma.like.findUnique({
+        where: { userId_routeId: { userId: user.id, routeId: parsed.routeId } }
+      });
+      liked = !!existing;
+      like_count = await prisma.like.count({ where: { routeId: parsed.routeId } });
+    } else if (parsed.target === LikeViewTarget.COMMENT && parsed.commentId) {
+      const existing = await prisma.like.findUnique({
+        where: { userId_commentId: { userId: user.id, commentId: parsed.commentId } }
+      });
+      liked = !!existing;
+      like_count = await prisma.like.count({ where: { commentId: parsed.commentId } });
+    }
+
+    return NextResponse.json({ liked, like_count }, { status: 200 });
+  });
 }
-
-// POSTだけで完結するようにし、不要なDELETEメソッドと関連スキーマの参照を削除しました。

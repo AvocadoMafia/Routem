@@ -9,12 +9,14 @@ export default function UserProfileHeader({
   iconUrl,
   bgUrl,
   mode = 'public',
+  followingId,
 }: {
   name?: string
   bio?: string
   iconUrl?: string
   bgUrl?: string
   mode?: ProfileMode
+  followingId?: string
 }) {
   return (
     <>
@@ -27,7 +29,7 @@ export default function UserProfileHeader({
               <UserName name={name} />
             </div>
           </div>
-          <ActionButtons mode={mode} />
+          <ActionButtons mode={mode} followingId={followingId} />
         </div>
         
         {/* bio section - separated from name/avatar row to prevent pushing name up when bio is long */}

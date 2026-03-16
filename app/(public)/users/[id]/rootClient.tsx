@@ -80,6 +80,7 @@ export default function RootClient({ id }: { id: string }) {
         iconUrl={targetUser.icon?.url}
         bgUrl={targetUser.background?.url}
         mode="public"
+        followingId={targetUser.id}
       />
 
       <UserProfileContent

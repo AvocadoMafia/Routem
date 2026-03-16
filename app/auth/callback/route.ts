@@ -48,7 +48,8 @@ export async function GET(request: NextRequest) {
           icon: {
             create: {
               url: iconUrl,
-              status: 'ADOPTED',
+              key: null,
+              status: 'EXTERNAL',
               type: 'USER_ICON',
               createdAt: new Date(),
               updatedAt: new Date(),

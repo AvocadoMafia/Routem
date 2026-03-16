@@ -9,12 +9,16 @@ export default function UserProfileContent({
   onChangeTab,
   stats,
   routes,
+  likedRoutes = [],
+  historyRoutes = [],
   mode = 'public',
 }: {
   activeTab: Tab
   onChangeTab: (t: Tab) => void
   stats: { routes: number; followers: number | string; following: number | string }
   routes: any[]
+  likedRoutes?: any[]
+  historyRoutes?: any[]
   mode?: 'self' | 'public'
 }) {
   return (
@@ -30,21 +34,37 @@ export default function UserProfileContent({
         ))}
 
         {activeTab === 'likes' && (
-          <div className="col-span-full py-20 text-center">
-            <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
-              <MdFavoriteBorder size={32} className="text-foreground-1" />
+          likedRoutes.length > 0 ? (
+            likedRoutes.map((route) => (
+              <div key={route.id} className="aspect-[4/5]">
+                <RouteCardGraphical route={route} />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
+                <MdFavoriteBorder size={32} className="text-foreground-1" />
+              </div>
+              <p className="text-foreground-1 font-medium">No liked routes yet.</p>
             </div>
-            <p className="text-foreground-1 font-medium">No liked routes yet.</p>
-          </div>
+          )
         )}
 
         {activeTab === 'history' && mode === 'self' && (
-          <div className="col-span-full py-20 text-center">
-            <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
-              <MdHistory size={32} className="text-foreground-1" />
+          historyRoutes.length > 0 ? (
+            historyRoutes.map((route) => (
+              <div key={route.id} className="aspect-[4/5]">
+                <RouteCardGraphical route={route} />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
+                <MdHistory size={32} className="text-foreground-1" />
+              </div>
+              <p className="text-foreground-1 font-medium">No browsing history yet.</p>
             </div>
-            <p className="text-foreground-1 font-medium">No browsing history yet.</p>
-          </div>
+          )
         )}
       </div>
     </div>

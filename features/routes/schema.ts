@@ -3,7 +3,11 @@ import { WaypointSchema, TransportationSchema } from "../database_schema";
 import { create } from "domain";
 
 export const GetRoutesSchema = z.object({
-    authorId: z.string().uuid().optional(),
+    // Accept standard RFC4122 UUIDs OR our fixed seeded UUIDs (uuid-like but non-RFC versions)
+    authorId: z.union([
+        z.string().uuid(),
+        z.string().regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+    ]).optional(),
     categoryId: z.string().uuid().optional(),
     createdAfter: z.string().datetime().optional(),
     limit: z.string().regex(/^\d+$/).transform(Number),
