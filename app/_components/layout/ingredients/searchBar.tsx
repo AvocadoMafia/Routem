@@ -1,16 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MdSearch, MdArrowBack } from 'react-icons/md'
-
-const MOCK_SUGGESTIONS = [
-  'Best driving routes in Tokyo',
-  'Scenic coastal roads in Chiba',
-  'Mountain passes in Nagano',
-  'Cycling paths around Lake Biwa',
-  'Historic trails in Kyoto'
-]
 
 interface SearchBarProps {
   onBack?: () => void
@@ -20,6 +13,54 @@ interface SearchBarProps {
 export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarProps) {
   const [isFocused, setIsFocused] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const q = searchValue.trim()
+    if (!q) {
+      setSuggestions([])
+      return
+    }
+    setLoading(true)
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/v1/suggestions?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+        const data = await res.json()
+        setSuggestions(data.suggestions || [])
+      } catch (e) {
+        setSuggestions([])
+      } finally {
+        setLoading(false)
+      }
+    }, 200)
+    return () => {
+      controller.abort()
+      clearTimeout(t)
+    }
+  }, [searchValue])
+
+  const doSearch = async (q: string) => {
+    const query = q.trim()
+    if (!query) return
+    try {
+      // Save history (non-blocking)
+      fetch('/api/v1/search/history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: query }) })
+        .catch(() => {})
+    } finally {
+      router.push(`/search?q=${encodeURIComponent(query)}`)
+      setIsFocused(false)
+      onBack?.()
+    }
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      doSearch(searchValue)
+    }
+  }
 
   return (
     <div className={`flex flex-row gap-4 items-center relative w-full ${isMobileOnly ? '' : 'lg:w-[300px]'}`}>
@@ -41,12 +82,13 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={onKeyDown}
           />
         </div>
       </div>
 
       <AnimatePresence>
-        {isFocused && (
+        {isFocused && suggestions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -54,13 +96,13 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
             className={'absolute top-[calc(100%+8px)] left-0 w-full bg-background-1 border border-grass rounded-xl shadow-lg py-2 z-50 overflow-hidden'}
           >
             <div className={'px-4 py-2 text-xs font-bold text-foreground-1 uppercase tracking-wider'}>
-              Suggestions
+              {loading ? 'Searching...' : 'Suggestions'}
             </div>
-            {MOCK_SUGGESTIONS.map((suggestion, index) => (
+            {suggestions.map((suggestion, index) => (
               <button
                 key={index}
                 className={'w-full text-left px-4 py-2.5 hover:bg-background-0 transition-colors text-foreground-0 flex items-center gap-3 cursor-pointer'}
-                onClick={() => setSearchValue(suggestion)}
+                onClick={() => doSearch(suggestion)}
               >
                 <MdSearch className={'text-lg text-foreground-1'} />
                 <span>{suggestion}</span>

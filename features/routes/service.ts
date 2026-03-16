@@ -18,6 +18,7 @@ export const routesService = {
   ): Promise<RouteWithRelations[]> => {
     let ids:string[] | undefined = undefined;
     if(query.q){
+    const meilisearch = getMeilisearch();
     const index = await meilisearch.getIndex("routes");
     const search = await index.search(query.q);
     ids = search.hits.map((hit)=>hit.id);

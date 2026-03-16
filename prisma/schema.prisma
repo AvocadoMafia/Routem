@@ -201,6 +201,7 @@ enum ImageStatus {
   UNUSED // 利用されなかった（削除候補など）
 }
 
+
 // 移動モードの列挙。描画スタイルやアイコン分岐に利用
 enum TransitMode {
   WALK // 徒歩
