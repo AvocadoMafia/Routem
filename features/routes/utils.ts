@@ -1,15 +1,21 @@
 import { ImageStatus, ImageType, Prisma, RouteVisibility, TransitMode } from "@prisma/client";
 import { postRouteType, PatchRouteType, GetRoutesType } from "@/features/routes/schema";
 
+
 /**
  * routes 検索用の Prisma.RouteWhereInput を組み立てる
  * @param query
- * @param userId 閲覧者のユーザーID
+ * @param user_id 閲覧者のユーザーID
  */
-export function buildRoutesWhere(query: GetRoutesType, userId?: string): Prisma.RouteWhereInput {
-    const isOwner = !!(userId && query.authorId && userId === query.authorId);
+export function buildRoutesWhere(query: GetRoutesType, user_id?: string, search_ids?:string[]): Prisma.RouteWhereInput {
+    const isOwner = !!(user_id && query.authorId && user_id === query.authorId);
 
     const where: Prisma.RouteWhereInput = {};
+
+    // searchIds
+    if (search_ids){
+        where.id = {in:search_ids}
+    }
 
     // authorId
     if (query.authorId) {

@@ -13,7 +13,7 @@ var prisma: PrismaClient;
 var  s3Client: S3Client;
 }
 
-export function getMeiliseach(){ 
+export function getMeilisearch(){ 
     // global変数として存在した場合のガード節
     if(globalThis.meilisearch) return globalThis.meilisearch;
 
