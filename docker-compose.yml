@@ -6,7 +6,7 @@ services:
     image: postgres:15
     restart: always
     ports:
-      - "5432:5432"   #データベース（データ入出力用）
+      - "5432:5432" #データベース（データ入出力用）
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -21,8 +21,8 @@ services:
     image: minio/minio
     restart: always
     ports:
-      - "9000:9000"  # S3 API (データ転送用)
-      - "9001:9001"  # Web UI (管理画面用)
+      - "9000:9000" # S3 API (データ転送用)
+      - "9001:9001" # Web UI (管理画面用)
     environment:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
@@ -50,6 +50,25 @@ services:
       exit 0;
       "
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.30.1
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_MASTER_KEY=${MEILISEARCH_APIKEY}
+      - MEILI_NO_ANALYTICS=true
+    volumes:
+      - meili_data:/meili_data
+
+  # 翻訳エンジン（中身はArgos Translate）
+  libretranslate:
+    image: libretranslate/libretranslate
+    ports:
+      - "5000:5000"
+    command: ["--load-only", "en,ja"]
+
 volumes:
   postgres_data:
+  meili_data:
   minio_dev_data:

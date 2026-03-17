@@ -4,68 +4,96 @@ import {LikeViewTarget} from "@prisma/client";
 
 export const likesRepository = {
     createLike: async (userId: string, target: LikeViewTarget, routeId?: string, commentId?: string) => {
-        return getPrisma().like.create({
-            data: {
-                userId,
-                target,
-                routeId,
-                commentId,
-            },
-        });
+        try {
+            return getPrisma().like.create({
+                data: {
+                    userId,
+                    target,
+                    routeId,
+                    commentId,
+                },
+            });
+        } catch (e) {
+            throw e;
+        }
     },
 
     deleteLike: async (id: string) => {
-        return getPrisma().like.delete({
-            where: { id },
-        });
+        try {
+            return getPrisma().like.delete({
+                where: { id },
+            });
+        } catch (e) {
+            throw e;
+        }
     },
 
     findById: async (id: string) => {
-        return getPrisma().like.findUnique({
-            where: { id },
-        });
+        try {
+            return getPrisma().like.findUnique({
+                where: { id },
+            });
+        } catch (e) {
+            throw e;
+        }
     },
 
     findByUserAndRoute: async (userId: string, routeId: string) => {
-        return getPrisma().like.findUnique({
-            where: {
-                userId_routeId: {
-                    userId,
-                    routeId,
+        try {
+            return getPrisma().like.findUnique({
+                where: {
+                    userId_routeId: {
+                        userId,
+                        routeId,
+                    },
                 },
-            },
-        });
+            });
+        } catch (e) {
+            throw e;
+        }
     },
 
     findByUserAndComment: async (userId: string, commentId: string) => {
-        return getPrisma().like.findUnique({
-            where: {
-                userId_commentId: {
-                    userId,
-                    commentId,
+        try {
+            return getPrisma().like.findUnique({
+                where: {
+                    userId_commentId: {
+                        userId,
+                        commentId,
+                    },
                 },
-            },
-        });
+            });
+        } catch (e) {
+            throw e;
+        }
     },
     deleteByUserAndRoute: async (userId: string, routeId: string) => {
-        return getPrisma().like.delete({
-            where: {
-                userId_routeId: {
-                    userId,
-                    routeId,
+        try {
+            return getPrisma().like.delete({
+                where: {
+                    userId_routeId: {
+                        userId,
+                        routeId,
+                    },
                 },
-            },
-        });
+            });
+        } catch (e) {
+            throw e;
+        }
     },
 
     deleteByUserAndComment: async (userId: string, commentId: string) => {
-        return getPrisma().like.delete({
-            where: {
-                userId_commentId: {
-                    userId,
-                    commentId,
+        try {
+            return getPrisma().like.delete({
+                where: {
+                    userId_commentId: {
+                        userId,
+                        commentId,
+                    },
                 },
-            },
-        });
+            });
+        } catch (e) {
+            throw e;
+        }
     },
 };

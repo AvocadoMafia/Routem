@@ -1,264 +1,163 @@
-import { postRouteType } from "@/features/routes/schema";
-import {
-  ImageStatus,
-  ImageType,
-  Prisma,
-  RouteVisibility,
-} from "@prisma/client";
-import { routesRepository } from "@/features/routes/repository";
+import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
 import { User } from "@supabase/supabase-js";
-import { GetRoutesType } from "@/features/routes/schema";
-import { FindRoutes } from "@/features/routes/repository";
-import { PatchRouteType } from "@/features/routes/schema";
-import { DeleteRouteType } from "@/features/routes/schema";
+import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@/features/routes/schema";
+import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
+import { getMeilisearch } from "@/lib/config/server";
+import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { searchHistoryService } from "@/features/searchHistory/service";
+import { parse } from "path";
 
+
+/**
+ * @brief 処理層のルート
+ * @abstract prisma用のinputを作って→repository層に投げる→meilisearchに収納
+ */
 export const routesService = {
   getRoutes: async (
     user: User | null,
     query: GetRoutesType,
-  ): Promise<FindRoutes> => {
-    const isOwner = user?.id === query.authorId;
-
-    // Prismaのネストの中にundefinedを入れるとエラーになるため、visibilityの条件を分岐させて、防いでいる。
-    let visibility_condition: Prisma.RouteWhereInput = {};
-    if (!isOwner) {
-      visibility_condition = { visibility: RouteVisibility.PUBLIC };
-    } else if (query.visibility) {
-      visibility_condition = { visibility: query.visibility };
-    }
-
-    const where: Prisma.RouteWhereInput = {
-      authorId: query.authorId,
-      ...(query.categoryId && { categoryId: query.categoryId }),
-      // ここも同様に、createdAfterがない場合はundefinedが入るとエラーになるため、条件分岐させている。
-      ...(query.createdAfter && { createdAt: { gte: query.createdAfter } }),
-      ...visibility_condition,
-    };
-
-    const result = await routesRepository.findRoutes({
-      where,
-      take: query.limit,
-      orderBy: {
-        createdAt: "desc",
-      },
-      include: {
-        category: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            icon: true,
-          },
-        },
-        thumbnail: true,
-        routeNodes: {
-          include: {
-            spot: true,
-            transitSteps: true,
-            images: true,
-          },
-        },
-      },
-    });
-    return result;
-  },
-
-  postRoute: async (body: postRouteType, user_id: string) => {
-    const current_nodes: Prisma.RouteNodeCreateWithoutRouteInput[] = [];
-    let current_node: Prisma.RouteNodeCreateWithoutRouteInput | null = null;
-    if (body.items) {
-      for (const item of body.items) {
-        if (item.type === "waypoint") {
-          current_node = {
-            order: current_nodes.length,
-            details: item.memo,
-            spot: (() => {
-              //source,sourceIdが存在する時
-              if (item.source && item.sourceId) {
-                return {
-                  connectOrCreate: {
-                    where: { source_sourceId: { source: item.source, sourceId: item.sourceId } },
-                    create: {
-                      name: item.name,
-                      latitude: item.lat,
-                      longitude: item.lng,
-                      source: item.source,
-                      sourceId: item.sourceId,
-                    },
-                  },
-                };
-              } else if (!!item.id) {
-                return {
-                  connectOrCreate: {
-                    where: { id: item.id },
-                    create: {
-                      name: item.name,
-                      latitude: item.lat,
-                      longitude: item.lng,
-                    },
-                  },
-                };
-              } else {
-                return {
-                  create: {
-                    name: item.name,
-                    latitude: item.lat,
-                    longitude: item.lng,
-                  },
-                };
-              }
-            })(),
-            transitSteps: { create: [] },
-            images: {
-              create: Array.isArray(item.images)
-                ? item.images.map((url) => ({
-                    url,
-                    type: ImageType.NODE_IMAGE,
-                    status: ImageStatus.ADOPTED,
-                  }))
-                : [],
-            },
-          };
-
-          current_nodes.push(current_node);
-        } else if(item.type === "transportation") {
-          if (current_node && current_node?.transitSteps?.create) {
-            (current_node?.transitSteps.create as any[]).push({
-              order: (current_node?.transitSteps.create as any[]).length,
-              mode: item.method,
-              memo: item.memo,
-              distance: item.distance,
-              duration: item.duration,
-            });
-          }
+  ): Promise<RouteWithRelations[]> => {
+    try {
+      let ids: string[] | undefined = undefined;
+      if (query.q) {
+        const meilisearch = getMeilisearch();
+        const index = await meilisearch.getIndex("routes");
+        const search = await index.search(query.q);
+        ids = search.hits.map((hit) => hit.id);
+        if (ids.length === 0) {
+          return [];
         }
       }
-    }
-
-    
-
-    return await routesRepository.createRoute({
-      data: {
-        title: body.title ?? undefined,
-        description: body.description ?? undefined,
-        visibility: body.visibility as RouteVisibility ?? undefined,
-        author: {connect:{id:user_id}},
-        category:{
-          connect:{
-            id:body.categoryId,
-          }
-        },
-
-        thumbnail: {
-          create: {
-            url: body.thumbnailImageSrc,
-            type: ImageType.ROUTE_THUMBNAIL,
-            status:ImageStatus.ADOPTED
-          },
-        },
-
-        ...(body.items && {
-          routeNodes: {
-            create: current_nodes,
-          },
-        }),
-      
-
-      },
-      include:{
-        thumbnail:true,
-        category:true,
-        routeNodes:true,
+      const where = buildRoutesWhere(query, user?.id, ids);
+      if (query.q) {
+        // 検索履歴を保存 (バックグラウンドで実行)
+        searchHistoryService.save(user?.id || null, query.q).catch((e) => {
+          console.error("Failed to save search history:", e);
+        });
       }
-    });
-  },
-  
-  patchRoute: async (parsed_body: PatchRouteType) => {
-    const current_nodes: Prisma.RouteNodeCreateWithoutRouteInput[] = [];
-    let current_node: Prisma.RouteNodeCreateWithoutRouteInput | null = null;
-    if (parsed_body.items) {
-      for (const item of parsed_body.items) {
-        if (item.type === "waypoint") {
-          current_node = {
-            order: current_nodes.length,
-            details: item.memo,
-            spot: {
-              connectOrCreate: {
-                where: {id: item.id},
-                create: {
-                name: item.name,
-                latitude: item.lat,
-                longitude: item.lng,
-                source: item.source,
-                sourceId: item.sourceId,
-              }},
-            },
-            transitSteps: { create: [] },
-            images: {
-              create: Array.isArray(item.images)
-                ? item.images.map((url) => ({
-                    url,
-                    type: ImageType.NODE_IMAGE,
-                    status: ImageStatus.ADOPTED,
-                  }))
-                : [],
-            },
-          };
+      const result = await routesRepository.findMany(where, query.limit);
+      if (ids) {
+        const sortedResult = ids
+          .map((id) => result.find((route) => route.id === id))
+          .filter((route) => route !== undefined); // DBから消えていた場合のundefinedを除外
 
-          current_nodes.push(current_node);
-        } else if(item.type === "transportation") {
-          if (current_node && current_node?.transitSteps?.create) {
-            (current_node?.transitSteps.create as any[]).push({
-              order: (current_node?.transitSteps.create as any[]).length,
-              mode: item.method,
-              memo: item.memo,
-              distance: item.distance,
-              duration: item.duration,
-            });
-          }
-        }
+        return sortedResult;
       }
-
-      
+      return result;
+    } catch (e) {
+      throw e;
     }
-
-    return await routesRepository.updateRoute({
-      where: { id: parsed_body.id },
-      data: {
-        // TODO:truthy判定をzodで防ぐ
-        // TODO:updateの際に、クライアントが一部を空欄にして上書きしたいときに、空欄をnullとして扱うかどうかの仕様を決める必要がある。現状は、空欄にしたい項目はクライアント側でnullを送る必要がある。
-        title: parsed_body.title ?? undefined,
-        description: parsed_body.description ?? undefined,
-        categoryId: parsed_body.categoryId ?? undefined,
-        visibility: parsed_body.visibility as RouteVisibility ?? undefined,
-        
-        thumbnail: {
-          update: {
-            url: parsed_body.thumbnailImageSrc ?? undefined,
-          },
-        },
-
-        ...(parsed_body.items && {
-          routeNodes: {
-            deleteMany: {},
-            create: current_nodes,
-          },
-        }),
-      },
-    });
   },
 
-  deleteRoute :async(parsed_body:DeleteRouteType, user_id:string) =>{
-    const deleted = await routesRepository.deleteRoute({
-      where:{id:parsed_body.id,
-             authorId:user_id
-            }
-    });
+  postRoute: async (parsed_body: postRouteType, user_id: string) => {
+    try {
+      const data = buildCreateRouteData(parsed_body, user_id);
+      const result = await routesRepository.create(data);
 
-    if(deleted.count === 0){
-      throw new Error("Notfound or Unauthorized");
+      const en_texts = (await translateJa2En([
+        result.title,
+        result.description,
+        ...result.routeNodes.map(n => n.spot?.name)
+      ])).filter(Boolean);
+
+      const meilisearch = getMeilisearch();
+      const index = meilisearch.index("routes");
+
+      const documents = [{
+        id: result.id,
+
+        title: result.title,
+        description: result.description,
+
+        authorId: result.authorId,
+        categoryId: result.categoryId,
+        visibility: result.visibility,
+
+        createdAt: result.createdAt?.getTime(),
+        updatedAt: result.updatedAt?.getTime(),
+
+        categoryName: result.category.name,
+
+        routeNodes: result.routeNodes
+            .map(n => n.spot?.name)
+            .filter(Boolean),
+
+        searchText: [
+          result.title,
+          result.description,
+          result.category.name,
+          ...result.routeNodes.map(n => n.spot?.name).filter(Boolean),
+          ...en_texts,
+        ].join(" ")
+      }];
+
+
+      return result
+    }catch(e){
+      throw e;
     }
+  },
 
-    return deleted;
-  }
+  patchRoute: async (parsed_body: PatchRouteType, user_id: string) => {
+    try {
+      const data = buildUpdateRouteData(parsed_body);
+      const result = await routesRepository.update(parsed_body.id, user_id, data);
+
+      const en_texts: string[] = await translateJa2En([result.title, result.description, ...result.routeNodes.map((node) => node.spot.name)])
+      const meilisearch = getMeilisearch();
+      const index = meilisearch.index("routes");
+      const documents = [{
+        id: result.id,
+
+        title: result.title,
+        description: result.description,
+
+        authorId: result.authorId,
+        categoryId: result.categoryId,
+        visibility: result.visibility,
+
+        createdAt: result.createdAt.getTime(),
+        updatedAt: result.updatedAt.getTime(),
+
+        categoryName: result.category.name,
+
+        routenodes: result.routeNodes.map((node) => node.spot.name),
+
+        searchText: [
+          result.title,
+          result.description,
+          result.category.name,
+          ...result.routeNodes.map(n => n.spot.name),
+          ...en_texts,
+        ].join(" ")
+      }];
+      await index.updateDocuments(documents, { primaryKey: "id" });
+      return result;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  //deleteManyではincludeでrelationデータを取得することができないので、この関数でのみ戻り値にrelationデータが含まれない。
+  //基本的には問題ないが、もし必要なら事前に取得したのち削除、というフローをとる必要がある。
+  deleteRoute: async (parsed_body: DeleteRouteType, user_id: string) => {
+    try {
+      const deleted = await routesRepository.deleteMany({
+        id: parsed_body.id,
+        authorId: user_id,
+      });
+
+      if (deleted.count === 0) {
+        throw new Error("Notfound or Unauthorized");
+      }
+
+      const meilisearch = getMeilisearch();
+      const index = meilisearch.index("routes");
+      await index.deleteDocument(parsed_body.id);
+
+      return deleted;
+    } catch (e) {
+      throw e;
+    }
+  },
 };

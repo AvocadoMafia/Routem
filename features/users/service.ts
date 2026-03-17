@@ -5,21 +5,28 @@ import { usersRepository } from "./repository"
 // DBの整合性チェックなどを担当
 export const usersService = {
   getUserById: async (id: string) => {
-    const user = await usersRepository.findById(id);
-    if (!user) {
-      throw new Error("User not found");
+    try {
+      const user = await usersRepository.findById(id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
+    } catch (e) {
+      throw e;
     }
-    return user;
-    },
+  },
 
   //ユーザー情報の更新処理
   updateUser: async (id: string, data: any) => {
-    const user = await usersRepository.updateUser(id, data);
-    if(!user) {
-      throw new Error("Update failed");
+    try {
+      const user = await usersRepository.updateUser(id, data);
+      if (!user) {
+        throw new Error("Update failed");
+      }
+      return user;
+    } catch (e) {
+      throw e;
     }
-    return user;
   }
-
 }
 

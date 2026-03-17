@@ -1,15 +1,17 @@
 import { z } from "zod";
 import { WaypointSchema, TransportationSchema } from "../database_schema";
-import { create } from "domain";
+import { id } from "zod/v4/locales";
 
 export const GetRoutesSchema = z.object({
     authorId: z.string().uuid().optional(),
     categoryId: z.string().uuid().optional(),
-    createdAfter: z.string().datetime().optional(),
+    createdAfter: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
     limit: z.string().regex(/^\d+$/).transform(Number),
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
+    q:z.string().optional(),
 });
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
+
 
 export const PostRouteSchema = z.object({
     categoryId: z.string().uuid(),

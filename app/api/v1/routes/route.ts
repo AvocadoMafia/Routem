@@ -8,7 +8,11 @@ import { createClient } from "@/lib/auth/supabase/server";
 import { PostRouteSchema } from "@/features/routes/schema";
 import { PatchRouteSchema } from "@/features/routes/schema";
 
-// GET /api/v1/routems
+
+
+// /api/v1/routes
+// validationとauthenticationつまり処理に入る前段階の層
+
 // 最近作成されたルートを一覧返却します
 export async function GET(req: NextRequest) {
   return await handleRequest(async () => {
@@ -39,6 +43,8 @@ export async function POST(req: NextRequest) {
     }
     const parsed_body = await validateParams(PostRouteSchema, body);
     const result = await routesService.postRoute(parsed_body, user.id);
+
+
     return NextResponse.json(result, { status: 201 });
   });
 }
@@ -57,7 +63,7 @@ export async function PATCH(req: NextRequest) {
       throw new Error("Invalid body: items[] is required");
     }
     const parsed_body = await validateParams(PatchRouteSchema, body);
-    const result = await routesService.patchRoute(parsed_body);
+    const result = await routesService.patchRoute(parsed_body, user.id);
     return NextResponse.json(result, { status: 200 });
   });
 }
