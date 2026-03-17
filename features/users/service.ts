@@ -4,9 +4,9 @@ import { usersRepository } from "./repository"
 // バリデーション→ロジック→throw error or return data
 // DBの整合性チェックなどを担当
 export const usersService = {
-  getUserById: async (id: string) => {
+  getUserById: async (id: string, requesterId?: string) => {
     try {
-      const user = await usersRepository.findById(id);
+      const user = await usersRepository.findById(id, requesterId);
       if (!user) {
         throw new Error("User not found");
       }

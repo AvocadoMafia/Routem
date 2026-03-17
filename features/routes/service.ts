@@ -6,12 +6,10 @@ import { getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { searchHistoryService } from "@/features/searchHistory/service";
 import { parse } from "path";
+import { FindRoutes } from "@/features/routes/repository";
+import crypto from "crypto";
+import {ImageStatus, ImageType} from "@prisma/client";
 
-
-/**
- * @brief 処理層のルート
- * @abstract prisma用のinputを作って→repository層に投げる→meilisearchに収納
- */
 export const routesService = {
   getRoutes: async (
     user: User | null,
@@ -29,12 +27,7 @@ export const routesService = {
         }
       }
       const where = buildRoutesWhere(query, user?.id, ids);
-      if (query.q) {
-        // 検索履歴を保存 (バックグラウンドで実行)
-        searchHistoryService.save(user?.id || null, query.q).catch((e) => {
-          console.error("Failed to save search history:", e);
-        });
-      }
+
       const result = await routesRepository.findMany(where, query.limit);
       if (ids) {
         const sortedResult = ids
@@ -159,5 +152,133 @@ export const routesService = {
     } catch (e) {
       throw e;
     }
+  },
+
+  getRouteDetail: async (id: string, userId: string | null): Promise<Route | null> => {
+    const route = await routesRepository.findRoutes({
+      where: { id },
+      include: {
+        category: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
+        thumbnail: true,
+        likes: true,
+        views: true,
+        routeNodes: {
+          include: {
+            spot: true,
+            transitSteps: true,
+            images: true,
+          },
+        },
+        collaborators: true,
+      },
+    }) as Route[];
+
+    if (route.length === 0) {
+      return null;
+    }
+
+    const targetRoute = route[0];
+
+    // 認可チェック
+    const isAuthor = targetRoute.authorId === userId;
+    const isCollaborator = targetRoute.collaborators.some(c => c.userId === userId);
+
+    if (targetRoute.visibility === RouteVisibility.PRIVATE && !isAuthor && !isCollaborator) {
+      throw new Error("Unauthorized");
+    }
+
+    return targetRoute;
+  },
+
+  generateInvite: async (routeId: string, userId: string) => {
+    const route = await routesRepository.findRoutes({
+      where: { id: routeId },
+    });
+
+    if (route.length === 0) throw new Error("Route not found");
+    if (route[0].authorId !== userId) throw new Error("Unauthorized");
+    if (route[0].collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
+      throw new Error("Collaboration is disabled for this route");
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    await getPrisma().routeInvite.create({
+      data: {
+        routeId,
+        tokenHash,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7日間有効
+      },
+    });
+
+    return token;
+  },
+
+  acceptInvite: async (token: string, userId: string) => {
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const invite = await getPrisma().routeInvite.findUnique({
+      where: { tokenHash },
+      include: { route: true },
+    });
+
+    if (!invite) throw new Error("Invalid token");
+    if (invite.revokedAt) throw new Error("Token revoked");
+    if (invite.expiresAt && invite.expiresAt < new Date()) throw new Error("Token expired");
+    if (invite.route.collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
+      throw new Error("Collaboration is disabled for this route");
+    }
+
+    // すでに作成者本人の場合は何もしない（または成功扱い）
+    if (invite.route.authorId === userId) {
+      return invite.routeId;
+    }
+
+    // collaboratorに追加 (upsert的に扱う)
+    await getPrisma().routeCollaborator.upsert({
+      where: {
+        routeId_userId: {
+          routeId: invite.routeId,
+          userId: userId,
+        },
+      },
+      create: {
+        routeId: invite.routeId,
+        userId: userId,
+      },
+      update: {}, // すでに存在すれば何もしない
+    });
+
+    // 使用回数をインクリメント
+    await getPrisma().routeInvite.update({
+      where: { id: invite.id },
+      data: { usedCount: { increment: 1 } },
+    });
+
+    return invite.routeId;
+  },
+
+  checkUpdatePermission: async (routeId: string, userId: string) => {
+    const route = await getPrisma().route.findUnique({
+      where: { id: routeId },
+      include: { collaborators: true },
+    });
+
+    if (!route) return false;
+    if (route.authorId === userId) return true;
+
+    const isCollaborator = route.collaborators.some(c => c.userId === userId);
+    if (isCollaborator && route.collaboratorPolicy === RouteCollaboratorPolicy.CAN_EDIT) {
+      return true;
+    }
+
+    return false;
   },
 };

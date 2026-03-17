@@ -12,6 +12,7 @@ import { useAtomValue } from "jotai";
 import { scrollDirectionAtom } from "@/lib/client/atoms";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
+import { postDataToServerWithJson } from "@/lib/client/helpers";
 
 type Props = {
   route: Route;
@@ -87,6 +88,18 @@ export default function RootClient({ route, currentUser }: Props) {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Minimal view tracking: post once per session when page opens
+  useEffect(() => {
+    if (!currentUser?.id) return; // only for logged-in users
+    if (!route?.id) return;
+    const key = `viewed:${route.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    postDataToServerWithJson(`/api/v1/views`, { routeId: route.id }).catch(() => {
+      // ignore errors; UI shouldn't break
+    });
+  }, [currentUser?.id, route?.id]);
 
   return (
     <div className="w-full h-full relative overflow-hidden">

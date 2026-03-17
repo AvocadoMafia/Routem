@@ -12,17 +12,21 @@ datasource db {
 }
 
 model User {
-  id              String          @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
-  name            String
-  gender          String?
-  age             Int?
-  bio             String?
-  icon            Image?          @relation("UserIcon")
-  background      Image?          @relation("UserBackground")
-  uploadedImages  Image[]         @relation("UserUploads")
-  routes          Route[]
-  likes           Like[]
-  comments        Comment[]
+  id             String              @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
+  name           String
+  gender         String?
+  age            Int?
+  bio            String?
+  icon           Image?              @relation("UserIcon")
+  background     Image?              @relation("UserBackground")
+  uploadedImages Image[]             @relation("UserUploads")
+  routes         Route[]
+  collaborations RouteCollaborator[]
+  likes          Like[]
+  comments       Comment[]
+  //これは逆で正しい
+  followings     Follow[]            @relation("follower")
+  followers      Follow[]            @relation("following")
   searchHistories SearchHistory[]
 }
 
@@ -89,13 +93,42 @@ model Route {
   authorId String @db.Uuid
   author   User   @relation(references: [id], fields: [authorId])
 
-  visibility RouteVisibility @default(PRIVATE)
-  routeNodes RouteNode[]
-  likes      Like[]
-  comments   Comment[]
-  views      View[]
+  visibility    RouteVisibility     @default(PRIVATE)
+  routeNodes    RouteNode[]
+  likes         Like[]
+  comments      Comment[]
+  views         View[]
+  collaborators RouteCollaborator[]
+  invites       RouteInvite[]
+
+  collaboratorPolicy RouteCollaboratorPolicy @default(DISABLED)
 
   @@index([authorId])
+}
+
+model RouteCollaborator {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId   String   @db.Uuid
+  route     Route    @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([routeId, userId])
+}
+
+model RouteInvite {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId   String    @db.Uuid
+  route     Route     @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  revokedAt DateTime?
+  maxUses   Int?
+  usedCount Int       @default(0)
+
+  @@index([routeId])
 }
 
 model RouteNode {
@@ -175,6 +208,17 @@ model View {
   userId String? @db.Uuid
 }
 
+model Follow {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  followingId String   @db.Uuid
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  followerId  String   @db.Uuid
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followingId, followerId])
+}
+
 enum LikeViewTarget {
   ROUTE
   COMMENT
@@ -200,6 +244,7 @@ enum ImageStatus {
   ADOPTED // 正式に採用された
   DRAFT // 一次保存・下書き状態
   UNUSED // 利用されなかった（削除候補など）
+  EXTERNAL // 外部URLのみを保持（S3キーなし）
 }
 
 // 移動モードの列挙。描画スタイルやアイコン分岐に利用
@@ -227,4 +272,10 @@ model SearchHistory {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, query])
+}
+
+enum RouteCollaboratorPolicy {
+  DISABLED
+  VIEW_ONLY
+  CAN_EDIT
 }

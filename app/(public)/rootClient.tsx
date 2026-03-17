@@ -13,7 +13,7 @@ import {PiForkKnife, PiMountains} from "react-icons/pi";
 import {LuPalette} from "react-icons/lu";
 import {FaRunning} from "react-icons/fa";
 import {IoIosArrowForward} from "react-icons/io";
-import {Route, User} from "@/lib/client/types";
+import {Route} from "@/lib/client/types";
 import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
 import type {RouteVisibility} from "@prisma/client";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
@@ -21,17 +21,6 @@ import { getDataFromServerWithJson } from "@/lib/client/helpers";
 export type selectedType = 'home' | 'photos' | 'interests' | 'recent' | 'trending'
 
 export default function RootClient() {
-
-    // Mock users for demo (this week)
-    const mockUsers: any[] = [
-        { id: 'u1', name: 'Aki Tanaka', bio: 'City explorer and coffee lover.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/Nara.jpg' } },
-        { id: 'u2', name: 'Kenji Sato', bio: 'Runner and ramen hunter in Kansai.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/Tokyo.jpg' } },
-        { id: 'u3', name: 'Serene Jane', bio: 'History routes and hidden shrines.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/userProfile.jpg' } },
-        { id: 'u4', name: 'Yuta Mori', bio: 'Snowy trails and craft beer enthusiast.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/Fuji.jpg' } },
-        { id: 'u5', name: 'Hana Suzuki', bio: 'Weekend cyclist and bakery map maker from Japan. And Ive Lived in French since last year. Its great and I love here.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/Kyoto.jpg' } },
-        { id: 'u6', name: 'Ren Nakamura', bio: 'Techie who loves riverfront jogs.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/Hokkaido.jpg' } },
-        { id: 'u7', name: 'Sara Ito', bio: 'Nature walks and deer lover in Nara.', icon: { url: '/mockImages/userIcon_1.jpg' }, background: { url: '/mockImages/Hokkaido.jpg' } },
-    ]
 
     // Fetch routes from API
     const [routes, setRoutes] = useState<Route[] | null>(null);
@@ -57,68 +46,9 @@ export default function RootClient() {
         return () => { cancelled = true };
     }, []);
 
-    // UIのエラーを回避するためにモック記事をfetchしたroutesに追加する
-    const paddedRoutes = useMemo<Route[]>(() => {
-        const base = Array.isArray(routes) ? routes : [];
-        if (base.length >= 6) return base;
-        // pad with placeholders
-        const placeholdersNeeded = 6 - base.length;
-        const placeholders: Route[] = Array.from({ length: Math.max(0, placeholdersNeeded) }).map((_, i) => ({
-            id: `placeholder-${i}`,
-            title: `Sample Route ${i + 1}`,
-            description: 'This is a sample description for the placeholder route.',
-            visibility: "PUBLIC" as RouteVisibility,
-            authorId: mockUsers[i % mockUsers.length].id,
-            author: {
-                ...mockUsers[i % mockUsers.length],
-                profileImage: mockUsers[i % mockUsers.length].icon ? { id: `img-u-${i}`, url: mockUsers[i % mockUsers.length].icon, type: 'USER_PROFILE', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: mockUsers[i % mockUsers.length].id, routeThumbId: null } : null,
-                gender: null,
-                age: null,
-            } as any,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            categoryId: `placeholder-cat-${i}`,
-            category: { id: `placeholder-cat-${i}`, name: 'General' },
-            thumbnail: { id: `thumb-${i}`, url: '/mockImages/Kyoto.jpg', type: 'ROUTE_THUMBNAIL', status: 'ADOPTED', createdAt: new Date(), updatedAt: new Date(), uploaderId: mockUsers[i % mockUsers.length].id, routeNodeId: null, userProfileId: null, routeThumbId: `placeholder-${i}` } as any,
-            likes: Array.from({ length: 10 + i * 5 }).map((_, j) => ({ 
-                id: `like-${i}-${j}`, 
-                createdAt: new Date(), 
-                target: 'ROUTE' as const, 
-                routeId: `placeholder-${i}`, 
-                userId: `u${(j % 7) + 1}`,
-                commentId: null
-            })),
-            views: Array.from({ length: 100 + i * 20 }).map((_, j) => ({ id: `view-${i}-${j}`, createdAt: new Date(), target: 'ROUTE', routeId: `placeholder-${i}`, userId: null })),
-            routeNodes: [
-                {
-                    id: `node-${i}-1`,
-                    routeId: `placeholder-${i}`,
-                    spotId: 'kyoto-station',
-                    details: 'Start from Kyoto Station',
-                    spot: {
-                        id: 'kyoto-station',
-                        name: 'Kyoto Station',
-                        longitude: 135.7588,
-                        latitude: 34.9858,
-                        source: 'mock'
-                    }
-                },
-                {
-                    id: `node-${i}-2`,
-                    routeId: `placeholder-${i}`,
-                    spotId: 'nara-park',
-                    details: 'Visit Nara Park',
-                    spot: {
-                        id: 'nara-park',
-                        name: 'Nara Park',
-                        longitude: 135.8430,
-                        latitude: 34.6851,
-                        source: 'mock'
-                    }
-                }
-            ] as any
-        }));
-        return [...base, ...placeholders];
+    // 取得したroutesをそのまま利用
+    const displayedRoutes = useMemo<Route[]>(() => {
+        return Array.isArray(routes) ? routes : [];
     }, [routes]);
 
     const [selected, setSelected] = useState<selectedType>('home')
@@ -134,11 +64,14 @@ export default function RootClient() {
                                 <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>
                             ) : (
                                 <>
-                                    <MapViewerOnLaptop routes={paddedRoutes}/>
-                                    <MapViewerOnMobile routes={paddedRoutes}/>
-                                    <TopRoutesList routes={paddedRoutes} />
-                                    <TopUsersList users={mockUsers}/>
-                                    <RecommendedRoutesList routes={paddedRoutes}/>
+                                    <MapViewerOnLaptop routes={displayedRoutes}/>
+                                    <MapViewerOnMobile routes={displayedRoutes}/>
+                                    <TopRoutesList routes={displayedRoutes} />
+                                    {/* TopUsersList will be rendered only if we have enough unique authors */}
+                                    {Array.from(new Map(displayedRoutes.map(r => [r.author?.id, r.author])).values()).filter(Boolean).length >= 5 && (
+                                        <TopUsersList users={Array.from(new Map(displayedRoutes.map(r => [r.author?.id, r.author])).values()).slice(0,5) as any} />
+                                    )}
+                                    <RecommendedRoutesList routes={displayedRoutes}/>
                                 </>
                             )}
                         </div>
@@ -159,7 +92,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={paddedRoutes}/>
+                                <RouteListBasic routes={displayedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-4'}>
                                 <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
@@ -172,7 +105,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={paddedRoutes}/>
+                                <RouteListBasic routes={displayedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-4'}>
                                 <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
@@ -185,7 +118,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={paddedRoutes}/>
+                                <RouteListBasic routes={routes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-4'}>
                                 <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
@@ -198,7 +131,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={paddedRoutes}/>
+                                <RouteListBasic routes={routes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-4'}>
                                 <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
@@ -211,7 +144,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={paddedRoutes}/>
+                                <RouteListBasic routes={routes}/>
                             </div>
                         </div>
                     )

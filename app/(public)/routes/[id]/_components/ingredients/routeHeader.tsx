@@ -2,16 +2,23 @@
 
 import { Route } from "@/lib/client/types";
 import Image from "next/image";
-import { HiEye, HiClock, HiBanknotes } from "react-icons/hi2";
+import { HiEye, HiClock, HiBanknotes, HiPencilSquare } from "react-icons/hi2";
 import { motion } from "framer-motion";
 import LikeButton from "./likeButton";
+import Link from "next/link";
+import { User } from "@supabase/supabase-js";
 
 type RouteHeaderProps = {
   route: Route;
+  currentUser?: User | null;
 };
 
-export default function RouteHeader({ route }: RouteHeaderProps) {
+export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const author = route.author;
+  const isAuthor = currentUser?.id === route.authorId;
+  const isCollaborator = route.collaborators?.some(c => c.userId === currentUser?.id);
+  const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === 'CAN_EDIT');
+
   return (
     <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start border-b py-8 border-grass">
       {/* サムネイル画像 - PCでは左側、モバイルでは上部 */}
@@ -76,6 +83,17 @@ export default function RouteHeader({ route }: RouteHeaderProps) {
         </div>
 
         <div className="flex flex-wrap gap-2 mt-1">
+          {canEdit && (
+            <Link
+              href={`/articles/${route.id}/edit`}
+              className="flex items-center gap-2 px-3 py-1 bg-accent-0 text-white rounded-lg shadow-sm hover:bg-accent-0/90 transition-all active:scale-95"
+            >
+              <HiPencilSquare className="w-4 h-4" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                Edit Route
+              </span>
+            </Link>
+          )}
           <div className="flex items-center gap-2 px-2.5 py-1 bg-foreground-0/5 rounded-lg border border-foreground-0/5">
             <HiClock className="w-3.5 h-3.5 text-accent-1" />
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground-1">

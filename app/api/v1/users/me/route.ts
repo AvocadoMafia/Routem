@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
         }
         //bodyを含ませる予定はないためとりあえずvalidateなし。いいねしたルートや作成したルート等は別APIからとってくるよてい
         //prismaからユーザー問い合わせ
-        const prismaUser = await usersService.getUserById(user.id);
+        const prismaUser = await usersService.getUserById(user.id, user.id);
 
         return NextResponse.json({...prismaUser}, {status: 200})
     })
