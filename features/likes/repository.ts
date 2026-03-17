@@ -1,8 +1,15 @@
 import {getPrisma} from "@/lib/config/server";
-import {LikeViewTarget} from "@prisma/client";
-
+import {LikeViewTarget, Prisma} from "@prisma/client";
+import { ROUTE_INCLUDE } from "@/features/routes/repository";
 
 export const likesRepository = {
+    findMany: async (args: Prisma.LikeFindManyArgs) => {
+        try {
+            return await getPrisma().like.findMany(args);
+        } catch (e) {
+            throw e;
+        }
+    },
     createLike: async (userId: string, target: LikeViewTarget, routeId?: string, commentId?: string) => {
         try {
             return getPrisma().like.create({
@@ -96,4 +103,18 @@ export const likesRepository = {
             throw e;
         }
     },
+  countLikesByRoute: async (routeId: string) => {
+    try {
+      return await getPrisma().like.count({ where: { routeId } });
+    } catch (e) {
+      throw e;
+    }
+  },
+  countLikesByComment: async (commentId: string) => {
+    try {
+      return await getPrisma().like.count({ where: { commentId } });
+    } catch (e) {
+      throw e;
+    }
+  },
 };

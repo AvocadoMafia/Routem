@@ -27,6 +27,29 @@ export const usersService = {
     } catch (e) {
       throw e;
     }
-  }
+  },
+
+  toggleFollow: async (followingId: string, followerId: string) => {
+    try {
+      if (followingId === followerId) {
+        throw new Error("Cannot follow yourself");
+      }
+
+      const existing = await usersRepository.findFollow(followingId, followerId);
+
+      if (existing) {
+        await usersRepository.deleteFollow(followingId, followerId);
+      } else {
+        await usersRepository.createFollow(followingId, followerId);
+      }
+
+      const followed = !existing;
+      const followerCount = await usersRepository.countFollowers(followingId);
+
+      return { followed, followerCount };
+    } catch (e) {
+      throw e;
+    }
+  },
 }
 

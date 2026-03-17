@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma, TransitMode, ImageType, ImageStatus, RouteVisibility } from "@prisma/client";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { routesService } from "@/features/routes/service";
 import { validateParams } from "@/lib/server/validateParams";
@@ -38,9 +37,6 @@ export async function POST(req: NextRequest) {
       throw new Error("Unauthorized");
     }
     const body = await req.json();
-    if (!body || !Array.isArray(body.items)) {
-      throw new Error("Invalid body: items[] is required");
-    }
     const parsed_body = await validateParams(PostRouteSchema, body);
     const result = await routesService.postRoute(parsed_body, user.id);
     return NextResponse.json(result, { status: 201 });
@@ -57,9 +53,6 @@ export async function PATCH(req: NextRequest) {
         throw new Error("unauthorized")
     }
     const body = await req.json();
-    if (!body || !Array.isArray(body.items)) {
-      throw new Error("Invalid body: items[] is required");
-    }
     const parsed_body = await validateParams(PatchRouteSchema, body);
 
     // 編集権限のチェック
@@ -68,33 +61,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized or Forbidden" }, { status: 403 });
     }
 
-    const result = await routesService.patchRoute(parsed_body);
+    const result = await routesService.patchRoute(parsed_body, user.id);
     return NextResponse.json(result, { status: 200 });
   });
-}
-
-
-
-//stringからTransitModeへのキャスト関数
-function mapMethodToTransitMode(method: string): TransitMode {
-  switch (method.toUpperCase()) {
-    case "WALK":
-      return TransitMode.WALK;
-    case "TRAIN":
-      return TransitMode.TRAIN;
-    case "BUS":
-      return TransitMode.BUS;
-    case "CAR":
-      return TransitMode.CAR;
-    case "BIKE":
-      return TransitMode.BIKE;
-    case "FLIGHT":
-      return TransitMode.FLIGHT;
-    case "SHIP":
-      return TransitMode.SHIP;
-    case "OTHER":
-      return TransitMode.OTHER;
-    default:
-      return TransitMode.WALK;
-  }
 }

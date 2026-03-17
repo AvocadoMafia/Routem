@@ -23,9 +23,6 @@ export async function POST(req: NextRequest) {
 
         const body = await req.json();
         const q = (body?.q || "").toString();
-        if (!q.trim()) {
-            return NextResponse.json({ message: "q is required" }, { status: 400 });
-        }
 
         const result = await searchHistoryService.save(user?.id || null, q);
         return NextResponse.json({ id: result.id }, { status: 201 });

@@ -1,6 +1,4 @@
-import {createServerClient} from "@supabase/ssr";
 import {NextRequest, NextResponse} from "next/server";
-import {getPrisma} from "@/lib/config/server";
 import {createClient} from "@/lib/auth/supabase/server";
 import {handleRequest} from "@/lib/server/handleRequest";
 import {usersService} from "@/features/users/service";
@@ -18,7 +16,7 @@ export async function GET(req: NextRequest) {
         }
         //bodyを含ませる予定はないためとりあえずvalidateなし。いいねしたルートや作成したルート等は別APIからとってくるよてい
         //prismaからユーザー問い合わせ
-        const prismaUser = await usersService.getUserById(user.id, user.id);
+        const prismaUser = await usersService.getUserById(user.id);
 
         return NextResponse.json({...prismaUser}, {status: 200})
     })

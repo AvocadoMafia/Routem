@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { createClient } from "@/lib/auth/supabase/server";
 import { z } from "zod";
-import { getPrisma } from "@/lib/config/server";
-import { LikeViewTarget } from "@prisma/client";
+import { viewsService } from "@/features/views/service";
 
 const ViewSchema = z.object({
   routeId: z.string().uuid(),
@@ -21,18 +20,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = ViewSchema.parse(body);
 
-    const prisma = getPrisma();
-
-    await prisma.view.create({
-      data: {
-        target: LikeViewTarget.ROUTE,
-        routeId: parsed.routeId,
-        userId: user.id,
-        // createdAt uses default now(); ts could be used if provided, but we trust server time
-      },
-    });
-
-    const view_count = await prisma.view.count({ where: { routeId: parsed.routeId } });
+    const view_count = await viewsService.recordView(parsed.routeId, user.id);
 
     return NextResponse.json({ ok: true, view_count }, { status: 200 });
   });

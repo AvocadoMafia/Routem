@@ -1,4 +1,4 @@
-import { ImageStatus, ImageType, Prisma, RouteVisibility, TransitMode } from "@prisma/client";
+import { ImageStatus, ImageType, Prisma, RouteVisibility, TransitMode, RouteCollaboratorPolicy } from "@prisma/client";
 import { postRouteType, PatchRouteType, GetRoutesType } from "@/features/routes/schema";
 
 
@@ -170,6 +170,7 @@ export function buildCreateRouteData(body: postRouteType, authorId: string): Pri
         routeNodes: {
             create: routeNodes,
         },
+        collaboratorPolicy: body.collaboratorPolicy as RouteCollaboratorPolicy ?? undefined,
     };
 }
 
@@ -195,5 +196,6 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
                 create: routeNodes,
             },
         }),
+        collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
     };
 }

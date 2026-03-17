@@ -35,6 +35,7 @@ export default function RootClient() {
             setError(null);
             try {
                 const data = await getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=12');
+                console.log(data)
                 if (!cancelled && data) setRoutes(data);
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load');
@@ -68,8 +69,8 @@ export default function RootClient() {
                                     <MapViewerOnMobile routes={displayedRoutes}/>
                                     <TopRoutesList routes={displayedRoutes} />
                                     {/* TopUsersList will be rendered only if we have enough unique authors */}
-                                    {Array.from(new Map(displayedRoutes.map(r => [r.author?.id, r.author])).values()).filter(Boolean).length >= 5 && (
-                                        <TopUsersList users={Array.from(new Map(displayedRoutes.map(r => [r.author?.id, r.author])).values()).slice(0,5) as any} />
+                                    {Array.from(new Map(displayedRoutes.filter(r => r.author).map(r => [r.author!.id, r.author!])).values()).length >= 5 && (
+                                        <TopUsersList users={Array.from(new Map(displayedRoutes.filter(r => r.author).map(r => [r.author!.id, r.author!])).values()).slice(0,5) as any} />
                                     )}
                                     <RecommendedRoutesList routes={displayedRoutes}/>
                                 </>
@@ -118,7 +119,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={routes}/>
+                                <RouteListBasic routes={displayedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-4'}>
                                 <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
@@ -131,7 +132,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={routes}/>
+                                <RouteListBasic routes={displayedRoutes}/>
                             </div>
                             <div className={'w-full flex flex-col gap-4'}>
                                 <div className={'py-2 flex flex-row justify-between items-center border-b border-grass/10'}>
@@ -144,7 +145,7 @@ export default function RootClient() {
                                         <IoIosArrowForward className={'text-lg'}/>
                                     </div>
                                 </div>
-                                <RouteListBasic routes={routes}/>
+                                <RouteListBasic routes={displayedRoutes}/>
                             </div>
                         </div>
                     )

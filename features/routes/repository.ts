@@ -1,5 +1,5 @@
 import { getPrisma } from "@/lib/config/server";
-import { Prisma, RouteVisibility } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export const ROUTE_INCLUDE = {
   category: true,
@@ -18,6 +18,9 @@ export const ROUTE_INCLUDE = {
       images: true,
     },
   },
+  likes: true,
+  views: true,
+  collaborators: true,
 } as const;
 
 export type RouteWithRelations = Prisma.RouteGetPayload<{
@@ -83,4 +86,79 @@ export const routesRepository = {
       throw e;
     }
   },
+
+  findRoutes: async (args: Prisma.RouteFindManyArgs): Promise<RouteWithRelations[]> => {
+    try {
+      return (await getPrisma().route.findMany({
+        ...args,
+        include: ROUTE_INCLUDE,
+      })) as RouteWithRelations[];
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  findUnique: async (id: string): Promise<RouteWithRelations | null> => {
+    try {
+      return (await getPrisma().route.findUnique({
+        where: { id },
+        include: ROUTE_INCLUDE,
+      })) as RouteWithRelations | null;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  createInvite: async (data: Prisma.RouteInviteCreateInput) => {
+    try {
+      return await getPrisma().routeInvite.create({
+        data,
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  findInviteByTokenHash: async (tokenHash: string) => {
+    try {
+      return await getPrisma().routeInvite.findUnique({
+        where: { tokenHash },
+        include: { route: true },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  updateInvite: async (id: string, data: Prisma.RouteInviteUpdateInput) => {
+    try {
+      return await getPrisma().routeInvite.update({
+        where: { id },
+        data,
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  upsertCollaborator: async (routeId: string, userId: string) => {
+    try {
+      return await getPrisma().routeCollaborator.upsert({
+        where: {
+          routeId_userId: {
+            routeId,
+            userId,
+          },
+        },
+        create: {
+          routeId,
+          userId,
+        },
+        update: {},
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
 };

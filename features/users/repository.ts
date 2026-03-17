@@ -102,5 +102,49 @@ export const usersRepository = {
     } catch (e) {
       throw e;
     }
-  }
+  },
+
+  findFollow: async (followingId: string, followerId: string) => {
+    try {
+      return await getPrisma().follow.findUnique({
+        where: {
+          followingId_followerId: { followingId, followerId },
+        },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  createFollow: async (followingId: string, followerId: string) => {
+    try {
+      return await getPrisma().follow.create({
+        data: { followingId, followerId },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  deleteFollow: async (followingId: string, followerId: string) => {
+    try {
+      return await getPrisma().follow.delete({
+        where: {
+          followingId_followerId: { followingId, followerId },
+        },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  countFollowers: async (followingId: string) => {
+    try {
+      return await getPrisma().follow.count({
+        where: { followingId },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
 };

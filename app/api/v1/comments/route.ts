@@ -7,11 +7,7 @@ import {commentsService} from "@/features/comments/service";
 
 export async function GET(req: NextRequest) {
     return handleRequest(async () => {
-        const supabase = await createClient(req);
-        const { data: { user }, error } = await supabase.auth.getUser();
-
-        const searchParams = req.nextUrl.searchParams;
-        const routeId = searchParams.get('routeId');
+        const routeId = req.nextUrl.searchParams.get('routeId');
 
         if (!routeId) {
             throw new Error("routeId is required");
