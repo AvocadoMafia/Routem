@@ -1,7 +1,11 @@
 import { getPrisma } from "@/lib/config/server"
 
 export const categoriesRepository = {
-    findCategories:async ()=>{
-        return getPrisma().category.findMany();
+    findCategories: async () => {
+        try {
+            return getPrisma().category.findMany();
+        } catch (e) {
+            throw e;
+        }
     }
 }

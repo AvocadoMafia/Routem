@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MdSearch, MdArrowBack } from 'react-icons/md'
+import {getDataFromServerWithJson, postDataToServerWithJson} from "@/lib/client/helpers";
 
 interface SearchBarProps {
   onBack?: () => void
@@ -27,9 +28,9 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
     setLoading(true)
     const t = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/v1/suggestions?q=${encodeURIComponent(q)}`, { signal: controller.signal })
-        const data = await res.json()
-        setSuggestions(data.suggestions || [])
+        const suggestions = await getDataFromServerWithJson<string[]>(`api/v1/searchHistory?q=${encodeURIComponent(q)}`)
+        console.log(suggestions)
+        setSuggestions(suggestions || [])
       } catch (e) {
         setSuggestions([])
       } finally {
@@ -46,9 +47,10 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
     const query = q.trim()
     if (!query) return
     try {
-      // Save history (non-blocking)
-      fetch('/api/v1/search/history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: query }) })
-        .catch(() => {})
+
+      //検索履歴の投稿処理
+      const json = await postDataToServerWithJson('api/v1/searchHistory', {q: query})
+
     } finally {
       router.push(`/search?q=${encodeURIComponent(query)}`)
       setIsFocused(false)

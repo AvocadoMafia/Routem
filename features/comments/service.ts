@@ -2,27 +2,46 @@ import {commentsRepository} from "@/features/comments/repository";
 
 export const commentsService = {
     getComments: async (userId?: string, take?: number, onlyMine?: boolean, without?: string[]) => {
-        // ... (省略)
+        try {
+            if (onlyMine && userId) {
+                return commentsRepository.getMyComments(userId, take, without);
+            }
+            return commentsRepository.getComments(take, without);
+        } catch (e) {
+            throw e;
+        }
     },
 
     getCommentsByRouteId: async (routeId: string) => {
-        return commentsRepository.getCommentsByRouteId(routeId);
+        try {
+            return commentsRepository.getCommentsByRouteId(routeId);
+        } catch (e) {
+            throw e;
+        }
     },
 
     createComment: async (userId: string, routeId: string, text: string) => {
-        return commentsRepository.createComment(userId, routeId, text);
+        try {
+            return commentsRepository.createComment(userId, routeId, text);
+        } catch (e) {
+            throw e;
+        }
     },
 
     deleteComment: async (userId: string, commentId: string) => {
-        const comment = await commentsRepository.findById(commentId);
-        if (!comment) {
-            throw new Error("Comment not found");
-        }
+        try {
+            const comment = await commentsRepository.findById(commentId);
+            if (!comment) {
+                throw new Error("Comment not found");
+            }
 
-        if (comment.userId !== userId) {
-            throw new Error("Unauthorized");
-        }
+            if (comment.userId !== userId) {
+                throw new Error("Unauthorized");
+            }
 
-        return commentsRepository.deleteComment(commentId);
+            return commentsRepository.deleteComment(commentId);
+        } catch (e) {
+            throw e;
+        }
     },
 };

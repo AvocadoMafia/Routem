@@ -1,7 +1,11 @@
 import { categoriesRepository } from "./repository"
 
 export const categoriesService = {
-    getCategories:async ()=>{
-        return categoriesRepository.findCategories();
+    getCategories: async () => {
+        try {
+            return categoriesRepository.findCategories();
+        } catch (e) {
+            throw e;
+        }
     }
 }
