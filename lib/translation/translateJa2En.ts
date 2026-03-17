@@ -10,7 +10,9 @@ export async function translateJa2En(ja_texts:string[]):Promise<string[]>{
   if(!ja_texts || ja_texts.length === 0) return [];  
 
   try{
-  const res = await fetch(process.env.LIBRETRANSLATE_URL!, {
+  const url = process.env.LIBRETRANSLATE_URL!;
+  const translateUrl = url.endsWith('/') ? `${url}translate` : `${url}/translate`;
+  const res = await fetch(translateUrl, {
   method: "POST",
   body: JSON.stringify({
     q: ja_texts,
@@ -21,15 +23,28 @@ export async function translateJa2En(ja_texts:string[]):Promise<string[]>{
   });
 
   if(!res.ok){
-    const data:{error:string} = await res.json();
-    console.error(data.error, res.status);
+    let errorMsg = `HTTP error! status: ${res.status}`;
+    try {
+      const data = await res.json();
+      errorMsg = data.error || errorMsg;
+    } catch (e) {
+      // Not JSON, ignore
+    }
+    console.error("Translation API error:", errorMsg);
     return ja_texts;
   }
 
-  const data = await res.json();
-  const en_text:string[] = data.translatedText;
-
-  return en_text;
+  try {
+    const data = await res.json();
+    const en_text:string[] = data.translatedText;
+    if (!en_text || !Array.isArray(en_text)) {
+        throw new Error("Invalid response format: translatedText is missing or not an array");
+    }
+    return en_text;
+  } catch (e) {
+    console.error("Failed to parse translation API response:", e);
+    return ja_texts;
+  }
   }catch(error){
     console.error("translation API error", error);
     return ja_texts;

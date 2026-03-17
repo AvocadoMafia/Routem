@@ -12,17 +12,18 @@ datasource db {
 }
 
 model User {
-  id             String    @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
-  name           String
-  gender         String?
-  age            Int?
-  bio            String?
-  icon           Image?    @relation("UserIcon")
-  background     Image?    @relation("UserBackground")
-  uploadedImages Image[]   @relation("UserUploads")
-  routes         Route[]
-  likes          Like[]
-  comments       Comment[]
+  id              String          @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
+  name            String
+  gender          String?
+  age             Int?
+  bio             String?
+  icon            Image?          @relation("UserIcon")
+  background      Image?          @relation("UserBackground")
+  uploadedImages  Image[]         @relation("UserUploads")
+  routes          Route[]
+  likes           Like[]
+  comments        Comment[]
+  searchHistories SearchHistory[]
 }
 
 enum Gender {
@@ -201,7 +202,6 @@ enum ImageStatus {
   UNUSED // 利用されなかった（削除候補など）
 }
 
-
 // 移動モードの列挙。描画スタイルやアイコン分岐に利用
 enum TransitMode {
   WALK // 徒歩
@@ -217,4 +217,14 @@ enum TransitMode {
 enum SpotSource {
   MAPBOX
   USER
+}
+
+model SearchHistory {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  query     String
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, query])
 }

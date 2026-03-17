@@ -4,7 +4,7 @@ import { translateJa2En } from "@/lib/translation/translateJa2En";
 export const searchHistoryService = {
   save: async (userId: string | null, q: string) => {
     const prisma = getPrisma();
-    if (!q || !q.trim()) return { id: null };
+    if (!q || !q.trim() || !userId) return { id: null };
 
     const query = q.trim();
     let [queryEn] = await translateJa2En([query]);
@@ -13,20 +13,20 @@ export const searchHistoryService = {
       queryEn = query;
     }
 
-    // Ensure table exists (idempotent)
-    await prisma.$executeRawUnsafe(
-      'CREATE TABLE IF NOT EXISTS "SearchHistory" (\n  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n  "createdAt" timestamp with time zone DEFAULT now(),\n  query text NOT NULL,\n  "queryEn" text,\n  "userId" uuid\n)'
-    );
-
     // Insert row
-    const rows = await prisma.$queryRawUnsafe<Array<{ id: string; createdAt: Date }>>(
-      'INSERT INTO "SearchHistory" (query, "queryEn", "userId") VALUES ($1, $2, $3) RETURNING id, "createdAt"',
-      query,
-      queryEn,
-      userId
-    );
+    // ログイン済みユーザーのみ保存するため、userIdは必ず存在する
+    const result = await prisma.searchHistory.upsert({
+      where: { userId_query: { query, userId } },
+      create: {
+        query,
+        userId,
+      },
+      update: {
+        createdAt: new Date(),
+      },
+    });
 
-    const id = rows?.[0]?.id;
+    const id = result.id;
 
     // Index to Meilisearch
     try {
@@ -38,7 +38,7 @@ export const searchHistoryService = {
           id,
           query,
           queryEn,
-          createdAt: rows?.[0]?.createdAt?.getTime?.() || Date.now(),
+          createdAt: result.createdAt.getTime(),
         },
       ]);
     } catch (e) {
@@ -70,12 +70,16 @@ export const searchHistoryService = {
     // Fallback to DB LIKE search
     try {
       const prisma = getPrisma();
-      const rows = await prisma.$queryRawUnsafe<Array<{ query: string; queryEn: string | null }>>(
-        'SELECT query, "queryEn" FROM "SearchHistory" WHERE query ILIKE $1 OR "queryEn" ILIKE $1 ORDER BY "createdAt" DESC LIMIT $2',
-        `%${query}%`,
-        limit
-      );
-      const list = rows.flatMap((r) => [r.query, r.queryEn || ""]).filter(Boolean) as string[];
+      const rows = await prisma.searchHistory.findMany({
+        where: {
+          query: { contains: query, mode: "insensitive" },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+      });
+      const list = rows.map((r) => r.query).filter(Boolean) as string[];
       return Array.from(new Set(list)).slice(0, limit);
     } catch (e) {
       console.error("db suggest error", e);

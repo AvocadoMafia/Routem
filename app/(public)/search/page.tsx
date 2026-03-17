@@ -1,5 +1,6 @@
 import RouteCardGraphical from "@/app/_components/common/templates/routeCardGraphical";
 import { Route } from "@/lib/client/types";
+import { getDataFromServerWithJson } from "@/lib/client/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -8,9 +9,12 @@ async function fetchRoutes(q: string): Promise<Route[]> {
   if (q) params.set('q', q);
   params.set('limit', '20');
 
-  const res = await fetch(`/api/v1/routes?${params.toString()}`, { cache: 'no-store' });
-  if (!res.ok) return [] as any;
-  return res.json();
+  // Use absolute URL in Server Component
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const url = `${baseUrl}/api/v1/routes?${params.toString()}`;
+
+  const res = await getDataFromServerWithJson<Route[]>(url);
+  return res || [];
 }
 
 export default async function SearchPage({ searchParams }: { searchParams: { q?: string } }) {

@@ -4,6 +4,7 @@ import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@
 import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
 import { getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { searchHistoryService } from "@/features/searchHistory/service";
 import { parse } from "path";
 
 
@@ -26,7 +27,12 @@ export const routesService = {
     return []; 
     }}
     const where = buildRoutesWhere(query, user?.id, ids);
-    // TODO:ログインユーザーのみサーチ履歴を保存。id, query, authorid.clueeの参考に。schemaも書き換えて両方に保存。
+    if (query.q) {
+      // 検索履歴を保存 (バックグラウンドで実行)
+      searchHistoryService.save(user?.id || null, query.q).catch((e) => {
+        console.error("Failed to save search history:", e);
+      });
+    }
     const result = await routesRepository.findMany(where, query.limit);
     if (ids) {
     const sortedResult = ids
@@ -39,16 +45,63 @@ export const routesService = {
   },
 
   postRoute: async (parsed_body: postRouteType, user_id: string) => {
-    const data = buildCreateRouteData(parsed_body, user_id);
-    const result = await routesRepository.create(data);
+    try {
+      const data = buildCreateRouteData(parsed_body, user_id);
+      const result = await routesRepository.create(data);
+
+      const en_texts = (await translateJa2En([
+        result.title,
+        result.description,
+        ...result.routeNodes.map(n => n.spot?.name)
+      ])).filter(Boolean);
+
+      const meilisearch = getMeilisearch();
+      const index = meilisearch.index("routes");
+
+      const documents = [{
+        id: result.id,
+
+        title: result.title,
+        description: result.description,
+
+        authorId: result.authorId,
+        categoryId: result.categoryId,
+        visibility: result.visibility,
+
+        createdAt: result.createdAt?.getTime(),
+        updatedAt: result.updatedAt?.getTime(),
+
+        categoryName: result.category.name,
+
+        routeNodes: result.routeNodes
+            .map(n => n.spot?.name)
+            .filter(Boolean),
+
+        searchText: [
+          result.title,
+          result.description,
+          result.category.name,
+          ...result.routeNodes.map(n => n.spot?.name).filter(Boolean),
+          ...en_texts,
+        ].join(" ")
+      }];
+
+
+      const task = await index.addDocuments(documents, {primaryKey: "id"});
+
+      return result
+    }catch(e){
+      throw e;
+    }
+  },
+
+  patchRoute: async (parsed_body: PatchRouteType, user_id: string) => {
+    const data = buildUpdateRouteData(parsed_body);
+    const result = await routesRepository.update(parsed_body.id, user_id, data);
 
     const en_texts :string[] = await translateJa2En([result.title, result.description, ...result.routeNodes.map((node)=>node.spot.name)])
-
     const meilisearch = getMeilisearch();
     const index = meilisearch.index("routes");
-    index.updateSearchableAttributes(["title", "description", "searchText", "categoryName"]);
-    index.updateFilterableAttributes(["authorId", "categoryId", "visibility"]);
-    index.updateSortableAttributes(["createdAt"]);
     const documents = [{
       id: result.id,
 
@@ -74,43 +127,7 @@ export const routesService = {
         ...en_texts,
       ].join(" ")
     }];
-    await index.addDocuments(documents);
-    return result;
-  },
-
-  patchRoute: async (parsed_body: PatchRouteType, user_id: string) => {
-    const data = buildUpdateRouteData(parsed_body);
-    const result = await routesRepository.update(parsed_body.id, user_id, data);
-
-    const en_texts :string[] = await translateJa2En([result.title, result.description, ...result.routeNodes.map((node)=>node.spot.name)])
-    const meilisearch = getMeilisearch();
-    const index = meilisearch.index("routes");
-    const documents = [{
-      id: parsed_body.id,
-
-      title: parsed_body.title,
-      description: parsed_body.description,
-
-      authorId: result.authorId,
-      categoryId: parsed_body.categoryId,
-      visibility: parsed_body.visibility,
-
-      createdAt: result.createdAt.getTime(),
-      updatedAt: result.updatedAt.getTime(),
-
-      categoryName: result.category.name,
-
-      routenodes:result.routeNodes.map((node)=>node.spot.name),
-
-      searchText: [ 
-        result.title,
-        result.description,
-        result.category.name,
-        ...result.routeNodes.map(n => n.spot.name),
-        ...en_texts,
-      ].join(" ")
-    }];
-    index.updateDocuments(documents);
+    await index.updateDocuments(documents, {primaryKey: "id"});
     return result;
   },
 
