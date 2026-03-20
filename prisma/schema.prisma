@@ -12,21 +12,21 @@ datasource db {
 }
 
 model User {
-  id             String              @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
-  name           String
-  gender         String?
-  age            Int?
-  bio            String?
-  icon           Image?              @relation("UserIcon")
-  background     Image?              @relation("UserBackground")
-  uploadedImages Image[]             @relation("UserUploads")
-  routes         Route[]
-  collaborations RouteCollaborator[]
-  likes          Like[]
-  comments       Comment[]
+  id              String              @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
+  name            String
+  gender          String?
+  age             Int?
+  bio             String?
+  icon            Image?              @relation("UserIcon")
+  background      Image?              @relation("UserBackground")
+  uploadedImages  Image[]             @relation("UserUploads")
+  routes          Route[]
+  collaborations  RouteCollaborator[]
+  likes           Like[]
+  comments        Comment[]
   //これは逆で正しい
-  followings     Follow[]            @relation("follower")
-  followers      Follow[]            @relation("following")
+  followings      Follow[]            @relation("follower")
+  followers       Follow[]            @relation("following")
   searchHistories SearchHistory[]
 }
 
@@ -86,9 +86,12 @@ model Route {
   createdAt   DateTime @default(now())
   title       String   @db.VarChar(100)
   description String
-  categoryId  String   @db.Uuid
-  category    Category @relation(fields: [categoryId], references: [id])
   thumbnail   Image?   @relation("RouteThumbnail")
+
+  //追加したやつ
+  budget   Budget?
+  routeFor RouteFor?
+  month    Int?
 
   authorId String @db.Uuid
   author   User   @relation(references: [id], fields: [authorId])
@@ -102,6 +105,7 @@ model Route {
   invites       RouteInvite[]
 
   collaboratorPolicy RouteCollaboratorPolicy @default(DISABLED)
+  tags               Tag[]
 
   @@index([authorId])
 }
@@ -160,7 +164,7 @@ model TransitStep {
   routeNode   RouteNode @relation(fields: [routeNodeId], references: [id], onDelete: Cascade)
 }
 
-model Category {
+model Tag {
   id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name   String  @unique
   routes Route[]
@@ -278,4 +282,47 @@ enum RouteCollaboratorPolicy {
   DISABLED
   VIEW_ONLY
   CAN_EDIT
+}
+
+enum RouteFor {
+  FAMILY
+  FRIENDS
+  COUPLE
+  SOLO
+}
+
+enum CurrencyCode {
+  JPY
+  USD
+  EUR
+  GBP
+  KRW
+  TWD
+  CNY
+  THB
+  VND
+  SGD
+  MYR
+  PHP
+  AUD
+  CAD
+  OTHER
+}
+
+model Budget {
+  routeId String @id @db.Uuid
+  route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  currency CurrencyCode
+  amount   Decimal      @db.Decimal(12, 2)
+
+  baseCurrency CurrencyCode @default(JPY)
+  baseAmount   Decimal      @db.Decimal(12, 2)
+
+  fxRateToBase Decimal?  @db.Decimal(18, 8)
+  fxRateDate   DateTime?
+
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
