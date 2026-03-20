@@ -24,10 +24,11 @@ export default async function Page({ params }: { params: { id: string } }) {
       author: {
         include: { icon: true }
       },
-      category: true,
       thumbnail: true,
       likes: true,
       views: true,
+      tags: true,
+      budget: true,
       routeNodes: {
         orderBy: { order: 'asc' },
         include: {
@@ -55,9 +56,12 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound(); // or redirect
   }
 
+  // Decimal シリアライズ問題の回避
+  const serializedRoute = JSON.parse(JSON.stringify(route));
+
   return (
     <div className="w-full h-full">
-      <ClientRoot route={route} />
+      <ClientRoot route={serializedRoute} />
     </div>
   );
 }

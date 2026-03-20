@@ -171,7 +171,7 @@ export default function MapViewerOnMobile(props: Props) {
                                         />
                                     </div>
                                     <span>{route.author.name}</span>
-                                    <span>・ {route.category?.name}</span>
+                                    <span>・ {route.routeFor}</span>
                                 </div>
 
                                 <div className="w-fit flex items-center px-2 py-1 gap-2 text-accent-0 bg-accent-0/10 rounded-full">

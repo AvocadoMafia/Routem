@@ -7,10 +7,13 @@ export type Route = Prisma.RouteGetPayload<{
         likes: true,
         views: true,
         routeNodes: { include: { spot: true, transitSteps: true, images: true } },
-        category: true,
+        tags: true,
         collaborators: true,
+        budget: true,
     }
 }>
+
+export type RouteWithRelations = Route;
 
 export type User = Prisma.UserGetPayload<{
     include: {
@@ -20,10 +23,6 @@ export type User = Prisma.UserGetPayload<{
         likes: true,
     }
 }>
-
-export type Category = Prisma.CategoryGetPayload<{
-}>
-
 
 export type Waypoint = {
     id?: string;

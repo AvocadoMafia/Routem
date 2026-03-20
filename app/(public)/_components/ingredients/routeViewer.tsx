@@ -36,8 +36,6 @@ export default function RouteViewer(props: Props) {
               </Link>
               <div className="text-foreground-1/60 mt-1 flex items-center gap-1.5">
                 <span className="text-xs font-bold">by @{route.author.name}</span>
-                <span className="opacity-60 text-[10px] font-bold uppercase tracking-[0.3em]">•</span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">{route.category.name}</span>
               </div>
             </div>
 

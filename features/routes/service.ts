@@ -44,44 +44,7 @@ export const routesService = {
       const data = buildCreateRouteData(parsed_body, user_id);
       const result = await routesRepository.create(data);
 
-      const en_texts = (await translateJa2En([
-        result.title,
-        result.description,
-        ...result.routeNodes.map(n => n.spot?.name)
-      ])).filter(Boolean);
-
-      const meilisearch = getMeilisearch();
-      const index = meilisearch.index("routes");
-
-      const documents = [{
-        id: result.id,
-
-        title: result.title,
-        description: result.description,
-
-        authorId: result.authorId,
-        categoryId: result.categoryId,
-        visibility: result.visibility,
-
-        createdAt: result.createdAt?.getTime(),
-        updatedAt: result.updatedAt?.getTime(),
-
-        categoryName: result.category.name,
-
-        routeNodes: result.routeNodes
-            .map(n => n.spot?.name)
-            .filter(Boolean),
-
-        searchText: [
-          result.title,
-          result.description,
-          result.category.name,
-          ...result.routeNodes.map(n => n.spot?.name).filter(Boolean),
-          ...en_texts,
-        ].join(" ")
-      }];
-
-      await index.addDocuments(documents, { primaryKey: "id" });
+      await syncToMeilisearch(result);
 
       return result
     }catch(e){
@@ -94,35 +57,8 @@ export const routesService = {
       const data = buildUpdateRouteData(parsed_body);
       const result = await routesRepository.update(parsed_body.id, user_id, data);
 
-      const en_texts: string[] = await translateJa2En([result.title, result.description, ...result.routeNodes.map((node) => node.spot.name)])
-      const meilisearch = getMeilisearch();
-      const index = meilisearch.index("routes");
-      const documents = [{
-        id: result.id,
+      await syncToMeilisearch(result);
 
-        title: result.title,
-        description: result.description,
-
-        authorId: result.authorId,
-        categoryId: result.categoryId,
-        visibility: result.visibility,
-
-        createdAt: result.createdAt.getTime(),
-        updatedAt: result.updatedAt.getTime(),
-
-        categoryName: result.category.name,
-
-        routenodes: result.routeNodes.map((node) => node.spot.name),
-
-        searchText: [
-          result.title,
-          result.description,
-          result.category.name,
-          ...result.routeNodes.map(n => n.spot.name),
-          ...en_texts,
-        ].join(" ")
-      }];
-      await index.updateDocuments(documents, { primaryKey: "id" });
       return result;
     } catch (e) {
       throw e;
@@ -249,3 +185,47 @@ export const routesService = {
   },
 
 };
+
+async function syncToMeilisearch(route: RouteWithRelations) {
+    const en_texts = (await translateJa2En([
+        route.title,
+        route.description,
+        ...route.routeNodes.map(n => n.spot?.name),
+        ...route.tags.map(t => t.name)
+    ])).filter(Boolean);
+
+    const meilisearch = getMeilisearch();
+    const routesIndex = meilisearch.index("routes");
+
+    const documents = [{
+        id: route.id,
+        title: route.title,
+        description: route.description,
+        authorId: route.authorId,
+        visibility: route.visibility,
+        createdAt: route.createdAt?.getTime(),
+        updatedAt: route.updatedAt?.getTime(),
+        routeNodes: route.routeNodes.map(n => n.spot?.name).filter(Boolean),
+        tags: route.tags.map(t => t.name),
+        month: route.month,
+        routeFor: route.routeFor,
+        budget: route.budget ? Number(route.budget.amount) : undefined,
+        searchText: [
+            route.title,
+            route.description,
+            ...route.routeNodes.map(n => n.spot?.name).filter(Boolean),
+            ...route.tags.map(t => t.name),
+            ...en_texts,
+        ].join(" ")
+    }];
+
+    await routesIndex.updateDocuments(documents, { primaryKey: "id" });
+
+    // タグをMeilisearchのtagsインデックスに追加
+    const tagsIndex = meilisearch.index("tags");
+    const tagDocuments = route.tags.map(t => ({
+        id: t.name,
+        name: t.name
+    }));
+    await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
+}

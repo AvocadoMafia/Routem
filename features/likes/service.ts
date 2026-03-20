@@ -46,7 +46,7 @@ export const likesService = {
 
             return likes
                 .map((l) => l.route)
-                .filter((r): r is NonNullable<typeof r> => !!r);
+                .filter((r): r is RouteWithRelations => !!r);
         } catch (e) {
             throw e;
         }

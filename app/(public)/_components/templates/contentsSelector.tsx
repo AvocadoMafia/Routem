@@ -1,14 +1,13 @@
 'use client'
 
 import { motion } from "framer-motion";
-import { HiSparkles, HiFlag, HiClock, HiFire } from "react-icons/hi2";
+import { HiSparkles, HiClock, HiFire } from "react-icons/hi2";
 import { selectedType } from "@/app/(public)/rootClient";
 import { HiHome } from "react-icons/hi";
 
 const SELECTOR_ITEMS = [
     { label: 'Home', icon: HiHome, selected: 'home'},
     { label: 'Photos', icon: HiSparkles, selected: 'photos' },
-    { label: 'Interests', icon: HiFlag, selected: 'interests' },
     { label: 'Recent', icon: HiClock, selected: 'recent' },
     { label: 'Trending', icon: HiFire, selected: 'trending' },
 ];

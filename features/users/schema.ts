@@ -6,6 +6,11 @@ import { z } from "zod";
  */
 export type User = z.infer<typeof UserSchema>;
 
+export const GetUsersSchema = z.object({
+  limit: z.string().regex(/^\d+$/).transform(Number).optional(),
+});
+export type GetUsersType = z.infer<typeof GetUsersSchema>;
+
 /**
  * GET、POSTのresponse
  */

@@ -31,10 +31,11 @@ export default async function RoutePage({ params }: { params: { id: string } }) 
         include: { icon: true }
       },
       thumbnail: true,
-      category: true,
       likes: true,
       views: true,
       collaborators: true,
+      tags: true,
+      budget: true,
       routeNodes: {
         orderBy: { order: 'asc' },
         include: {
@@ -59,5 +60,8 @@ export default async function RoutePage({ params }: { params: { id: string } }) 
     notFound(); // または Unauthorized ページへ
   }
 
-  return <RootClient route={route} currentUser={user} />;
+  // Decimal シリアライズ問題の回避
+  const serializedRoute = JSON.parse(JSON.stringify(route));
+
+  return <RootClient route={serializedRoute} currentUser={user} />;
 }

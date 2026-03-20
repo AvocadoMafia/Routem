@@ -1,9 +1,18 @@
+import { GetUsersType } from "./schema";
 import { usersRepository } from "./repository"
 
 // ビジネスロジック層
 // バリデーション→ロジック→throw error or return data
 // DBの整合性チェックなどを担当
 export const usersService = {
+  getUsers: async (params: GetUsersType) => {
+    try {
+      return await usersRepository.findMany(params);
+    } catch (e) {
+      throw e;
+    }
+  },
+
   getUserById: async (id: string, requesterId?: string) => {
     try {
       const user = await usersRepository.findById(id, requesterId);

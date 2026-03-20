@@ -104,10 +104,10 @@ export default function DetailsViewer({
         }`}
       >
         <div className="flex flex-col gap-20">
-          {/* 上部: 投稿者とカテゴリー/タグ */}
+          {/* 上部: 投稿者とタグ */}
           <div className="max-w-4xl flex flex-col gap-12">
             <AuthorSection author={route.author} />
-            <CategoryTags category={route.category} />
+            <CategoryTags tags={route.tags} />
           </div>
 
           {/* 下部: タブ切り替えエリア (Comments / Related Articles) */}

@@ -59,7 +59,7 @@ export default function RouteCardHorizontal(props: Props){
             >
               •
             </span>
-            <span className="truncate">{props.route.category?.name}</span>
+            <span className="truncate">{props.route.routeFor}</span>
           </div>
         </div>
         <div className="shrink-0 text-xs">

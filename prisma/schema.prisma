@@ -90,8 +90,9 @@ model Route {
 
   //追加したやつ
   budget   Budget?
-  routeFor RouteFor?
+  routeFor RouteFor @default(EVERYONE)
   month    Int?
+  tags     Tag[]
 
   authorId String @db.Uuid
   author   User   @relation(references: [id], fields: [authorId])
@@ -105,7 +106,6 @@ model Route {
   invites       RouteInvite[]
 
   collaboratorPolicy RouteCollaboratorPolicy @default(DISABLED)
-  tags               Tag[]
 
   @@index([authorId])
 }
@@ -285,6 +285,7 @@ enum RouteCollaboratorPolicy {
 }
 
 enum RouteFor {
+  EVERYONE
   FAMILY
   FRIENDS
   COUPLE

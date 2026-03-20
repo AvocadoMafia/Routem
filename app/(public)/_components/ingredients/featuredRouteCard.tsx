@@ -53,7 +53,7 @@ export default function FeaturedRouteCard(props: Props) {
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
                 <span className="text-xs font-bold normal-case tracking-normal">@{props.route.author.name}</span>
                 <span className="opacity-60">•</span>
-                <span className="truncate">{props.route.category?.name}</span>
+                <span className="truncate">{props.route.routeFor}</span>
               </div>
               <div className="flex items-center gap-3 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                 <div className="flex items-center gap-1">
