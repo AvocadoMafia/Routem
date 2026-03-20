@@ -11,7 +11,7 @@ type Props = {
 export default function RouteList(props: Props) {
   return (
     <div
-      className="flex w-[400px] h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
+      className="flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
       tabIndex={0}
       role="region"
       aria-label="Route list"

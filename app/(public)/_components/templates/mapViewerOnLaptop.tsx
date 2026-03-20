@@ -78,7 +78,7 @@ export default function MapViewerOnLaptop(props: Props) {
     return (
         <div className={'w-full rounded-2xl h-fit overflow-hidden relative md:block hidden border border-grass/10 shadow-sm'}>
             <div className={'w-full h-[600px] flex flex-row'}>
-                <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10'} onWheel={e => e.stopPropagation()}>
+                <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 lg:block hidden'} onWheel={e => e.stopPropagation()}>
                     {/* マップ上のオーバーレイなどが必要な場合はここに追加 */}
                     <Map
                         ref={mapRef}
