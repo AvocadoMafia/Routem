@@ -64,7 +64,7 @@ export default function RouteCardGraphical(props: Props) {
                   <span className="tabular-nums">{props.route?.likes?.length ?? 0}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
-                  <HiEye className="w-4 h-4 text-accent-1" />
+                  <HiEye className="w-4 h-4 text-accent-0" />
                   <span className="tabular-nums">{props.route?.views?.length ?? 0}</span>
                 </div>
               </div>

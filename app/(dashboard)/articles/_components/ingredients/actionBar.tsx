@@ -70,7 +70,7 @@ export default function ActionBar({
                         {/* Step 2: Settings */}
                         <button
                             onClick={() => setActiveSection('settings')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeSection === 'settings' ? 'bg-accent-1 text-white shadow-md' : 'text-foreground-1 hover:bg-grass/10'}`}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeSection === 'settings' ? 'bg-accent-0 text-white shadow-md' : 'text-foreground-1 hover:bg-grass/10'}`}
                         >
                             <Settings size={14} />
                             <span>Settings</span>

@@ -67,7 +67,7 @@ export function UserCardGraphical(props: Props) {
                   {props.user.name}
                 </h4>
                 <div className="flex items-center gap-1.5 text-xs text-white/80">
-                  <IoPersonAdd className="w-3.5 h-3.5 text-accent-1" />
+                  <IoPersonAdd className="w-3.5 h-3.5 text-accent-0" />
                   <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
                 </div>
               </div>

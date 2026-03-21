@@ -72,7 +72,7 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
             </button>
         )}
       <div 
-        className={`flex-1 p-[1px] rounded-full transition-all ${isFocused ? 'bg-linear-to-r from-accent-0 to-accent-1 shadow-sm' : 'bg-transparent'}`}
+        className={`flex-1 p-[1px] rounded-full transition-all ${isFocused ? 'bg-linear-to-r from-accent-0 to-accent-0 shadow-sm' : 'bg-transparent'}`}
       >
         <div className={`flex items-center gap-2 bg-background-0 px-4 py-2 rounded-full w-full h-full ${isFocused ? 'bg-background-1' : ''}`}>
           <MdSearch className={'text-xl text-foreground-1'} />

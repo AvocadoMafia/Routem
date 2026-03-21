@@ -79,9 +79,9 @@ export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }
                                 e.stopPropagation();
                                 onAddItem('transportation');
                             }}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-accent-1/10 rounded-xl transition-colors whitespace-nowrap group/btn"
+                            className="flex items-center gap-2 px-3 py-2 hover:bg-accent-0/10 rounded-xl transition-colors whitespace-nowrap group/btn"
                         >
-                            <div className="w-8 h-8 bg-accent-1/10 rounded-lg flex items-center justify-center text-accent-1 group-hover/btn:scale-110 transition-transform">
+                            <div className="w-8 h-8 bg-accent-0/10 rounded-lg flex items-center justify-center text-accent-0 group-hover/btn:scale-110 transition-transform">
                                 <Navigation size={16} />
                             </div>
                             <span className="text-xs font-bold text-foreground-0">Transport</span>

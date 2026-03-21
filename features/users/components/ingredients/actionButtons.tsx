@@ -76,8 +76,8 @@ export default function ActionButtons({ mode, followingId }: { mode: ProfileMode
           <button
             onClick={onToggleFollow}
             disabled={!followingId || isLoadingFollow}
-            className={`px-8 py-2.5 rounded-xl font-bold transition-opacity cursor-pointer shadow-md shadow-accent-1/20 ${
-              isFollowing ? 'bg-background-1 text-foreground-0 border border-grass' : 'bg-accent-1 text-background-1'
+            className={`px-8 py-2.5 rounded-xl font-bold transition-opacity cursor-pointer shadow-md shadow-accent-0/20 ${
+              isFollowing ? 'bg-background-1 text-foreground-0 border border-grass' : 'bg-accent-0 text-background-1'
             } disabled:opacity-50`}
           >
             {isFollowing ? 'Following' : 'Follow'}

@@ -103,7 +103,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                             <div className={'flex flex-col'}>
                                                 <span className={'font-bold text-xl text-foreground-0'}>{user.name}</span>
                                                 <span
-                                                    className={'text-sm text-accent-1 text-left hover:underline'}
+                                                    className={'text-sm text-accent-0 text-left hover:underline'}
                                                 >
                                                     View Profile
                                                 </span>
@@ -125,7 +125,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                         <p className={'text-foreground-1 text-sm mb-4'}>Log in to see your profile and routes.</p>
                                         <button 
                                             onClick={() => handleNavigate('/login')}
-                                            className={'w-full bg-accent-1 text-background-1 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-accent-1/20'}
+                                            className={'w-full bg-accent-0 text-background-1 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-accent-0/20'}
                                         >
                                             Log in
                                         </button>
@@ -159,7 +159,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                                         <button
                                                             key={subItem.name}
                                                             onClick={() => handleNavigate(subItem.path)}
-                                                            className={'w-full text-left p-3 text-foreground-1 hover:text-accent-1 transition-colors cursor-pointer'}
+                                                            className={'w-full text-left p-3 text-foreground-1 hover:text-accent-0 transition-colors cursor-pointer'}
                                                         >
                                                             {subItem.name}
                                                         </button>
@@ -175,7 +175,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             <div className={'space-y-4 pt-4'}>
                                 <div className={'flex items-center justify-between px-1'}>
                                     <h3 className={'text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-0'}>Following</h3>
-                                    <button className={'text-accent-1 text-xs font-bold hover:underline'}>View All</button>
+                                    <button className={'text-accent-0 text-xs font-bold hover:underline'}>View All</button>
                                 </div>
                                 <div className={'space-y-1'}>
                                     {MOCK_FOLLOWING.map((followedUser) => (
@@ -186,11 +186,11 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                             <div className={'flex items-center gap-3'}>
                                                 <img className={'w-10 h-10 rounded-full object-cover'} src={followedUser.icon} alt={followedUser.name}/>
                                                 <div className={'flex flex-col text-left'}>
-                                                    <span className={'font-medium text-foreground-0 group-hover:text-accent-1 transition-colors'}>{followedUser.name}</span>
+                                                    <span className={'font-medium text-foreground-0 group-hover:text-accent-0 transition-colors'}>{followedUser.name}</span>
                                                     <span className={'text-xs text-foreground-1'}>{followedUser.handle}</span>
                                                 </div>
                                             </div>
-                                            <MdPersonAdd size={20} className={'text-foreground-1 group-hover:text-accent-1 transition-colors'} />
+                                            <MdPersonAdd size={20} className={'text-foreground-1 group-hover:text-accent-0 transition-colors'} />
                                         </button>
                                     ))}
                                 </div>

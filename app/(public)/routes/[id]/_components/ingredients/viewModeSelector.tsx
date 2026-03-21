@@ -31,7 +31,7 @@ export default function ViewModeSelector({
         onClick={() => setViewMode("diagram")}
         className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
           viewMode === "diagram"
-            ? "bg-accent-1 text-white shadow-lg shadow-accent-1/20"
+            ? "bg-accent-0 text-white shadow-lg shadow-accent-0/20"
             : "text-foreground-1 hover:text-foreground-0"
         } ${!isMobile && "hidden"}`}
       >
@@ -42,7 +42,7 @@ export default function ViewModeSelector({
         onClick={() => setViewMode("details")}
         className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
           viewMode === "details"
-            ? "bg-accent-1 text-white shadow-lg shadow-accent-1/20"
+            ? "bg-accent-0 text-white shadow-lg shadow-accent-0/20"
             : "text-foreground-1 hover:text-foreground-0"
         }`}
       >
@@ -53,7 +53,7 @@ export default function ViewModeSelector({
         onClick={() => setViewMode("map")}
         className={`flex items-center gap-2 px-4 md:px-6 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
           viewMode === "map"
-            ? "bg-accent-1 text-white shadow-lg shadow-accent-1/20"
+            ? "bg-accent-0 text-white shadow-lg shadow-accent-0/20"
             : "text-foreground-1 hover:text-foreground-0"
         }`}
       >

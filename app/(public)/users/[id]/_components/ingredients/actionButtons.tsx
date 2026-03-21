@@ -44,7 +44,7 @@ export default function ActionButtons({ isOwnPage }: { isOwnPage: boolean }) {
         </>
       ) : (
         <>
-          <button className="bg-accent-1 text-background-1 px-8 py-2.5 rounded-xl font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-accent-1/20">
+          <button className="bg-accent-0 text-background-1 px-8 py-2.5 rounded-xl font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-accent-0/20">
             Follow
           </button>
           <button className="p-2.5 bg-background-1 border border-grass rounded-xl hover:bg-grass transition-colors cursor-pointer">

@@ -40,7 +40,7 @@ export default function RouteCard({ route }: { route: RouteItem }) {
           </div>
         </div>
       </div>
-      <h3 className="font-bold text-foreground-0 group-hover:text-accent-1 transition-colors">{route.title}</h3>
+      <h3 className="font-bold text-foreground-0 group-hover:text-accent-0 transition-colors">{route.title}</h3>
     </motion.div>
   )
 }

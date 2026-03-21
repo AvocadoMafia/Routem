@@ -33,14 +33,14 @@ export default function ContentsSelector(props: Props) {
                         {isSelected && (
                             <motion.div
                                 layoutId="active-pill"
-                                className="absolute inset-0 bg-accent-1 rounded-full shadow-sm z-0"
+                                className="absolute inset-0 bg-accent-0 rounded-full shadow-sm z-0"
                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                             />
                         )}
                         
                         <div className="relative z-10 flex items-center gap-2">
                             <item.icon 
-                                className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-white' : 'text-accent-0 group-hover:text-accent-1'}`}
+                                className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-white' : 'text-accent-0 group-hover:text-accent-0'}`}
                             />
                             <span className={`text-[10px] font-bold uppercase tracking-[0.3em] transition-colors duration-300 md:block ${isSelected ? 'text-white block' : 'hidden text-foreground-1 group-hover:text-foreground-0'}`}>
                                 {item.label}

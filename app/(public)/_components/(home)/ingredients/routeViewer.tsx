@@ -51,7 +51,7 @@ export default function RouteViewer(props: Props) {
                 </svg>
                 {route.likes?.length ?? 0} Likes
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-1/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-accent-1">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-0/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-accent-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"

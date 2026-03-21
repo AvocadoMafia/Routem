@@ -110,7 +110,7 @@ export default function PhotoContainer(props: { test: number }) {
                         </div>
                         <div className="flex flex-col items-end">
                             <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-white/40 mb-0.5">Explore</span>
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent-1">View Route →</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent-0">View Route →</span>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import { Route } from "@/lib/client/types"
 import React from "react";
-import {HiEye, HiHeart} from "react-icons/hi2";
+import {HiEye, HiHeart, HiUsers, HiCurrencyDollar} from "react-icons/hi2";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,7 +30,7 @@ export default function RouteCardBasic(props: Props) {
                     </div>
                 </div>
             </div>
-            <div className={'w-[45%] h-full min-w-[160px] flex flex-col gap-4 p-6 bg-background-1 rounded-xl shadow-inner'}>
+            <div className={'w-[45%] h-full min-w-[160px] flex flex-col gap-4 p-6 bg-background-1 rounded-xl'}>
                 <div className="w-full flex flex-col gap-3">
                     <div className="flex items-center gap-3">
                         <div className="relative w-10 h-10 rounded-full">
@@ -54,15 +54,27 @@ export default function RouteCardBasic(props: Props) {
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{props.route.likes?.length ?? 0}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <HiEye className="w-4 h-4 text-accent-1" />
+                            <HiEye className="w-4 h-4 text-accent-0" />
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{props.route.views?.length ?? 0}</span>
                         </div>
                     </div>
                 </div>
-                <div className="w-full grid grid-cols-1 gap-2">
-                    <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center">
-                        <span className="block text-foreground-0 text-[9px] font-bold uppercase tracking-[0.2em] mb-0.5">Stops</span>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.routeNodes.length} pts</span>
+                <div className="w-full grid grid-cols-2 gap-2">
+                    <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center min-w-0">
+                        <div className="flex items-center gap-1 mb-0.5">
+                            <HiUsers className="w-3 h-3 text-foreground-1" />
+                            <span className="block text-foreground-1 text-[9px] font-bold uppercase tracking-[0.2em]">For</span>
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.routeFor.toLowerCase()}</span>
+                    </div>
+                    <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center min-w-0">
+                        <div className="flex items-center gap-1 mb-0.5">
+                            <HiCurrencyDollar className="w-3 h-3 text-foreground-1" />
+                            <span className="block text-foreground-1 text-[9px] font-bold uppercase tracking-[0.2em]">Budget</span>
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">
+                            {props.route.budget ? `${props.route.budget.amount.toLocaleString()} ${props.route.budget.currency}` : '---'}
+                        </span>
                     </div>
                 </div>
                 <div className={'w-full text-foreground-1 line-clamp-5 md:text-sm text-xs leading-relaxed'}>

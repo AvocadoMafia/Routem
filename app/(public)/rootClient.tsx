@@ -51,7 +51,7 @@ export default function RootClient() {
 
     const [selected, setSelected] = useState<selectedType>('home')
     return (
-        <div className={'w-full max-w-[1600px] h-full flex flex-col items-center md:px-8 px-4 gap-12 relative'}>
+        <div className={'w-full max-w-[1600px] h-full flex flex-col items-center gap-2 md:px-8 px-4 relative'}>
             <ContentsSelector selected={selected} setSelected={setSelected}/>
             {(() => {
                 switch (selected) {

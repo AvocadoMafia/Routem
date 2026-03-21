@@ -225,7 +225,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-8 py-2.5 bg-accent-1 text-background-1 font-bold rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-accent-1/20 disabled:opacity-50"
+                    className="px-8 py-2.5 bg-accent-0 text-background-1 font-bold rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-accent-0/20 disabled:opacity-50"
                   >
                     {isSubmitting ? 'Saving...' : 'Save Changes'}
                   </button>

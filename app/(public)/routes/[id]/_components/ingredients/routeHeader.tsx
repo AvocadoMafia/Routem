@@ -95,7 +95,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             </Link>
           )}
           <div className="flex items-center gap-2 px-2.5 py-1 bg-foreground-0/5 rounded-lg border border-foreground-0/5">
-            <HiClock className="w-3.5 h-3.5 text-accent-1" />
+            <HiClock className="w-3.5 h-3.5 text-accent-0" />
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground-1">
               2.5h
             </span>

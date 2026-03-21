@@ -49,7 +49,7 @@ export default function FeaturedUserCard(props: Props) {
                 e.stopPropagation();
                 // Follow logic here
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 text-[#232323] backdrop-blur-md rounded-full hover:bg-accent-1 hover:text-white hover:border-accent-1 transition-all duration-300"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 text-[#232323] backdrop-blur-md rounded-full hover:bg-accent-0 hover:text-white hover:border-accent-0 transition-all duration-300"
             >
               <IoPersonAdd className="w-5 h-5 transition-transform" />
               <span className="text-[10px] font-bold tracking-[0.3em] uppercase">Follow</span>
@@ -67,7 +67,7 @@ export default function FeaturedUserCard(props: Props) {
                 {props.user.name}
               </h3>
               <div className="flex items-center gap-2 mt-1 text-white/80">
-                <IoPersonAdd className="w-4 h-4 text-accent-1" />
+                <IoPersonAdd className="w-4 h-4 text-accent-0" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
                 <span className="opacity-60">・</span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">from US</span>

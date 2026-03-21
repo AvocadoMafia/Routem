@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TrendingTagCard from "@/app/(public)/_components/(trending)/ingredients/trendingTagCard";
 
 type Props = {
     tags: string[];
@@ -6,19 +7,19 @@ type Props = {
 
 export default function TrendingTagsList({ tags }: Props) {
     return (
-        <div className={'w-full flex-1 flex flex-col gap-4'}>
-            <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Hot Topics</h2>
-            <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                    <Link
-                        key={tag}
-                        href={`/explore?q=${encodeURIComponent(tag)}`}
-                        className="px-4 py-2 bg-background-0 hover:bg-accent-0 hover:text-white text-foreground-0 text-sm font-bold rounded-full border border-grass/10 transition-colors duration-300"
-                    >
-                        #{tag}
-                    </Link>
-                ))}
-                {tags.length === 0 && <p className="text-foreground-1 text-xs">No tags found.</p>}
+        <div className={'w-full h-fit p-2 bg-background-0 rounded-xl shadow-md'}>
+            <div className={'w-full flex flex-col gap-4 bg-background-1 rounded-xl p-6'}>
+                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Trending Tags</h2>
+                <div className="flex flex-col gap-3">
+                    {tags.map((tag, idx) => (
+                        <TrendingTagCard key={tag} tag={tag} rank={idx + 1} />
+                    ))}
+                    {tags.length === 0 && (
+                        <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-grass/5 rounded-3xl">
+                            <p className="text-foreground-1/40 text-[10px] font-bold uppercase tracking-widest">No tags found.</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )

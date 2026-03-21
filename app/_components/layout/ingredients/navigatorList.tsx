@@ -75,7 +75,7 @@ export default function NavigatorList() {
                 {isLoggedIn && (
                     <motion.button 
                         onClick={() => router.push('/articles/new')} 
-                        className={'bg-accent-1 text-white py-1.5 px-4 lg:px-4 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2'}
+                        className={'bg-accent-0 text-white py-1.5 px-4 lg:px-4 rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2'}
                         whileHover={{scale:1.02}}
                         whileTap={{scale:0.98}}
                     >

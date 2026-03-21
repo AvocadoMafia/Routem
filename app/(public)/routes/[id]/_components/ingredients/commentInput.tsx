@@ -26,7 +26,7 @@ export default function CommentInput({ onPost }: CommentInputProps) {
   return (
     <div 
       className={`p-[1px] rounded-3xl transition-all duration-300 ${
-        isFocused ? "bg-linear-to-r from-accent-1 to-accent-0 shadow-sm" : "bg-foreground-0/10"
+        isFocused ? "bg-linear-to-r from-accent-0 to-accent-0 shadow-sm" : "bg-foreground-0/10"
       }`}
     >
       <div className="flex flex-col gap-4 p-6 rounded-[23px] w-full bg-background-1">
@@ -43,7 +43,7 @@ export default function CommentInput({ onPost }: CommentInputProps) {
           <button 
             onClick={handlePost}
             disabled={submitting || !text.trim()}
-            className="px-6 py-2 bg-accent-1 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full hover:opacity-90 transition-all shadow-lg shadow-accent-1/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-2 bg-accent-0 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full hover:opacity-90 transition-all shadow-lg shadow-accent-0/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
             {submitting ? "Posting..." : "Post Comment"}

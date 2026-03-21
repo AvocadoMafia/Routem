@@ -22,7 +22,7 @@ export default function TrendingSection() {
             try {
                 const [routesData, usersData, tagsData] = await Promise.all([
                     getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=10'),
-                    getDataFromServerWithJson<User[]>('/api/v1/users?limit=5'),
+                    getDataFromServerWithJson<User[]>('/api/v1/users?limit=6'),
                     getDataFromServerWithJson<string[]>('/api/v1/tags?limit=10')
                 ]);
 
@@ -45,10 +45,10 @@ export default function TrendingSection() {
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>;
 
     return (
-        <div className={'w-full h-full overflow-hidden pb-6'}>
-            <div className={'w-full h-full overflow-hidden flex flex-row gap-4 bg-background-0 p-6 rounded-[30px] shadow-lg'}>
+        <div className={'w-full h-full overflow-hidden'}>
+            <div className={'w-full h-full overflow-hidden flex flex-row gap-12'}>
                 <TrendingRoutesList routes={routes || []} />
-                <div className={'flex-1 h-full flex flex-col gap-4 overflow-y-auto no-scrollbar pb-10'}>
+                <div className={'flex-1 h-full flex flex-col gap-6 overflow-y-auto no-scrollbar py-6'}>
                     <TrendingUsersList users={users || []} />
                     <TrendingTagsList tags={tags || []} />
                 </div>

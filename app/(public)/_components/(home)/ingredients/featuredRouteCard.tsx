@@ -62,7 +62,7 @@ export default function FeaturedRouteCard(props: Props) {
                   <span className="truncate">likes</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <HiEye className="w-4 h-4 text-accent-1" />
+                  <HiEye className="w-4 h-4 text-accent-0" />
                   <span className="tabular-nums">{props.route.views?.length ?? 0}</span>
                   <span className="truncate">views</span>
                 </div>

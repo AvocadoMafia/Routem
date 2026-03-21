@@ -177,7 +177,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
 
             <button 
                 onClick={handleSearch}
-                className="group relative w-full py-5 mt-2 bg-foreground-0 text-background-0 rounded-2xl font-bold overflow-hidden transition-all duration-300 hover:bg-accent-1 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/10"
+                className="group relative w-full py-5 mt-2 bg-foreground-0 text-background-0 rounded-2xl font-bold overflow-hidden transition-all duration-300 hover:bg-accent-0 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/10"
             >
                 <span className="relative z-10 tracking-widest uppercase text-sm">
                     Search Routes
