@@ -18,12 +18,20 @@ export const viewsService = {
     }
   },
 
+  /**
+   * 閲覧履歴のあるルートを取得
+   * セキュリティ: PUBLIC または 自分が作成したルートのみ返す
+   */
   getViewedRoutes: async (userId: string) => {
     try {
       const where: Prisma.RouteWhereInput = {
         views: {
           some: { userId }
-        }
+        },
+        OR: [
+          { visibility: 'PUBLIC' },
+          { authorId: userId },
+        ],
       };
       return await routesRepository.findMany(where);
     } catch (e) {

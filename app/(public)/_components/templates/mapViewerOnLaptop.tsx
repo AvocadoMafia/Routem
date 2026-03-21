@@ -14,6 +14,12 @@ type Props = {
     routes: Route[]
 }
 
+// RouteNode型（スポット情報付き）
+type RouteNodeWithSpot = {
+    id: string;
+    spot: { longitude: number | null; latitude: number | null };
+};
+
 export default function MapViewerOnLaptop(props: Props) {
     const [focusedRouteIndex, setFocusedRouteIndex] = useState<number>(1);
     const mapRef = useRef<MapRef>(null);
@@ -25,9 +31,9 @@ export default function MapViewerOnLaptop(props: Props) {
     useEffect(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length === 0 || !mapRef.current) return;
 
-        const coords = focusedRoute.routeNodes
-            .filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
-            .map(node => [node.spot.longitude as number, node.spot.latitude as number]);
+        const coords = (focusedRoute.routeNodes as RouteNodeWithSpot[])
+            .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
+            .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
 
         if (coords.length === 0) return;
 
@@ -54,9 +60,9 @@ export default function MapViewerOnLaptop(props: Props) {
 
     const lineData = useMemo(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length < 2) return null;
-        const coordinates = focusedRoute.routeNodes
-            .filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
-            .map(node => [node.spot.longitude as number, node.spot.latitude as number]);
+        const coordinates = (focusedRoute.routeNodes as RouteNodeWithSpot[])
+            .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
+            .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
 
         if (coordinates.length < 2) return null;
 
@@ -83,15 +89,15 @@ export default function MapViewerOnLaptop(props: Props) {
                     <Map
                         ref={mapRef}
                         initialViewState={{
-                            latitude: focusedRoute?.routeNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,
-                            longitude: focusedRoute?.routeNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,
+                            latitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot)?.spot.latitude ?? 35.6804,
+                            longitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot)?.spot.longitude ?? 139.7690,
                             zoom: 12,
                         }}
                         mapStyle="mapbox://styles/mapbox/streets-v12"
                         mapboxAccessToken={mapboxAccessToken}
                         style={{ width: "100%", height: "100%" }}
                     >
-                        {focusedRoute?.routeNodes?.filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
+                        {(focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
                             <Marker
                                 key={node.id}
                                 longitude={node.spot.longitude as number}

@@ -7,8 +7,7 @@ import RouteSettingsSection from "./templates/routeSettingsSection";
 import ActionBar from "./ingredients/actionBar";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAtomValue } from "jotai";
-import { isMobileAtom } from "@/lib/client/atoms";
+import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
 import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson } from "@/lib/client/helpers";
 import { Route, RouteItem } from "@/lib/client/types";
@@ -20,7 +19,7 @@ interface RouteEditorClientProps {
 
 export default function RouteEditorClient({ initialRoute, mode }: RouteEditorClientProps) {
     const router = useRouter();
-    const isMobile = useAtomValue(isMobileAtom);
+    const isMobile = useUiStore((state) => state.isMobile);
 
     // -------------------------------------------------------------------------
     // 状態管理
@@ -45,7 +44,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         amount: Number(initialRoute?.budget?.amount) || 0,
         note: initialRoute?.budget?.note || undefined
     });
-    const [tags, setTags] = useState<string[]>(initialRoute?.tags?.map(t => t.name) || []);
+    const [tags, setTags] = useState<string[]>(initialRoute?.tags?.map((t: { name: string }) => t.name) || []);
 
     // ルート編集ロジック（カスタムフック）
     const {
@@ -60,11 +59,22 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         addWaypoint
     } = useRouteEditor();
 
+    // RouteNode型定義（Prismaベース）
+    type RouteNodeData = {
+        id: string;
+        order: number;
+        details: string | null;
+        spot: { name: string; latitude: number | null; longitude: number | null; source: string | null; sourceId: string | null };
+        images: { url: string }[];
+        transitSteps: { id: string; mode: string; memo: string | null; distance: number | null; duration: number | null; order: number }[];
+    };
+
     // 初期値をセットする（編集時、または初期データがある場合）
     useEffect(() => {
         if (initialRoute?.routeNodes) {
             const initialItems: RouteItem[] = [];
-            initialRoute.routeNodes.forEach((node) => {
+            const routeNodes = initialRoute.routeNodes as RouteNodeData[];
+            routeNodes.forEach((node) => {
                 initialItems.push({
                     type: 'waypoint',
                     id: node.id,
@@ -72,17 +82,17 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                     lat: node.spot.latitude || 0,
                     lng: node.spot.longitude || 0,
                     memo: node.details || '',
-                    images: node.images?.map(img => img.url) || [],
-                    source: node.spot.source || 'USER',
+                    images: node.images?.map((img) => img.url) || [],
+                    source: (node.spot.source as 'MAPBOX' | 'USER') || 'USER',
                     sourceId: node.spot.sourceId || undefined,
                     order: node.order
                 });
                 if (node.transitSteps) {
-                    node.transitSteps.forEach(step => {
+                    node.transitSteps.forEach((step) => {
                         initialItems.push({
                             type: 'transportation',
                             id: step.id,
-                            method: step.mode,
+                            method: step.mode as 'WALK' | 'TRAIN' | 'BUS' | 'CAR' | 'BIKE' | 'FLIGHT' | 'SHIP' | 'OTHER',
                             memo: step.memo || '',
                             distance: step.distance || undefined,
                             duration: step.duration || undefined,

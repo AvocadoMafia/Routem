@@ -1,35 +1,48 @@
 import { likesRepository } from "@/features/likes/repository";
 import { LikeViewTarget } from "@prisma/client";
 import { ROUTE_INCLUDE } from "@/features/routes/repository";
+import { getPrisma } from "@/lib/config/server";
 
 export const likesService = {
+    /**
+     * いいねの切り替え（トランザクション使用）
+     * TOCTOU脆弱性防止のため、チェックと更新を単一トランザクションで実行
+     */
     toggleLike: async (userId: string, target: LikeViewTarget, routeId?: string, commentId?: string) => {
-        try {
-        if (target === LikeViewTarget.ROUTE && routeId) {
-          const existing = await likesRepository.findByUserAndRoute(userId, routeId);
-          if (existing) {
-            await likesRepository.deleteByUserAndRoute(userId, routeId);
-          } else {
-            await likesRepository.createLike(userId, target, routeId, undefined);
-          }
-          const liked = !existing;
-          const likeCount = await likesRepository.countLikesByRoute(routeId);
-          return { liked, likeCount };
-        } else if (target === LikeViewTarget.COMMENT && commentId) {
-          const existing = await likesRepository.findByUserAndComment(userId, commentId);
-          if (existing) {
-            await likesRepository.deleteByUserAndComment(userId, commentId);
-          } else {
-            await likesRepository.createLike(userId, target, undefined, commentId);
-          }
-          const liked = !existing;
-          const likeCount = await likesRepository.countLikesByComment(commentId);
-          return { liked, likeCount };
-        }
+        return getPrisma().$transaction(async (tx) => {
+            if (target === LikeViewTarget.ROUTE && routeId) {
+                const existing = await tx.like.findUnique({
+                    where: { userId_routeId: { userId, routeId } },
+                });
+                if (existing) {
+                    await tx.like.delete({
+                        where: { userId_routeId: { userId, routeId } },
+                    });
+                } else {
+                    await tx.like.create({
+                        data: { userId, target, routeId },
+                    });
+                }
+                const likeCount = await tx.like.count({ where: { routeId } });
+                return { liked: !existing, likeCount };
+            } else if (target === LikeViewTarget.COMMENT && commentId) {
+                const existing = await tx.like.findUnique({
+                    where: { userId_commentId: { userId, commentId } },
+                });
+                if (existing) {
+                    await tx.like.delete({
+                        where: { userId_commentId: { userId, commentId } },
+                    });
+                } else {
+                    await tx.like.create({
+                        data: { userId, target, commentId },
+                    });
+                }
+                const likeCount = await tx.like.count({ where: { commentId } });
+                return { liked: !existing, likeCount };
+            }
             throw new Error("Invalid target or missing ID");
-        } catch (e) {
-            throw e;
-        }
+        });
     },
 
     getLikedRoutes: async (userId: string) => {

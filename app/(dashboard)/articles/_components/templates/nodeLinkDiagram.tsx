@@ -5,8 +5,7 @@ import WaypointCard from "../ingredients/WaypointCard";
 import TransportationCard from "../ingredients/TransportationCard";
 import RouteNode from "../ingredients/RouteNode";
 import InlineAddMenu from "../ingredients/InlineAddMenu";
-import { useAtomValue } from "jotai";
-import { scrollDirectionAtom } from "@/lib/client/atoms";
+import { useUiStore } from "@/lib/client/stores/uiStore";
 import { motion } from "framer-motion";
 
 interface NodeLinkDiagramProps {
@@ -45,7 +44,7 @@ export default function NodeLinkDiagram({
     const [addingAfterIndex, setAddingAfterIndex] = useState<number | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const scrollDirection = useAtomValue(scrollDirectionAtom);
+    const scrollDirection = useUiStore((state) => state.scrollDirection);
     const [yOffset, setYOffset] = useState(0);
 
     const updateOffset = useCallback(() => {

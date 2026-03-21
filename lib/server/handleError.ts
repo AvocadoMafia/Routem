@@ -1,16 +1,46 @@
 import { ZodError } from "zod";
+import { AppError } from "./AppError";
+import { ErrorCode } from "@/lib/types/error";
 
-// instance of --error的なのに応じてレスポンスを角
+/**
+ * エラーを統一形式のレスポンスに変換
+ */
 export async function handleError(error: unknown): Promise<Response> {
-    if (error instanceof ZodError) {
-        return Response.json(
-            {message: error.message, code: "ZOD_ERROR"},
-            {status: 400}
-        )
-    }
+  // AppErrorの場合
+  if (error instanceof AppError) {
+    return Response.json(error.toJSON(), { status: error.status });
+  }
+
+  // Zodバリデーションエラーの場合
+  if (error instanceof ZodError) {
     return Response.json(
-        {message: "Internal Server Error", code: "INTERNAL_SERVER_ERROR"},
-        {status: 500}
-    )
-    
+      {
+        code: ErrorCode.VALIDATION_ERROR,
+        message: "Validation error",
+        details: { issues: error.issues },
+      },
+      { status: 400 }
+    );
+  }
+
+  // 一般的なErrorの場合（開発環境ではメッセージを含める）
+  if (error instanceof Error) {
+    const isDev = process.env.NODE_ENV === "development";
+    return Response.json(
+      {
+        code: ErrorCode.INTERNAL_SERVER_ERROR,
+        message: isDev ? error.message : "Internal Server Error",
+      },
+      { status: 500 }
+    );
+  }
+
+  // 未知のエラー
+  return Response.json(
+    {
+      code: ErrorCode.INTERNAL_SERVER_ERROR,
+      message: "Internal Server Error",
+    },
+    { status: 500 }
+  );
 }

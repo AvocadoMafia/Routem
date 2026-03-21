@@ -47,7 +47,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   // Author check or collaborator check
   const isAuthor = route.authorId === user.id;
-  const isCollaborator = route.collaborators.some(c => c.userId === user.id);
+  const isCollaborator = route.collaborators.some((c: { userId: string }) => c.userId === user.id);
   
   // Requirement: collaborators can edit if policy is CAN_EDIT
   const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === 'CAN_EDIT');
