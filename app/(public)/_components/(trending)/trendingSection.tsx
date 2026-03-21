@@ -46,9 +46,9 @@ export default function TrendingSection() {
 
     return (
         <div className={'w-full h-full overflow-hidden'}>
-            <div className={'w-full h-full overflow-hidden flex flex-row gap-12'}>
+            <div className={'w-full h-full overflow-hidden flex flex-col lg:flex-row gap-8 lg:gap-12'}>
                 <TrendingRoutesList routes={routes || []} />
-                <div className={'flex-1 h-full flex flex-col gap-6 overflow-y-auto no-scrollbar py-6'}>
+                <div className={'md:block hidden flex-1 h-full flex flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
                     <TrendingUsersList users={users || []} />
                     <TrendingTagsList tags={tags || []} />
                 </div>

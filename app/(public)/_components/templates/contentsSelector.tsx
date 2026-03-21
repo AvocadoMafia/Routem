@@ -21,7 +21,7 @@ type Props = {
 export default function ContentsSelector(props: Props) {
 
     return (
-        <div className={'shrink-0 w-fit h-fit sticky top-2 z-40 bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
+        <div className={'shrink-0 w-fit h-fit bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
             {SELECTOR_ITEMS.map((item) => {
                 const isSelected = props.selected === item.selected;
                 return (

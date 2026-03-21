@@ -9,8 +9,8 @@ type Props = {
 }
 export default function RouteCardBasic(props: Props) {
     return (
-        <Link href={`/routes/${props.route.id}`} className={'group w-full h-[320px] overflow-hidden rounded-2xl flex shadow-sm hover:shadow-2xl transition-shadow duration-700 bg-background-0 p-2 gap-2'}>
-            <div className={'flex-1 h-full relative overflow-hidden rounded-xl'}>
+        <Link href={`/routes/${props.route.id}`} className={'group w-full h-fit md:h-[320px] overflow-hidden rounded-2xl flex flex-col md:flex-row shadow-sm hover:shadow-2xl transition-shadow duration-700 bg-background-0 p-2 gap-2'}>
+            <div className={'flex-1 min-h-[240px] md:h-full relative overflow-hidden rounded-xl'}>
                 {/* オーバーレイ（視認性向上） - Smoother blur gradient with masked blur to avoid sharp boundary */}
                 <div className="absolute inset-0 z-10 rounded-xl overflow-hidden
                     backdrop-blur-2xl bg-black/50
@@ -30,7 +30,7 @@ export default function RouteCardBasic(props: Props) {
                     </div>
                 </div>
             </div>
-            <div className={'w-[45%] h-full min-w-[160px] flex flex-col gap-4 p-6 bg-background-1 rounded-xl'}>
+            <div className={'w-full md:w-[45%] h-full min-w-[160px] flex flex-col gap-4 p-6 bg-background-1 rounded-xl'}>
                 <div className="w-full flex flex-col gap-3">
                     <div className="flex items-center gap-3">
                         <div className="relative w-10 h-10 rounded-full">

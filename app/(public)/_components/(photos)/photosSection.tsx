@@ -4,7 +4,7 @@ import PhotoViewer from "@/app/(public)/_components/(photos)/templates/photoView
 
 export default function PhotosSection() {
     return (
-        <div className={'w-full h-fit py-6'}>
+        <div className={'w-full h-fit py-12'}>
             <PhotoViewer/>
         </div>
     );

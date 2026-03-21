@@ -16,7 +16,7 @@ type Props = {
 
 export default function HomeSection({ routes, users, loading, error }: Props) {
     return (
-        <div className={'w-full h-fit flex flex-col items-center gap-20 py-6'}>
+        <div className={'w-full h-fit flex flex-col items-center gap-20 py-12'}>
             {error && <div className={'w-full text-red-500 text-sm'}>{error}</div>}
             {loading ? (
                 <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>

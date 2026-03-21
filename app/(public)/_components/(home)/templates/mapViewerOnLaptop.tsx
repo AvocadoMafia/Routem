@@ -94,58 +94,60 @@ export default function MapViewerOnLaptop(props: Props) {
 
 
     return (
-        <div className={'w-full rounded-2xl h-fit overflow-hidden relative md:block hidden border border-grass/10 shadow-sm'}>
-            <div className={'w-full h-[600px] flex flex-row'}>
-                <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 block'} onWheel={e => e.stopPropagation()}>
-                    {/* マップ上のオーバーレイなどが必要な場合はここに追加 */}
-                    <Map
-                        ref={mapRef}
-                        initialViewState={{
-                            latitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
-                            longitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
-                            zoom: 12,
-                        }}
-                        mapStyle="mapbox://styles/mapbox/streets-v12"
-                        mapboxAccessToken={mapboxAccessToken}
-                        style={{ width: "100%", height: "100%" }}
-                    >
-                        {(focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
-                            <Marker
-                                key={node.id}
-                                longitude={node.spot.longitude as number}
-                                latitude={node.spot.latitude as number}
-                                anchor="bottom"
-                            >
-                                <MapPin
-                                    size={32}
-                                    className="text-accent-0 fill-accent-0/20 stroke-[2.5px] drop-shadow-sm"
-                                />
-                            </Marker>
-                        ))}
+        <div className={'w-full h-[650px] p-2 block bg-background-0 rounded-2xl md:block hidden shadow-md'}>
+            <div className={'w-full h-full rounded-2xl h-fit overflow-hidden relative bg-background-1'}>
+                <div className={'w-full h-full flex flex-row'}>
+                    <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 block'} onWheel={e => e.stopPropagation()}>
+                        {/* マップ上のオーバーレイなどが必要な場合はここに追加 */}
+                        <Map
+                            ref={mapRef}
+                            initialViewState={{
+                                latitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
+                                longitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
+                                zoom: 12,
+                            }}
+                            mapStyle="mapbox://styles/mapbox/streets-v12"
+                            mapboxAccessToken={mapboxAccessToken}
+                            style={{ width: "100%", height: "100%" }}
+                        >
+                            {(focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
+                                <Marker
+                                    key={node.id}
+                                    longitude={node.spot.longitude as number}
+                                    latitude={node.spot.latitude as number}
+                                    anchor="bottom"
+                                >
+                                    <MapPin
+                                        size={32}
+                                        className="text-accent-0 fill-accent-0/20 stroke-[2.5px] drop-shadow-sm"
+                                    />
+                                </Marker>
+                            ))}
 
-                        {lineData && (
-                            <Source type="geojson" data={lineData as any}>
-                                <Layer
-                                    id="route-line"
-                                    type="line"
-                                    layout={{
-                                        "line-join": "round",
-                                        "line-cap": "round"
-                                    }}
-                                    paint={{
-                                        "line-color": "red",
-                                        "line-width": 4,
-                                        "line-opacity": 0.6
-                                    }}
-                                />
-                            </Source>
-                        )}
-                    </Map>
+                            {lineData && (
+                                <Source type="geojson" data={lineData as any}>
+                                    <Layer
+                                        id="route-line"
+                                        type="line"
+                                        layout={{
+                                            "line-join": "round",
+                                            "line-cap": "round"
+                                        }}
+                                        paint={{
+                                            "line-color": "red",
+                                            "line-width": 4,
+                                            "line-opacity": 0.6
+                                        }}
+                                    />
+                                </Source>
+                            )}
+                        </Map>
+                    </div>
+                    <RouteViewer focusedIndex={focusedRouteIndex} routes={props.routes}/>
+                    <RouteList focusedIndex={focusedRouteIndex} routes={props.routes} setFocusedIndex={setFocusedRouteIndex} />
                 </div>
-                <RouteViewer focusedIndex={focusedRouteIndex} routes={props.routes}/>
-                <RouteList focusedIndex={focusedRouteIndex} routes={props.routes} setFocusedIndex={setFocusedRouteIndex} />
+                {/*<RouteFilter/>*/}
             </div>
-            {/*<RouteFilter/>*/}
         </div>
     )
 }
