@@ -3,7 +3,7 @@ import RootClient from "@/app/(public)/rootClient";
 
 export default function Page() {
   return (
-      <div className={'w-full h-fit flex justify-center'}>
+      <div className={'w-full h-full flex justify-center'}>
           <RootClient/>
       </div>
   )

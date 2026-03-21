@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAtom } from "jotai";
-import { scrollDirectionAtom } from "@/lib/client/atoms";
+import { useUiStore } from "@/lib/client/stores/uiStore";
 
 export function useInitialModal() {
   const [isVisible, setIsVisible] = useState(true);
   const [canClose, setCanClose] = useState(false);
-  const [scrollDirection, setScrollDirection] = useAtom(scrollDirectionAtom);
+  const scrollDirection = useUiStore((state) => state.scrollDirection);
+  const setScrollDirection = useUiStore((state) => state.setScrollDirection);
 
   useEffect(() => {
     // マウント時にスクロール方向をリセット

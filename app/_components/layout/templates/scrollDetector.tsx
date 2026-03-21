@@ -1,12 +1,11 @@
 'use client'
 
 import {useEffect, useRef} from "react";
-import {useAtom} from "jotai";
-import {scrollDirectionAtom} from "@/lib/client/atoms";
+import { useUiStore } from "@/lib/client/stores/uiStore";
 import {usePathname} from "next/navigation";
 
 export default function ScrollDetector() {
-    const [, setScrollDirection] = useAtom(scrollDirectionAtom)
+    const setScrollDirection = useUiStore((state) => state.setScrollDirection)
     const pathname = usePathname()
     const touchStart = useRef<{ x: number, y: number } | null>(null)
     const lastScrollY = useRef(0)

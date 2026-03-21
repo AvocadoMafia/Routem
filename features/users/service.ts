@@ -1,9 +1,19 @@
+import { GetUsersType } from "./schema";
 import { usersRepository } from "./repository"
+import { getPrisma } from "@/lib/config/server";
 
 // ビジネスロジック層
 // バリデーション→ロジック→throw error or return data
 // DBの整合性チェックなどを担当
 export const usersService = {
+  getUsers: async (params: GetUsersType) => {
+    try {
+      return await usersRepository.findMany(params);
+    } catch (e) {
+      throw e;
+    }
+  },
+
   getUserById: async (id: string, requesterId?: string) => {
     try {
       const user = await usersRepository.findById(id, requesterId);
@@ -29,27 +39,33 @@ export const usersService = {
     }
   },
 
+  /**
+   * フォローの切り替え（トランザクション使用）
+   * TOCTOU脆弱性防止のため、チェックと更新を単一トランザクションで実行
+   */
   toggleFollow: async (followingId: string, followerId: string) => {
-    try {
-      if (followingId === followerId) {
-        throw new Error("Cannot follow yourself");
-      }
+    if (followingId === followerId) {
+      throw new Error("Cannot follow yourself");
+    }
 
-      const existing = await usersRepository.findFollow(followingId, followerId);
+    return getPrisma().$transaction(async (tx) => {
+      const existing = await tx.follow.findUnique({
+        where: { followingId_followerId: { followingId, followerId } },
+      });
 
       if (existing) {
-        await usersRepository.deleteFollow(followingId, followerId);
+        await tx.follow.delete({
+          where: { followingId_followerId: { followingId, followerId } },
+        });
       } else {
-        await usersRepository.createFollow(followingId, followerId);
+        await tx.follow.create({
+          data: { followingId, followerId },
+        });
       }
 
-      const followed = !existing;
-      const followerCount = await usersRepository.countFollowers(followingId);
-
-      return { followed, followerCount };
-    } catch (e) {
-      throw e;
-    }
+      const followerCount = await tx.follow.count({ where: { followingId } });
+      return { followed: !existing, followerCount };
+    });
   },
 }
 

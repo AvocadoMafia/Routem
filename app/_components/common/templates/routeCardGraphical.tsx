@@ -15,16 +15,16 @@ export default function RouteCardGraphical(props: Props) {
 
   return (
     <Link
-      href={`/routes/${props.route.id}`}
+      href={`/routes/${props.route?.id}`}
       onClick={props.onClick}
       className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2"
-      aria-label={props.rank ? `Rank ${props.rank}: ${props.route.title}` : props.route.title}
+      aria-label={props.rank ? `Rank ${props.rank}: ${props.route?.title}` : props.route?.title}
     >
       {/* Background Thumbnail Image with Margin (via container padding) */}
       <div className="relative w-full h-full rounded-lg overflow-hidden">
         <Image
-          src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
-          alt={`${props.route.title} thumbnail`}
+          src={props.route?.thumbnail?.url || '/mockImages/Kyoto.jpg'}
+          alt={`${props.route?.title} thumbnail`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           unoptimized
@@ -51,21 +51,21 @@ export default function RouteCardGraphical(props: Props) {
           <div className="space-y-3">
             <div className="space-y-1">
               <h4 className="text-lg font-bold leading-tight drop-shadow-sm line-clamp-2">
-                {props.route.title}
+                {props.route?.title}
               </h4>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
-                <span className="text-xs font-bold normal-case tracking-normal">@{props.route.author.name}</span>
+                <span className="text-xs font-bold normal-case tracking-normal">@{props.route?.author.name}</span>
                 <span className="opacity-60">•</span>
-                <span className="truncate">{props.route.category.name}</span>
+                <span className="truncate">{props.route?.routeFor}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                   <HiHeart className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
+                  <span className="tabular-nums">{props.route?.likes?.length ?? 0}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                   <HiEye className="w-4 h-4 text-accent-1" />
-                  <span className="tabular-nums">{props.route.views?.length ?? 0}</span>
+                  <span className="tabular-nums">{props.route?.views?.length ?? 0}</span>
                 </div>
               </div>
 

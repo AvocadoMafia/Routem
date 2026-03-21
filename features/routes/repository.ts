@@ -2,7 +2,6 @@ import { getPrisma } from "@/lib/config/server";
 import { Prisma } from "@prisma/client";
 
 export const ROUTE_INCLUDE = {
-  category: true,
   author: {
     select: {
       id: true,
@@ -21,6 +20,8 @@ export const ROUTE_INCLUDE = {
   likes: true,
   views: true,
   collaborators: true,
+  budget: true,
+  tags: true,
 } as const;
 
 export type RouteWithRelations = Prisma.RouteGetPayload<{

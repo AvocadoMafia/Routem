@@ -1,4 +1,4 @@
-import { ImageStatus, ImageType, Prisma, RouteVisibility, TransitMode, RouteCollaboratorPolicy } from "@prisma/client";
+import { ImageStatus, ImageType, Prisma, RouteVisibility, TransitMode, RouteCollaboratorPolicy, RouteFor, CurrencyCode } from "@prisma/client";
 import { postRouteType, PatchRouteType, GetRoutesType } from "@/features/routes/schema";
 
 
@@ -20,11 +20,6 @@ export function buildRoutesWhere(query: GetRoutesType, user_id?: string, search_
     // authorId
     if (query.authorId) {
         where.authorId = query.authorId;
-    }
-
-    // categoryId
-    if (query.categoryId) {
-        where.categoryId = query.categoryId;
     }
 
     // createdAfter (schema.tsでDateに変換済み)
@@ -159,7 +154,6 @@ export function buildCreateRouteData(body: postRouteType, authorId: string): Pri
         description: body.description,
         visibility: body.visibility as RouteVisibility,
         author: { connect: { id: authorId } },
-        category: { connect: { id: body.categoryId } },
         thumbnail: {
             create: {
                 url: body.thumbnailImageSrc,
@@ -171,6 +165,23 @@ export function buildCreateRouteData(body: postRouteType, authorId: string): Pri
             create: routeNodes,
         },
         collaboratorPolicy: body.collaboratorPolicy as RouteCollaboratorPolicy ?? undefined,
+        routeFor: body.routeFor as RouteFor,
+        month: body.month === 0 ? null : body.month,
+        budget: {
+            create: {
+                currency: body.budget.currency as CurrencyCode,
+                amount: body.budget.amount,
+                baseAmount: body.budget.amount, // TODO: 為替レート変換
+                baseCurrency: "JPY",
+                note: body.budget.note,
+            }
+        },
+        tags: {
+            connectOrCreate: body.tags.map(tag => ({
+                where: { name: tag },
+                create: { name: tag }
+            }))
+        }
     };
 }
 
@@ -183,7 +194,6 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
     return {
         title: body.title ?? undefined,
         description: body.description ?? undefined,
-        category: body.categoryId ? { connect: { id: body.categoryId } } : undefined,
         visibility: (body.visibility as RouteVisibility) ?? undefined,
         thumbnail: body.thumbnailImageSrc ? {
             update: {
@@ -197,5 +207,23 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
             },
         }),
         collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
+        routeFor: (body.routeFor as RouteFor) ?? undefined,
+        month: body.month === 0 ? null : (body.month ?? undefined),
+        budget: body.budget ? {
+            update: {
+                currency: body.budget.currency as CurrencyCode,
+                amount: body.budget.amount,
+                baseAmount: body.budget.amount, // TODO: 為替レート変換
+                baseCurrency: "JPY",
+                note: body.budget.note,
+            }
+        } : undefined,
+        tags: body.tags ? {
+            set: [], // 一旦リセット
+            connectOrCreate: body.tags.map(tag => ({
+                where: { name: tag },
+                create: { name: tag }
+            }))
+        } : undefined,
     };
 }

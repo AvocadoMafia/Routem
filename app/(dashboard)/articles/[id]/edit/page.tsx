@@ -24,10 +24,11 @@ export default async function Page({ params }: { params: { id: string } }) {
       author: {
         include: { icon: true }
       },
-      category: true,
       thumbnail: true,
       likes: true,
       views: true,
+      tags: true,
+      budget: true,
       routeNodes: {
         orderBy: { order: 'asc' },
         include: {
@@ -46,7 +47,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   // Author check or collaborator check
   const isAuthor = route.authorId === user.id;
-  const isCollaborator = route.collaborators.some(c => c.userId === user.id);
+  const isCollaborator = route.collaborators.some((c: { userId: string }) => c.userId === user.id);
   
   // Requirement: collaborators can edit if policy is CAN_EDIT
   const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === 'CAN_EDIT');
@@ -55,9 +56,12 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound(); // or redirect
   }
 
+  // Decimal シリアライズ問題の回避
+  const serializedRoute = JSON.parse(JSON.stringify(route));
+
   return (
     <div className="w-full h-full">
-      <ClientRoot route={route} />
+      <ClientRoot route={serializedRoute} />
     </div>
   );
 }

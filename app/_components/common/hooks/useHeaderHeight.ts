@@ -1,11 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useRef } from 'react'
-import { useSetAtom } from 'jotai'
-import { headerHeightAtom } from '@/lib/client/atoms'
+import { useUiStore } from '@/lib/client/stores/uiStore'
 
 export const useHeaderHeight = () => {
-    const setHeaderHeight = useSetAtom(headerHeightAtom)
+    const setHeaderHeight = useUiStore((state) => state.setHeaderHeight)
     const observer = useRef<ResizeObserver | null>(null)
 
     const ref = useCallback((node: HTMLElement | null) => {

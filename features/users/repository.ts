@@ -1,10 +1,29 @@
 
 import {getPrisma} from "@/lib/config/server";
-import {UpdateUserType} from "@/features/users/schema";
+import {UpdateUserType, GetUsersType} from "@/features/users/schema";
+import { Prisma } from "@prisma/client";
           
+
+export const USER_SELECT = {
+    id: true,
+    name: true,
+    bio: true,
+    icon: true,
+} as const;
 
 
 export const usersRepository = {
+  findMany: async (params: GetUsersType) => {
+    try {
+      return await getPrisma().user.findMany({
+        take: params.limit,
+        select: USER_SELECT,
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
   findById: async (id: string, requesterId?: string) => {
     try {
         const isOwner = !!requesterId && requesterId === id;

@@ -3,15 +3,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/auth/supabase/server'
 import {getPrisma} from "@/lib/config/server";
 
+/**
+ * Open Redirect防止: 安全な相対パスのみ許可
+ * - `/`で始まる必要がある
+ * - `//`で始まるURL（プロトコル相対URL）を拒否
+ * - `:`を含むURL（プロトコル指定）を拒否
+ * - `\`を含むURL（パストラバーサル）を拒否
+ */
+function isValidRedirectPath(path: string): boolean {
+  if (!path.startsWith('/')) return false
+  if (path.startsWith('//')) return false
+  if (path.includes(':')) return false
+  if (path.includes('\\')) return false
+  return true
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get('next') ?? '/'
-  if (!next.startsWith('/')) {
-    // if "next" is not a relative URL, use the default
-    next = '/'
-  }
+  const nextParam = searchParams.get('next') ?? '/'
+  const next = isValidRedirectPath(nextParam) ? nextParam : '/'
 
   if (code) {
     const supabase = await createClient(request)

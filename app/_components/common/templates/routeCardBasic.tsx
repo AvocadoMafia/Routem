@@ -46,7 +46,6 @@ export default function RouteCardBasic(props: Props) {
                         </div>
                         <div className="flex flex-col min-w-0">
                             <h4 className="text-sm font-bold truncate text-foreground-0">{props.route.author.name}</h4>
-                            <span className="text-[10px] font-bold text-foreground-1 uppercase tracking-[0.2em]">{props.route.category?.name}</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -60,14 +59,10 @@ export default function RouteCardBasic(props: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="w-full grid grid-cols-2 gap-2">
+                <div className="w-full grid grid-cols-1 gap-2">
                     <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center">
                         <span className="block text-foreground-0 text-[9px] font-bold uppercase tracking-[0.2em] mb-0.5">Stops</span>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.routeNodes.length} pts</span>
-                    </div>
-                    <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center">
-                        <span className="block text-foreground-0 text-[9px] font-bold uppercase tracking-[0.2em] mb-0.5">Category</span>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.category?.name}</span>
                     </div>
                 </div>
                 <div className={'w-full text-foreground-1 line-clamp-5 md:text-sm text-xs leading-relaxed'}>

@@ -1,4 +1,5 @@
 import {commentsRepository} from "@/features/comments/repository";
+import { getPrisma } from "@/lib/config/server";
 
 export const commentsService = {
     getComments: async (userId?: string, take?: number, onlyMine?: boolean, without?: string[]) => {
@@ -28,9 +29,16 @@ export const commentsService = {
         }
     },
 
+    /**
+     * コメント削除（トランザクション使用）
+     * TOCTOU脆弱性防止のため、権限チェックと削除を単一トランザクションで実行
+     */
     deleteComment: async (userId: string, commentId: string) => {
-        try {
-            const comment = await commentsRepository.findById(commentId);
+        return getPrisma().$transaction(async (tx) => {
+            const comment = await tx.comment.findUnique({
+                where: { id: commentId },
+            });
+
             if (!comment) {
                 throw new Error("Comment not found");
             }
@@ -39,9 +47,9 @@ export const commentsService = {
                 throw new Error("Unauthorized");
             }
 
-            return commentsRepository.deleteComment(commentId);
-        } catch (e) {
-            throw e;
-        }
+            return tx.comment.delete({
+                where: { id: commentId },
+            });
+        });
     },
 };

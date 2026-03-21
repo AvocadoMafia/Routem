@@ -43,7 +43,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       <div className="flex flex-col gap-4 flex-1 min-w-0">
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-bold text-accent-0 uppercase tracking-[0.3em]">
-            {route.category?.name || "Travel Route"}
+            {route.routeFor || "EVERYONE"}
           </span>
           <span className="text-foreground-1/20">•</span>
           <span className="text-[10px] font-bold text-foreground-1 uppercase tracking-[0.3em]">

@@ -49,7 +49,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             className="max-w-4xl"
                         >
                             <span className="inline-block px-3 py-1 mb-8 border border-white/20 rounded-sm text-[10px] font-bold tracking-[0.4em] uppercase backdrop-blur-md">
-                                {route.category?.name || "Travel Route"}
+                                {route.routeFor || "EVERYONE"}
                             </span>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-10 tracking-[0.1em] leading-tight uppercase">
                                 {route.title}

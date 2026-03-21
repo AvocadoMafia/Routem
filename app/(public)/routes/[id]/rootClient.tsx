@@ -8,8 +8,7 @@ import DiagramViewer from "./_components/templates/diagramViewer";
 import DetailsViewer from "./_components/templates/detailsViewer";
 import InitialModal from "./_components/templates/initialModal";
 import ViewModeSelector from "./_components/ingredients/viewModeSelector";
-import { useAtomValue } from "jotai";
-import { scrollDirectionAtom } from "@/lib/client/atoms";
+import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
 import { postDataToServerWithJson } from "@/lib/client/helpers";
@@ -51,7 +50,7 @@ export default function RootClient({ route, currentUser }: Props) {
   const [viewMode, setViewMode] = useState<"diagram" | "details" | "map">("details");
   const [infoTab, setInfoTab] = useState<"comments" | "related">("comments");
   const [isMobile, setIsMobile] = useState(false);
-  const scrollDirection = useAtomValue(scrollDirectionAtom);
+  const scrollDirection = useUiStore((state) => state.scrollDirection);
   const [yOffset, setYOffset] = useState(0);
 
   const {
