@@ -71,7 +71,7 @@ export async function updateSession(request: NextRequest) {
   // of sync and terminate the user's session prematurely!
 
   // セキュリティヘッダーを追加
-  addSecurityHeaders(supabaseResponse)
+  // addSecurityHeaders(supabaseResponse)
 
   return supabaseResponse
 }
@@ -79,44 +79,44 @@ export async function updateSession(request: NextRequest) {
 /**
  * セキュリティヘッダーをレスポンスに追加
  */
-function addSecurityHeaders(response: NextResponse) {
-  // クリックジャッキング対策
-  response.headers.set('X-Frame-Options', 'DENY')
-
-  // MIMEタイプスニッフィング対策
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-
-  // Referrer制御
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-
-  // XSS対策（レガシーブラウザ向け）
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-
-  // Content-Security-Policy
-  const csp = [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com",
-    "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
-    "img-src 'self' data: blob: https://*.mapbox.com https://*.maptiles.com https://lh3.googleusercontent.com https://images.unsplash.com https://i.pravatar.cc *",
-    "font-src 'self'",
-    "connect-src 'self' https://api.mapbox.com https://*.supabase.co wss://*.supabase.co https://events.mapbox.com",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join('; ')
-  response.headers.set('Content-Security-Policy', csp)
-
-  // HTTPS強制（本番環境）
-  if (process.env.NODE_ENV === 'production') {
-    response.headers.set(
-      'Strict-Transport-Security',
-      'max-age=31536000; includeSubDomains'
-    )
-  }
-
-  // Permissions Policy
-  response.headers.set(
-    'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(self)'
-  )
-}
+// function addSecurityHeaders(response: NextResponse) {
+//   // クリックジャッキング対策
+//   response.headers.set('X-Frame-Options', 'DENY')
+//
+//   // MIMEタイプスニッフィング対策
+//   response.headers.set('X-Content-Type-Options', 'nosniff')
+//
+//   // Referrer制御
+//   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+//
+//   // XSS対策（レガシーブラウザ向け）
+//   response.headers.set('X-XSS-Protection', '1; mode=block')
+//
+//   // Content-Security-Policy
+//   const csp = [
+//     "default-src 'self'",
+//     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://api.mapbox.com",
+//     "style-src 'self' 'unsafe-inline' https://api.mapbox.com",
+//     "img-src 'self' data: blob: https://*.mapbox.com https://*.maptiles.com https://lh3.googleusercontent.com https://images.unsplash.com https://i.pravatar.cc *",
+//     "font-src 'self'",
+//     "connect-src 'self' https://api.mapbox.com https://*.supabase.co wss://*.supabase.co https://events.mapbox.com",
+//     "frame-ancestors 'none'",
+//     "base-uri 'self'",
+//     "form-action 'self'",
+//   ].join('; ')
+//   response.headers.set('Content-Security-Policy', csp)
+//
+//   // HTTPS強制（本番環境）
+//   if (process.env.NODE_ENV === 'production') {
+//     response.headers.set(
+//       'Strict-Transport-Security',
+//       'max-age=31536000; includeSubDomains'
+//     )
+//   }
+//
+//   // Permissions Policy
+//   response.headers.set(
+//     'Permissions-Policy',
+//     'camera=(), microphone=(), geolocation=(self)'
+//   )
+// }
