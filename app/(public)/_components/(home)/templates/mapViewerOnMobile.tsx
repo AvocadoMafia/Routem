@@ -1,7 +1,8 @@
 'use client'
 
 import {useState, useEffect, useRef} from "react";
-import {Map, Marker, Source, Layer, MapRef} from "react-map-gl/mapbox-legacy";
+import {Map, Marker, Source, Layer, MapRef} from "react-map-gl/mapbox";
+import mapboxgl from "mapbox-gl";
 import { Route } from "@/lib/client/types";
 import { HiHeart } from "react-icons/hi2";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -18,6 +19,12 @@ type Props = {
 function MobileMap({ route }: { route: Route }) {
     const mapboxAccessToken = getClientMapboxAccessToken();
     const mapRef = useRef<MapRef>(null);
+
+    useEffect(() => {
+        if (mapboxAccessToken) {
+            mapboxgl.accessToken = mapboxAccessToken;
+        }
+    }, [mapboxAccessToken]);
 
     useEffect(() => {
         if (!route || !route.routeNodes || route.routeNodes.length === 0 || !mapRef.current) return;

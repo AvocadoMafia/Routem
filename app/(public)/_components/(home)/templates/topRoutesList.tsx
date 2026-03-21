@@ -1,6 +1,6 @@
 "use client"
 
-import FeaturedRouteCard from '@/app/(public)/_components/ingredients/featuredRouteCard'
+import FeaturedRouteCard from '@/app/(public)/_components/(home)/ingredients/featuredRouteCard'
 import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import {Route} from "@/lib/client/types";
 

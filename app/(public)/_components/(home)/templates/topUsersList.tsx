@@ -1,6 +1,6 @@
 'use client'
 
-import FeaturedUserCard from '@/app/(public)/_components/ingredients/featuredUserCard'
+import FeaturedUserCard from '@/app/(public)/_components/(home)/ingredients/featuredUserCard'
 import { User } from "@/lib/client/types"
 import RouteCardGraphical from "@/app/_components/common/templates/routeCardGraphical";
 import {UserCardGraphical} from "@/app/_components/common/templates/userCardGraphical";

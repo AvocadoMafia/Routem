@@ -1,6 +1,6 @@
 import { likesRepository } from "@/features/likes/repository";
 import { LikeViewTarget } from "@prisma/client";
-import { ROUTE_INCLUDE } from "@/features/routes/repository";
+import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
 import { getPrisma } from "@/lib/config/server";
 
 export const likesService = {
@@ -58,7 +58,7 @@ export const likesService = {
             });
 
             return likes
-                .map((l) => l.route)
+                .map((l) => (l as any).route)
                 .filter((r): r is RouteWithRelations => !!r);
         } catch (e) {
             throw e;

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useMemo } from "react";
-import { Map, Marker, Source, Layer, MapRef } from "react-map-gl/mapbox-legacy";
+import { Map, Marker, Source, Layer, MapRef } from "react-map-gl/mapbox";
+import mapboxgl from "mapbox-gl";
 import { Route } from "@/lib/client/types";
 import { MapPin } from "lucide-react";
 import getClientMapboxAccessToken from "@/lib/config/client";
@@ -15,6 +16,12 @@ type Props = {
 export default function MapViewer({ route, focusIndex, items }: Props) {
   const mapRef = useRef<MapRef>(null);
   const mapboxAccessToken = getClientMapboxAccessToken();
+
+  useEffect(() => {
+    if (mapboxAccessToken) {
+      mapboxgl.accessToken = mapboxAccessToken;
+    }
+  }, [mapboxAccessToken]);
 
   useEffect(() => {
     if (!route || !route.routeNodes || route.routeNodes.length === 0 || !mapRef.current) return;

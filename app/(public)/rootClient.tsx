@@ -2,17 +2,11 @@
 
 import {useEffect, useMemo, useState} from "react";
 import ContentsSelector from "@/app/(public)/_components/templates/contentsSelector";
-import MapViewerOnLaptop from "@/app/(public)/_components/templates/mapViewerOnLaptop";
-import TopUsersList from "@/app/(public)/_components/templates/topUsersList";
-import TopRoutesList from "@/app/(public)/_components/templates/topRoutesList";
-import RecommendedRoutesList from "@/app/(public)/_components/templates/recommendedRoutesList";
-import PhotoViewer from "@/app/(public)/_components/templates/photoViewer";
 import {Route, User} from "@/lib/client/types";
-import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
-import TrendingRoutesList from "@/app/(public)/_components/templates/trendingRoutesList";
-import TrendingUsersList from "@/app/(public)/_components/templates/trendingUsersList";
-import TrendingTagsList from "@/app/(public)/_components/templates/trendingTagsList";
+import HomeSection from "@/app/(public)/_components/(home)/homeSection";
+import PhotosSection from "@/app/(public)/_components/(photos)/photosSection";
+import TrendingSection from "@/app/(public)/_components/(trending)/trendingSection";
 
 export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followers'
 
@@ -62,35 +56,18 @@ export default function RootClient() {
             {(() => {
                 switch (selected) {
                     case 'home': return (
-                        <div className={'w-full h-fit flex flex-col items-center gap-20'}>
-                            {error && <div className={'w-full text-red-500 text-sm'}>{error}</div>}
-                            {loading ? (
-                                <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>
-                            ) : (
-                                <>
-                                    <MapViewerOnLaptop routes={displayedRoutes}/>
-                                    <MapViewerOnMobile routes={displayedRoutes}/>
-                                    <TopRoutesList routes={displayedRoutes} />
-                                    {/* TopUsersList */}
-                                    {users && users.length >= 5 && (
-                                        <TopUsersList users={users} />
-                                    )}
-                                    <RecommendedRoutesList routes={displayedRoutes}/>
-                                </>
-                            )}
-                        </div>
+                        <HomeSection 
+                            routes={displayedRoutes} 
+                            users={users} 
+                            loading={loading} 
+                            error={error} 
+                        />
                     )
                     case 'photos': return (
-                        <PhotoViewer/>
+                        <PhotosSection />
                     )
                     case 'trending': return (
-                        <div className={'w-full h-full overflow-hidden flex flex-row'}>
-                            <TrendingRoutesList />
-                            <div className={'flex-1 h-full flex flex-col gap-2 overflow-y-scroll'}>
-                                <TrendingUsersList/>
-                                <TrendingTagsList/>
-                            </div>
-                        </div>
+                        <TrendingSection />
                     )
                     case 'likes': return <></>
                     case 'followers': return <></>

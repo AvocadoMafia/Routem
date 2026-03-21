@@ -1,4 +1,4 @@
-import RouteCardHorizontal from '@/app/(public)/_components/ingredients/routeCardHorizontal';
+import RouteCardHorizontal from '@/app/(public)/_components/(home)/ingredients/routeCardHorizontal';
 import {Route} from "@/lib/client/types";
 
 

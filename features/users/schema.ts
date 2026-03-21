@@ -13,7 +13,7 @@ export const GetUsersSchema = z.object({
     .regex(/^\d+$/)
     .transform(Number)
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
-    .default(String(DEFAULT_LIMIT))
+    .default(DEFAULT_LIMIT)
     .optional(),
 });
 export type GetUsersType = z.infer<typeof GetUsersSchema>;

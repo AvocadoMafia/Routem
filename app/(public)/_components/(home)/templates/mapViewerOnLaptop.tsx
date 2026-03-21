@@ -1,10 +1,11 @@
 'use client'
 
 import {useState, useEffect, useRef} from "react";
-import {Map, Marker, Source, Layer, MapRef} from "react-map-gl/mapbox-legacy";
-import RouteList from "@/app/(public)/_components/ingredients/routeList";
-import RouteViewer from "@/app/(public)/_components/ingredients/routeViewer";
-import RouteFilter from "@/app/(public)/_components/ingredients/routeFilter";
+import {Map, Marker, Source, Layer, MapRef} from "react-map-gl/mapbox";
+import mapboxgl from "mapbox-gl";
+import RouteList from "@/app/(public)/_components/(home)/ingredients/routeList";
+import RouteViewer from "@/app/(public)/_components/(home)/ingredients/routeViewer";
+import RouteFilter from "@/app/(public)/_components/(home)/ingredients/routeFilter";
 import {Route} from "@/lib/client/types";
 import getClientMapboxAccessToken from "@/lib/config/client";
 import { useMemo } from "react";
@@ -21,10 +22,16 @@ type RouteNodeWithSpot = {
 };
 
 export default function MapViewerOnLaptop(props: Props) {
-    const [focusedRouteIndex, setFocusedRouteIndex] = useState<number>(1);
+    const [focusedRouteIndex, setFocusedRouteIndex] = useState<number>(0);
     const mapRef = useRef<MapRef>(null);
 
     const mapboxAccessToken = getClientMapboxAccessToken()
+
+    useEffect(() => {
+        if (mapboxAccessToken) {
+            mapboxgl.accessToken = mapboxAccessToken;
+        }
+    }, [mapboxAccessToken]);
 
     const focusedRoute = props.routes[focusedRouteIndex];
 
@@ -76,21 +83,26 @@ export default function MapViewerOnLaptop(props: Props) {
         };
     }, [focusedRoute]);
 
-    if(!mapboxAccessToken) return (
-        <p>マップボックスのアクセストークンが存在しません。</p>
-    )
+    if(!mapboxAccessToken) {
+        console.error("Mapbox access token is missing!");
+        return (
+            <div className="w-full h-[600px] flex items-center justify-center bg-gray-100 text-red-500 border border-red-200 rounded-2xl">
+                <p>マップボックスのアクセストークンが存在しません。環境変数 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN を確認してください。</p>
+            </div>
+        )
+    }
 
 
     return (
         <div className={'w-full rounded-2xl h-fit overflow-hidden relative md:block hidden border border-grass/10 shadow-sm'}>
             <div className={'w-full h-[600px] flex flex-row'}>
-                <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 lg:block hidden'} onWheel={e => e.stopPropagation()}>
+                <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 block'} onWheel={e => e.stopPropagation()}>
                     {/* マップ上のオーバーレイなどが必要な場合はここに追加 */}
                     <Map
                         ref={mapRef}
                         initialViewState={{
-                            latitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot)?.spot.latitude ?? 35.6804,
-                            longitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot)?.spot.longitude ?? 139.7690,
+                            latitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
+                            longitude: (focusedRoute?.routeNodes as RouteNodeWithSpot[] | undefined)?.find((node) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
                             zoom: 12,
                         }}
                         mapStyle="mapbox://styles/mapbox/streets-v12"
