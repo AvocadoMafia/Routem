@@ -10,8 +10,11 @@ import PhotoViewer from "@/app/(public)/_components/templates/photoViewer";
 import {Route, User} from "@/lib/client/types";
 import MapViewerOnMobile from "@/app/(public)/_components/templates/mapViewerOnMobile";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import TrendingRoutesList from "@/app/(public)/_components/templates/trendingRoutesList";
+import TrendingUsersList from "@/app/(public)/_components/templates/trendingUsersList";
+import TrendingTagsList from "@/app/(public)/_components/templates/trendingTagsList";
 
-export type selectedType = 'home' | 'photos' | 'recent' | 'trending'
+export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followers'
 
 export default function RootClient() {
 
@@ -54,7 +57,7 @@ export default function RootClient() {
 
     const [selected, setSelected] = useState<selectedType>('home')
     return (
-        <div className={'w-full max-w-[1600px] h-fit flex flex-col items-center md:px-8 px-4 md:pb-12 pb-6 gap-12 relative'}>
+        <div className={'w-full max-w-[1600px] h-full flex flex-col items-center md:px-8 px-4 gap-12 relative'}>
             <ContentsSelector selected={selected} setSelected={setSelected}/>
             {(() => {
                 switch (selected) {
@@ -80,8 +83,17 @@ export default function RootClient() {
                     case 'photos': return (
                         <PhotoViewer/>
                     )
-                    case 'recent': return <></>
-                    case 'trending': return <></>
+                    case 'trending': return (
+                        <div className={'w-full h-full overflow-hidden flex flex-row'}>
+                            <TrendingRoutesList />
+                            <div className={'flex-1 h-full flex flex-col gap-2 overflow-y-scroll'}>
+                                <TrendingUsersList/>
+                                <TrendingTagsList/>
+                            </div>
+                        </div>
+                    )
+                    case 'likes': return <></>
+                    case 'followers': return <></>
                 }
             })()}
         </div>
