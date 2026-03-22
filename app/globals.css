@@ -81,7 +81,7 @@ html, body {
     --color-foreground-1: var(--foreground-1);
     --color-accent-0: var(--accent-0);
     --color-accent-0: var(--accent-0);
-    --color-accent-2: var(--accent-2);
+    --color-accent-0: var(--accent-0);
     --color-grass: var(--grass);
     --color-accent-warning: var(--accent-warning);
 }

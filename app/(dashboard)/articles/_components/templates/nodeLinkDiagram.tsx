@@ -110,7 +110,7 @@ export default function NodeLinkDiagram({
                     <button
                         onClick={onPublish}
                         disabled={publishing}
-                        className={`shrink-0 px-4 h-10 rounded-xl font-bold text-sm text-white flex items-center gap-2 active:scale-90 shadow-md transition-all ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale' : 'bg-accent-2 hover:bg-accent-2/90'}`}
+                        className={`shrink-0 px-4 h-10 rounded-xl font-bold text-sm text-white flex items-center gap-2 active:scale-90 shadow-md transition-all ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale' : 'bg-accent-0 hover:bg-accent-0/90'}`}
                         aria-label="Publish"
                     >
                         {publishing ? (
@@ -123,7 +123,7 @@ export default function NodeLinkDiagram({
                 </div>
 
                 <div className="flex items-center gap-2 pl-2 border-l border-grass/30 ml-2">
-                    <span className="shrink-0 text-[10px] font-black px-2 py-1 bg-accent-2/10 text-accent-2 rounded-lg border border-accent-2/20">
+                    <span className="shrink-0 text-[10px] font-black px-2 py-1 bg-accent-0/10 text-accent-0 rounded-lg border border-accent-0/20">
                         {items.filter(i => i.type === 'waypoint').length}W
                     </span>
                 </div>

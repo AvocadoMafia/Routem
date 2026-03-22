@@ -287,7 +287,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
 
                 <div className="flex items-center gap-3 text-xs text-foreground-1/70">
                     {typeof item.lat === "number" && typeof item.lng === "number" && (
-                        <span className="text-accent-2 font-bold flex items-center gap-1">
+                        <span className="text-accent-0 font-bold flex items-center gap-1">
                             <CheckCircle2 size={12} /> Location Selected
                         </span>
                     )}

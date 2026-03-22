@@ -32,7 +32,7 @@ export default function ActionBar({
             <div className="flex items-center justify-between p-4 gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     {message ? (
-                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border animate-in fade-in slide-in-from-left-2 duration-300 max-w-full group ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-transparent text-red-600 border-red-500/50' : 'bg-transparent text-accent-2 border-accent-2/50'}`}>
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border animate-in fade-in slide-in-from-left-2 duration-300 max-w-full group ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-transparent text-red-600 border-red-500/50' : 'bg-transparent text-accent-0 border-accent-0/50'}`}>
                             {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={14} className="shrink-0" /> : <CheckCircle2 size={14} className="shrink-0" />}
                             <span className="text-[11px] font-bold tracking-tight truncate">{message}</span>
                             <button
@@ -44,7 +44,7 @@ export default function ActionBar({
                             </button>
                         </div>
                     ) : isSettingsComplete ? (
-                        <div className="flex items-center gap-2 text-accent-2 bg-accent-2/20 px-3 py-1.5 rounded-full border border-accent-2/40 animate-in fade-in slide-in-from-left-2 duration-500">
+                        <div className="flex items-center gap-2 text-accent-0 bg-accent-0/20 px-3 py-1.5 rounded-full border border-accent-0/40 animate-in fade-in slide-in-from-left-2 duration-500">
                             <CheckCircle2 size={16} />
                             <span className="text-xs font-bold tracking-tight">Publication Settings Ready</span>
                         </div>
@@ -85,7 +85,7 @@ export default function ActionBar({
                     <button
                         onClick={handlePublish}
                         disabled={publishing}
-                        className={`group relative flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black text-sm text-white shadow-lg transition-all active:scale-95 overflow-hidden ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale cursor-pointer' : 'bg-accent-2 hover:bg-accent-2/90 hover:shadow-accent-2/20 hover:-translate-y-0.5'} `}
+                        className={`group relative flex items-center gap-2 px-6 py-2.5 rounded-2xl font-black text-sm text-white shadow-lg transition-all active:scale-95 overflow-hidden ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale cursor-pointer' : 'bg-accent-0 hover:bg-accent-0/90 hover:shadow-accent-0/20 hover:-translate-y-0.5'} `}
                     >
                         {isSettingsComplete && !publishing && (
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
