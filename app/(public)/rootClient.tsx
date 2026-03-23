@@ -10,6 +10,7 @@ import TrendingSection from "@/app/(public)/_components/(trending)/trendingSecti
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { motion } from "framer-motion";
 import LikesSection from "@/app/(public)/_components/(likes)/likesSection";
+import FollowingsSection from "@/app/(public)/_components/(followings)/followingsSection";
 
 export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followers'
 
@@ -89,7 +90,9 @@ export default function RootClient() {
                     case 'likes': return (
                         <LikesSection />
                     )
-                    case 'followers': return <></>
+                    case 'followers': return (
+                        <FollowingsSection/>
+                    )
                 }
             })()}
         </div>

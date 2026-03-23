@@ -51,7 +51,7 @@ export default function LikesSection() {
                             src={routeOnFocus.thumbnail?.url ?? '/mockImages/Fuji.jpg'}
                             alt=""
                             fill
-                            className="object-cover blur-[60px] opacity-25 scale-110"
+                            className="object-cover blur-sm opacity-25 scale-110"
                             unoptimized
                         />
                     )}

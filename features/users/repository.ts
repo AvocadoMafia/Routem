@@ -166,4 +166,23 @@ export const usersRepository = {
       throw e;
     }
   },
+
+  // 指定ユーザーがフォローしているユーザー一覧を取得
+  findFollowings: async (userId: string, limit?: number) => {
+    try {
+      const follows = await getPrisma().follow.findMany({
+        where: { followerId: userId },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        include: {
+          following: {
+            select: USER_SELECT,
+          },
+        },
+      });
+      return follows.map((f) => f.following);
+    } catch (e) {
+      throw e;
+    }
+  },
 };

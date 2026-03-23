@@ -67,5 +67,14 @@ export const usersService = {
       return { followed: !existing, followerCount };
     });
   },
+
+  // 指定ユーザーがフォローしているユーザー一覧
+  getFollowings: async (userId: string, limit?: number) => {
+    try {
+      return await usersRepository.findFollowings(userId, limit);
+    } catch (e) {
+      throw e;
+    }
+  },
 }
 

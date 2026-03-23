@@ -117,7 +117,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-base font-bold text-foreground-0">@{routeOnFocus.author.name}</span>
+                                        <span className="text-base font-bold text-foreground-0">{routeOnFocus.author.name}</span>
                                         <div className="flex items-center gap-4 mt-0.5">
                                             <div className="flex items-center gap-1.5">
                                                 <HiHeart className="w-4 h-4 text-accent-0" />
@@ -145,7 +145,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                         </div>
                                     </div>
 
-                                    <p className="text-foreground-1 text-sm leading-relaxed line-clamp-4 italic border-l-2 border-accent-0/20 pl-4">
+                                    <p className="text-foreground-1 text-sm leading-relaxed line-clamp-4">
                                         "{routeOnFocus.description || 'No description provided.'}"
                                     </p>
                                 </div>
