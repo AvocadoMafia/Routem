@@ -167,7 +167,7 @@ export const usersRepository = {
     }
   },
 
-  // 指定ユーザーがフォローしているユーザー一覧を取得
+  // 指定ユーザーがフォローしているユーザー一覧を取得（BFF: ユーザーのみ）
   findFollowings: async (userId: string, limit?: number) => {
     try {
       const follows = await getPrisma().follow.findMany({
@@ -181,6 +181,45 @@ export const usersRepository = {
         },
       });
       return follows.map((f) => f.following);
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // 指定ユーザーのFollowレコード一覧を取得（フォローそのもの + followingユーザーを含む）
+  findFollowingRecords: async (userId: string, limit?: number) => {
+    try {
+      return await getPrisma().follow.findMany({
+        where: { followerId: userId },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        include: {
+          following: {
+            select: USER_SELECT,
+          },
+        },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // 動的include対応のFollowレコード取得
+  findFollowRecords: async (
+    userId: string,
+    opts: { include?: { following?: boolean; follower?: boolean }; take?: number }
+  ) => {
+    try {
+      const include: any = {};
+      if (opts.include?.following) include.following = { select: USER_SELECT };
+      if (opts.include?.follower) include.follower = { select: USER_SELECT };
+
+      return await getPrisma().follow.findMany({
+        where: { followerId: userId },
+        orderBy: { createdAt: 'desc' },
+        take: opts.take ?? 30,
+        include: Object.keys(include).length ? include : undefined,
+      });
     } catch (e) {
       throw e;
     }

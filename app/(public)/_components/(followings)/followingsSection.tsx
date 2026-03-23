@@ -7,13 +7,16 @@ import RouteCardBasic from '@/app/_components/common/templates/routeCardBasic'
 import FollowingUserCard from '@/app/(public)/_components/(followings)/ingredients/followingUserCard'
 import {HiUsers} from "react-icons/hi2";
 
-// 軽量ユーザー型（API /api/v1/me/followings の戻り値想定）
+// 軽量ユーザー型（ユーザー表示用）
 type LightUser = {
     id: string
     name: string
     bio?: string | null
     icon?: { url: string } | null
 }
+
+// Followレコード（バックから返すフォローそのもの）
+type FollowRecord = { id: string; createdAt: string; following: LightUser }
 
 export default function FollowingsSection() {
     const [routes, setRoutes] = useState<Route[] | null>(null)
@@ -28,13 +31,13 @@ export default function FollowingsSection() {
             setLoading(true)
             setError(null)
             try {
-                const [routesData, followingsData] = await Promise.all([
+                const [routesData, followRecords] = await Promise.all([
                     getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=12'),
-                    getDataFromServerWithJson<LightUser[]>('/api/v1/me/followings?limit=20'),
+                    getDataFromServerWithJson<FollowRecord[]>('/api/v1/followings?following=true&take=20'),
                 ])
                 if (!cancelled) {
                     setRoutes(routesData ?? [])
-                    setFollowings(followingsData ?? [])
+                    setFollowings((followRecords ?? []).map(fr => fr.following))
                 }
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load followings feed')
@@ -78,7 +81,7 @@ export default function FollowingsSection() {
                     </div>
                 </div>
                 {/* メイン: 新着ルート */}
-                <div className="flex-1 h-full overflow-y-auto no-scrollbar p-6">
+                <div className="md:block hidden flex-1 h-full overflow-y-auto no-scrollbar p-6">
                     <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1 mb-4">New Routes By Followings</h2>
                     {routes && routes.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">

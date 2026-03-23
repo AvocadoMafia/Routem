@@ -8,15 +8,18 @@ import Image from "next/image";
 
 export default function LikesSection() {
 
-    const [routes, setRoutes] = useState<Route[]>([]);
+    type LikeRecord = { id: string; createdAt: string; route: Route }
+
+    const [likes, setLikes] = useState<LikeRecord[]>([]);
+    const routes: Route[] = likes.map(l => l.route);
 
     const [focusedRouteIdx, setFocusedRouteIdx] = useState<number>(0);
     const prevIndexRef = useRef<number>(0);
 
 
     useEffect(() => {
-        getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=10').then(
-            (routes) => setRoutes(routes || [])
+        getDataFromServerWithJson<LikeRecord[]>('/api/v1/likes?route=true&take=30').then(
+            (items) => setLikes((items || []).filter((it: any) => it.route))
         )
     }, [])
 
@@ -44,7 +47,7 @@ export default function LikesSection() {
                     animate="center"
                     exit="exit"
                     transition={{ duration: 0.4 }}
-                    className="fixed inset-0 z-0 overflow-hidden pointer-events-none"
+                    className="fixed inset-0 z-0 overflow-hidden pointer-events-none md:block hidden"
                 >
                     {routeOnFocus && (
                         <Image
@@ -61,8 +64,8 @@ export default function LikesSection() {
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--accent-0-rgb),0.05),transparent_70%)] pointer-events-none z-1" />
 
             <div className="relative z-10 w-full h-full flex flex-row">
-                <LikedRoutesList routes={routes} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
-                <div className="flex-1 h-full relative">
+                <LikedRoutesList routes={routes} likes={likes} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
+                <div className="flex-1 h-full relative md:block hidden">
                     <FocusingRouteViewer routeOnFocus={routeOnFocus} focusedRouteIdx={focusedRouteIdx} setFocusedRouteIdx={setFocusedRouteIdx} routesLength={routes.length}/>
                 </div>
             </div>

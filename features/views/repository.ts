@@ -21,4 +21,13 @@ export const viewsRepository = {
       throw e;
     }
   },
+
+  // 動的include対応のViewレコード取得
+  findMany: async (args: Prisma.ViewFindManyArgs) => {
+    try {
+      return await getPrisma().view.findMany(args);
+    } catch (e) {
+      throw e;
+    }
+  },
 };

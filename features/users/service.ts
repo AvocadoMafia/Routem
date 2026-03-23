@@ -76,5 +76,26 @@ export const usersService = {
       throw e;
     }
   },
+
+  // 指定ユーザーのFollowレコード（followingユーザーを含む）
+  getFollowingRecords: async (userId: string, limit?: number) => {
+    try {
+      return await usersRepository.findFollowingRecords(userId, limit);
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // 新API: フォローそのもの（include制御・take対応）
+  getFollowRecords: async (
+    userId: string,
+    opts: { include?: { following?: boolean; follower?: boolean }; take?: number }
+  ) => {
+    try {
+      return await usersRepository.findFollowRecords(userId, opts);
+    } catch (e) {
+      throw e;
+    }
+  },
 }
 
