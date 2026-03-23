@@ -7,7 +7,7 @@ type Props = {
 
 export default function TrendingTagsList({ tags }: Props) {
     return (
-        <div className={'w-full h-fit p-2 bg-background-0 rounded-xl shadow-md'}>
+        <div className={'w-full h-fit p-1.5 bg-background-0 rounded-2xl shadow-md'}>
             <div className={'w-full flex flex-col gap-4 bg-background-1 rounded-xl p-6'}>
                 <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Trending Tags</h2>
                 <div className="flex flex-col gap-3">

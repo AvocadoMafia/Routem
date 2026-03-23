@@ -10,20 +10,38 @@ type Props = {
 
 export default function LikedRoutesList({routes, focusedRouteIdx, setFocusedRouteIdx}: Props) {
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const itemRefs = useRef<Map<number, HTMLElement>>(new Map());
 
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
-        const target = container.querySelector(`[data-idx="${focusedRouteIdx}"]`) as HTMLElement | null;
+        const target = itemRefs.current.get(focusedRouteIdx);
         if (target) {
-            target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            const containerHeight = container.clientHeight;
+            const targetHeight = target.offsetHeight;
+            const targetTop = target.offsetTop;
+            const scrollTop = targetTop - (containerHeight / 2) + (targetHeight / 2);
+
+            // Using requestAnimationFrame to ensure the DOM is stable before scrolling
+            requestAnimationFrame(() => {
+                container.scrollTo({
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
+            });
         }
     }, [focusedRouteIdx]);
 
     return (
-        <div ref={containerRef} className={'w-1/3 min-w-[300px] h-full overflow-y-scroll bg-red-400 p-2 flex flex-col gap-3'}>
+        <div ref={containerRef} className={'w-1/3 min-w-[340px] h-full overflow-y-scroll p-4 flex flex-col gap-4 no-scrollbar backdrop-blur-sm'}>
             {routes.map((route, idx) => (
-                <div key={idx} data-idx={idx}>
+                <div key={idx} ref={(el) => {
+                    if (el) {
+                        itemRefs.current.set(idx, el);
+                    } else {
+                        itemRefs.current.delete(idx);
+                    }
+                }}>
                     <RouteCardOnLikesList route={route} myIdx={idx} focusedRouteIdx={focusedRouteIdx} onClick={() => setFocusedRouteIdx(idx)}/>
                 </div>
             ))}

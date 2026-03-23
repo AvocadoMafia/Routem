@@ -9,8 +9,8 @@ type Props = {
 }
 export default function RouteCardBasic(props: Props) {
     return (
-        <Link href={`/routes/${props.route.id}`} className={'group w-full h-fit md:h-[320px] overflow-hidden rounded-2xl flex flex-col md:flex-row shadow-sm hover:shadow-2xl transition-shadow duration-700 bg-background-0 p-2 gap-2'}>
-            <div className={'flex-1 min-h-[240px] md:h-full relative overflow-hidden rounded-xl'}>
+        <Link href={`/routes/${props.route.id}`} className={'group w-full h-fit md:h-[320px] overflow-hidden rounded-2xl flex flex-col md:flex-row shadow-sm hover:shadow-2xl transition-shadow duration-700 bg-background-0 p-1.5 gap-1.5'}>
+            <div className={'flex-1 min-h-[240px] md:h-full relative overflow-hidden rounded-xl bg-background-1'}>
                 {/* オーバーレイ（視認性向上） - Smoother blur gradient with masked blur to avoid sharp boundary */}
                 <div className="absolute inset-0 z-10 rounded-xl overflow-hidden
                     backdrop-blur-2xl bg-black/50
@@ -59,15 +59,15 @@ export default function RouteCardBasic(props: Props) {
                         </div>
                     </div>
                 </div>
-                <div className="w-full grid grid-cols-2 gap-2">
-                    <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center min-w-0">
+                <div className="w-full grid grid-cols-2 gap-1.5">
+                    <div className="rounded-lg bg-background-0 p-1.5 flex flex-col justify-center min-w-0">
                         <div className="flex items-center gap-1 mb-0.5">
                             <HiUsers className="w-3 h-3 text-foreground-1" />
                             <span className="block text-foreground-1 text-[9px] font-bold uppercase tracking-[0.2em]">For</span>
                         </div>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{props.route.routeFor.toLowerCase()}</span>
                     </div>
-                    <div className="rounded-lg bg-background-0 p-2 flex flex-col justify-center min-w-0">
+                    <div className="rounded-lg bg-background-0 p-1.5 flex flex-col justify-center min-w-0">
                         <div className="flex items-center gap-1 mb-0.5">
                             <HiCurrencyDollar className="w-3 h-3 text-foreground-1" />
                             <span className="block text-foreground-1 text-[9px] font-bold uppercase tracking-[0.2em]">Budget</span>
