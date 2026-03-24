@@ -45,6 +45,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
             {/* 👇 ここが唯一のスクロール要素 */}
             <motion.div
                 initial={false}
+                id="main-scroll-container"
                 animate={{
                     paddingTop: scrollDirection === 'down' ? 0 : headerHeight,
                 }}

@@ -94,8 +94,8 @@ export default function MapViewerOnLaptop(props: Props) {
 
 
     return (
-        <div className={'w-full h-[650px] p-2 block bg-background-0 rounded-2xl md:block hidden shadow-md'}>
-            <div className={'w-full h-full rounded-2xl h-fit overflow-hidden relative bg-background-1'}>
+        <div className={'w-full h-[650px] p-1.5 block bg-background-0 rounded-3xl md:block hidden shadow-md'}>
+            <div className={'w-full h-full rounded-2xl overflow-hidden relative bg-background-1'}>
                 <div className={'w-full h-full flex flex-row'}>
                     <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 block'} onWheel={e => e.stopPropagation()}>
                         {/* マップ上のオーバーレイなどが必要な場合はここに追加 */}

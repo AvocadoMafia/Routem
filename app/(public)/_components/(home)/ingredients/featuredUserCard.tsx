@@ -14,7 +14,7 @@ export default function FeaturedUserCard(props: Props) {
   return (
     <div
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2 text-left cursor-pointer"
+      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 text-left cursor-pointer"
       aria-label={`Top user: ${props.user.name}`}
       role="button"
       tabIndex={0}
@@ -25,7 +25,7 @@ export default function FeaturedUserCard(props: Props) {
       }}
     >
       {/* Background Image with Margin (via container padding) */}
-      <div className="relative w-full h-full rounded-lg overflow-hidden">
+      <div className="relative w-full h-full rounded-xl overflow-hidden">
         <Image
           src={props.user.background?.url || "/mockImages/userProfile.jpg"}
           alt={`${props.user.name} background`}

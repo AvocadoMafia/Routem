@@ -3,11 +3,34 @@ import { handleRequest } from "@/lib/server/handleRequest";
 import { createClient } from "@/lib/auth/supabase/server";
 import { z } from "zod";
 import { viewsService } from "@/features/views/service";
+import { validateParams } from "@/lib/server/validateParams";
+import { GetViewsQuerySchema } from "@/features/views/schema";
 
 const ViewSchema = z.object({
   routeId: z.string().uuid(),
   ts: z.number().optional(),
 });
+
+// GET /api/v1/views
+// Query: route=bool&user=bool&take=int
+// Returns current user's view records with optional includes
+export async function GET(req: NextRequest) {
+  return handleRequest(async () => {
+    const supabase = await createClient(req);
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) throw new Error("Unauthorized");
+
+    const searchParams = Object.fromEntries(new URL(req.url).searchParams);
+    const parsed = await validateParams(GetViewsQuerySchema, searchParams);
+
+    const items = await viewsService.getViews(user.id, {
+      include: { route: !!parsed.route, user: !!parsed.user },
+      take: parsed.take ?? 30,
+    });
+
+    return NextResponse.json(items, { status: 200 });
+  });
+}
 
 // POST /api/v1/views
 // Record a view for a route by the current user. Requires authentication.

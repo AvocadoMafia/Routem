@@ -2,8 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { createClient } from "@/lib/auth/supabase/server";
 import { validateParams } from "@/lib/server/validateParams";
-import { CreateLikeSchema } from "@/features/likes/schema";
+import { CreateLikeSchema, GetLikesQuerySchema } from "@/features/likes/schema";
 import { likesService } from "@/features/likes/service";
+
+// GET /api/v1/likes
+// Query: route=bool&user=bool&comment=bool&take=int
+// Returns the current user's like records with optional includes.
+export async function GET(req: NextRequest) {
+  return handleRequest(async () => {
+    const supabase = await createClient(req);
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) throw new Error("Unauthorized");
+
+    const searchParams = Object.fromEntries(new URL(req.url).searchParams);
+    const parsed = await validateParams(GetLikesQuerySchema, searchParams);
+
+    const items = await likesService.getLikes(user.id, {
+      include: { route: !!parsed.route, user: !!parsed.user, comment: !!parsed.comment },
+      take: parsed.take ?? 30,
+    });
+
+    return NextResponse.json(items, { status: 200 });
+  });
+}
 
 // POST /api/v1/likes
 // Toggle like for route or comment. Requires authenticated user.

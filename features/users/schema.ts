@@ -57,3 +57,21 @@ export const UpdateUserSchema = UserSchema.pick({
 
 export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
 
+// helper: boolean query parser
+const BoolParam = z
+  .union([z.literal("true"), z.literal("false"), z.boolean()])
+  .transform((v) => v === true || v === "true");
+
+// Followings GET query: following? follower? take?
+export const GetFollowingsQuerySchema = z.object({
+  following: BoolParam.optional(),
+  follower: BoolParam.optional(),
+  take: z
+    .union([z.string().regex(/^\d+$/), z.number()])
+    .transform((n: any) => (typeof n === "string" ? Number(n) : n))
+    .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
+    .default(30)
+    .optional(),
+});
+export type GetFollowingsQuery = z.infer<typeof GetFollowingsQuerySchema>;
+

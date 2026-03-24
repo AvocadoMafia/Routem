@@ -16,11 +16,11 @@ export default function FeaturedRouteCard(props: Props) {
     <Link
       href={`/routes/${props.route.id}`}
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-2"
+      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5"
       aria-label={`Top route: ${props.route.title}`}
     >
       {/* Background Image with Margin (via container padding) */}
-      <div className="relative w-full h-full rounded-lg overflow-hidden">
+      <div className="relative w-full h-full rounded-xl overflow-hidden">
         <Image
           src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
           alt={`${props.route.title} background`}

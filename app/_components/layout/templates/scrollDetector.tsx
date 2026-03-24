@@ -34,17 +34,20 @@ export default function ScrollDetector() {
         }
 
         const handleScroll = (e: Event) => {
-            // 特定の要素内（メニューなど）でのスクロールは無視する
-            if (e.target instanceof Element && e.target.closest('[data-ignore-scroll-detector]')) {
-                return;
+            const target = e.target;
+            if (!(target instanceof HTMLElement || target instanceof Document)) return;
+
+            // id="main-scroll-container" を持たない要素、または data-ignore-scroll-detector を持つ要素は無視する
+            if (target instanceof HTMLElement) {
+                if (target.id !== 'main-scroll-container' || target.closest('[data-ignore-scroll-detector]')) {
+                    return;
+                }
             }
 
-            const target = e.target;
             let currentScrollY = 0;
-
             if (target instanceof HTMLElement) {
                 currentScrollY = target.scrollTop;
-            } else if (target === document) {
+            } else if (target instanceof Document) {
                 currentScrollY = window.scrollY;
             } else {
                 return;
