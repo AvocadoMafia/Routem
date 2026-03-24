@@ -16,8 +16,8 @@ export default function RouteCardOnLikesList({route, myIdx, focusedRouteIdx, onC
     const isFocusing = focusedRouteIdx === myIdx;
 
     return (
-        <div className={`w-full h-32 bg-background-0 text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md ${isFocusing? 'ring-2 ring-accent-0' : ''}`} onClick={onClick}>
-            <div className={`w-full h-full flex flex-row rounded-xl overflow-hidden ${isFocusing ? 'bg-background-2' : 'bg-background-1'}`}>
+        <div className={`w-full h-32 bg-background-0 backdrop-blur-xs text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${isFocusing? 'ring-2 ring-accent-0 border-transparent' : 'border-1 border-white/10'}`} onClick={onClick}>
+            <div className={`w-full h-full flex flex-row rounded-xl overflow-hidden bg-background-1`}>
                 <div className="relative h-full aspect-square">
                     <Image
                         className={'h-full w-full object-cover'}

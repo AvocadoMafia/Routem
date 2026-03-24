@@ -81,7 +81,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                     initial="enter"
                     animate="center"
                     exit="exit"
-                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
                     <div className="w-full h-full bg-background-1 rounded-[1.25rem] relative overflow-hidden flex flex-row">
                         {/* メイン画像セクション */}

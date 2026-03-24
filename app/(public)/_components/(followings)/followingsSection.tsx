@@ -56,48 +56,57 @@ export default function FollowingsSection() {
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>
 
     return (
-        <div className="w-full h-full overflow-hidden">
-            <div className="w-full h-full overflow-hidden flex flex-col lg:flex-row gap-6 lg:gap-10">
+        <div className="w-full h-full overflow-hidden flex flex-col">
+            {/* モバイル用 Sticky Header */}
+            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-4 py-3 flex items-center gap-2">
+                <HiUsers className="text-accent-0 w-5 h-5" />
+                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Followings</h1>
+            </div>
 
-                {/* 右サイドバー: フォロー中リスト（縦） */}
-                <div
-                    className="w-full lg:w-[360px] p-6 flex-shrink-0 h-fit lg:h-full">
-                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Followings</h2>
-                    <div className="flex flex-col gap-2 max-h-full overflow-y-auto no-scrollbar py-3">
-                        {followings && followings.length > 0 ? (
-                            followings.map((u) => (
-                                <FollowingUserCard key={u.id} user={u}/>
-                            ))
+            <div className="flex-1 w-full overflow-y-auto lg:overflow-hidden no-scrollbar">
+                <div className="w-full flex flex-col lg:flex-row gap-6 lg:gap-10">
+                    {/* 右サイドバー: フォロー中リスト（縦） */}
+                    <div
+                        className="w-full lg:w-[360px] p-6 flex-shrink-0 h-fit lg:h-full">
+                        {!loading && !error && (
+                            <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1 hidden md:block">Followings</h2>
+                        )}
+                        <div className="flex flex-col gap-2 max-h-full overflow-y-auto no-scrollbar py-3">
+                            {followings && followings.length > 0 ? (
+                                followings.map((u) => (
+                                    <FollowingUserCard key={u.id} user={u}/>
+                                ))
+                            ) : (
+                                <div
+                                    className="w-full py-24 flex flex-col items-center justify-center gap-6">
+                                    <div className={'w-fit h-fit p-4 bg-foreground-1/20 rounded-full'}>
+                                        <HiUsers className={'text-foreground-1/80 w-8 h-8'} />
+                                    </div>
+                                    <p className="text-foreground-1 text-md font-semibold tracking-widest text-center">No
+                                        followings yet.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    {/* メイン: 新着ルート */}
+                    <div className="md:block hidden flex-1 h-full overflow-y-auto no-scrollbar p-6">
+                        <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1 mb-4">New Routes By Followings</h2>
+                        {routes && routes.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
+                                {routes.map((route) => (
+                                    <div key={route.id}>
+                                        <RouteCardBasic route={route}/>
+                                    </div>
+                                ))}
+                            </div>
                         ) : (
                             <div
-                                className="w-full py-24 flex flex-col items-center justify-center gap-6">
-                                <div className={'w-fit h-fit p-4 bg-foreground-1/20 rounded-full'}>
-                                    <HiUsers className={'text-foreground-1/80 w-8 h-8'} />
-                                </div>
-                                <p className="text-foreground-1 text-md font-semibold tracking-widest">No
-                                    followings yet.</p>
+                                className="w-full py-16 flex flex-col items-center justify-center border-2 border-dashed border-foreground-2/10 rounded-2xl">
+                                <p className="text-foreground-1/60 text-[10px] font-bold uppercase tracking-widest">No
+                                    routes found.</p>
                             </div>
                         )}
                     </div>
-                </div>
-                {/* メイン: 新着ルート */}
-                <div className="md:block hidden flex-1 h-full overflow-y-auto no-scrollbar p-6">
-                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1 mb-4">New Routes By Followings</h2>
-                    {routes && routes.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
-                            {routes.map((route) => (
-                                <div key={route.id}>
-                                    <RouteCardBasic route={route}/>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div
-                            className="w-full py-16 flex flex-col items-center justify-center border-2 border-dashed border-foreground-2/10 rounded-2xl">
-                            <p className="text-foreground-1/60 text-[10px] font-bold uppercase tracking-widest">No
-                                routes found.</p>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

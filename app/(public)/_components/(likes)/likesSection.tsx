@@ -54,14 +54,14 @@ export default function LikesSection() {
                             src={routeOnFocus.thumbnail?.url ?? '/mockImages/Fuji.jpg'}
                             alt=""
                             fill
-                            className="object-cover blur-sm opacity-25 scale-110"
+                            className="object-cover blur-sm opacity-50 scale-110"
                             unoptimized
                         />
                     )}
                 </motion.div>
             </AnimatePresence>
             
-            <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--accent-0-rgb),0.05),transparent_70%)] pointer-events-none z-1" />
+            <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
 
             <div className="relative z-10 w-full h-full flex flex-row">
                 <LikedRoutesList routes={routes} likes={likes} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
