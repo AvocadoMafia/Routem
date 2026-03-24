@@ -1,12 +1,10 @@
-#開発用dockerファイル
-
 services:
-  #データベース(postgres)
+  # データベース(postgres)
   postgres:
     image: postgres:15
     restart: always
     ports:
-      - "5432:5432" #データベース（データ入出力用）
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -16,24 +14,31 @@ services:
     env_file:
       - .env
 
+  # Redis（キャッシュ / 推薦データ用）
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
   minio:
-    #画像保管用オブジェクトストレージ(minio)
     image: minio/minio
     restart: always
     ports:
-      - "9000:9000" # S3 API (データ転送用)
-      - "9001:9001" # Web UI (管理画面用)
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
-
     command: server --console-address ":9001" /data
-
     volumes:
       - minio_dev_data:/data
 
   mc:
-    #minioの初期化用クライアント
     image: minio/mc
     depends_on:
       - minio
@@ -61,7 +66,6 @@ services:
     volumes:
       - meili_data:/meili_data
 
-  # 翻訳エンジン（中身はArgos Translate）
   libretranslate:
     image: libretranslate/libretranslate
     ports:
@@ -72,3 +76,4 @@ volumes:
   postgres_data:
   meili_data:
   minio_dev_data:
+  redis_data:
