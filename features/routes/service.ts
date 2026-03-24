@@ -2,7 +2,7 @@ import { routesRepository, RouteWithRelations } from "@/features/routes/reposito
 import { User } from "@supabase/supabase-js";
 import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@/features/routes/schema";
 import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
-import { getMeilisearch } from "@/lib/config/server";
+import { getMeilisearch, getRedisClient } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import crypto from "crypto";
 import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
@@ -14,6 +14,29 @@ export const routesService = {
   ): Promise<RouteWithRelations[]> => {
     try {
       let ids: string[] | undefined = undefined;
+      
+      // クエリ指定が limit 以外にない、または明示的におすすめが指定された場合
+      const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && query[k as keyof GetRoutesType] !== undefined).length === 0;
+      
+      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related") {
+        const redis = getRedisClient();
+        let redisKey = "recommend:global";
+
+        if (query.type === "user_recommend" && user) {
+          redisKey = `recommend:user:${user.id}`;
+        } else if (query.type === "related" && query.targetId) {
+          redisKey = `recommend:related:${query.targetId}`;
+        }
+
+        const cachedData = await redis.get(redisKey);
+        if (cachedData) {
+          const scored = JSON.parse(cachedData) as { id: string, score: number }[];
+          ids = scored.slice(0, query.limit).map(s => s.id);
+          
+          if (ids.length === 0) return [];
+        }
+      }
+
       if (query.q) {
         const meilisearch = getMeilisearch();
         const index = await meilisearch.getIndex("routes");

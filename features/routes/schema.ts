@@ -9,6 +9,8 @@ export const GetRoutesSchema = z.object({
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
     collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
     q:z.string().optional(),
+    type: z.enum(["recommend", "user_recommend", "related"]).optional(),
+    targetId: z.string().uuid().optional(),
 });
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
 

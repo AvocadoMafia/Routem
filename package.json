@@ -2,11 +2,13 @@
   "name": "next_project_basis",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "recommend": "tsx --env-file=.env scripts/generateRecommendations.ts"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
