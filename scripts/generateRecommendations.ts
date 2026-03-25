@@ -58,7 +58,10 @@ async function main() {
             score: a.likes.length * 3 + a.views.length + recentBoost,
         };
     });
-    globalScored.sort((a, b) => b.score - a.score);
+    globalScored.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return b.id.localeCompare(a.id);
+    });
     await redis.set("recommend:global", JSON.stringify(globalScored));
 
     // 2. User Recommendations (recommend:user:${userId})
@@ -96,7 +99,10 @@ async function main() {
             })
             // スコアが0でも、新着記事などは含めるようにフィルタを緩めるか、
             // あるいは最低限グローバルなおすすめを混ぜる
-            .sort((a, b) => b.score - a.score)
+            .sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return b.id.localeCompare(a.id);
+            })
             .slice(0, 100); // 上位100件を保持
 
         if (userScored.length > 0) {
@@ -121,7 +127,10 @@ async function main() {
                 
                 return { id: r.id, score: commonTags * 100 + baseScore };
             })
-            .sort((a, b) => b.score - a.score)
+            .sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return b.id.localeCompare(a.id);
+            })
             .slice(0, 50); // 上位50件
 
         if (relatedScored.length > 0) {

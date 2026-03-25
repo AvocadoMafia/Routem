@@ -171,10 +171,12 @@ export function sliceByScoreCursor(
       // カーソル位置を探す
       const idx = items.findIndex(
         item => item.score < decoded.score ||
-          (item.score === decoded.score && item.id <= decoded.id)
+          (item.score === decoded.score && item.id < decoded.id)
       )
       if (idx !== -1) {
         startIndex = idx
+      } else {
+        return { items: [], nextCursor: null }
       }
     }
   }

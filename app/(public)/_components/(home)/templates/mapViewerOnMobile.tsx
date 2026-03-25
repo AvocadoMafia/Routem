@@ -13,19 +13,19 @@ type Props = {
 
 export default function MapViewerOnMobile(props: Props) {
     return (
-        <div className={'w-full h-[700px] md:hidden block'}>
+        <div className={'w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
             <Swiper
                 slidesPerView={1}
                 spaceBetween={16}
-                className="w-full h-full rounded-xl overflow-hidden shadow-md text-foreground-0"
+                className="w-full h-full rounded-2xl overflow-hidden text-foreground-0"
             >
                 {props.routes.map((route, idx) => (
                     <SwiperSlide key={route.id ?? idx}>
-                        <div className="w-full h-full flex flex-col rounded-xl overflow-hidden">
+                        <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden bg-background-1">
                             {/* 上部マップ (静止画像に置き換え) */}
-                            <div className="w-full h-[200px] relative">
+                            <div className="w-full h-[275px] relative">
                                 <Image
-                                    className="absolute w-full h-full object-cover"
+                                    className="absolute w-full h-full object-cover rounded-xl"
                                     src="/map.jpg"
                                     alt="Map preview"
                                     fill
@@ -33,7 +33,7 @@ export default function MapViewerOnMobile(props: Props) {
                             </div>
 
                             {/* 下部コンテンツ */}
-                            <div className="w-full flex-1 flex flex-col p-4 gap-2">
+                            <div className="w-full flex-1 flex flex-col p-6 gap-2">
                                 <h1 className="text-2xl font-bold line-clamp-2">
                                     {route.title}
                                 </h1>

@@ -6,13 +6,12 @@ import { useEffect, useRef } from "react";
 
 type Props = {
     routes: Route[];
-    hideHeader?: boolean;
     fetchMore?: () => Promise<void>;
     hasMore?: boolean;
     isFetching?: boolean;
 };
 
-export default function TrendingRoutesList({ routes, hideHeader, fetchMore, hasMore, isFetching }: Props) {
+export default function TrendingRoutesList({ routes, fetchMore, hasMore, isFetching }: Props) {
     const observerTarget = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -48,13 +47,11 @@ export default function TrendingRoutesList({ routes, hideHeader, fetchMore, hasM
     ));
 
     return (
-        <div className={`w-full lg:w-[900px] ${hideHeader ? 'h-fit' : 'h-full overflow-y-auto'} no-scrollbar flex flex-col gap-6 ${hideHeader ? 'py-2' : 'py-6 lg:py-12'}`}>
-            {!hideHeader && (
-                <h2 className="text-base font-bold uppercase tracking-[0.3em] text-foreground-0 mb-2 flex items-center gap-2">
-                    <HiFire className="text-accent-0 w-5 h-5" />
-                    Trending Routes
-                </h2>
-            )}
+        <div className={`w-full lg:w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>
+            <h2 className="md:flex hidden text-base font-bold uppercase tracking-[0.3em] text-foreground-0 mb-2 items-center gap-2">
+                <HiFire className="text-accent-0 w-5 h-5" />
+                Trending Routes
+            </h2>
             {routes.map((route, idx) => (
                 <div key={route.id ?? idx} className={'w-full h-fit lg:h-[400px]'}>
                     <RouteCardBasic route={route} />

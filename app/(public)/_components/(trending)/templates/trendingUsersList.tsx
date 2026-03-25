@@ -3,15 +3,14 @@ import TrendingUserCard from "@/app/(public)/_components/(trending)/ingredients/
 
 type Props = {
     users: User[];
-    mobileMode?: boolean;
 };
 
-export default function TrendingUsersList({ users, mobileMode }: Props) {
+export default function TrendingUsersList({ users }: Props) {
 
     return (
-        <div className={`w-full h-fit ${mobileMode ? '' : 'p-1.5 bg-background-0 rounded-2xl shadow-md'}`}>
-            <div className={`w-full flex flex-col gap-4 ${mobileMode ? '' : 'bg-background-1 rounded-xl p-6'}`}>
-                {!mobileMode && <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Top Travelers</h2>}
+        <div className={`w-full h-fit p-1.5 md:bg-background-0 md:rounded-2xl md:shadow-md`}>
+            <div className={`w-full flex flex-col gap-4 md:bg-background-1 md:rounded-xl md:p-6`}>
+                <h2 className="md:block hidden text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Top Travelers</h2>
                 <div className="flex flex-col gap-3">
                     {users.map((user, idx) => (
                         <TrendingUserCard key={user.id} user={user} rank={idx + 1} />

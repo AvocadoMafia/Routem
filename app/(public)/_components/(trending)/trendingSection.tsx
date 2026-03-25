@@ -88,14 +88,14 @@ export default function TrendingSection() {
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>;
 
     return (
-        <div className={'w-full h-full overflow-hidden flex flex-col'}>
+        <div className={'w-full md:h-full h-fit'}>
             {/* モバイル用 Sticky Header & Tabs */}
             <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 flex flex-col gap-2">
-                <div className="px-4 py-3 flex items-center gap-2">
+                <div className="px-2 py-3 flex items-center gap-2">
                     <HiFire className="text-accent-0 w-5 h-5" />
                     <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Trending</h1>
                 </div>
-                <div className="flex items-center px-4 overflow-x-auto no-scrollbar">
+                <div className="flex items-center px-2 overflow-x-auto no-scrollbar">
                     <button
                         onClick={() => setActiveTab('routes')}
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1'}`}
@@ -123,34 +123,32 @@ export default function TrendingSection() {
                 </div>
             </div>
 
-            <div className={'flex-1 w-full overflow-hidden flex flex-col lg:flex-row gap-8 lg:gap-12'}>
-                {/* モバイル表示: アクティブなタブに応じて切り替え */}
-                <div className="md:hidden w-full h-full overflow-y-auto no-scrollbar">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeTab}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.2 }}
-                            className="p-4"
-                        >
-                            {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} hideHeader />}
-                            {activeTab === 'users' && <TrendingUsersList users={users || []} mobileMode />}
-                            {activeTab === 'tags' && <TrendingTagsList tags={tags || []} mobileMode />}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
+            {/* モバイル表示: アクティブなタブに応じて切り替え */}
+            <div className="md:hidden w-full h-fit">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} hideHeader />}
+                        {activeTab === 'users' && <TrendingUsersList users={users || []}  />}
+                        {activeTab === 'tags' && <TrendingTagsList tags={tags || []} />}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
 
-                {/* デスクトップ表示: 既存のレイアウト */}
-                <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
-                    <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />
-                    <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
-                        <TrendingUsersList users={users || []} />
-                        <TrendingTagsList tags={tags || []} />
-                    </div>
+            {/* デスクトップ表示: 既存のレイアウト */}
+            <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
+                <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />
+                <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
+                    <TrendingUsersList users={users || []} />
+                    <TrendingTagsList tags={tags || []} />
                 </div>
             </div>
+
         </div>
     );
 }

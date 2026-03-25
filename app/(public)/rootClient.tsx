@@ -78,6 +78,7 @@ export default function RootClient() {
                 : `/api/v1/routes?limit=15&cursor=${cursor}`;
 
             const res = await getDataFromServerWithJson<CursorResponse<Route>>(routesUrl);
+            console.log("res", res);
 
             if (res && res.items.length > 0) {
                 setRoutes(prev => {
