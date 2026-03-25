@@ -30,7 +30,7 @@ export default function TrendingSection() {
             setHasMore(true);
             try {
                 const [routesData, usersData, tagsData] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?type=trending&limit=10&offset=0'),
+                    getDataFromServerWithJson<Route[]>('/api/v1/routes?type=trending&limit=15&offset=0'),
                     getDataFromServerWithJson<User[]>('/api/v1/users?limit=6'),
                     getDataFromServerWithJson<string[]>('/api/v1/tags?limit=10')
                 ]);
@@ -39,7 +39,7 @@ export default function TrendingSection() {
                     setRoutes(routesData || []);
                     setUsers(usersData);
                     setTags(tagsData);
-                    if (routesData && routesData.length < 10) setHasMore(false);
+                    if (routesData && routesData.length < 15) setHasMore(false);
                 }
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load trending data');
@@ -56,7 +56,7 @@ export default function TrendingSection() {
         setIsFetching(true);
         try {
             const offset = routes.length;
-            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?type=trending&limit=10&offset=${offset}`);
+            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?type=trending&limit=15&offset=${offset}`);
             
             if (newRoutes && newRoutes.length > 0) {
                 setRoutes(prev => {
@@ -64,7 +64,7 @@ export default function TrendingSection() {
                     const filtered = newRoutes.filter(r => !existingIds.has(r.id));
                     return [...prev, ...filtered];
                 });
-                if (newRoutes.length < 10) setHasMore(false);
+                if (newRoutes.length < 15) setHasMore(false);
             } else {
                 setHasMore(false);
             }

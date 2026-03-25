@@ -38,8 +38,8 @@ export default function TrendingRoutesList({ routes, hideHeader, fetchMore, hasM
         };
     }, [hasMore, fetchMore, isFetching]);
 
-    // ダミーカードの生成（30個）
-    const dummyCards = Array.from({ length: 30 }).map((_, i) => (
+    // ダミーカードの生成（15個）
+    const dummyCards = Array.from({ length: 15 }).map((_, i) => (
         <RouteCardBasicSkeleton 
             key={`dummy-${i}`} 
             isFirst={i === 0}
@@ -56,7 +56,7 @@ export default function TrendingRoutesList({ routes, hideHeader, fetchMore, hasM
                 </h2>
             )}
             {routes.map((route, idx) => (
-                <div key={idx} className={'w-full h-fit lg:h-[400px]'}>
+                <div key={route.id ?? idx} className={'w-full h-fit lg:h-[400px]'}>
                     <RouteCardBasic route={route} />
                 </div>
             ))}

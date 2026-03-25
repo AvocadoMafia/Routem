@@ -46,8 +46,8 @@ export default function RelatedArticles({
     };
   }, [hasMore, fetchMore, isFetching, loading]);
 
-  // ダミーカードの生成（30個）
-  const dummyCards = Array.from({ length: 30 }).map((_, i) => (
+  // ダミーカードの生成（15個）
+  const dummyCards = Array.from({ length: 15 }).map((_, i) => (
     <RouteCardWidelySkeleton 
       key={`dummy-${i}`} 
       isFirst={i === 0}

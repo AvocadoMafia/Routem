@@ -27,10 +27,10 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
     try {
       setLoading(true);
       setError(null);
-      const data = await getDataFromServerWithJson<Comment[]>(`/api/v1/comments?routeId=${routeId}&limit=10&offset=0`);
+      const data = await getDataFromServerWithJson<Comment[]>(`/api/v1/comments?routeId=${routeId}&limit=15&offset=0`);
       if (data) {
         setComments(data);
-        setHasMore(data.length === 10);
+        setHasMore(data.length === 15);
       }
     } catch (err: any) {
       setError(err.message || "Failed to load comments");
@@ -48,14 +48,14 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
     setIsFetching(true);
     try {
       const offset = comments.length;
-      const data = await getDataFromServerWithJson<Comment[]>(`/api/v1/comments?routeId=${routeId}&limit=10&offset=${offset}`);
+      const data = await getDataFromServerWithJson<Comment[]>(`/api/v1/comments?routeId=${routeId}&limit=15&offset=${offset}`);
       if (data && data.length > 0) {
         setComments(prev => {
           const existingIds = new Set(prev.map(c => c.id));
           const filtered = data.filter(c => !existingIds.has(c.id));
           return [...prev, ...filtered];
         });
-        setHasMore(data.length === 10);
+        setHasMore(data.length === 15);
       } else {
         setHasMore(false);
       }
@@ -129,7 +129,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
             {comments.map((comment, idx) => (
               <CommentItem key={idx} comment={comment} />
             ))}
-            {hasMore && Array.from({ length: 10 }).map((_, i) => (
+            {hasMore && Array.from({ length: 15 }).map((_, i) => (
               <CommentItemSkeleton 
                 key={`dummy-${i}`} 
                 isFirst={i === 0}
@@ -142,7 +142,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
         )}
       </div>
 
-      {!loading && hasMore === false && comments.length > 10 && (
+      {!loading && hasMore === false && comments.length > 15 && (
         <div className="w-full text-center py-4">
           <span className="text-[10px] font-bold text-foreground-1/40 uppercase tracking-[0.3em]">End of discussion</span>
         </div>

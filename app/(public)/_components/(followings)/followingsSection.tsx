@@ -42,15 +42,15 @@ export default function FollowingsSection() {
             setHasMoreFollowings(true)
             try {
                 const [routesData, followRecords] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=12&offset=0'),
-                    getDataFromServerWithJson<FollowRecord[]>('/api/v1/followings?following=true&take=20&offset=0'),
+                    getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=15&offset=0'),
+                    getDataFromServerWithJson<FollowRecord[]>('/api/v1/followings?following=true&take=15&offset=0'),
                 ])
                 if (!cancelled) {
                     setRoutes(routesData ?? [])
                     setFollowings((followRecords ?? []).map(fr => fr.following))
                     
-                    if ((routesData ?? []).length < 12) setHasMoreRoutes(false);
-                    if ((followRecords ?? []).length < 20) setHasMoreFollowings(false);
+                    if ((routesData ?? []).length < 15) setHasMoreRoutes(false);
+                    if ((followRecords ?? []).length < 15) setHasMoreFollowings(false);
                 }
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load followings feed')
@@ -70,14 +70,14 @@ export default function FollowingsSection() {
         setIsFetching(true);
         try {
             const offset = routes.length;
-            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?limit=12&offset=${offset}`);
+            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?limit=15&offset=${offset}`);
             if (newRoutes && newRoutes.length > 0) {
                 setRoutes(prev => {
                     const existingIds = new Set(prev.map(r => r.id));
                     const filtered = newRoutes.filter(r => !existingIds.has(r.id));
                     return [...prev, ...filtered];
                 });
-                if (newRoutes.length < 12) setHasMoreRoutes(false);
+                if (newRoutes.length < 15) setHasMoreRoutes(false);
             } else {
                 setHasMoreRoutes(false);
             }
@@ -93,7 +93,7 @@ export default function FollowingsSection() {
         setIsFetching(true);
         try {
             const offset = followings.length;
-            const res = await getDataFromServerWithJson<FollowRecord[]>(`/api/v1/followings?following=true&take=20&offset=${offset}`);
+            const res = await getDataFromServerWithJson<FollowRecord[]>(`/api/v1/followings?following=true&take=15&offset=${offset}`);
             if (res && res.length > 0) {
                 const newFollowings = res.map(fr => fr.following);
                 setFollowings(prev => {
@@ -101,7 +101,7 @@ export default function FollowingsSection() {
                     const filtered = newFollowings.filter(u => !existingIds.has(u.id));
                     return [...prev, ...filtered];
                 });
-                if (res.length < 20) setHasMoreFollowings(false);
+                if (res.length < 15) setHasMoreFollowings(false);
             } else {
                 setHasMoreFollowings(false);
             }
@@ -140,7 +140,7 @@ export default function FollowingsSection() {
         return () => observer.disconnect();
     }, [hasMoreFollowings, followings.length, isFetching, loading]);
 
-    const routeDummyCards = Array.from({ length: 12 }).map((_, i) => (
+    const routeDummyCards = Array.from({ length: 15 }).map((_, i) => (
         <RouteCardBasicSkeleton 
             key={`dummy-route-${i}`} 
             isFirst={i === 0}
@@ -148,7 +148,7 @@ export default function FollowingsSection() {
         />
     ));
 
-    const followingDummyCards = Array.from({ length: 20 }).map((_, i) => (
+    const followingDummyCards = Array.from({ length: 15 }).map((_, i) => (
         <FollowingUserCardSkeleton 
             key={`dummy-following-${i}`} 
             isFirst={i === 0}

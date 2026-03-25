@@ -28,9 +28,9 @@ export default function HomeSection({ routes, users, loading, error, fetchMore, 
     }, []);
 
     return (
-        <div className={'w-full h-fit flex flex-col items-center gap-20 py-12'}>
+        <div className="w-full h-full flex flex-col items-center gap-20 py-12">
             {error && <div className={'w-full text-red-500 text-sm'}>{error}</div>}
-            {loading ? (
+            {loading && routes.length === 0 ? (
                 <div className={'w-full text-foreground-1 text-sm'}>Loading routes...</div>
             ) : (
                 <>
@@ -39,7 +39,7 @@ export default function HomeSection({ routes, users, loading, error, fetchMore, 
                             {isMobile ? (
                                 <MapViewerOnMobile routes={routes}/>
                             ) : (
-                                <MapViewerOnLaptop routes={routes} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching || loading}/>
+                                <MapViewerOnLaptop routes={routes} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching}/>
                             )}
                         </>
                     )}
@@ -48,7 +48,7 @@ export default function HomeSection({ routes, users, loading, error, fetchMore, 
                     {users && users.length >= 5 && (
                         <TopUsersList users={users} />
                     )}
-                    <RecommendedRoutesList routes={routes} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching || loading}/>
+                    <RecommendedRoutesList routes={routes} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching}/>
                 </>
             )}
         </div>

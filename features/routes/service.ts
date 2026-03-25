@@ -3,6 +3,7 @@ import { User } from "@supabase/supabase-js";
 import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@/features/routes/schema";
 import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
 import { getMeilisearch, getRedisClient } from "@/lib/config/server";
+import { DEFAULT_LIMIT } from "@/lib/server/constants";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import crypto from "crypto";
 import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
@@ -34,7 +35,8 @@ export const routesService = {
         if (cachedData) {
           const scored = JSON.parse(cachedData) as { id: string, score: number }[];
           const start = query.offset ?? 0;
-          ids = scored.slice(start, start + query.limit).map(s => s.id);
+          const limit = query.limit ?? DEFAULT_LIMIT;
+          ids = scored.slice(start, start + limit).map(s => s.id);
           
           if (ids.length === 0) return [];
         }

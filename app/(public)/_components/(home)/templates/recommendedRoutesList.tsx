@@ -34,8 +34,8 @@ export default function RecommendedRoutesList(props: Props) {
         };
     }, [props.hasMore, props.fetchMore, props.isFetching]);
 
-    // ダミーカードの生成（30個）
-    const dummyCards = Array.from({ length: 30 }).map((_, i) => (
+    // ダミーカードの生成（15個）
+    const dummyCards = Array.from({ length: 15 }).map((_, i) => (
         <RouteCardBasicSkeleton 
             key={`dummy-${i}`} 
             isFirst={i === 0}
@@ -48,7 +48,7 @@ export default function RecommendedRoutesList(props: Props) {
             <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Recommended For You</h2>
             <div className={'w-full grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3'}>
                 {props.routes.map((r, idx) => (
-                    <RouteCardBasic route={r} key={idx} />
+                    <RouteCardBasic route={r} key={r.id ?? idx} />
                 ))}
                 {props.hasMore && dummyCards}
             </div>

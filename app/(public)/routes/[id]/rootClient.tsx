@@ -46,7 +46,7 @@ function getFlattenedItems(route: Route) {
 }
 
 export default function RootClient({ route, currentUser }: Props) {
-  const items = useMemo(() => getFlattenedItems(route), [route]);
+    const items = useMemo(() => getFlattenedItems(route), [route.id]);
   const [viewMode, setViewMode] = useState<"diagram" | "details" | "map">("details");
   const [infoTab, setInfoTab] = useState<"comments" | "related">("comments");
   const [isMobile, setIsMobile] = useState(false);
@@ -88,11 +88,11 @@ export default function RootClient({ route, currentUser }: Props) {
       setRelatedLoading(true);
       setRelatedHasMore(true);
       try {
-        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=12&offset=0`;
+        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&offset=0`;
         const data = await getDataFromServerWithJson<Route[]>(url);
         if (!cancelled && data) {
           setRelatedRoutes(data);
-          if (data.length < 12) setRelatedHasMore(false);
+          if (data.length < 15) setRelatedHasMore(false);
         }
       } catch (e) {
         console.error("Failed to load related routes:", e);
@@ -109,7 +109,7 @@ export default function RootClient({ route, currentUser }: Props) {
     setIsFetchingRelated(true);
     try {
       const offset = relatedRoutes.length;
-      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=12&offset=${offset}`;
+      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&offset=${offset}`;
       const newRoutes = await getDataFromServerWithJson<Route[]>(url);
       
       if (newRoutes && newRoutes.length > 0) {
@@ -118,7 +118,7 @@ export default function RootClient({ route, currentUser }: Props) {
           const filtered = newRoutes.filter(r => !existingIds.has(r.id));
           return [...prev, ...filtered];
         });
-        if (newRoutes.length < 12) setRelatedHasMore(false);
+        if (newRoutes.length < 15) setRelatedHasMore(false);
       } else {
         setRelatedHasMore(false);
       }

@@ -20,8 +20,8 @@ export default function MapViewerOnMobile(props: Props) {
                 className="w-full h-full rounded-xl overflow-hidden shadow-md text-foreground-0"
             >
                 {props.routes.map((route, idx) => (
-                    <SwiperSlide key={idx}>
-                        <div className="w-full h-[700px] flex flex-col rounded-xl overflow-hidden">
+                    <SwiperSlide key={route.id ?? idx}>
+                        <div className="w-full h-full flex flex-col rounded-xl overflow-hidden">
                             {/* 上部マップ (静止画像に置き換え) */}
                             <div className="w-full h-[200px] relative">
                                 <Image

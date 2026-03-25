@@ -37,8 +37,8 @@ export default function RouteList(props: Props) {
     };
   }, [props.hasMore, props.fetchMore, props.isFetching]);
 
-  // ダミーカードの生成（30個）
-  const dummyCards = Array.from({ length: 30 }).map((_, i) => (
+  // ダミーカードの生成（15個）
+  const dummyCards = Array.from({ length: 15 }).map((_, i) => (
       <RouteCardHorizontalSkeleton
           key={`dummy-${i}`}
           isFirst={i === 0}
@@ -67,7 +67,7 @@ export default function RouteList(props: Props) {
     >
       {props.routes.map((route, idx) => (
         <RouteCardHorizontal
-            key={idx}
+            key={route.id ?? idx}
             route={route}
             isFocused={idx === props.focusedIndex}
             onClick={() => {props.setFocusedIndex(idx)}}

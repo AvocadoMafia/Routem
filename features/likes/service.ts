@@ -3,6 +3,7 @@ import { LikeViewTarget, Prisma } from "@prisma/client";
 import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
 import { getPrisma } from "@/lib/config/server";
 import { USER_SELECT } from "@/features/users/repository";
+import { DEFAULT_LIMIT } from "@/lib/server/constants";
 
 export const likesService = {
     /**
@@ -26,7 +27,7 @@ export const likesService = {
         userId: string,
         opts: { include?: { route?: boolean; user?: boolean; comment?: boolean }; take?: number; offset?: number }
     ) => {
-        const take = opts.take ?? 30;
+        const take = opts.take ?? DEFAULT_LIMIT;
         const skip = opts.offset ?? 0;
 
         const include: Prisma.LikeInclude = {};

@@ -53,8 +53,8 @@ export default function UserProfileContent({
     };
   }, [hasMore, fetchMore, isFetching]);
 
-  // ダミーカードの生成（30個）
-  const dummyCards = Array.from({ length: 30 }).map((_, i) => (
+  // ダミーカードの生成（15個）
+  const dummyCards = Array.from({ length: 15 }).map((_, i) => (
     <div key={`dummy-${i}`} className="aspect-[4/5]">
       <RouteCardGraphicalSkeleton 
         isFirst={i === 0}
@@ -72,7 +72,7 @@ export default function UserProfileContent({
         {activeTab === 'routes' && (
           <>
             {routes.map((route, idx) => (
-              <div key={idx} className="aspect-[4/5]">
+              <div key={route.id ?? idx} className="aspect-[4/5]">
                 <RouteCardGraphical route={route} />
               </div>
             ))}
@@ -84,7 +84,7 @@ export default function UserProfileContent({
           likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
-                <div key={idx} className="aspect-[4/5]">
+                <div key={route.id ?? idx} className="aspect-[4/5]">
                   <RouteCardGraphical route={route} />
                 </div>
               ))}
@@ -104,7 +104,7 @@ export default function UserProfileContent({
           historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
-                <div key={idx} className="aspect-[4/5]">
+                <div key={route.id ?? idx} className="aspect-[4/5]">
                   <RouteCardGraphical route={route} />
                 </div>
               ))}

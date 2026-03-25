@@ -55,19 +55,19 @@ export default function RootClient({ id }: { id: string }) {
       setIsLoadingRoutes(true)
       if (activeTab === 'routes') {
         try {
-          const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=12&offset=0&type=user_posts`)
+          const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=15&offset=0&type=user_posts`)
           setUserRoutes(res || [])
-          setHasMoreRoutes((res || []).length === 12)
+          setHasMoreRoutes((res || []).length === 15)
         } catch (error) {
           console.error('Failed to fetch user routes:', error)
         }
       } else if (activeTab === 'likes') {
         try {
-          const res = await getDataFromServerWithJson<any[]>(`/api/v1/likes?userId=${id}&route=true&take=12&offset=0`)
+          const res = await getDataFromServerWithJson<any[]>(`/api/v1/likes?userId=${id}&route=true&take=15&offset=0`)
           // /api/v1/likes returns Like records. Map to routes.
           const routes = (res || []).map((l: any) => l.route).filter(Boolean)
           setLikedRoutes(routes)
-          setHasMoreLikes((res || []).length === 12)
+          setHasMoreLikes((res || []).length === 15)
         } catch (error) {
           console.error('Failed to fetch user likes:', error)
         }
@@ -85,14 +85,14 @@ export default function RootClient({ id }: { id: string }) {
       setIsFetching(true)
       try {
         const offset = userRoutes.length
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=12&offset=${offset}&type=user_posts`)
+        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=15&offset=${offset}&type=user_posts`)
         if (res && res.length > 0) {
           setUserRoutes(prev => {
             const existingIds = new Set(prev.map(r => r.id));
             const filtered = res.filter(r => !existingIds.has(r.id));
             return [...prev, ...filtered];
           })
-          setHasMoreRoutes(res.length === 12)
+          setHasMoreRoutes(res.length === 15)
         } else {
           setHasMoreRoutes(false)
         }
@@ -105,7 +105,7 @@ export default function RootClient({ id }: { id: string }) {
       setIsFetching(true)
       try {
         const offset = likedRoutes.length
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/likes?userId=${id}&route=true&take=12&offset=${offset}`)
+        const res = await getDataFromServerWithJson<any[]>(`/api/v1/likes?userId=${id}&route=true&take=15&offset=${offset}`)
         if (res && res.length > 0) {
           const newRoutes = (res || []).map((l: any) => l.route).filter(Boolean)
           setLikedRoutes(prev => {
@@ -113,7 +113,7 @@ export default function RootClient({ id }: { id: string }) {
             const filtered = newRoutes.filter(r => !existingIds.has(r.id));
             return [...prev, ...filtered];
           })
-          setHasMoreLikes(res.length === 12)
+          setHasMoreLikes(res.length === 15)
         } else {
           setHasMoreLikes(false)
         }

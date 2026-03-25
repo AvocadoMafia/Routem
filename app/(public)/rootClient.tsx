@@ -36,8 +36,8 @@ export default function RootClient() {
             try {
                 const isUserLoggedIn = user && user.id !== "";
                 const routesUrl = isUserLoggedIn 
-                    ? '/api/v1/routes?limit=12&type=user_recommend&offset=0'
-                    : '/api/v1/routes?limit=12&offset=0';
+                    ? '/api/v1/routes?limit=15&type=user_recommend&offset=0'
+                    : '/api/v1/routes?limit=15&offset=0';
 
                 const [routesData, usersData] = await Promise.all([
                     getDataFromServerWithJson<Route[]>(routesUrl),
@@ -47,7 +47,7 @@ export default function RootClient() {
                 if (!cancelled) {
                     if (routesData) {
                         setRoutes(routesData);
-                        if (routesData.length < 12) setHasMore(false);
+                        if (routesData.length < 15) setHasMore(false);
                     }
                     if (usersData) setUsers(usersData);
                 }
@@ -68,8 +68,8 @@ export default function RootClient() {
             const isUserLoggedIn = user && user.id !== "";
             const offset = routes.length;
             const routesUrl = isUserLoggedIn 
-                ? `/api/v1/routes?limit=12&type=user_recommend&offset=${offset}`
-                : `/api/v1/routes?limit=12&offset=${offset}`;
+                ? `/api/v1/routes?limit=15&type=user_recommend&offset=${offset}`
+                : `/api/v1/routes?limit=15&offset=${offset}`;
 
             const newRoutes = await getDataFromServerWithJson<Route[]>(routesUrl);
             
@@ -81,7 +81,7 @@ export default function RootClient() {
                     const filtered = newRoutes.filter(r => !existingIds.has(r.id));
                     return [...prev, ...filtered];
                 });
-                if (newRoutes.length < 12) setHasMore(false);
+                if (newRoutes.length < 15) setHasMore(false);
             } else {
                 setHasMore(false);
             }
@@ -119,9 +119,11 @@ export default function RootClient() {
                 switch (selected) {
                     case 'home': return (
                         <HomeSection 
+                            key="home-section"
                             routes={displayedRoutes} 
                             users={users} 
-                            loading={loading || isFetching} 
+                            loading={loading} 
+                            isFetching={isFetching}
                             error={error} 
                             fetchMore={fetchMoreRoutes}
                             hasMore={hasMore}

@@ -9,9 +9,8 @@ export type User = z.infer<typeof UserSchema>;
 
 export const GetUsersSchema = z.object({
   limit: z
-    .string()
-    .regex(/^\d+$/)
-    .transform(Number)
+    .union([z.string().regex(/^\d+$/), z.number()])
+    .transform((n: any) => (typeof n === "string" ? Number(n) : n))
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
     .default(DEFAULT_LIMIT)
     .optional(),

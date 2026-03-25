@@ -2,6 +2,7 @@ import { viewsRepository } from "./repository";
 import { routesRepository, ROUTE_INCLUDE } from "@/features/routes/repository";
 import { LikeViewTarget, Prisma } from "@prisma/client";
 import { USER_SELECT } from "@/features/users/repository";
+import { DEFAULT_LIMIT } from "@/lib/server/constants";
 
 export const viewsService = {
   recordView: async (routeId: string, userId: string | null) => {
@@ -68,7 +69,7 @@ export const viewsService = {
     userId: string,
     opts: { include?: { route?: boolean; user?: boolean }; take?: number; offset?: number }
   ) => {
-    const take = opts.take ?? 30;
+    const take = opts.take ?? DEFAULT_LIMIT;
     const skip = opts.offset ?? 0;
 
     const include: Prisma.ViewInclude = {};

@@ -1,10 +1,17 @@
 import { z } from "zod";
 import { WaypointSchema, TransportationSchema } from "../database_schema";
 
+import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/server/constants";
+
 export const GetRoutesSchema = z.object({
     authorId: z.string().uuid().optional(),
     createdAfter: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
-    limit: z.string().regex(/^\d+$/).transform(Number),
+    limit: z
+        .union([z.string().regex(/^\d+$/), z.number()])
+        .transform((n: any) => (typeof n === "string" ? Number(n) : n))
+        .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
+        .default(DEFAULT_LIMIT)
+        .optional(),
     offset: z.string().regex(/^\d+$/).optional().transform((val) => val ? Number(val) : undefined),
     q:z.string().optional(),
     type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts"]).optional(),

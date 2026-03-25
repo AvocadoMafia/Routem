@@ -66,7 +66,7 @@ export default function MapViewerOnLaptop(props: Props) {
                 { padding: 80, duration: 2000 }
             );
         }
-    }, [focusedRoute]);
+    }, [focusedRoute?.id]);
 
     const lineData = useMemo(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length < 2) return null;
