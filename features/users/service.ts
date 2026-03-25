@@ -1,6 +1,7 @@
 import { GetUsersType } from "./schema";
 import { usersRepository } from "./repository"
 import { getPrisma } from "@/lib/config/server";
+import { encodeCursor } from "@/lib/server/cursor";
 
 // ビジネスロジック層
 // バリデーション→ロジック→throw error or return data
@@ -86,13 +87,27 @@ export const usersService = {
     }
   },
 
-  // 新API: フォローそのもの（include制御・take対応）
+  // 新API: フォローそのもの（include制御・カーソル対応）
   getFollowRecords: async (
     userId: string,
-    opts: { include?: { following?: boolean; follower?: boolean }; take?: number; offset?: number }
+    opts: { include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string }
   ) => {
     try {
-      return await usersRepository.findFollowRecords(userId, opts);
+      const take = opts.take ?? 30;
+      const follows = await usersRepository.findFollowRecords(userId, {
+        include: opts.include,
+        take,
+        cursor: opts.cursor,
+      });
+
+      // nextCursorを計算
+      let nextCursor: string | null = null;
+      if (follows.length === take && follows.length > 0) {
+        const last = follows[follows.length - 1];
+        nextCursor = encodeCursor({ createdAt: last.createdAt, id: last.id });
+      }
+
+      return { items: follows, nextCursor };
     } catch (e) {
       throw e;
     }

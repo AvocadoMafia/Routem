@@ -6,6 +6,9 @@ import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 export default function LikesSection() {
 
     type LikeRecord = { id: string; createdAt: string; route: Route }
@@ -18,8 +21,8 @@ export default function LikesSection() {
 
 
     useEffect(() => {
-        getDataFromServerWithJson<LikeRecord[]>('/api/v1/me/likes?route=true&take=30').then(
-            (items) => setLikes((items || []).filter((it: any) => it.route))
+        getDataFromServerWithJson<CursorResponse<LikeRecord>>('/api/v1/likes?route=true&take=30').then(
+            (res) => setLikes((res?.items || []).filter((it: any) => it.route))
         )
     }, [])
 

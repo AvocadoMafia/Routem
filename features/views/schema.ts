@@ -7,7 +7,7 @@ const BoolParam = z
   .transform((v) => v === true || v === "true");
 
 // GET /api/v1/views query schema
-// route? user? take?
+// route? user? take? cursor?
 export const GetViewsQuerySchema = z.object({
   route: BoolParam.optional(),
   user: BoolParam.optional(),
@@ -17,10 +17,6 @@ export const GetViewsQuerySchema = z.object({
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
     .default(DEFAULT_LIMIT)
     .optional(),
-  offset: z
-    .union([z.string().regex(/^\d+$/), z.number()])
-    .transform((n: any) => (typeof n === "string" ? Number(n) : n))
-    .default(0)
-    .optional(),
+  cursor: z.string().optional(),
 });
 export type GetViewsQuery = z.infer<typeof GetViewsQuerySchema>;

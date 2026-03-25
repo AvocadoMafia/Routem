@@ -1,12 +1,15 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from '@/features/users/components/templates/userProfileHeader'
 import UserProfileContent from '@/features/users/components/templates/userProfileContent'
 import { Tab } from '@/features/users/components/ingredients/tabNavigation'
+
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
 export default function RootClient() {
   const router = useRouter()
@@ -21,6 +24,11 @@ export default function RootClient() {
   const [hasMoreHistory, setHasMoreHistory] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
   const [isInitialized, setIsInitialized] = useState(false)
+
+  // カーソル管理
+  const routesCursorRef = useRef<string | null>(null)
+  const likesCursorRef = useRef<string | null>(null)
+  const historyCursorRef = useRef<string | null>(null)
 
   const likedRoutes = likes.map(l => l.route).filter(Boolean)
   const historyRoutes = history.map(v => v.route).filter(Boolean)
@@ -61,17 +69,26 @@ export default function RootClient() {
       setIsLoadingRoutes(true)
       try {
         if (activeTab === 'routes') {
-          const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&offset=0&type=user_posts`)
-          setUserRoutes(res || [])
-          setHasMoreRoutes((res || []).length === 15)
+          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&type=user_posts`)
+          if (res) {
+            setUserRoutes(res.items)
+            routesCursorRef.current = res.nextCursor
+            setHasMoreRoutes(!!res.nextCursor)
+          }
         } else if (activeTab === 'likes') {
-          const res = await getDataFromServerWithJson<any[]>(`/api/v1/me/likes?limit=15&offset=0`)
-          setLikes(res || [])
-          setHasMoreLikes((res || []).length === 15)
+          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/likes?route=true&take=15`)
+          if (res) {
+            setLikes(res.items)
+            likesCursorRef.current = res.nextCursor
+            setHasMoreLikes(!!res.nextCursor)
+          }
         } else if (activeTab === 'history') {
-          const res = await getDataFromServerWithJson<any[]>(`/api/v1/me/views?limit=15&offset=0`)
-          setHistory(res || [])
-          setHasMoreHistory((res || []).length === 15)
+          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/views?route=true&take=15`)
+          if (res) {
+            setHistory(res.items)
+            historyCursorRef.current = res.nextCursor
+            setHasMoreHistory(!!res.nextCursor)
+          }
         }
       } catch (error) {
         console.error(`Failed to fetch ${activeTab}:`, error)
@@ -85,19 +102,20 @@ export default function RootClient() {
 
   const fetchMore = async () => {
     if (isFetching || !currentUser?.id) return
-    
-    if (activeTab === 'routes' && hasMoreRoutes) {
+
+    if (activeTab === 'routes' && hasMoreRoutes && routesCursorRef.current) {
       setIsFetching(true)
       try {
-        const offset = userRoutes.length
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&offset=${offset}&type=user_posts`)
-        if (res && res.length > 0) {
+        const cursor = encodeURIComponent(routesCursorRef.current)
+        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&cursor=${cursor}&type=user_posts`)
+        if (res && res.items.length > 0) {
           setUserRoutes(prev => {
             const existingIds = new Set(prev.map(r => r.id));
-            const filtered = res.filter(r => !existingIds.has(r.id));
+            const filtered = res.items.filter(r => !existingIds.has(r.id));
             return [...prev, ...filtered];
           })
-          setHasMoreRoutes(res.length === 15)
+          routesCursorRef.current = res.nextCursor
+          setHasMoreRoutes(!!res.nextCursor)
         } else {
           setHasMoreRoutes(false)
         }
@@ -106,18 +124,19 @@ export default function RootClient() {
       } finally {
         setIsFetching(false)
       }
-    } else if (activeTab === 'likes' && hasMoreLikes) {
+    } else if (activeTab === 'likes' && hasMoreLikes && likesCursorRef.current) {
       setIsFetching(true)
       try {
-        const offset = likes.length
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/me/likes?limit=15&offset=${offset}`)
-        if (res && res.length > 0) {
+        const cursor = encodeURIComponent(likesCursorRef.current)
+        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/likes?route=true&take=15&cursor=${cursor}`)
+        if (res && res.items.length > 0) {
           setLikes(prev => {
             const existingIds = new Set(prev.map(l => l.id));
-            const filtered = res.filter(l => !existingIds.has(l.id));
+            const filtered = res.items.filter(l => !existingIds.has(l.id));
             return [...prev, ...filtered];
           })
-          setHasMoreLikes(res.length === 15)
+          likesCursorRef.current = res.nextCursor
+          setHasMoreLikes(!!res.nextCursor)
         } else {
           setHasMoreLikes(false)
         }
@@ -126,18 +145,19 @@ export default function RootClient() {
       } finally {
         setIsFetching(false)
       }
-    } else if (activeTab === 'history' && hasMoreHistory) {
+    } else if (activeTab === 'history' && hasMoreHistory && historyCursorRef.current) {
       setIsFetching(true)
       try {
-        const offset = history.length
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/me/views?limit=15&offset=${offset}`)
-        if (res && res.length > 0) {
+        const cursor = encodeURIComponent(historyCursorRef.current)
+        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/views?route=true&take=15&cursor=${cursor}`)
+        if (res && res.items.length > 0) {
           setHistory(prev => {
             const existingIds = new Set(prev.map(v => v.id));
-            const filtered = res.filter(v => !existingIds.has(v.id));
+            const filtered = res.items.filter(v => !existingIds.has(v.id));
             return [...prev, ...filtered];
           })
-          setHasMoreHistory(res.length === 15)
+          historyCursorRef.current = res.nextCursor
+          setHasMoreHistory(!!res.nextCursor)
         } else {
           setHasMoreHistory(false)
         }

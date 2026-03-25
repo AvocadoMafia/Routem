@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useState, useRef} from "react";
 import ContentsSelector from "@/app/(public)/_components/templates/contentsSelector";
 import {Route, User} from "@/lib/client/types";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
@@ -13,6 +13,9 @@ import { motion } from "framer-motion";
 import LikesSection from "@/app/(public)/_components/(likes)/likesSection";
 import FollowingsSection from "@/app/(public)/_components/(followings)/followingsSection";
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followers'
 
 export default function RootClient() {
@@ -24,6 +27,7 @@ export default function RootClient() {
     const [loading, setLoading] = useState<boolean>(true);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [hasMore, setHasMore] = useState<boolean>(true);
+    const nextCursorRef = useRef<string | null>(null);
     const user = userStore((state) => state.user);
 
     //記事のfetch処理
@@ -33,21 +37,23 @@ export default function RootClient() {
             setLoading(true);
             setError(null);
             setHasMore(true);
+            nextCursorRef.current = null;
             try {
                 const isUserLoggedIn = user && user.id !== "";
-                const routesUrl = isUserLoggedIn 
-                    ? '/api/v1/routes?limit=15&type=user_recommend&offset=0'
-                    : '/api/v1/routes?limit=15&offset=0';
+                const routesUrl = isUserLoggedIn
+                    ? '/api/v1/routes?limit=15&type=user_recommend'
+                    : '/api/v1/routes?limit=15';
 
-                const [routesData, usersData] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>(routesUrl),
+                const [routesRes, usersData] = await Promise.all([
+                    getDataFromServerWithJson<CursorResponse<Route>>(routesUrl),
                     getDataFromServerWithJson<User[]>('/api/v1/users?limit=5')
                 ]);
-                
+
                 if (!cancelled) {
-                    if (routesData) {
-                        setRoutes(routesData);
-                        if (routesData.length < 15) setHasMore(false);
+                    if (routesRes) {
+                        setRoutes(routesRes.items);
+                        nextCursorRef.current = routesRes.nextCursor;
+                        if (!routesRes.nextCursor) setHasMore(false);
                     }
                     if (usersData) setUsers(usersData);
                 }
@@ -62,26 +68,27 @@ export default function RootClient() {
     }, [user?.id]);
 
     const fetchMoreRoutes = async () => {
-        if (isFetching || !hasMore || !routes) return;
+        if (isFetching || !hasMore || !routes || !nextCursorRef.current) return;
         setIsFetching(true);
         try {
             const isUserLoggedIn = user && user.id !== "";
-            const offset = routes.length;
-            const routesUrl = isUserLoggedIn 
-                ? `/api/v1/routes?limit=15&type=user_recommend&offset=${offset}`
-                : `/api/v1/routes?limit=15&offset=${offset}`;
+            const cursor = encodeURIComponent(nextCursorRef.current);
+            const routesUrl = isUserLoggedIn
+                ? `/api/v1/routes?limit=15&type=user_recommend&cursor=${cursor}`
+                : `/api/v1/routes?limit=15&cursor=${cursor}`;
 
-            const newRoutes = await getDataFromServerWithJson<Route[]>(routesUrl);
-            
-            if (newRoutes && newRoutes.length > 0) {
+            const res = await getDataFromServerWithJson<CursorResponse<Route>>(routesUrl);
+
+            if (res && res.items.length > 0) {
                 setRoutes(prev => {
-                    if (!prev) return newRoutes;
+                    if (!prev) return res.items;
                     // 重複排除
                     const existingIds = new Set(prev.map(r => r.id));
-                    const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+                    const filtered = res.items.filter(r => !existingIds.has(r.id));
                     return [...prev, ...filtered];
                 });
-                if (newRoutes.length < 15) setHasMore(false);
+                nextCursorRef.current = res.nextCursor;
+                if (!res.nextCursor) setHasMore(false);
             } else {
                 setHasMore(false);
             }

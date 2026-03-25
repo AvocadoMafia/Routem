@@ -3,6 +3,7 @@ import { routesRepository, ROUTE_INCLUDE } from "@/features/routes/repository";
 import { LikeViewTarget, Prisma } from "@prisma/client";
 import { USER_SELECT } from "@/features/users/repository";
 import { DEFAULT_LIMIT } from "@/lib/server/constants";
+import { buildUpdatedAtCursorWhere, encodeUpdatedAtCursor } from "@/lib/server/cursor";
 
 export const viewsService = {
   recordView: async (routeId: string, userId: string | null) => {
@@ -23,16 +24,13 @@ export const viewsService = {
       });
 
       if (existingView) {
-        await viewsRepository.updateView(existingView.id, {
-          updatedAt: now,
-        });
+        // Just touch the record - @updatedAt will auto-update
+        await viewsRepository.updateView(existingView.id, {});
       } else {
         await viewsRepository.createView({
           target: LikeViewTarget.ROUTE,
           route: { connect: { id: routeId } },
           userId: userId,
-          createdAt: now,
-          updatedAt: now,
         });
       }
 
@@ -64,13 +62,12 @@ export const viewsService = {
     }
   },
 
-  // 新API: Viewレコード（自分）をincludeフラグ・takeで取得
+  // 新API: Viewレコード（自分）をincludeフラグ・カーソルで取得
   getViews: async (
     userId: string,
-    opts: { include?: { route?: boolean; user?: boolean }; take?: number; offset?: number }
+    opts: { include?: { route?: boolean; user?: boolean }; take?: number; cursor?: string }
   ) => {
     const take = opts.take ?? DEFAULT_LIMIT;
-    const skip = opts.offset ?? 0;
 
     const include: Prisma.ViewInclude = {};
     if (opts.include?.route) {
@@ -80,21 +77,38 @@ export const viewsService = {
       (include as any).user = { select: USER_SELECT } as any;
     }
 
+    // カーソル条件を構築（updatedAtベース）
+    const cursorWhere = buildUpdatedAtCursorWhere(opts.cursor);
+    const where: Prisma.ViewWhereInput = {
+      userId,
+      ...cursorWhere,
+    };
+
     const args: Prisma.ViewFindManyArgs = {
-      where: { userId },
-      orderBy: { updatedAt: "desc" },
+      where,
+      orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
       take,
-      skip,
       include: Object.keys(include).length ? include : undefined,
     };
 
     const views = await viewsRepository.findMany(args);
-    return views.map((v: any) => ({
+
+    // nextCursorを計算
+    let nextCursor: string | null = null;
+    if (views.length === take && views.length > 0) {
+      const last = views[views.length - 1] as any;
+      nextCursor = encodeUpdatedAtCursor({ updatedAt: last.updatedAt, id: last.id });
+    }
+
+    const items = views.map((v: any) => ({
       id: v.id,
       target: v.target,
       createdAt: v.createdAt,
+      updatedAt: v.updatedAt,
       route: opts.include?.route ? v.route ?? null : undefined,
       user: opts.include?.user ? v.user ?? null : undefined,
     }));
+
+    return { items, nextCursor };
   },
 };

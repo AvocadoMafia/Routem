@@ -7,18 +7,20 @@ import { DEFAULT_LIMIT } from "@/lib/server/constants";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import crypto from "crypto";
 import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
+import { sliceByScoreCursor, encodeScoreCursor } from "@/lib/server/cursor";
 
 export const routesService = {
   getRoutes: async (
     user: User | null,
     query: GetRoutesType,
-  ): Promise<RouteWithRelations[]> => {
+  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null }> => {
     try {
       let ids: string[] | undefined = undefined;
-      
-      // クエリ指定が limit 以外にない、または明示的におすすめが指定された場合
-      const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && query[k as keyof GetRoutesType] !== undefined).length === 0;
-      
+      let nextCursor: string | null = null;
+
+      // クエリ指定が limit と cursor 以外にない、または明示的におすすめが指定された場合
+      const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && k !== 'cursor' && query[k as keyof GetRoutesType] !== undefined).length === 0;
+
       if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related" || query.type === "trending") {
         const redis = getRedisClient();
         let redisKey = "recommend:global";
@@ -34,11 +36,14 @@ export const routesService = {
         const cachedData = await redis.get(redisKey);
         if (cachedData) {
           const scored = JSON.parse(cachedData) as { id: string, score: number }[];
-          const start = query.offset ?? 0;
           const limit = query.limit ?? DEFAULT_LIMIT;
-          ids = scored.slice(start, start + limit).map(s => s.id);
-          
-          if (ids.length === 0) return [];
+
+          // スコアベースのカーソルページネーション
+          const sliced = sliceByScoreCursor(scored, query.cursor, limit);
+          ids = sliced.items.map(s => s.id);
+          nextCursor = sliced.nextCursor;
+
+          if (ids.length === 0) return { items: [], nextCursor: null };
         }
       }
 
@@ -48,7 +53,7 @@ export const routesService = {
         const search = await index.search(query.q);
         ids = search.hits.map((hit) => hit.id);
         if (ids.length === 0) {
-          return [];
+          return { items: [], nextCursor: null };
         }
       }
       const where = buildRoutesWhere(query, user?.id, ids);
@@ -60,15 +65,15 @@ export const routesService = {
         orderBy = { createdAt: "desc" };
       }
 
-      const result = await routesRepository.findMany(where, query.limit, query.offset, orderBy);
+      const result = await routesRepository.findMany(where, query.limit, undefined, orderBy);
       if (ids) {
         const sortedResult = ids
           .map((id) => result.find((route) => route.id === id))
           .filter((route) => route !== undefined); // DBから消えていた場合のundefinedを除外
 
-        return sortedResult;
+        return { items: sortedResult, nextCursor };
       }
-      return result;
+      return { items: result, nextCursor };
     } catch (e) {
       throw e;
     }

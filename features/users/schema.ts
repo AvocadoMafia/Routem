@@ -61,7 +61,7 @@ const BoolParam = z
   .union([z.literal("true"), z.literal("false"), z.boolean()])
   .transform((v) => v === true || v === "true");
 
-// Followings GET query: following? follower? take?
+// Followings GET query: following? follower? take? cursor?
 export const GetFollowingsQuerySchema = z.object({
   following: BoolParam.optional(),
   follower: BoolParam.optional(),
@@ -71,11 +71,7 @@ export const GetFollowingsQuerySchema = z.object({
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
     .default(30)
     .optional(),
-  offset: z
-    .union([z.string().regex(/^\d+$/), z.number()])
-    .transform((n: any) => (typeof n === "string" ? Number(n) : n))
-    .default(0)
-    .optional(),
+  cursor: z.string().optional(),
 });
 export type GetFollowingsQuery = z.infer<typeof GetFollowingsQuerySchema>;
 

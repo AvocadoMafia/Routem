@@ -1,4 +1,31 @@
 import { ErrorScheme } from "@/lib/client/types"
+import NProgress from "nprogress"
+
+// nprogress設定
+NProgress.configure({
+    showSpinner: false,
+    minimum: 0.1,
+    speed: 300,
+    trickleSpeed: 200,
+})
+
+// リクエストカウンター（複数リクエストを追跡）
+let requestCount = 0
+
+function startProgress() {
+    requestCount++
+    if (requestCount === 1) {
+        NProgress.start()
+    }
+}
+
+function stopProgress() {
+    requestCount--
+    if (requestCount <= 0) {
+        requestCount = 0
+        NProgress.done()
+    }
+}
 
 export function isErrorScheme(error: any): error is ErrorScheme {
     return (
@@ -35,6 +62,8 @@ export async function requestToServerWithJson<T>(
         params.body = JSON.stringify(obj)
     }
 
+    startProgress()
+
     try {
         const res = await fetch(url, params)
         let json: any
@@ -63,6 +92,8 @@ export async function requestToServerWithJson<T>(
         }
 
         throw toErrorScheme(error)
+    } finally {
+        stopProgress()
     }
 }
 

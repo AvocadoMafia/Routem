@@ -13,6 +13,9 @@ import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
 import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 type Props = {
   route: Route;
   currentUser?: User | null;
@@ -56,6 +59,7 @@ export default function RootClient({ route, currentUser }: Props) {
   const [relatedLoading, setRelatedLoading] = useState<boolean>(true);
   const [isFetchingRelated, setIsFetchingRelated] = useState<boolean>(false);
   const [relatedHasMore, setRelatedHasMore] = useState<boolean>(true);
+  const relatedCursorRef = useRef<string | null>(null);
 
   const scrollDirection = useUiStore((state) => state.scrollDirection);
   const [yOffset, setYOffset] = useState(0);
@@ -87,12 +91,14 @@ export default function RootClient({ route, currentUser }: Props) {
       if (!route.id) return;
       setRelatedLoading(true);
       setRelatedHasMore(true);
+      relatedCursorRef.current = null;
       try {
-        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&offset=0`;
-        const data = await getDataFromServerWithJson<Route[]>(url);
-        if (!cancelled && data) {
-          setRelatedRoutes(data);
-          if (data.length < 15) setRelatedHasMore(false);
+        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15`;
+        const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
+        if (!cancelled && res) {
+          setRelatedRoutes(res.items);
+          relatedCursorRef.current = res.nextCursor;
+          if (!res.nextCursor) setRelatedHasMore(false);
         }
       } catch (e) {
         console.error("Failed to load related routes:", e);
@@ -105,20 +111,21 @@ export default function RootClient({ route, currentUser }: Props) {
   }, [route.id]);
 
   const fetchMoreRelatedRoutes = async () => {
-    if (isFetchingRelated || !relatedHasMore || !route.id) return;
+    if (isFetchingRelated || !relatedHasMore || !route.id || !relatedCursorRef.current) return;
     setIsFetchingRelated(true);
     try {
-      const offset = relatedRoutes.length;
-      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&offset=${offset}`;
-      const newRoutes = await getDataFromServerWithJson<Route[]>(url);
-      
-      if (newRoutes && newRoutes.length > 0) {
+      const cursor = encodeURIComponent(relatedCursorRef.current);
+      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&cursor=${cursor}`;
+      const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
+
+      if (res && res.items.length > 0) {
         setRelatedRoutes(prev => {
           const existingIds = new Set(prev.map(r => r.id));
-          const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+          const filtered = res.items.filter(r => !existingIds.has(r.id));
           return [...prev, ...filtered];
         });
-        if (newRoutes.length < 15) setRelatedHasMore(false);
+        relatedCursorRef.current = res.nextCursor;
+        if (!res.nextCursor) setRelatedHasMore(false);
       } else {
         setRelatedHasMore(false);
       }

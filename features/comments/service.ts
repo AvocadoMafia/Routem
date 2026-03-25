@@ -1,5 +1,7 @@
 import {commentsRepository} from "@/features/comments/repository";
 import { getPrisma } from "@/lib/config/server";
+import { encodeCursor } from "@/lib/server/cursor";
+import { DEFAULT_LIMIT } from "@/lib/server/constants";
 
 export const commentsService = {
     getComments: async (userId?: string, take?: number, onlyMine?: boolean, without?: string[]) => {
@@ -13,9 +15,19 @@ export const commentsService = {
         }
     },
 
-    getCommentsByRouteId: async (routeId: string, take?: number, skip?: number) => {
+    getCommentsByRouteId: async (routeId: string, take?: number, cursor?: string) => {
         try {
-            return commentsRepository.getCommentsByRouteId(routeId, take, skip);
+            const limit = take ?? DEFAULT_LIMIT;
+            const comments = await commentsRepository.getCommentsByRouteId(routeId, limit, cursor);
+
+            // nextCursorを計算
+            let nextCursor: string | null = null;
+            if (comments.length === limit && comments.length > 0) {
+                const last = comments[comments.length - 1];
+                nextCursor = encodeCursor({ createdAt: last.createdAt, id: last.id });
+            }
+
+            return { items: comments, nextCursor };
         } catch (e) {
             throw e;
         }

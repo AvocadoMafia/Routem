@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TrendingRoutesList from "@/app/(public)/_components/(trending)/templates/trendingRoutesList";
 import TrendingUsersList from "@/app/(public)/_components/(trending)/templates/trendingUsersList";
 import TrendingTagsList from "@/app/(public)/_components/(trending)/templates/trendingTagsList";
@@ -12,6 +12,9 @@ import {CiRoute} from "react-icons/ci";
 
 type TrendingTab = 'routes' | 'users' | 'tags';
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 export default function TrendingSection() {
     const [routes, setRoutes] = useState<Route[]>([]);
     const [users, setUsers] = useState<User[] | null>(null);
@@ -21,6 +24,7 @@ export default function TrendingSection() {
     const [hasMore, setHasMore] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<TrendingTab>('routes');
+    const nextCursorRef = useRef<string | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -28,18 +32,22 @@ export default function TrendingSection() {
             setLoading(true);
             setError(null);
             setHasMore(true);
+            nextCursorRef.current = null;
             try {
-                const [routesData, usersData, tagsData] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?type=trending&limit=15&offset=0'),
+                const [routesRes, usersData, tagsData] = await Promise.all([
+                    getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?type=trending&limit=15'),
                     getDataFromServerWithJson<User[]>('/api/v1/users?limit=6'),
                     getDataFromServerWithJson<string[]>('/api/v1/tags?limit=10')
                 ]);
 
                 if (!cancelled) {
-                    setRoutes(routesData || []);
+                    if (routesRes) {
+                        setRoutes(routesRes.items);
+                        nextCursorRef.current = routesRes.nextCursor;
+                        if (!routesRes.nextCursor) setHasMore(false);
+                    }
                     setUsers(usersData);
                     setTags(tagsData);
-                    if (routesData && routesData.length < 15) setHasMore(false);
                 }
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load trending data');
@@ -52,19 +60,20 @@ export default function TrendingSection() {
     }, []);
 
     const fetchMoreRoutes = async () => {
-        if (isFetching || !hasMore || routes.length === 0) return;
+        if (isFetching || !hasMore || routes.length === 0 || !nextCursorRef.current) return;
         setIsFetching(true);
         try {
-            const offset = routes.length;
-            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?type=trending&limit=15&offset=${offset}`);
-            
-            if (newRoutes && newRoutes.length > 0) {
+            const cursor = encodeURIComponent(nextCursorRef.current);
+            const res = await getDataFromServerWithJson<CursorResponse<Route>>(`/api/v1/routes?type=trending&limit=15&cursor=${cursor}`);
+
+            if (res && res.items.length > 0) {
                 setRoutes(prev => {
                     const existingIds = new Set(prev.map(r => r.id));
-                    const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+                    const filtered = res.items.filter(r => !existingIds.has(r.id));
                     return [...prev, ...filtered];
                 });
-                if (newRoutes.length < 15) setHasMore(false);
+                nextCursorRef.current = res.nextCursor;
+                if (!res.nextCursor) setHasMore(false);
             } else {
                 setHasMore(false);
             }

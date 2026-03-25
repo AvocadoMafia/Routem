@@ -158,3 +158,35 @@ body {
     background-size: 200% 100%;
     animation: shimmer 2s infinite linear;
 }
+
+/* NProgress styles - positioned below header */
+#nprogress {
+    pointer-events: none;
+}
+
+#nprogress .bar {
+    background: var(--accent-0);
+    position: fixed;
+    z-index: 1000;
+    top: 50px; /* mobile header height */
+    left: 0;
+    width: 100%;
+    height: 3px;
+}
+
+@media (min-width: 768px) {
+    #nprogress .bar {
+        top: 60px; /* desktop header height */
+    }
+}
+
+#nprogress .peg {
+    display: block;
+    position: absolute;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    box-shadow: 0 0 10px var(--accent-0), 0 0 5px var(--accent-0);
+    opacity: 1;
+    transform: rotate(3deg) translate(0px, -4px);
+}

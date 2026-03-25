@@ -38,11 +38,7 @@ export const GetLikesQuerySchema = z.object({
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
     .default(DEFAULT_LIMIT)
     .optional(),
-  offset: z
-    .union([z.string().regex(/^\d+$/), z.number()])
-    .transform((n: any) => (typeof n === "string" ? Number(n) : n))
-    .default(0)
-    .optional(),
+  cursor: z.string().optional(),
 });
 export type GetLikesQuery = z.infer<typeof GetLikesQuerySchema>;
 

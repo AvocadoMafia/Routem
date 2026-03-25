@@ -13,6 +13,7 @@ import { PatchRouteSchema } from "@/features/routes/schema";
 // validationとauthenticationつまり処理に入る前段階の層
 
 // 最近作成されたルートを一覧返却します
+// Response: { items: Route[], nextCursor: string | null }
 export async function GET(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
@@ -20,8 +21,8 @@ export async function GET(req: NextRequest) {
     const safe_user = error ? null : user;
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
-    const data = await routesService.getRoutes(safe_user, parsed_params);
-    return NextResponse.json(data, {status: 200});
+    const result = await routesService.getRoutes(safe_user, parsed_params);
+    return NextResponse.json(result, {status: 200});
   });
 }
 

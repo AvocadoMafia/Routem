@@ -4,6 +4,7 @@ import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository"
 import { getPrisma } from "@/lib/config/server";
 import { USER_SELECT } from "@/features/users/repository";
 import { DEFAULT_LIMIT } from "@/lib/server/constants";
+import { buildCursorWhere, encodeCursor } from "@/lib/server/cursor";
 
 export const likesService = {
     /**
@@ -22,13 +23,12 @@ export const likesService = {
     },
 
 
-    // 新API: Likeレコードをincludeフラグ・takeで制御して取得
+    // 新API: Likeレコードをincludeフラグ・カーソルで制御して取得
     getLikes: async (
         userId: string,
-        opts: { include?: { route?: boolean; user?: boolean; comment?: boolean }; take?: number; offset?: number }
+        opts: { include?: { route?: boolean; user?: boolean; comment?: boolean }; take?: number; cursor?: string }
     ) => {
         const take = opts.take ?? DEFAULT_LIMIT;
-        const skip = opts.offset ?? 0;
 
         const include: Prisma.LikeInclude = {};
         if (opts.include?.route) {
@@ -58,18 +58,31 @@ export const likesService = {
             } as any;
         }
 
+        // カーソル条件を構築
+        const cursorWhere = buildCursorWhere(opts.cursor);
+        const where: Prisma.LikeWhereInput = {
+            userId,
+            ...cursorWhere,
+        };
+
         const args: Prisma.LikeFindManyArgs = {
-            where: { userId },
-            orderBy: { createdAt: "desc" },
+            where,
+            orderBy: [{ createdAt: "desc" }, { id: "desc" }],
             take,
-            skip,
             include: Object.keys(include).length > 0 ? include : undefined,
         };
 
         const likes = await likesRepository.findMany(args);
 
+        // nextCursorを計算
+        let nextCursor: string | null = null;
+        if (likes.length === take && likes.length > 0) {
+            const last = likes[likes.length - 1];
+            nextCursor = encodeCursor({ createdAt: last.createdAt, id: last.id });
+        }
+
         // route=true指定でも、target=COMMENT の場合は route を null に正規化
-        return likes.map((l) => {
+        const items = likes.map((l) => {
             const base: any = {
                 id: l.id,
                 target: l.target,
@@ -86,5 +99,7 @@ export const likesService = {
             }
             return base;
         });
+
+        return { items, nextCursor };
     },
 };

@@ -12,7 +12,7 @@ export const GetRoutesSchema = z.object({
         .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
         .default(DEFAULT_LIMIT)
         .optional(),
-    offset: z.string().regex(/^\d+$/).optional().transform((val) => val ? Number(val) : undefined),
+    cursor: z.string().optional(),
     q:z.string().optional(),
     type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts"]).optional(),
     targetId: z.string().uuid().optional(),

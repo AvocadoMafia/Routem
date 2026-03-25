@@ -20,6 +20,9 @@ type LightUser = {
 // Followレコード（バックから返すフォローそのもの）
 type FollowRecord = { id: string; createdAt: string; following: LightUser }
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 export default function FollowingsSection() {
     const [routes, setRoutes] = useState<Route[]>([])
     const [followings, setFollowings] = useState<LightUser[]>([])
@@ -29,6 +32,8 @@ export default function FollowingsSection() {
     const [hasMoreFollowings, setHasMoreFollowings] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    const routesCursorRef = useRef<string | null>(null);
+    const followingsCursorRef = useRef<string | null>(null);
     const observerTargetRoutes = useRef<HTMLDivElement>(null);
     const observerTargetFollowings = useRef<HTMLDivElement>(null);
 
@@ -40,17 +45,24 @@ export default function FollowingsSection() {
             setError(null)
             setHasMoreRoutes(true)
             setHasMoreFollowings(true)
+            routesCursorRef.current = null;
+            followingsCursorRef.current = null;
             try {
-                const [routesData, followRecords] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=15&offset=0'),
-                    getDataFromServerWithJson<FollowRecord[]>('/api/v1/followings?following=true&take=15&offset=0'),
+                const [routesRes, followRes] = await Promise.all([
+                    getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?limit=15'),
+                    getDataFromServerWithJson<CursorResponse<FollowRecord>>('/api/v1/followings?following=true&take=15'),
                 ])
                 if (!cancelled) {
-                    setRoutes(routesData ?? [])
-                    setFollowings((followRecords ?? []).map(fr => fr.following))
-                    
-                    if ((routesData ?? []).length < 15) setHasMoreRoutes(false);
-                    if ((followRecords ?? []).length < 15) setHasMoreFollowings(false);
+                    if (routesRes) {
+                        setRoutes(routesRes.items);
+                        routesCursorRef.current = routesRes.nextCursor;
+                        if (!routesRes.nextCursor) setHasMoreRoutes(false);
+                    }
+                    if (followRes) {
+                        setFollowings(followRes.items.map(fr => fr.following));
+                        followingsCursorRef.current = followRes.nextCursor;
+                        if (!followRes.nextCursor) setHasMoreFollowings(false);
+                    }
                 }
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load followings feed')
@@ -66,18 +78,19 @@ export default function FollowingsSection() {
     }, [])
 
     const fetchMoreRoutes = async () => {
-        if (isFetching || !hasMoreRoutes || routes.length === 0) return;
+        if (isFetching || !hasMoreRoutes || routes.length === 0 || !routesCursorRef.current) return;
         setIsFetching(true);
         try {
-            const offset = routes.length;
-            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?limit=15&offset=${offset}`);
-            if (newRoutes && newRoutes.length > 0) {
+            const cursor = encodeURIComponent(routesCursorRef.current);
+            const res = await getDataFromServerWithJson<CursorResponse<Route>>(`/api/v1/routes?limit=15&cursor=${cursor}`);
+            if (res && res.items.length > 0) {
                 setRoutes(prev => {
                     const existingIds = new Set(prev.map(r => r.id));
-                    const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+                    const filtered = res.items.filter(r => !existingIds.has(r.id));
                     return [...prev, ...filtered];
                 });
-                if (newRoutes.length < 15) setHasMoreRoutes(false);
+                routesCursorRef.current = res.nextCursor;
+                if (!res.nextCursor) setHasMoreRoutes(false);
             } else {
                 setHasMoreRoutes(false);
             }
@@ -89,19 +102,20 @@ export default function FollowingsSection() {
     };
 
     const fetchMoreFollowings = async () => {
-        if (isFetching || !hasMoreFollowings || followings.length === 0) return;
+        if (isFetching || !hasMoreFollowings || followings.length === 0 || !followingsCursorRef.current) return;
         setIsFetching(true);
         try {
-            const offset = followings.length;
-            const res = await getDataFromServerWithJson<FollowRecord[]>(`/api/v1/followings?following=true&take=15&offset=${offset}`);
-            if (res && res.length > 0) {
-                const newFollowings = res.map(fr => fr.following);
+            const cursor = encodeURIComponent(followingsCursorRef.current);
+            const res = await getDataFromServerWithJson<CursorResponse<FollowRecord>>(`/api/v1/followings?following=true&take=15&cursor=${cursor}`);
+            if (res && res.items.length > 0) {
+                const newFollowings = res.items.map(fr => fr.following);
                 setFollowings(prev => {
                     const existingIds = new Set(prev.map(u => u.id));
                     const filtered = newFollowings.filter(u => !existingIds.has(u.id));
                     return [...prev, ...filtered];
                 });
-                if (res.length < 15) setHasMoreFollowings(false);
+                followingsCursorRef.current = res.nextCursor;
+                if (!res.nextCursor) setHasMoreFollowings(false);
             } else {
                 setHasMoreFollowings(false);
             }
