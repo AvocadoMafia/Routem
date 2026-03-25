@@ -22,11 +22,11 @@ export default function ContentsSelector(props: Props) {
 
     return (
         <div className={'shrink-0 w-fit h-fit bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
-            {SELECTOR_ITEMS.map((item) => {
+            {SELECTOR_ITEMS.map((item, idx) => {
                 const isSelected = props.selected === item.selected;
                 return (
                     <button
-                        key={item.label}
+                        key={idx}
                         className={'relative flex items-center justify-center md:min-w-28 gap-2 px-4 py-2 cursor-pointer group whitespace-nowrap rounded-full transition-colors'}
                         onClick={() => {props.setSelected(item.selected as selectedType)}}
                     >

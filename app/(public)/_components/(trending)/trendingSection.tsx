@@ -13,10 +13,12 @@ import {CiRoute} from "react-icons/ci";
 type TrendingTab = 'routes' | 'users' | 'tags';
 
 export default function TrendingSection() {
-    const [routes, setRoutes] = useState<Route[] | null>(null);
+    const [routes, setRoutes] = useState<Route[]>([]);
     const [users, setUsers] = useState<User[] | null>(null);
     const [tags, setTags] = useState<string[] | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<TrendingTab>('routes');
 
@@ -25,17 +27,19 @@ export default function TrendingSection() {
         async function load() {
             setLoading(true);
             setError(null);
+            setHasMore(true);
             try {
                 const [routesData, usersData, tagsData] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=10'),
+                    getDataFromServerWithJson<Route[]>('/api/v1/routes?type=trending&limit=10&offset=0'),
                     getDataFromServerWithJson<User[]>('/api/v1/users?limit=6'),
                     getDataFromServerWithJson<string[]>('/api/v1/tags?limit=10')
                 ]);
 
                 if (!cancelled) {
-                    setRoutes(routesData);
+                    setRoutes(routesData || []);
                     setUsers(usersData);
                     setTags(tagsData);
+                    if (routesData && routesData.length < 10) setHasMore(false);
                 }
             } catch (e: any) {
                 if (!cancelled) setError(e?.message ?? 'Failed to load trending data');
@@ -46,6 +50,30 @@ export default function TrendingSection() {
         load();
         return () => { cancelled = true };
     }, []);
+
+    const fetchMoreRoutes = async () => {
+        if (isFetching || !hasMore || routes.length === 0) return;
+        setIsFetching(true);
+        try {
+            const offset = routes.length;
+            const newRoutes = await getDataFromServerWithJson<Route[]>(`/api/v1/routes?type=trending&limit=10&offset=${offset}`);
+            
+            if (newRoutes && newRoutes.length > 0) {
+                setRoutes(prev => {
+                    const existingIds = new Set(prev.map(r => r.id));
+                    const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+                    return [...prev, ...filtered];
+                });
+                if (newRoutes.length < 10) setHasMore(false);
+            } else {
+                setHasMore(false);
+            }
+        } catch (e) {
+            console.error("Failed to fetch more trending routes:", e);
+        } finally {
+            setIsFetching(false);
+        }
+    };
 
     if (loading) return <div className="w-full h-full flex items-center justify-center">Loading trending...</div>;
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>;
@@ -98,7 +126,7 @@ export default function TrendingSection() {
                             transition={{ duration: 0.2 }}
                             className="p-4"
                         >
-                            {activeTab === 'routes' && <TrendingRoutesList routes={routes || []} hideHeader />}
+                            {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} hideHeader />}
                             {activeTab === 'users' && <TrendingUsersList users={users || []} mobileMode />}
                             {activeTab === 'tags' && <TrendingTagsList tags={tags || []} mobileMode />}
                         </motion.div>
@@ -107,7 +135,7 @@ export default function TrendingSection() {
 
                 {/* デスクトップ表示: 既存のレイアウト */}
                 <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
-                    <TrendingRoutesList routes={routes || []} />
+                    <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />
                     <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
                         <TrendingUsersList users={users || []} />
                         <TrendingTagsList tags={tags || []} />

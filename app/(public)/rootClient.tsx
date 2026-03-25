@@ -8,6 +8,7 @@ import HomeSection from "@/app/(public)/_components/(home)/homeSection";
 import PhotosSection from "@/app/(public)/_components/(photos)/photosSection";
 import TrendingSection from "@/app/(public)/_components/(trending)/trendingSection";
 import { useUiStore } from "@/lib/client/stores/uiStore";
+import { userStore } from "@/lib/client/stores/userStore";
 import { motion } from "framer-motion";
 import LikesSection from "@/app/(public)/_components/(likes)/likesSection";
 import FollowingsSection from "@/app/(public)/_components/(followings)/followingsSection";
@@ -21,6 +22,9 @@ export default function RootClient() {
     const [users, setUsers] = useState<User[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const user = userStore((state) => state.user);
 
     //記事のfetch処理
     useEffect(() => {
@@ -28,14 +32,23 @@ export default function RootClient() {
         async function load() {
             setLoading(true);
             setError(null);
+            setHasMore(true);
             try {
+                const isUserLoggedIn = user && user.id !== "";
+                const routesUrl = isUserLoggedIn 
+                    ? '/api/v1/routes?limit=12&type=user_recommend&offset=0'
+                    : '/api/v1/routes?limit=12&offset=0';
+
                 const [routesData, usersData] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=12'),
+                    getDataFromServerWithJson<Route[]>(routesUrl),
                     getDataFromServerWithJson<User[]>('/api/v1/users?limit=5')
                 ]);
                 
                 if (!cancelled) {
-                    if (routesData) setRoutes(routesData);
+                    if (routesData) {
+                        setRoutes(routesData);
+                        if (routesData.length < 12) setHasMore(false);
+                    }
                     if (usersData) setUsers(usersData);
                 }
             } catch (e: any) {
@@ -46,7 +59,38 @@ export default function RootClient() {
         }
         load();
         return () => { cancelled = true };
-    }, []);
+    }, [user?.id]);
+
+    const fetchMoreRoutes = async () => {
+        if (isFetching || !hasMore || !routes) return;
+        setIsFetching(true);
+        try {
+            const isUserLoggedIn = user && user.id !== "";
+            const offset = routes.length;
+            const routesUrl = isUserLoggedIn 
+                ? `/api/v1/routes?limit=12&type=user_recommend&offset=${offset}`
+                : `/api/v1/routes?limit=12&offset=${offset}`;
+
+            const newRoutes = await getDataFromServerWithJson<Route[]>(routesUrl);
+            
+            if (newRoutes && newRoutes.length > 0) {
+                setRoutes(prev => {
+                    if (!prev) return newRoutes;
+                    // 重複排除
+                    const existingIds = new Set(prev.map(r => r.id));
+                    const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+                    return [...prev, ...filtered];
+                });
+                if (newRoutes.length < 12) setHasMore(false);
+            } else {
+                setHasMore(false);
+            }
+        } catch (e) {
+            console.error("Failed to fetch more routes:", e);
+        } finally {
+            setIsFetching(false);
+        }
+    };
 
     // 取得したroutesをそのまま利用
     const displayedRoutes = useMemo<Route[]>(() => {
@@ -77,8 +121,10 @@ export default function RootClient() {
                         <HomeSection 
                             routes={displayedRoutes} 
                             users={users} 
-                            loading={loading} 
+                            loading={loading || isFetching} 
                             error={error} 
+                            fetchMore={fetchMoreRoutes}
+                            hasMore={hasMore}
                         />
                     )
                     case 'photos': return (

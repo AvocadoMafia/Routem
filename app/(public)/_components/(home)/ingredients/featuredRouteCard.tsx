@@ -1,29 +1,29 @@
 import Link from 'next/link';
 import React from 'react'
-import { BiHash } from 'react-icons/bi'
 import {HiHeart, HiClock, HiBanknotes, HiEye} from 'react-icons/hi2'
-import {Route} from "@/lib/client/types";
 import Image from 'next/image';
+import { Route } from '@/lib/types/domain';
 
-export type Props = {
-  route: Route
-  onClick?: () => void
+export type FeaturedRouteCardProps = {
+  route: Route;
+  isLinkCard?: boolean;
+  isFocused?: boolean;
+  onClick?: () => void;
 }
 
-export default function FeaturedRouteCard(props: Props) {
+export default function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
 
-  return (
-    <Link
-      href={`/routes/${props.route.id}`}
-      onClick={props.onClick}
-      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5"
-      aria-label={`Top route: ${props.route.title}`}
+  const content = (
+    <div
+      onClick={onClick}
+      className={`group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`}
+      aria-label={`Top route: ${route.title}`}
     >
       {/* Background Image with Margin (via container padding) */}
       <div className="relative w-full h-full rounded-xl overflow-hidden">
         <Image
-          src={props.route.thumbnail?.url || '/mockImages/Kyoto.jpg'}
-          alt={`${props.route.title} background`}
+          src={route.thumbnail?.url || '/map.jpg'}
+          alt={`${route.title} background`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           unoptimized
@@ -48,22 +48,22 @@ export default function FeaturedRouteCard(props: Props) {
           <div className="space-y-3">
             <div className="space-y-1">
               <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-2 text-white">
-                {props.route.title}
+                {route.title}
               </h3>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
-                <span className="text-xs font-bold normal-case tracking-normal">@{props.route.author.name}</span>
+                <span className="text-xs font-bold normal-case tracking-normal">@{route.author.name}</span>
                 <span className="opacity-60">•</span>
-                <span className="truncate">{props.route.routeFor}</span>
+                <span className="truncate">{route.routeFor}</span>
               </div>
               <div className="flex items-center gap-3 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                 <div className="flex items-center gap-1">
                   <HiHeart className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums">{props.route.likes?.length ?? 0}</span>
+                  <span className="tabular-nums">{route.likes?.length ?? 0}</span>
                   <span className="truncate">likes</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <HiEye className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums">{props.route.views?.length ?? 0}</span>
+                  <span className="tabular-nums">{route.views?.length ?? 0}</span>
                   <span className="truncate">views</span>
                 </div>
               </div>
@@ -83,6 +83,16 @@ export default function FeaturedRouteCard(props: Props) {
           </div>
         </div>
       </div>
-    </Link>
-  )
+    </div>
+  );
+
+  if (isLinkCard) {
+    return (
+      <Link href={`/routes/${route.id}`} className="block w-full h-full">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

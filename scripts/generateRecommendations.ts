@@ -32,15 +32,22 @@ async function main() {
         where: {
             visibility: "PUBLIC",
         },
-        select: {
-            id: true,
+        include: {
             likes: true,
             views: true,
-            createdAt: true,
+            tags: true,
         },
     });
 
-    const scored = routes.map((a: any) => {
+    const users = await prisma.user.findMany({
+        include: {
+            likes: true,
+            followings: true,
+        }
+    });
+
+    // 1. Global Recommendations (recommend:global)
+    const globalScored = routes.map((a: any) => {
         const recentBoost =
             Date.now() - a.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000
                 ? 100
@@ -51,14 +58,78 @@ async function main() {
             score: a.likes.length * 3 + a.views.length + recentBoost,
         };
     });
+    globalScored.sort((a, b) => b.score - a.score);
+    await redis.set("recommend:global", JSON.stringify(globalScored));
 
-    // スコア順にソート
-    scored.sort((a, b) => b.score - a.score);
+    // 2. User Recommendations (recommend:user:${userId})
+    for (const user of users) {
+        const userInterestedTagNames = new Set<string>();
+        // ユーザーが「いいね」または「閲覧」した記事のタグを集める
+        const likedRoutes = routes.filter(r => user.likes.some(l => l.routeId === r.id));
+        const viewedRoutes = routes.filter(r => r.views.some(v => v.userId === user.id));
+        
+        likedRoutes.forEach(r => r.tags.forEach(t => userInterestedTagNames.add(t.name)));
+        viewedRoutes.forEach(r => r.tags.forEach(t => userInterestedTagNames.add(t.name)));
 
-    // Redisへ保存
-    await redis.set("recommend:global", JSON.stringify(scored));
+        const userScored = routes
+            .filter(r => r.authorId !== user.id) // 自分の記事は除外
+            .map(r => {
+                let score = 0;
+                // タグが一致していたら加点
+                r.tags.forEach(t => {
+                    if (userInterestedTagNames.has(t.name)) score += 10;
+                });
+                // フォローしている人の記事なら加点
+                if (user.followings.some(f => f.followingId === r.authorId)) {
+                    score += 50;
+                }
+                // 基本スコア（いいね数など）も加味
+                const baseScore = r.likes.length * 2 + r.views.length;
+                
+                // 最近の投稿へのブースト (Globalと同様)
+                const recentBoost =
+                    Date.now() - r.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000
+                        ? 20
+                        : 0;
 
-    console.log("Generated recommendations:", scored.length);
+                return { id: r.id, score: score + baseScore + recentBoost };
+            })
+            // スコアが0でも、新着記事などは含めるようにフィルタを緩めるか、
+            // あるいは最低限グローバルなおすすめを混ぜる
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 100); // 上位100件を保持
+
+        if (userScored.length > 0) {
+            await redis.set(`recommend:user:${user.id}`, JSON.stringify(userScored));
+        }
+    }
+
+    // 3. Related Routes (recommend:related:${routeId})
+    for (const route of routes) {
+        const currentTagNames = route.tags.map(t => t.name);
+        const relatedScored = routes
+            .filter(r => r.id !== route.id)
+            .map(r => {
+                let commonTags = 0;
+                r.tags.forEach(t => {
+                    if (currentTagNames.includes(t.name)) commonTags++;
+                });
+                
+                // 関連度（共通タグ）を最優先にしつつ、基本スコアもわずかに加味して
+                // 全くタグが被らなくても何かしら出るようにする
+                const baseScore = r.likes.length * 0.1 + r.views.length * 0.01;
+                
+                return { id: r.id, score: commonTags * 100 + baseScore };
+            })
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 50); // 上位50件
+
+        if (relatedScored.length > 0) {
+            await redis.set(`recommend:related:${route.id}`, JSON.stringify(relatedScored));
+        }
+    }
+
+    console.log(`Generated recommendations for ${routes.length} routes and ${users.length} users.`);
 
     // 接続を閉じる
     await redis.quit();

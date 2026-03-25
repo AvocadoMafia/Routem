@@ -135,8 +135,8 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
                             {/* Navigation Links (Accordion) */}
                             <div className={'space-y-2'}>
-                                {(['Explore', 'About'] as const).map((item) => (
-                                    <div key={item} className={'space-y-1'}>
+                                {(['Explore', 'About'] as const).map((item, idx) => (
+                                    <div key={idx} className={'space-y-1'}>
                                         <button 
                                             onClick={() => toggleAccordion(item)}
                                             className={'w-full flex items-center justify-between p-3 hover:bg-background-0 rounded-xl transition-colors font-bold text-foreground-0 cursor-pointer'}
@@ -155,9 +155,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                                     exit={{ height: 0, opacity: 0 }}
                                                     className={'overflow-hidden pl-4 space-y-1'}
                                                 >
-                                                    {MENU_ITEMS[item].map((subItem) => (
+                                                    {MENU_ITEMS[item].map((subItem, sIdx) => (
                                                         <button
-                                                            key={subItem.name}
+                                                            key={sIdx}
                                                             onClick={() => handleNavigate(subItem.path)}
                                                             className={'w-full text-left p-3 text-foreground-1 hover:text-accent-0 transition-colors cursor-pointer'}
                                                         >
@@ -178,9 +178,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                     <button className={'text-accent-0 text-xs font-bold hover:underline'}>View All</button>
                                 </div>
                                 <div className={'space-y-1'}>
-                                    {MOCK_FOLLOWING.map((followedUser) => (
+                                    {MOCK_FOLLOWING.map((followedUser, idx) => (
                                         <button
-                                            key={followedUser.id}
+                                            key={idx}
                                             className={'w-full flex items-center justify-between p-2 hover:bg-background-0 rounded-xl transition-colors group cursor-pointer'}
                                         >
                                             <div className={'flex items-center gap-3'}>

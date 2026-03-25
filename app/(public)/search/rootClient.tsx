@@ -23,7 +23,7 @@ export default function RootClient(props: Props) {
 
     return (
         <div className={'w-full h-full grid grid-cols-3'}>
-            {routes.map(route => <div key={route.id}><RouteCardBasic route={route}/></div>)}
+            {routes.map((route, idx) => <div key={idx}><RouteCardBasic route={route}/></div>)}
         </div>
     )
 }

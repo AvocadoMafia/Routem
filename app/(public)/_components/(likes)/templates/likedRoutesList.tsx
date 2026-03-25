@@ -1,4 +1,4 @@
-import RouteCardOnLikesList from "@/app/(public)/_components/(likes)/ingredients/routeCardOnLikesList";
+import RouteCardWidely from "@/app/_components/common/templates/routeCardWidely";
 import {Route} from "@/lib/types/domain";
 import {useEffect, useMemo, useRef} from "react";
 import Link from "next/link";
@@ -66,7 +66,7 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
                             itemRefs.current.delete(idx);
                         }
                     }}>
-                        <RouteCardOnLikesList route={route} myIdx={idx} focusedRouteIdx={focusedRouteIdx} onClick={() => setFocusedRouteIdx(idx)}/>
+                        <RouteCardWidely route={route} isFocused={focusedRouteIdx === idx} onClick={() => setFocusedRouteIdx(idx)} isLinkCard={false}/>
                     </div>
                 ))}
             </div>
@@ -77,10 +77,8 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
                     <div key={date} className={'flex flex-col gap-2'}>
                         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1/80 px-1">{date}</div>
                         <div className={'flex flex-col gap-3'}>
-                            {items.map((like) => (
-                                <Link key={like.id} href={`/routes/${like.route.id}`} className={'block'}>
-                                    <RouteCardOnLikesList route={like.route} myIdx={-1} />
-                                </Link>
+            {items.map((like, idx) => (
+                                    <RouteCardWidely key={idx} route={like.route} isFocused={false} />
                             ))}
                         </div>
                     </div>

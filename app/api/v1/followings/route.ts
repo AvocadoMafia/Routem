@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
     const follows = await usersService.getFollowRecords(user.id, {
       include: { following: !!parsed.following, follower: !!parsed.follower },
       take: parsed.take ?? 30,
+      offset: parsed.offset ?? 0,
     });
 
     // minimal base + requested relations

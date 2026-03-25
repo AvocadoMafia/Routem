@@ -1,27 +1,24 @@
 import {Route} from "@/lib/types/domain";
 import Image from "next/image";
 import {HiHeart, HiEye} from "react-icons/hi2";
+import Link from "next/link";
 
-
-type Props = {
-    route: Route,
-    myIdx: number,
-    onClick? : () => void,
-    focusedRouteIdx?: number,
+export type RouteCardWidelyProps = {
+    route: Route;
+    isLinkCard?: boolean;
+    isFocused?: boolean;
+    onClick?: () => void;
 }
 
+export default function RouteCardWidely({route, isLinkCard = true, isFocused = false, onClick}: RouteCardWidelyProps) {
 
-export default function RouteCardOnLikesList({route, myIdx, focusedRouteIdx, onClick}: Props) {
-
-    const isFocusing = focusedRouteIdx === myIdx;
-
-    return (
-        <div className={`w-full h-32 bg-background-0 backdrop-blur-xs text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${isFocusing? 'ring-2 ring-accent-0 border-transparent' : 'border-1 border-white/10'}`} onClick={onClick}>
+    const content = (
+        <div className={`w-full h-32 bg-background-0 text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`} onClick={onClick}>
             <div className={`w-full h-full flex flex-row rounded-xl overflow-hidden bg-background-1`}>
                 <div className="relative h-full aspect-square">
                     <Image
                         className={'h-full w-full object-cover'}
-                        src={route.thumbnail?.url ?? '/mockImages/Fuji.jpg'}
+                        src={route.thumbnail?.url ?? '/map.jpg'}
                         alt={route.title}
                         fill
                         unoptimized
@@ -45,5 +42,15 @@ export default function RouteCardOnLikesList({route, myIdx, focusedRouteIdx, onC
                 </div>
             </div>
         </div>
-    )
+    );
+
+    if (isLinkCard) {
+        return (
+            <Link href={`/routes/${route.id}`} className="block w-full">
+                {content}
+            </Link>
+        );
+    }
+
+    return content;
 }

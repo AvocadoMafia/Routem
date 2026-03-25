@@ -7,13 +7,18 @@ import {commentsService} from "@/features/comments/service";
 
 export async function GET(req: NextRequest) {
     return handleRequest(async () => {
-        const routeId = req.nextUrl.searchParams.get('routeId');
+        const searchParams = Object.fromEntries(new URL(req.url).searchParams);
+        const parsed = await validateParams(GetCommentsSchema, searchParams);
 
-        if (!routeId) {
+        if (!parsed.routeId) {
             throw new Error("routeId is required");
         }
 
-        const comments = await commentsService.getCommentsByRouteId(routeId);
+        const comments = await commentsService.getCommentsByRouteId(
+            parsed.routeId,
+            parsed.take,
+            parsed.offset
+        );
 
         return NextResponse.json(comments, {status: 200})
     })

@@ -72,6 +72,11 @@ export const GetFollowingsQuerySchema = z.object({
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
     .default(30)
     .optional(),
+  offset: z
+    .union([z.string().regex(/^\d+$/), z.number()])
+    .transform((n: any) => (typeof n === "string" ? Number(n) : n))
+    .default(0)
+    .optional(),
 });
 export type GetFollowingsQuery = z.infer<typeof GetFollowingsQuerySchema>;
 

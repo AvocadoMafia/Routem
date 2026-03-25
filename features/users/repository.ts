@@ -32,6 +32,11 @@ export const usersRepository = {
             include: {
                 icon: true,
                 background: true,
+                _count: {
+                    select: {
+                        routes: true
+                    }
+                }
             }
         });
 
@@ -207,7 +212,7 @@ export const usersRepository = {
   // 動的include対応のFollowレコード取得
   findFollowRecords: async (
     userId: string,
-    opts: { include?: { following?: boolean; follower?: boolean }; take?: number }
+    opts: { include?: { following?: boolean; follower?: boolean }; take?: number; offset?: number }
   ) => {
     try {
       const include: any = {};
@@ -218,6 +223,7 @@ export const usersRepository = {
         where: { followerId: userId },
         orderBy: { createdAt: 'desc' },
         take: opts.take ?? 30,
+        skip: opts.offset ?? 0,
         include: Object.keys(include).length ? include : undefined,
       });
     } catch (e) {

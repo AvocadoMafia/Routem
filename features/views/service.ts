@@ -6,11 +6,34 @@ import { USER_SELECT } from "@/features/users/repository";
 export const viewsService = {
   recordView: async (routeId: string, userId: string | null) => {
     try {
-      await viewsRepository.createView({
-        target: LikeViewTarget.ROUTE,
-        route: { connect: { id: routeId } },
-        userId: userId,
+      const now = new Date();
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+      const existingView = await viewsRepository.findFirst({
+        where: {
+          routeId,
+          userId,
+          createdAt: {
+            gte: startOfDay,
+            lte: endOfDay,
+          },
+        },
       });
+
+      if (existingView) {
+        await viewsRepository.updateView(existingView.id, {
+          updatedAt: now,
+        });
+      } else {
+        await viewsRepository.createView({
+          target: LikeViewTarget.ROUTE,
+          route: { connect: { id: routeId } },
+          userId: userId,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
 
       const viewCount = await viewsRepository.countViews(routeId);
       return viewCount;
@@ -43,9 +66,10 @@ export const viewsService = {
   // 新API: Viewレコード（自分）をincludeフラグ・takeで取得
   getViews: async (
     userId: string,
-    opts: { include?: { route?: boolean; user?: boolean }; take?: number }
+    opts: { include?: { route?: boolean; user?: boolean }; take?: number; offset?: number }
   ) => {
     const take = opts.take ?? 30;
+    const skip = opts.offset ?? 0;
 
     const include: Prisma.ViewInclude = {};
     if (opts.include?.route) {
@@ -57,8 +81,9 @@ export const viewsService = {
 
     const args: Prisma.ViewFindManyArgs = {
       where: { userId },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
       take,
+      skip,
       include: Object.keys(include).length ? include : undefined,
     };
 

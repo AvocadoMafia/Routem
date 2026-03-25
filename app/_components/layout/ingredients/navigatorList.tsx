@@ -32,9 +32,9 @@ export default function NavigatorList() {
     return (
         <div className={'flex items-center flex-1 justify-between'}>
             <div className={'hidden lg:flex items-center gap-8 font-medium'}>
-                {(['Explore', 'About'] as const).map((item) => (
+                {(['Explore', 'About'] as const).map((item, idx) => (
                     <div 
-                        key={item} 
+                        key={idx} 
                         className={'relative'}
                         onMouseEnter={() => setOpenMenu(item)}
                         onMouseLeave={() => setOpenMenu(null)}
@@ -55,9 +55,9 @@ export default function NavigatorList() {
                                     exit={{ opacity: 0, y: 10 }}
                                     className={'absolute top-full left-0 min-w-[160px] bg-background-1 border border-grass rounded-xl shadow-lg py-2 z-50'}
                                 >
-                                    {menuItems[item].map((subItem) => (
+                                    {menuItems[item].map((subItem, sIdx) => (
                                         <button
-                                            key={subItem.name}
+                                            key={sIdx}
                                             onClick={() => router.push(subItem.path)}
                                             className={'w-full text-left px-4 py-2 hover:bg-background-0 transition-colors text-foreground-0 whitespace-nowrap cursor-pointer'}
                                         >

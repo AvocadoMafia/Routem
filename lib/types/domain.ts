@@ -28,6 +28,11 @@ export type User = Prisma.UserGetPayload<{
     background: true
     uploadedImages: true
     likes: true
+    _count: {
+      select: {
+        routes: true
+      }
+    }
   }
 }>
 

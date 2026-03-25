@@ -18,7 +18,7 @@ export const routesService = {
       // クエリ指定が limit 以外にない、または明示的におすすめが指定された場合
       const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && query[k as keyof GetRoutesType] !== undefined).length === 0;
       
-      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related") {
+      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related" || query.type === "trending") {
         const redis = getRedisClient();
         let redisKey = "recommend:global";
 
@@ -26,12 +26,15 @@ export const routesService = {
           redisKey = `recommend:user:${user.id}`;
         } else if (query.type === "related" && query.targetId) {
           redisKey = `recommend:related:${query.targetId}`;
+        } else if (query.type === "trending") {
+          redisKey = "recommend:trending";
         }
 
         const cachedData = await redis.get(redisKey);
         if (cachedData) {
           const scored = JSON.parse(cachedData) as { id: string, score: number }[];
-          ids = scored.slice(0, query.limit).map(s => s.id);
+          const start = query.offset ?? 0;
+          ids = scored.slice(start, start + query.limit).map(s => s.id);
           
           if (ids.length === 0) return [];
         }
@@ -48,7 +51,14 @@ export const routesService = {
       }
       const where = buildRoutesWhere(query, user?.id, ids);
 
-      const result = await routesRepository.findMany(where, query.limit);
+      let orderBy: Prisma.RouteOrderByWithRelationInput | undefined = undefined;
+      if (query.orderBy === "updatedAt") {
+        orderBy = { updatedAt: "desc" };
+      } else if (query.orderBy === "createdAt") {
+        orderBy = { createdAt: "desc" };
+      }
+
+      const result = await routesRepository.findMany(where, query.limit, query.offset, orderBy);
       if (ids) {
         const sortedResult = ids
           .map((id) => result.find((route) => route.id === id))

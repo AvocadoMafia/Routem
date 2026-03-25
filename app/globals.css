@@ -145,3 +145,16 @@ body {
     color: var(--foreground-0);
     font-family: var(--font-roboto), Arial, Helvetica, sans-serif;
 }
+
+.shimmer {
+    background: linear-gradient(
+            110deg,
+            var(--background-0) 0%,
+            var(--background-1) 20%,
+            var(--background-1) 40%,
+            var(--background-1) 60%,
+            var(--background-0) 80%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+}

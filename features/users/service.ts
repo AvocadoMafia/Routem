@@ -89,7 +89,7 @@ export const usersService = {
   // 新API: フォローそのもの（include制御・take対応）
   getFollowRecords: async (
     userId: string,
-    opts: { include?: { following?: boolean; follower?: boolean }; take?: number }
+    opts: { include?: { following?: boolean; follower?: boolean }; take?: number; offset?: number }
   ) => {
     try {
       return await usersRepository.findFollowRecords(userId, opts);

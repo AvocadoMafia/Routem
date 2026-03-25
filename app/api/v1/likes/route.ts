@@ -17,9 +17,13 @@ export async function GET(req: NextRequest) {
     const searchParams = Object.fromEntries(new URL(req.url).searchParams);
     const parsed = await validateParams(GetLikesQuerySchema, searchParams);
 
-    const items = await likesService.getLikes(user.id, {
+    // If userId is provided in query, use it (for public profile), otherwise use current user
+    const targetUserId = parsed.userId || user.id;
+
+    const items = await likesService.getLikes(targetUserId, {
       include: { route: !!parsed.route, user: !!parsed.user, comment: !!parsed.comment },
       take: parsed.take ?? 30,
+      offset: parsed.offset ?? 0,
     });
 
     return NextResponse.json(items, { status: 200 });

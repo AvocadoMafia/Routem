@@ -13,9 +13,9 @@ export const commentsService = {
         }
     },
 
-    getCommentsByRouteId: async (routeId: string) => {
+    getCommentsByRouteId: async (routeId: string, take?: number, skip?: number) => {
         try {
-            return commentsRepository.getCommentsByRouteId(routeId);
+            return commentsRepository.getCommentsByRouteId(routeId, take, skip);
         } catch (e) {
             throw e;
         }

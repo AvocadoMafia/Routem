@@ -10,111 +10,48 @@ export const likesRepository = {
             throw e;
         }
     },
-    createLike: async (userId: string, target: LikeViewTarget, routeId?: string, commentId?: string) => {
-        try {
-            return getPrisma().like.create({
-                data: {
-                    userId,
-                    target,
-                    routeId,
-                    commentId,
-                },
+
+    /**
+     * ルートのいいね状態を切り替え、最新のカウントを返す（トランザクション内での実行を想定）
+     */
+    toggleRouteLike: async (tx: Prisma.TransactionClient, userId: string, routeId: string) => {
+        const existing = await tx.like.findUnique({
+            where: { userId_routeId: { userId, routeId } },
+        });
+
+        if (existing) {
+            await tx.like.delete({
+                where: { userId_routeId: { userId, routeId } },
             });
-        } catch (e) {
-            throw e;
+        } else {
+            await tx.like.create({
+                data: { userId, target: LikeViewTarget.ROUTE, routeId },
+            });
         }
+
+        const likeCount = await tx.like.count({ where: { routeId } });
+        return { liked: !existing, likeCount };
     },
 
-    deleteLike: async (id: string) => {
-        try {
-            return getPrisma().like.delete({
-                where: { id },
-            });
-        } catch (e) {
-            throw e;
-        }
-    },
+    /**
+     * コメントのいいね状態を切り替え、最新のカウントを返す（トランザクション内での実行を想定）
+     */
+    toggleCommentLike: async (tx: Prisma.TransactionClient, userId: string, commentId: string) => {
+        const existing = await tx.like.findUnique({
+            where: { userId_commentId: { userId, commentId } },
+        });
 
-    findById: async (id: string) => {
-        try {
-            return getPrisma().like.findUnique({
-                where: { id },
+        if (existing) {
+            await tx.like.delete({
+                where: { userId_commentId: { userId, commentId } },
             });
-        } catch (e) {
-            throw e;
+        } else {
+            await tx.like.create({
+                data: { userId, target: LikeViewTarget.COMMENT, commentId },
+            });
         }
-    },
 
-    findByUserAndRoute: async (userId: string, routeId: string) => {
-        try {
-            return getPrisma().like.findUnique({
-                where: {
-                    userId_routeId: {
-                        userId,
-                        routeId,
-                    },
-                },
-            });
-        } catch (e) {
-            throw e;
-        }
+        const likeCount = await tx.like.count({ where: { commentId } });
+        return { liked: !existing, likeCount };
     },
-
-    findByUserAndComment: async (userId: string, commentId: string) => {
-        try {
-            return getPrisma().like.findUnique({
-                where: {
-                    userId_commentId: {
-                        userId,
-                        commentId,
-                    },
-                },
-            });
-        } catch (e) {
-            throw e;
-        }
-    },
-    deleteByUserAndRoute: async (userId: string, routeId: string) => {
-        try {
-            return getPrisma().like.delete({
-                where: {
-                    userId_routeId: {
-                        userId,
-                        routeId,
-                    },
-                },
-            });
-        } catch (e) {
-            throw e;
-        }
-    },
-
-    deleteByUserAndComment: async (userId: string, commentId: string) => {
-        try {
-            return getPrisma().like.delete({
-                where: {
-                    userId_commentId: {
-                        userId,
-                        commentId,
-                    },
-                },
-            });
-        } catch (e) {
-            throw e;
-        }
-    },
-  countLikesByRoute: async (routeId: string) => {
-    try {
-      return await getPrisma().like.count({ where: { routeId } });
-    } catch (e) {
-      throw e;
-    }
-  },
-  countLikesByComment: async (commentId: string) => {
-    try {
-      return await getPrisma().like.count({ where: { commentId } });
-    } catch (e) {
-      throw e;
-    }
-  },
 };

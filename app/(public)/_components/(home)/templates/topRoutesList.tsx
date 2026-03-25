@@ -1,8 +1,8 @@
 "use client"
 
-import FeaturedRouteCard from '@/app/(public)/_components/(home)/ingredients/featuredRouteCard'
 import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import {Route} from "@/lib/client/types";
+import FeaturedRouteCard from '@/app/(public)/_components/(home)/ingredients/featuredRouteCard'
 
 type Props = {
   routes: Route[];
@@ -17,7 +17,7 @@ export default function TopRoutesList(props: Props) {
 
       <div className="w-full md:h-[300px] sm:h-[800px] h-[900px] grid grid-rows-3 md:grid-rows-1 grid-cols-1 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 grid-cols-2 gap-3">
         <div className="col-span-2">
-          <FeaturedRouteCard route={props.routes[0]}/>
+          <FeaturedRouteCard route={props.routes[0]} isLinkCard={true}/>
         </div>
         <div className="col-span-1 block">
           <RouteCardGraphical route={props.routes[1]} rank={2}/>

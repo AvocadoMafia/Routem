@@ -11,7 +11,7 @@ import ViewModeSelector from "./_components/ingredients/viewModeSelector";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
-import { postDataToServerWithJson } from "@/lib/client/helpers";
+import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
 
 type Props = {
   route: Route;
@@ -50,6 +50,13 @@ export default function RootClient({ route, currentUser }: Props) {
   const [viewMode, setViewMode] = useState<"diagram" | "details" | "map">("details");
   const [infoTab, setInfoTab] = useState<"comments" | "related">("comments");
   const [isMobile, setIsMobile] = useState(false);
+
+  // 関連記事 (Related Routes) の状態管理
+  const [relatedRoutes, setRelatedRoutes] = useState<Route[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState<boolean>(true);
+  const [isFetchingRelated, setIsFetchingRelated] = useState<boolean>(false);
+  const [relatedHasMore, setRelatedHasMore] = useState<boolean>(true);
+
   const scrollDirection = useUiStore((state) => state.scrollDirection);
   const [yOffset, setYOffset] = useState(0);
 
@@ -72,6 +79,55 @@ export default function RootClient({ route, currentUser }: Props) {
       setYOffset(50);
     }
   }, []);
+
+  // 関連記事の初期フェッチ
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRelated() {
+      if (!route.id) return;
+      setRelatedLoading(true);
+      setRelatedHasMore(true);
+      try {
+        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=12&offset=0`;
+        const data = await getDataFromServerWithJson<Route[]>(url);
+        if (!cancelled && data) {
+          setRelatedRoutes(data);
+          if (data.length < 12) setRelatedHasMore(false);
+        }
+      } catch (e) {
+        console.error("Failed to load related routes:", e);
+      } finally {
+        if (!cancelled) setRelatedLoading(false);
+      }
+    }
+    loadRelated();
+    return () => { cancelled = true };
+  }, [route.id]);
+
+  const fetchMoreRelatedRoutes = async () => {
+    if (isFetchingRelated || !relatedHasMore || !route.id) return;
+    setIsFetchingRelated(true);
+    try {
+      const offset = relatedRoutes.length;
+      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=12&offset=${offset}`;
+      const newRoutes = await getDataFromServerWithJson<Route[]>(url);
+      
+      if (newRoutes && newRoutes.length > 0) {
+        setRelatedRoutes(prev => {
+          const existingIds = new Set(prev.map(r => r.id));
+          const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+          return [...prev, ...filtered];
+        });
+        if (newRoutes.length < 12) setRelatedHasMore(false);
+      } else {
+        setRelatedHasMore(false);
+      }
+    } catch (e) {
+      console.error("Failed to fetch more related routes:", e);
+    } finally {
+      setIsFetchingRelated(false);
+    }
+  };
 
   useEffect(() => {
     updateOffset();
@@ -125,6 +181,11 @@ export default function RootClient({ route, currentUser }: Props) {
             viewMode={viewMode}
             isMobile={isMobile}
             onItemClick={handleDiagramClick}
+            relatedRoutes={relatedRoutes}
+            relatedLoading={relatedLoading}
+            isFetchingRelated={isFetchingRelated}
+            fetchMoreRelated={fetchMoreRelatedRoutes}
+            relatedHasMore={relatedHasMore}
           />
         </motion.div>
 
@@ -146,6 +207,11 @@ export default function RootClient({ route, currentUser }: Props) {
             isMobile={isMobile}
             scrollContainerRef={scrollContainerRef}
             itemRefs={itemRefs}
+            relatedRoutes={relatedRoutes}
+            relatedLoading={relatedLoading}
+            isFetchingRelated={isFetchingRelated}
+            fetchMoreRelated={fetchMoreRelatedRoutes}
+            relatedHasMore={relatedHasMore}
           />
 
           {/* MAP VIEW */}

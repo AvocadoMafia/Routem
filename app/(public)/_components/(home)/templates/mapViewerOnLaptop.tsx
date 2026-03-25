@@ -12,7 +12,10 @@ import { useMemo } from "react";
 import { MapPin } from "lucide-react";
 
 type Props = {
-    routes: Route[]
+    routes: Route[];
+    fetchMore: () => Promise<void>;
+    hasMore: boolean;
+    isFetching?: boolean;
 }
 
 // RouteNode型（スポット情報付き）
@@ -144,7 +147,14 @@ export default function MapViewerOnLaptop(props: Props) {
                         </Map>
                     </div>
                     <RouteViewer focusedIndex={focusedRouteIndex} routes={props.routes}/>
-                    <RouteList focusedIndex={focusedRouteIndex} routes={props.routes} setFocusedIndex={setFocusedRouteIndex} />
+                    <RouteList 
+                        focusedIndex={focusedRouteIndex} 
+                        routes={props.routes} 
+                        setFocusedIndex={setFocusedRouteIndex} 
+                        fetchMore={props.fetchMore} 
+                        hasMore={props.hasMore}
+                        isFetching={props.isFetching}
+                    />
                 </div>
                 {/*<RouteFilter/>*/}
             </div>

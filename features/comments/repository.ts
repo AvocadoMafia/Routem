@@ -51,13 +51,15 @@ export const commentsRepository = {
         }
     },
 
-    getCommentsByRouteId: async (routeId: string) => {
+    getCommentsByRouteId: async (routeId: string, take?: number, skip?: number) => {
         try {
             const prisma = getPrisma();
             return prisma.comment.findMany({
                 where: {
                     routeId,
                 },
+                take,
+                skip,
                 include: {
                     user: {
                         select: {

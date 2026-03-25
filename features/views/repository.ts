@@ -12,6 +12,25 @@ export const viewsRepository = {
     }
   },
 
+  updateView: async (id: string, data: Prisma.ViewUpdateInput) => {
+    try {
+      return await getPrisma().view.update({
+        where: { id },
+        data,
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  findFirst: async (args: Prisma.ViewFindFirstArgs) => {
+    try {
+      return await getPrisma().view.findFirst(args);
+    } catch (e) {
+      throw e;
+    }
+  },
+
   countViews: async (routeId: string) => {
     try {
       return await getPrisma().view.count({

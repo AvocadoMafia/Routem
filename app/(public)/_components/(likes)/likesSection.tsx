@@ -18,7 +18,7 @@ export default function LikesSection() {
 
 
     useEffect(() => {
-        getDataFromServerWithJson<LikeRecord[]>('/api/v1/likes?route=true&take=30').then(
+        getDataFromServerWithJson<LikeRecord[]>('/api/v1/me/likes?route=true&take=30').then(
             (items) => setLikes((items || []).filter((it: any) => it.route))
         )
     }, [])

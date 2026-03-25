@@ -14,8 +14,12 @@ export default function RootClient({ id }: { id: string }) {
   const { user: currentUser } = userStore()
   const [targetUser, setTargetUser] = useState<User | null>(null)
   const [userRoutes, setUserRoutes] = useState<any[]>([])
+  const [likedRoutes, setLikedRoutes] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
+  const [isFetching, setIsFetching] = useState(false)
+  const [hasMoreRoutes, setHasMoreRoutes] = useState(true)
+  const [hasMoreLikes, setHasMoreLikes] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
 
   useEffect(() => {
@@ -38,23 +42,88 @@ export default function RootClient({ id }: { id: string }) {
       }
     }
 
-    const fetchRoutes = async () => {
+    fetchUser()
+  }, [id, currentUser, router])
+
+  // 初期フェッチ（タブ切り替え時）
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      // 既にデータがある場合は再取得しない（初回のみ）
+      if (activeTab === 'routes' && userRoutes.length > 0) return
+      if (activeTab === 'likes' && likedRoutes.length > 0) return
+
       setIsLoadingRoutes(true)
-      try {
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=50&visibility=PUBLIC`)
-        if (res) {
-          setUserRoutes(res)
+      if (activeTab === 'routes') {
+        try {
+          const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=12&offset=0&type=user_posts`)
+          setUserRoutes(res || [])
+          setHasMoreRoutes((res || []).length === 12)
+        } catch (error) {
+          console.error('Failed to fetch user routes:', error)
         }
-      } catch (error) {
-        console.error('Failed to fetch user routes:', error)
-      } finally {
-        setIsLoadingRoutes(false)
+      } else if (activeTab === 'likes') {
+        try {
+          const res = await getDataFromServerWithJson<any[]>(`/api/v1/likes?userId=${id}&route=true&take=12&offset=0`)
+          // /api/v1/likes returns Like records. Map to routes.
+          const routes = (res || []).map((l: any) => l.route).filter(Boolean)
+          setLikedRoutes(routes)
+          setHasMoreLikes((res || []).length === 12)
+        } catch (error) {
+          console.error('Failed to fetch user likes:', error)
+        }
       }
+      setIsLoadingRoutes(false)
     }
 
-    fetchUser()
-    fetchRoutes()
-  }, [id, currentUser, router])
+    fetchInitialData()
+  }, [id, activeTab, userRoutes.length, likedRoutes.length])
+
+  const fetchMore = async () => {
+    if (isFetching) return
+    
+    if (activeTab === 'routes' && hasMoreRoutes) {
+      setIsFetching(true)
+      try {
+        const offset = userRoutes.length
+        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=12&offset=${offset}&type=user_posts`)
+        if (res && res.length > 0) {
+          setUserRoutes(prev => {
+            const existingIds = new Set(prev.map(r => r.id));
+            const filtered = res.filter(r => !existingIds.has(r.id));
+            return [...prev, ...filtered];
+          })
+          setHasMoreRoutes(res.length === 12)
+        } else {
+          setHasMoreRoutes(false)
+        }
+      } catch (error) {
+        console.error('Failed to fetch more user routes:', error)
+      } finally {
+        setIsFetching(false)
+      }
+    } else if (activeTab === 'likes' && hasMoreLikes) {
+      setIsFetching(true)
+      try {
+        const offset = likedRoutes.length
+        const res = await getDataFromServerWithJson<any[]>(`/api/v1/likes?userId=${id}&route=true&take=12&offset=${offset}`)
+        if (res && res.length > 0) {
+          const newRoutes = (res || []).map((l: any) => l.route).filter(Boolean)
+          setLikedRoutes(prev => {
+            const existingIds = new Set(prev.map(r => r.id));
+            const filtered = newRoutes.filter(r => !existingIds.has(r.id));
+            return [...prev, ...filtered];
+          })
+          setHasMoreLikes(res.length === 12)
+        } else {
+          setHasMoreLikes(false)
+        }
+      } catch (error) {
+        console.error('Failed to fetch more user likes:', error)
+      } finally {
+        setIsFetching(false)
+      }
+    }
+  }
 
   if (isLoading) {
     return (
@@ -87,12 +156,16 @@ export default function RootClient({ id }: { id: string }) {
         activeTab={activeTab}
         onChangeTab={setActiveTab}
         stats={{ 
-          routes: userRoutes?.length || 0, 
+          routes: targetUser._count?.routes ?? 0, 
           followers: '0', 
           following: '0' 
         }}
-        routes={userRoutes || []}
+        routes={userRoutes}
+        likedRoutes={likedRoutes}
         mode="public"
+        fetchMore={fetchMore}
+        hasMore={activeTab === 'routes' ? hasMoreRoutes : hasMoreLikes}
+        isFetching={isFetching}
       />
     </div>
   )

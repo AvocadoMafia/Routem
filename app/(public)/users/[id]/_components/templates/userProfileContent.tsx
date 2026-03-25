@@ -23,8 +23,8 @@ export default function UserProfileContent({
       <TabNavigation activeTab={activeTab} onChange={onChangeTab} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {activeTab === 'routes' && routes.map((route) => (
-          <div key={route.id} className="aspect-[4/5]">
+            {activeTab === 'routes' && routes.map((route, idx) => (
+          <div key={idx} className="aspect-[4/5]">
             <RouteCardGraphical route={route} />
           </div>
         ))}
