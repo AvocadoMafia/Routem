@@ -49,15 +49,15 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
     }, [likes]);
 
     return (
-        <div className={'md:w-1/3 w-full min-w-[340px] md:p-3 h-full overflow-y-auto md:overflow-hidden no-scrollbar'}>
+        <div className={'md:w-1/3 w-full min-w-[340px] md:h-full h-fit md:p-3 no-scrollbar '}>
             {/* モバイル用 Sticky Header */}
-            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-4 py-3 mb-2 flex items-center gap-2">
+            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 mb-2 flex items-center gap-2">
                 <HiHeart className="text-accent-0 w-5 h-5" />
                 <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
             </div>
 
             {/* デスクトップ: フォーカス可能な縦スクロールリスト */}
-            <div ref={containerRef} className={'hidden md:flex flex-col gap-4 h-full overflow-y-scroll no-scrollbar p-4 bg-linear-to-br from-grass/60 via-grass/30 to-grass/60 backdrop-blur-md rounded-2xl border-1 border-white/20 shadow-inner'}>
+            <div ref={containerRef} className={'hidden md:flex flex-col gap-4 h-full overflow-y-scroll md:p-3 no-scrollbar bg-linear-to-br from-grass/60 via-grass/30 to-grass/60 backdrop-blur-md rounded-2xl border-1 border-white/20 shadow-inner'}>
                 {routes.map((route, idx) => (
                     <div key={route.id ?? idx} ref={(el) => {
                         if (el) {
@@ -72,7 +72,7 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
             </div>
 
             {/* モバイル: いいね日ごとにグルーピングしたシンプルな縦リスト */}
-            <div className={'md:hidden flex flex-col gap-6 p-4'}>
+            <div className={'md:hidden flex flex-col gap-6'}>
                 {groupedByDate.map(([date, items]) => (
                     <div key={date} className={'flex flex-col gap-2'}>
                         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1/80 px-1">{date}</div>

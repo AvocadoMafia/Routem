@@ -35,7 +35,7 @@ export default function LikesSection() {
 
 
     return (
-        <div className={'w-full h-full flex flex-row relative overflow-hidden'}>
+        <div className={'w-full md:h-full h-fit flex flex-row relative md:overflow-hidden'}>
             {/* 全面背景装飾 */}
             <AnimatePresence custom={direction} initial={false}>
                 <motion.div
@@ -66,7 +66,7 @@ export default function LikesSection() {
             
             <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
 
-            <div className="relative z-10 w-full h-full flex flex-row">
+            <div className="relative z-10 w-full md:h-full h-fit flex flex-row">
                 <LikedRoutesList routes={routes} likes={likes} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
                 <div className="flex-1 h-full relative md:block hidden">
                     <FocusingRouteViewer routeOnFocus={routeOnFocus} focusedRouteIdx={focusedRouteIdx} setFocusedRouteIdx={setFocusedRouteIdx} routesLength={routes.length}/>

@@ -133,7 +133,7 @@ export default function TrendingSection() {
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
                     >
-                        {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} hideHeader />}
+                        {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />}
                         {activeTab === 'users' && <TrendingUsersList users={users || []}  />}
                         {activeTab === 'tags' && <TrendingTagsList tags={tags || []} />}
                     </motion.div>
