@@ -1,28 +1,44 @@
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
-import { User } from "@supabase/supabase-js";
-import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@/features/routes/schema";
-import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
+import {
+  DeleteRouteType,
+  GetRoutesType,
+  PatchRouteType,
+  postRouteType,
+} from "@/features/routes/schema";
+import {
+  buildCreateRouteData,
+  buildRoutesWhere,
+  buildUpdateRouteData,
+} from "@/features/routes/utils";
 import { getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
+import { User } from "@supabase/supabase-js";
 import crypto from "crypto";
-import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
 
 export const routesService = {
-  getRoutes: async (
-    user: User | null,
-    query: GetRoutesType,
-  ): Promise<RouteWithRelations[]> => {
+  getRoutes: async (user: User | null, query: GetRoutesType): Promise<RouteWithRelations[]> => {
     try {
       let ids: string[] | undefined = undefined;
-      if (query.q) {
-        const meilisearch = getMeilisearch();
-        const index = await meilisearch.getIndex("routes");
-        const search = await index.search(query.q);
-        ids = search.hits.map((hit) => hit.id);
-        if (ids.length === 0) {
-          return [];
-        }
+
+      const meilisearch = getMeilisearch();
+      const index = await meilisearch.getIndex("routes");
+
+      // Where検索用の緯度経度近い順ソート
+      const sort =
+        (query.lat != undefined && query.lon != undefined) ||
+        (query.lat == undefined && query.lon == undefined)
+          ? [`_geoPoint(${query.lat},${query.lon}):asc`]
+          : undefined;
+
+      const search = await index.search(query.q, {
+        ...(sort && { sort }),
+      });
+      ids = search.hits.map((hit) => hit.id);
+      if (ids.length === 0) {
+        return [];
       }
+
       const where = buildRoutesWhere(query, user?.id, ids);
 
       const result = await routesRepository.findMany(where, query.limit);
@@ -46,8 +62,8 @@ export const routesService = {
 
       await syncToMeilisearch(result);
 
-      return result
-    }catch(e){
+      return result;
+    } catch (e) {
       throw e;
     }
   },
@@ -98,7 +114,7 @@ export const routesService = {
 
       // 認可チェック
       const isAuthor = route.authorId === userId;
-      const isCollaborator = route.collaborators.some(c => c.userId === userId);
+      const isCollaborator = route.collaborators.some((c) => c.userId === userId);
 
       if (route.visibility === RouteVisibility.PRIVATE && !isAuthor && !isCollaborator) {
         throw new Error("Unauthorized");
@@ -173,7 +189,7 @@ export const routesService = {
       if (!route) return false;
       if (route.authorId === userId) return true;
 
-      const isCollaborator = route.collaborators.some(c => c.userId === userId);
+      const isCollaborator = route.collaborators.some((c) => c.userId === userId);
       if (isCollaborator && route.collaboratorPolicy === RouteCollaboratorPolicy.CAN_EDIT) {
         return true;
       }
@@ -183,49 +199,56 @@ export const routesService = {
       throw e;
     }
   },
-
 };
 
 async function syncToMeilisearch(route: RouteWithRelations) {
-    const en_texts = (await translateJa2En([
+  const en_texts = (
+    await translateJa2En([
+      route.title,
+      route.description,
+      ...route.routeNodes.map((n) => n.spot?.name),
+      ...route.tags.map((t) => t.name),
+    ])
+  ).filter(Boolean);
+
+  const meilisearch = getMeilisearch();
+  const routesIndex = meilisearch.index("routes");
+
+  const documents = [
+    {
+      id: route.id,
+      title: route.title,
+      description: route.description,
+      authorId: route.authorId,
+      visibility: route.visibility,
+      createdAt: route.createdAt?.getTime(),
+      updatedAt: route.updatedAt?.getTime(),
+      routeNodes: route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+      tags: route.tags.map((t) => t.name),
+      month: route.month,
+      routeFor: route.routeFor,
+      budget: route.budget ? Number(route.budget.amount) : undefined,
+      _geo: {
+        lat: route.routeNodes[0]?.spot.latitude,
+        lon: route.routeNodes[0]?.spot.longitude,
+      },
+      searchText: [
         route.title,
         route.description,
-        ...route.routeNodes.map(n => n.spot?.name),
-        ...route.tags.map(t => t.name)
-    ])).filter(Boolean);
+        ...route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+        ...route.tags.map((t) => t.name),
+        ...en_texts,
+      ].join(" "),
+    },
+  ];
 
-    const meilisearch = getMeilisearch();
-    const routesIndex = meilisearch.index("routes");
+  await routesIndex.updateDocuments(documents, { primaryKey: "id" });
 
-    const documents = [{
-        id: route.id,
-        title: route.title,
-        description: route.description,
-        authorId: route.authorId,
-        visibility: route.visibility,
-        createdAt: route.createdAt?.getTime(),
-        updatedAt: route.updatedAt?.getTime(),
-        routeNodes: route.routeNodes.map(n => n.spot?.name).filter(Boolean),
-        tags: route.tags.map(t => t.name),
-        month: route.month,
-        routeFor: route.routeFor,
-        budget: route.budget ? Number(route.budget.amount) : undefined,
-        searchText: [
-            route.title,
-            route.description,
-            ...route.routeNodes.map(n => n.spot?.name).filter(Boolean),
-            ...route.tags.map(t => t.name),
-            ...en_texts,
-        ].join(" ")
-    }];
-
-    await routesIndex.updateDocuments(documents, { primaryKey: "id" });
-
-    // タグをMeilisearchのtagsインデックスに追加
-    const tagsIndex = meilisearch.index("tags");
-    const tagDocuments = route.tags.map(t => ({
-        id: t.name,
-        name: t.name
-    }));
-    await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
+  // タグをMeilisearchのtagsインデックスに追加
+  const tagsIndex = meilisearch.index("tags");
+  const tagDocuments = route.tags.map((t) => ({
+    id: t.name,
+    name: t.name,
+  }));
+  await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
 }

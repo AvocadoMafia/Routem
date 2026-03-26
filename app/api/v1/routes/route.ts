@@ -1,13 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { GetRoutesSchema, PatchRouteSchema, PostRouteSchema } from "@/features/routes/schema";
 import { routesService } from "@/features/routes/service";
-import { validateParams } from "@/lib/server/validateParams";
-import { GetRoutesSchema } from "@/features/routes/schema";
 import { createClient } from "@/lib/auth/supabase/server";
-import { PostRouteSchema } from "@/features/routes/schema";
-import { PatchRouteSchema } from "@/features/routes/schema";
-
-
+import { handleRequest } from "@/lib/server/handleRequest";
+import { validateParams } from "@/lib/server/validateParams";
+import { NextRequest, NextResponse } from "next/server";
 
 // /api/v1/routes
 // validationとauthenticationつまり処理に入る前段階の層
@@ -16,15 +12,17 @@ import { PatchRouteSchema } from "@/features/routes/schema";
 export async function GET(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
     const safe_user = error ? null : user;
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
     const data = await routesService.getRoutes(safe_user, parsed_params);
-    return NextResponse.json(data, {status: 200});
+    return NextResponse.json(data, { status: 200 });
   });
 }
-
 
 // POST /api/v1/routems
 // ルート作成用のAPI。
@@ -32,7 +30,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
     if (error || !user) {
       throw new Error("Unauthorized");
     }
@@ -43,14 +44,15 @@ export async function POST(req: NextRequest) {
   });
 }
 
-
-
 export async function PATCH(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
-    const {data:{user}, error} = await supabase.auth.getUser();
-    if(!user || error){
-        throw new Error("unauthorized")
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (!user || error) {
+      throw new Error("unauthorized");
     }
     const body = await req.json();
     const parsed_body = await validateParams(PatchRouteSchema, body);
