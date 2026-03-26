@@ -2,6 +2,8 @@ import 'dotenv/config';
 import { PrismaClient, RouteVisibility, RouteFor, TransitMode, SpotSource, CurrencyCode } from "@prisma/client";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { getMeilisearch } from "@/lib/config/server";
+import { translateJa2En } from "@/lib/translation/translateJa2En";
 
 const dbType = process.env.DB_TYPE || 'local';
 const connectionString = dbType === 'vercel'
@@ -78,7 +80,7 @@ async function main() {
         const tag = tagNames[i % tagNames.length];
         const spot = spotsData[i % spotsData.length];
 
-        await prisma.route.upsert({
+        const route = await prisma.route.upsert({
             where: { id: routeId },
             update: {
                 title: `Dummy Route ${i}`,
@@ -118,8 +120,83 @@ async function main() {
                     }]
                 }
             },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        icon: true,
+                    },
+                },
+                thumbnail: true,
+                routeNodes: {
+                    include: {
+                        spot: true,
+                        transitSteps: true,
+                        images: true,
+                    },
+                },
+                likes: true,
+                views: true,
+                collaborators: true,
+                budget: true,
+                tags: true,
+            }
         });
+
+        // Sync to Meilisearch
+        try {
+            await syncToMeilisearch(route);
+            console.log(`[${i}/40] Synced route "${route.title}" to Meilisearch`);
+        } catch (error) {
+            console.error(`Failed to sync route ${routeId} to Meilisearch:`, error);
+        }
     }
+}
+
+// Sync route to Meilisearch index (same as in routesService.ts)
+async function syncToMeilisearch(route: any) {
+    const en_texts = (await translateJa2En([
+        route.title,
+        route.description,
+        ...route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
+        ...route.tags.map((t: any) => t.name)
+    ])).filter(Boolean);
+
+    const meilisearch = getMeilisearch();
+    const routesIndex = meilisearch.index("routes");
+
+    const documents = [{
+        id: route.id,
+        title: route.title,
+        description: route.description,
+        authorId: route.authorId,
+        visibility: route.visibility,
+        createdAt: route.createdAt?.getTime(),
+        updatedAt: route.updatedAt?.getTime(),
+        routeNodes: route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
+        tags: route.tags.map((t: any) => t.name),
+        month: route.month,
+        routeFor: route.routeFor,
+        budget: route.budget ? Number(route.budget.amount) : undefined,
+        searchText: [
+            route.title,
+            route.description,
+            ...route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
+            ...route.tags.map((t: any) => t.name),
+            ...en_texts,
+        ].join(" ")
+    }];
+
+    await routesIndex.updateDocuments(documents, { primaryKey: "id" });
+
+    // タグをMeilisearchのtagsインデックスに追加
+    const tagsIndex = meilisearch.index("tags");
+    const tagDocuments = route.tags.map((t: any) => ({
+        id: t.name,
+        name: t.name
+    }));
+    await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
 }
 
 //実行処理

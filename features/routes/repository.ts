@@ -111,6 +111,16 @@ export const routesRepository = {
     }
   },
 
+  count: async (where: Prisma.RouteWhereInput): Promise<number> => {
+    try {
+      return await getPrisma().route.count({
+        where,
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
   createInvite: async (data: Prisma.RouteInviteCreateInput) => {
     try {
       return await getPrisma().routeInvite.create({

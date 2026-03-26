@@ -6,10 +6,9 @@ export default async function Page({ searchParams }: { searchParams: { q?: strin
   const params = await searchParams;
   const q = params.q || '';
 
-
   return (
-    <div className="w-full h-full p-4">
+    <main className="w-full min-h-screen">
       <RootClient q={q} />
-    </div>
+    </main>
   );
 }

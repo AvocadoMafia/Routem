@@ -13,12 +13,32 @@ export const GetRoutesSchema = z.object({
         .default(DEFAULT_LIMIT)
         .optional(),
     cursor: z.string().optional(),
-    q:z.string().optional(),
     type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts"]).optional(),
     targetId: z.string().uuid().optional(),
     orderBy: z.enum(["createdAt", "updatedAt"]).optional(),
 });
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
+
+// Search Routes Schema - limit-offset pagination
+export const SearchRoutesSchema = z.object({
+    q: z.string().optional(),
+    limit: z
+        .union([z.string().regex(/^\d+$/), z.number()])
+        .transform((n: any) => (typeof n === "string" ? Number(n) : n))
+        .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
+        .default(DEFAULT_LIMIT)
+        .optional(),
+    offset: z
+        .union([z.string().regex(/^\d+$/), z.number()])
+        .transform((n: any) => (typeof n === "string" ? Number(n) : n))
+        .transform((n) => Math.max(0, n))
+        .default(0)
+        .optional(),
+    orderBy: z.enum(["relevant", "latest", "likes"]).default("relevant").optional(),
+    routeFor: z.string().optional(),
+    month: z.string().optional(),
+});
+export type SearchRoutesType = z.infer<typeof SearchRoutesSchema>;
 
 export const PostRouteSchema = z.object({
     description: z.string(),

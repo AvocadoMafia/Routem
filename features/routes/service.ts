@@ -1,6 +1,6 @@
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
 import { User } from "@supabase/supabase-js";
-import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@/features/routes/schema";
+import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType, SearchRoutesType } from "@/features/routes/schema";
 import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
 import { getMeilisearch, getRedisClient } from "@/lib/config/server";
 import { DEFAULT_LIMIT } from "@/lib/server/constants";
@@ -46,16 +46,6 @@ export const routesService = {
           if (ids.length === 0) return { items: [], nextCursor: null };
         }
       }
-
-      if (query.q) {
-        const meilisearch = getMeilisearch();
-        const index = await meilisearch.getIndex("routes");
-        const search = await index.search(query.q);
-        ids = search.hits.map((hit) => hit.id);
-        if (ids.length === 0) {
-          return { items: [], nextCursor: null };
-        }
-      }
       const where = buildRoutesWhere(query, user?.id, ids);
 
       let orderBy: Prisma.RouteOrderByWithRelationInput | undefined = undefined;
@@ -74,6 +64,104 @@ export const routesService = {
         return { items: sortedResult, nextCursor };
       }
       return { items: result, nextCursor };
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // Search Routes - limit-offset pagination
+  searchRoutes: async (
+    user: User | null,
+    query: SearchRoutesType,
+  ): Promise<{ items: RouteWithRelations[]; total: number }> => {
+    try {
+      const limit = query.limit ?? DEFAULT_LIMIT;
+      const offset = query.offset ?? 0;
+
+      let ids: string[] = [];
+      let total = 0;
+
+      if (query.q) {
+        const meilisearch = getMeilisearch();
+        const index = await meilisearch.getIndex("routes");
+        
+        const search = await index.search(query.q, {
+          limit,
+          offset,
+        });
+        
+        ids = search.hits.map((hit) => hit.id);
+        total = search.estimatedTotalHits || 0;
+        
+        if (ids.length === 0) {
+          return { items: [], total };
+        }
+
+        // Set where clause with search ids
+        const where: Prisma.RouteWhereInput = {
+          id: { in: ids },
+          visibility: RouteVisibility.PUBLIC,
+        };
+
+        // Filter by routeFor
+        if (query.routeFor) {
+          where.routeFor = query.routeFor as any;
+        }
+
+        // Filter by month
+        if (query.month) {
+          where.month = Number(query.month);
+        }
+
+        // Fetch routes in meilisearch result order
+        const result = await routesRepository.findMany(where, ids.length);
+        
+        // Sort by meilisearch order
+        const sortedResult = ids
+          .map((id) => result.find((route) => route.id === id))
+          .filter((route) => route !== undefined);
+
+        return { items: sortedResult, total };
+      } else {
+        // No query, return based on database
+        const where: Prisma.RouteWhereInput = {
+          visibility: RouteVisibility.PUBLIC,
+        };
+
+        // Filter by routeFor
+        if (query.routeFor) {
+          where.routeFor = query.routeFor as any;
+        }
+
+        // Filter by month
+        if (query.month) {
+          where.month = Number(query.month);
+        }
+
+        // Fetch routes with limit and offset
+        let orderBy: Prisma.RouteOrderByWithRelationInput = { createdAt: "desc" };
+        if (query.orderBy === "latest") {
+          orderBy = { createdAt: "desc" };
+        } else if (query.orderBy === "likes") {
+          // For likes ordering, fetch with default order then sort in memory
+          orderBy = { createdAt: "desc" };
+        } else if (query.orderBy === "relevant") {
+          orderBy = { createdAt: "desc" }; // fallback for DB path
+        }
+
+        // Get total count
+        total = await routesRepository.count(where);
+        
+        // Fetch routes
+        const result = await routesRepository.findMany(where, limit, offset, orderBy);
+        
+        // Sort by likes count if requested
+        if (query.orderBy === "likes") {
+          result.sort((a, b) => b.likes.length - a.likes.length);
+        }
+        
+        return { items: result, total };
+      }
     } catch (e) {
       throw e;
     }

@@ -4,6 +4,21 @@ import { createClient } from '@/lib/auth/supabase/server'
 import {getPrisma} from "@/lib/config/server";
 
 /**
+ * OAuth認証コールバックエンドポイント
+ * 
+ * Supabaseからリダイレクトされ、認証コードをセッションに交換するエンドポイント
+ * 
+ * このエンドポイントへのアクセスソースについて：
+ * - ブラウザ（Web）: http://localhost:3000/auth/callback
+ * - iPhone実機: http://192.168.x.x:3000/auth/callback (またはNGROK URL)
+ * - いずれの場合でも、Supabaseの「Redirect URLs」設定に追加する必要があります
+ * 
+ * リダイレクト後の挙動：
+ * - 開発環境: request.origin を使用（自動的にクライアントの origin が使われる）
+ * - 本番環境: X-Forwarded-Host ヘッダーを確認（ロードバランサー等を想定）
+ */
+
+/**
  * Open Redirect防止: 安全な相対パスのみ許可
  * - `/`で始まる必要がある
  * - `//`で始まるURL（プロトコル相対URL）を拒否
