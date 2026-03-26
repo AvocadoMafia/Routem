@@ -24,7 +24,6 @@ export const searchHistoryService = {
       try {
         const meili = getMeilisearch();
         const index = meili.index("search_queries");
-        await index.updateSearchableAttributes(["query", "queryEn"]);
         await index.addDocuments([
           {
             id,
