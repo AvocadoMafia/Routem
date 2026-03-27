@@ -1,7 +1,7 @@
 'use client'
 
 import ScrollDetector from "@/app/_components/layout/templates/scrollDetector";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect} from "react";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { motion } from "framer-motion";
 import Header from "@/app/_components/layout/templates/header";
@@ -11,13 +11,14 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
 
     const scrollDirection = useUiStore((state) => state.scrollDirection)
     const setIsMobile = useUiStore((state) => state.setIsMobile)
-    const [headerHeight, setHeaderHeight] = useState(50)
+    const headerHeight = useUiStore((state) => state.headerHeight)
+    const setHeaderHeight = useUiStore((state) => state.setHeaderHeight)
 
     const updateHeight = useCallback(() => {
         const isMobile = window.innerWidth < 768;
         setIsMobile(isMobile);
         setHeaderHeight(isMobile ? 50 : 60)
-    }, [setIsMobile])
+    }, [setIsMobile, setHeaderHeight])
 
     useEffect(() => {
         updateHeight()

@@ -17,14 +17,14 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
     const isEmpty = routes.length === 0 && !isFetching;
 
     return (
-        <div>
+        <div className={'w-full p-6'}>
             {isEmpty ? (
                 <div className="flex items-center justify-center py-20">
                     <p className="text-slate-500 text-lg">結果が見つかりませんでした</p>
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-max">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-max">
                         {routes.map((route) => (
                             <div
                                 key={route.id}
@@ -39,6 +39,7 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
                                 <div ref={observerTarget}>
                                     <RouteCardBasicSkeleton />
                                 </div>
+                                <RouteCardBasicSkeleton />
                                 <RouteCardBasicSkeleton />
                                 <RouteCardBasicSkeleton />
                             </>

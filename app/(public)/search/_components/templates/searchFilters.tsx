@@ -1,3 +1,6 @@
+'use client';
+
+import { FiRotateCcw, FiUsers, FiCalendar } from 'react-icons/fi';
 import FilterSelect from '@/app/(public)/search/_components/ingredients/filterSelect';
 
 export type FilterState = {
@@ -12,33 +15,33 @@ type Props = {
 }
 
 const SORT_OPTIONS = [
-    { value: 'relevant', label: '関連度が高い' },
-    { value: 'latest', label: '最新順' },
-    { value: 'likes', label: 'いいね順' },
+    { value: 'relevant', label: 'Most Relevant' },
+    { value: 'latest', label: 'Latest' },
+    { value: 'likes', label: 'Most Liked' },
 ];
 
 const ROUTE_FOR_OPTIONS = [
-    { value: '', label: 'すべて' },
-    { value: 'family', label: 'ファミリー' },
-    { value: 'couples', label: 'カップル' },
-    { value: 'friends', label: '友達' },
-    { value: 'solo', label: 'ソロ' },
+    { value: '', label: 'All' },
+    { value: 'family', label: 'Family' },
+    { value: 'couples', label: 'Couples' },
+    { value: 'friends', label: 'Friends' },
+    { value: 'solo', label: 'Solo' },
 ];
 
 const MONTH_OPTIONS = [
-    { value: '', label: 'すべての季節' },
-    { value: '1', label: '1月' },
-    { value: '2', label: '2月' },
-    { value: '3', label: '3月' },
-    { value: '4', label: '4月' },
-    { value: '5', label: '5月' },
-    { value: '6', label: '6月' },
-    { value: '7', label: '7月' },
-    { value: '8', label: '8月' },
-    { value: '9', label: '9月' },
-    { value: '10', label: '10月' },
-    { value: '11', label: '11月' },
-    { value: '12', label: '12月' },
+    { value: '', label: 'All Seasons' },
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
 ];
 
 export default function SearchFilters({ filters, onFiltersChange }: Props) {
@@ -50,34 +53,36 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
     };
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h3 className="text-lg font-bold text-slate-900 mb-4">フィルター</h3>
+        <div className="h-full flex flex-col p-6 gap-6">
+            <div className="hidden md:block border-b border-grass pb-4">
+                <h3 className="text-lg font-bold text-foreground-0 uppercase tracking-widest">Filter</h3>
             </div>
 
-            <FilterSelect
-                label="並べ替え"
-                icon="🔄"
-                value={filters.orderBy}
-                options={SORT_OPTIONS}
-                onChange={(value) => handleFilterChange('orderBy', value)}
-            />
+            <div className="flex-1 space-y-6 h-fit no-scrollbar">
+                <FilterSelect
+                    label="Sort By"
+                    icon={<FiRotateCcw className="inline" size={18} />}
+                    value={filters.orderBy}
+                    options={SORT_OPTIONS}
+                    onChange={(value) => handleFilterChange('orderBy', value)}
+                />
 
-            <FilterSelect
-                label="ルートのタイプ"
-                icon="👥"
-                value={filters.routeFor}
-                options={ROUTE_FOR_OPTIONS}
-                onChange={(value) => handleFilterChange('routeFor', value)}
-            />
+                <FilterSelect
+                    label="Route Type"
+                    icon={<FiUsers className="inline" size={18} />}
+                    value={filters.routeFor}
+                    options={ROUTE_FOR_OPTIONS}
+                    onChange={(value) => handleFilterChange('routeFor', value)}
+                />
 
-            <FilterSelect
-                label="季節"
-                icon="🌳"
-                value={filters.month}
-                options={MONTH_OPTIONS}
-                onChange={(value) => handleFilterChange('month', value)}
-            />
+                <FilterSelect
+                    label="Season"
+                    icon={<FiCalendar className="inline" size={18} />}
+                    value={filters.month}
+                    options={MONTH_OPTIONS}
+                    onChange={(value) => handleFilterChange('month', value)}
+                />
+            </div>
         </div>
     );
 }
