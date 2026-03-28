@@ -43,7 +43,7 @@ export const PostRouteSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title must be at most 100 characters"),
   visibility: z.enum(["PUBLIC", "PRIVATE"]),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-  routeFor: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
+  who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
   when: z.array(z.int().min(1).max(12)).min(1).max(12),
   budget: z.object({
     currency: z.enum([
@@ -85,7 +85,7 @@ export const PatchRouteSchema = z.object({
     .optional(),
   visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-  routeFor: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
+  who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
   when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
   budget: z
     .object({
