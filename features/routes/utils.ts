@@ -112,7 +112,7 @@ export function buildRouteNodesFromItems(
                 create: {
                   name: item.name,
                   latitude: item.lat,
-                  longitude: item.lng,
+                  longitude: item.lon,
                   source: item.source,
                   sourceId: item.sourceId,
                 },
@@ -125,7 +125,7 @@ export function buildRouteNodesFromItems(
                 create: {
                   name: item.name,
                   latitude: item.lat,
-                  longitude: item.lng,
+                  longitude: item.lon,
                 },
               },
             };
@@ -134,7 +134,7 @@ export function buildRouteNodesFromItems(
               create: {
                 name: item.name,
                 latitude: item.lat,
-                longitude: item.lng,
+                longitude: item.lon,
               },
             };
           }
@@ -259,5 +259,3 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
       : undefined,
   };
 }
-
-export async function getAdjacentMonth();
