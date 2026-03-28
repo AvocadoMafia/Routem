@@ -5,7 +5,6 @@ import {
   ImageType,
   Prisma,
   RouteCollaboratorPolicy,
-  RouteFor,
   RouteVisibility,
   TransitMode,
 } from "@prisma/client";
@@ -42,6 +41,11 @@ export function buildRoutesWhere(
   //   5W1H who
   if (query.who) {
     where.routeFor = query.who;
+  }
+
+  //   5W1H when
+  if (query.when) {
+    where.month = { hasSome: query.when };
   }
 
   // visibility
@@ -187,8 +191,8 @@ export function buildCreateRouteData(
       create: routeNodes,
     },
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
-    routeFor: body.routeFor as RouteFor,
-    month: body.month === 0 ? null : body.month,
+    routeFor: body.who,
+    month: body.when,
     budget: {
       create: {
         currency: body.budget.currency as CurrencyCode,
@@ -231,8 +235,8 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
       },
     }),
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
-    routeFor: (body.routeFor as RouteFor) ?? undefined,
-    month: body.month === 0 ? null : (body.month ?? undefined),
+    routeFor: body.who,
+    month: body.when,
     budget: body.budget
       ? {
           update: {
@@ -255,3 +259,5 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
       : undefined,
   };
 }
+
+export async function getAdjacentMonth();

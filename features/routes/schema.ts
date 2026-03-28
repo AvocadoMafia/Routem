@@ -16,6 +16,7 @@ export const GetRoutesSchema = z
     lat: z.coerce.number().optional(),
     lon: z.coerce.number().optional(),
     who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
+    when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
   })
   .refine(
     (data) => {
@@ -43,7 +44,7 @@ export const PostRouteSchema = z.object({
   visibility: z.enum(["PUBLIC", "PRIVATE"]),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
   routeFor: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
-  month: z.number().int().min(0).max(12),
+  when: z.array(z.int().min(1).max(12)).min(1).max(12),
   budget: z.object({
     currency: z.enum([
       "JPY",
@@ -85,7 +86,7 @@ export const PatchRouteSchema = z.object({
   visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
   routeFor: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
-  month: z.number().int().min(0).max(12).optional(),
+  when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
   budget: z
     .object({
       currency: z.enum([

@@ -91,7 +91,7 @@ model Route {
   //追加したやつ
   budget   Budget?
   routeFor RouteFor @default(EVERYONE)
-  month    Int?
+  month    Int[]
   tags     Tag[]
 
   authorId String @db.Uuid
