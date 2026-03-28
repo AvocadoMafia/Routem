@@ -13,11 +13,14 @@ import {
 import { getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
-import { User } from "@supabase/supabase-js";
 import crypto from "crypto";
 
 export const routesService = {
-  getRoutes: async (user: User | null, query: GetRoutesType): Promise<RouteWithRelations[]> => {
+  // user:Userではなくuser_idを受け取ることで、testしやすくしている。
+  getRoutes: async (
+    user_id: string | undefined,
+    query: GetRoutesType,
+  ): Promise<RouteWithRelations[]> => {
     try {
       let ids: string[] | undefined = undefined;
 
@@ -39,7 +42,7 @@ export const routesService = {
         return [];
       }
 
-      const where = buildRoutesWhere(query, user?.id, ids);
+      const where = buildRoutesWhere(query, user_id, ids);
 
       const result = await routesRepository.findMany(where, query.limit);
       if (ids) {
