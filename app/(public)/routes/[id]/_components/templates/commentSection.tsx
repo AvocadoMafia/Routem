@@ -118,11 +118,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
       <CommentInput onPost={handlePostComment} />
 
       <div className="flex flex-col gap-6">
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <Loader2 className="w-6 h-6 animate-spin text-accent-0" />
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="text-red-500 text-sm text-center py-10">{error}</div>
         ) : comments.length > 0 ? (
           <>

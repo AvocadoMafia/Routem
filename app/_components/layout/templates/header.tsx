@@ -32,15 +32,8 @@ export default function Header () {
                         </div>
 
                         <div className={'flex items-center gap-8 flex-1'}>
-                            <NavigatorList />
+                            <NavigatorList onSearchClick={() => setIsSearchMode(true)} />
                         </div>
-
-                        <button 
-                            className={'lg:hidden p-2 hover:bg-grass rounded-full transition-colors cursor-pointer'}
-                            onClick={() => setIsSearchMode(true)}
-                        >
-                            <MdSearch size={24} className={'text-foreground-0'} />
-                        </button>
                     </>
                 ) : (
                     <div className="w-full flex items-center lg:hidden">

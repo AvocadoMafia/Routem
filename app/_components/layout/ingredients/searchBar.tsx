@@ -98,7 +98,7 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
             className={'absolute top-[calc(100%+8px)] left-0 w-full bg-background-1 border border-grass rounded-xl shadow-lg py-2 z-50 overflow-hidden'}
           >
             <div className={'px-4 py-2 text-xs font-bold text-foreground-1 uppercase tracking-wider'}>
-              {loading ? 'Searching...' : 'Suggestions'}
+              Suggestions
             </div>
             {suggestions.map((suggestion, index) => (
               <button

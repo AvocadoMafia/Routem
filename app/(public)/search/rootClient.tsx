@@ -124,7 +124,7 @@ export default function RootClient(props: Props) {
     return (
         <div className="w-full h-full md:overflow-hidden flex relative">
             {/* Filters Sidebar - Desktop */}
-            <div className={'hidden md:block w-[400px] h-full bg-background-0 overflow-y-scroll border-r border-grass'}>
+            <div className={'hidden md:block w-[320px] lg:w-[380px] h-full bg-background-0 overflow-y-auto border-r border-grass'}>
                 <SearchFilters filters={filters} onFiltersChange={setFilters} />
             </div>
 

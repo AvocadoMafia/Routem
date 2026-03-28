@@ -53,15 +53,16 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
     };
 
     return (
-        <div className="h-full flex flex-col p-6 gap-6">
-            <div className="hidden md:block border-b border-grass pb-4">
-                <h3 className="text-lg font-bold text-foreground-0 uppercase tracking-widest">Filter</h3>
+        <div className="h-full flex flex-col p-6 gap-8 bg-background-0/50 backdrop-blur-sm">
+            <div className="hidden md:flex items-center gap-3 border-b border-grass pb-6">
+                <div className="w-1 h-6 bg-accent-0 rounded-full"></div>
+                <h3 className="text-xl font-black text-foreground-0 uppercase tracking-[0.2em]">Filter</h3>
             </div>
 
-            <div className="flex-1 space-y-6 h-fit no-scrollbar">
+            <div className="flex-1 space-y-10 h-fit no-scrollbar">
                 <FilterSelect
                     label="Sort By"
-                    icon={<FiRotateCcw className="inline" size={18} />}
+                    icon={<FiRotateCcw size={18} />}
                     value={filters.orderBy}
                     options={SORT_OPTIONS}
                     onChange={(value) => handleFilterChange('orderBy', value)}
@@ -69,7 +70,7 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
 
                 <FilterSelect
                     label="Route Type"
-                    icon={<FiUsers className="inline" size={18} />}
+                    icon={<FiUsers size={18} />}
                     value={filters.routeFor}
                     options={ROUTE_FOR_OPTIONS}
                     onChange={(value) => handleFilterChange('routeFor', value)}
@@ -77,11 +78,21 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
 
                 <FilterSelect
                     label="Season"
-                    icon={<FiCalendar className="inline" size={18} />}
+                    icon={<FiCalendar size={18} />}
                     value={filters.month}
                     options={MONTH_OPTIONS}
                     onChange={(value) => handleFilterChange('month', value)}
                 />
+            </div>
+            
+            <div className="pt-6 border-t border-grass mt-auto">
+                <button 
+                    onClick={() => onFiltersChange({ orderBy: 'relevant', routeFor: '', month: '' })}
+                    className="w-full py-3 rounded-xl border border-grass text-foreground-1 text-sm font-bold hover:bg-background-2 transition-colors flex items-center justify-center gap-2"
+                >
+                    <FiRotateCcw size={14} />
+                    Reset All
+                </button>
             </div>
         </div>
     );

@@ -170,7 +170,6 @@ export default function FollowingsSection() {
         />
     ));
 
-    if (loading) return <div className="w-full h-full flex items-center justify-center">Loading...</div>
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>
 
     return (

@@ -24,11 +24,12 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
                 </div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 auto-rows-max">
-                        {routes.map((route) => (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 auto-rows-max">
+                        {routes.map((route, index) => (
                             <div
                                 key={route.id}
-                                className="animate-fadeIn"
+                                className="animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out fill-mode-both"
+                                style={{ animationDelay: `${(index % 6) * 100}ms` }}
                             >
                                 <RouteCardBasic route={route} />
                             </div>

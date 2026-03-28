@@ -49,11 +49,7 @@ export default function LikeButton({ routeId, initialLikesCount, initialIsLiked 
           isLiked ? "border-accent-0 ring-1 ring-accent-0/20" : "border-grass hover:border-accent-0"
         }`}
       >
-        {loading ? (
-          <Loader2 className="w-6 h-6 animate-spin text-accent-0" />
-        ) : (
-          <HiHeart className={`w-6 h-6 group-hover:scale-125 transition-transform ${isLiked ? "text-accent-0 fill-accent-0" : "text-accent-0"}`} />
-        )}
+        <HiHeart className={`w-6 h-6 group-hover:scale-125 transition-transform ${isLiked ? "text-accent-0 fill-accent-0" : "text-accent-0"}`} />
         <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-0">
           {isLiked ? "Liked!" : "Like this route"}
         </span>

@@ -74,12 +74,6 @@ export default function RelatedArticles({
         {hasMore && dummyCards}
       </div>
       
-      {loading && routes.length === 0 && (
-        <div className="w-full py-10 text-center text-foreground-1/50 italic">
-          Loading related articles...
-        </div>
-      )}
-      
       {!loading && routes.length === 0 && (
         <div className="w-full py-10 text-center text-foreground-1/50 italic">
           No related articles found.
