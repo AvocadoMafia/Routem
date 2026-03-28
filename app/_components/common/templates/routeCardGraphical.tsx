@@ -41,6 +41,11 @@ export default function RouteCardGraphical({route, isLinkCard = true, isFocused 
           {/* Top section: Rank on the right */}
           <div className="flex justify-end items-start">
             {/* rank props used to be here, but we should probably pass it explicitly if needed */}
+              {rank && (
+                  <span className="theme-reversed w-8 h-8 flex items-center justify-center rounded-full bg-background-1 text-foreground-0 text-xs font-bold border border-black/10 shadow-sm">
+                #{rank}
+              </span>
+              )}
           </div>
 
           {/* Bottom section: Title and Meta Info */}

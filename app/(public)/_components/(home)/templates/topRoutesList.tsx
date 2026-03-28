@@ -15,8 +15,8 @@ export default function TopRoutesList(props: Props) {
         <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Routes — This week</h2>
       </div>
 
-      <div className="w-full md:h-[300px] sm:h-[800px] h-[900px] grid grid-rows-3 md:grid-rows-1 grid-cols-1 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">
+        <div className="sm:col-span-2 col-span-1">
           <FeaturedRouteCard route={props.routes[0]} isLinkCard={true}/>
         </div>
         <div className="col-span-1 block">
@@ -25,10 +25,10 @@ export default function TopRoutesList(props: Props) {
         <div className="col-span-1 block">
           <RouteCardGraphical route={props.routes[2]} rank={3}/>
         </div>
-        <div className="col-span-1 block md:hidden lg:block">
+        <div className="col-span-1 sm:col-span-1 md:col-span-2 xl:col-span-1 block lg:hidden xl:block">
           <RouteCardGraphical route={props.routes[3]} rank={4}/>
         </div>
-        <div className="col-span-1 block md:hidden xl:block">
+        <div className="col-span-1 block md:hidden">
           <RouteCardGraphical route={props.routes[4]} rank={5}/>
         </div>
       </div>

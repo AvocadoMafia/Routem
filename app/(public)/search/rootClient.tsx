@@ -130,9 +130,9 @@ export default function RootClient(props: Props) {
 
             {/* Filters ModalFullSize - Mobile */}
             {showFilters && (
-                <ModalFullSize onBackgroundClick={() => setShowFilters(false)}>
-                    <div className="flex flex-col w-full h-full bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
-                        <div className="sticky z-10 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 py-3 flex items-center justify-between top-0">
+                <ModalFullSize onBackgroundClick={() => setShowFilters(false)} hiddenUnderMd={true}>
+                    <div className="flex flex-col w-full h-full bg-background-0 shadow-2xl animate-in duration-200">
+                        <div className="sticky z-10 bg-background-1 backdrop-blur-md border-b border-grass px-4 py-3 flex items-center justify-between top-0">
                             <div className="text-base font-bold text-foreground-0">Filters</div>
                             <button className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95 transition-transform" onClick={() => setShowFilters(false)}>
                                 <X size={22} />

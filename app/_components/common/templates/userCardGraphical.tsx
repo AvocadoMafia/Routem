@@ -42,7 +42,7 @@ export function UserCardGraphical(props: Props) {
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
           {/* Top section: Rank on the right */}
-          <div className="flex justify-end items-start">
+          <div className="flex justify-start items-start">
             {props.rank && (
               <span className="theme-reversed w-8 h-8 flex items-center justify-center rounded-full bg-background-1 text-foreground-0 text-xs font-bold border border-black/10 shadow-sm">
                 #{props.rank}
@@ -73,8 +73,8 @@ export function UserCardGraphical(props: Props) {
               </div>
             </div>
             {/* Profile info area (Button-like) */}
-            <div className="bg-background-1 text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em] rounded-full w-full h-fit py-2 hover-theme-reversed flex justify-center items-center">
-                Follow
+            <div className={'line-clamp-2 text-xs text-white/60 leading-relaxed'}>
+                {props.user.bio}
             </div>
           </div>
         </div>
