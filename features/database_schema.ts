@@ -1,18 +1,34 @@
 import { z } from "zod";
 
-export const WaypointSchema = z.object({
-  id: z.string().uuid().optional(), 
-  type: z.literal("waypoint"),
-  name: z.string(),
-  images: z.array(z.string().startsWith(process.env.MINIO_ENDPOINT || "", "Image must be a valid URL",),).max(3).optional(),
-  memo: z.string(),
-  lat: z.number().optional(),
-  lng: z.number().optional(),
-  source: z.enum(["MAPBOX", "USER"]).optional(),
-  sourceId: z.string().optional(),
-});
+export const WaypointSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    type: z.literal("waypoint"),
+    name: z.string(),
+    images: z
+      .array(z.string().startsWith(process.env.MINIO_ENDPOINT || "", "Image must be a valid URL"))
+      .max(3)
+      .optional(),
+    memo: z.string(),
+    lat: z.number().optional(),
+    lon: z.number().optional(),
+    source: z.enum(["MAPBOX", "USER"]).optional(),
+    sourceId: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      return (
+        (data.lat != undefined && data.lon != undefined) ||
+        (data.lat == undefined && data.lon == undefined)
+      );
+    },
+    {
+      message: "lat, lonはセットで必要です",
+      path: ["lat"],
+    },
+  );
 
-export const PostWaypointSchema = WaypointSchema.omit({id:true});
+export const PostWaypointSchema = WaypointSchema.omit({ id: true });
 
 export const TransportationSchema = z.object({
   type: z.literal("transportation"),
