@@ -27,7 +27,7 @@ export default function RootClient(props: Props) {
     const [isFetching, setIsFetching] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [filters, setFilters] = useState<FilterState>({ orderBy: "relevant", routeFor: "", month: "" });
-    const [showFilters, setShowFilters] = useState(true);
+    const [showFilters, setShowFilters] = useState(false);
     const limit = 12;
     const observerTarget = useRef<HTMLDivElement>(null);
     
