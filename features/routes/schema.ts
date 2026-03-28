@@ -15,6 +15,7 @@ export const GetRoutesSchema = z
     q: z.string().default(""),
     lat: z.coerce.number().optional(),
     lon: z.coerce.number().optional(),
+    who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
   })
   .refine(
     (data) => {
