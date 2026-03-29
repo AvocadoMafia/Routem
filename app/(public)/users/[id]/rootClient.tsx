@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { User } from '@/lib/client/types'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
-import UserProfileHeader from '@/features/users/components/templates/userProfileHeader'
-import UserProfileContent from '@/features/users/components/templates/userProfileContent'
-import { Tab } from '@/features/users/components/ingredients/tabNavigation'
+import UserProfileHeader from './_components/templates/userProfileHeader'
+import UserProfileContent from './_components/templates/userProfileContent'
+import { Tab } from './_components/ingredients/tabNavigation'
 
 export default function RootClient({ id }: { id: string }) {
   const router = useRouter()

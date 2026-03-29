@@ -10,7 +10,7 @@ const SELECTOR_ITEMS = [
     { label: 'Photos', icon: HiSparkles, selected: 'photos' },
     { label: 'Trending', icon: HiFire, selected: 'trending' },
     { label: 'Likes', icon: HiHeart, selected: 'likes' },
-    { label: 'Followers', icon: HiUsers, selected: 'followers' },
+    { label: 'Followings', icon: HiUsers, selected: 'followings' },
 ];
 
 type Props = {

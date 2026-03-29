@@ -110,7 +110,37 @@ async function main() {
         }
     }
 
-    // 3. Related Routes (recommend:related:${routeId})
+    // 3. Followings Recommendations (recommend:followings:${userId})
+    for (const user of users) {
+        const followingIds = user.followings.map(f => f.followingId);
+        const followingsScored = routes
+            .filter(r => followingIds.includes(r.authorId))
+            .map(r => {
+                // 基本スコア（いいね数など）
+                const baseScore = r.likes.length * 2 + r.views.length;
+                
+                // 最近の投稿へのブースト
+                const recentBoost =
+                    Date.now() - r.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000
+                        ? 50
+                        : 0;
+
+                return { id: r.id, score: baseScore + recentBoost };
+            })
+            .sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return b.id.localeCompare(a.id);
+            });
+
+        if (followingsScored.length > 0) {
+            await redis.set(`recommend:followings:${user.id}`, JSON.stringify(followingsScored));
+        } else {
+            // フォローしている人がいない、または投稿がない場合はキーを削除（以前あった場合のため）
+            await redis.del(`recommend:followings:${user.id}`);
+        }
+    }
+
+    // 4. Related Routes (recommend:related:${routeId})
     for (const route of routes) {
         const currentTagNames = route.tags.map(t => t.name);
         const relatedScored = routes

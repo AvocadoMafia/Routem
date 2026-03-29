@@ -49,7 +49,7 @@ export default function FollowingsSection() {
             followingsCursorRef.current = null;
             try {
                 const [routesRes, followRes] = await Promise.all([
-                    getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?limit=15'),
+                    getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?type=followings&limit=15'),
                     getDataFromServerWithJson<CursorResponse<FollowRecord>>('/api/v1/followings?following=true&take=15'),
                 ])
                 if (!cancelled) {
@@ -82,7 +82,7 @@ export default function FollowingsSection() {
         setIsFetching(true);
         try {
             const cursor = encodeURIComponent(routesCursorRef.current);
-            const res = await getDataFromServerWithJson<CursorResponse<Route>>(`/api/v1/routes?limit=15&cursor=${cursor}`);
+            const res = await getDataFromServerWithJson<CursorResponse<Route>>(`/api/v1/routes?type=followings&limit=15&cursor=${cursor}`);
             if (res && res.items.length > 0) {
                 setRoutes(prev => {
                     const existingIds = new Set(prev.map(r => r.id));

@@ -21,12 +21,14 @@ export const routesService = {
       // クエリ指定が limit と cursor 以外にない、または明示的におすすめが指定された場合
       const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && k !== 'cursor' && query[k as keyof GetRoutesType] !== undefined).length === 0;
 
-      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related" || query.type === "trending") {
+      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related" || query.type === "trending" || query.type === "followings") {
         const redis = getRedisClient();
         let redisKey = "recommend:global";
 
         if (query.type === "user_recommend" && user) {
           redisKey = `recommend:user:${user.id}`;
+        } else if (query.type === "followings" && user) {
+          redisKey = `recommend:followings:${user.id}`;
         } else if (query.type === "related" && query.targetId) {
           redisKey = `recommend:related:${query.targetId}`;
         } else if (query.type === "trending") {
@@ -44,6 +46,9 @@ export const routesService = {
           nextCursor = sliced.nextCursor;
 
           if (ids.length === 0) return { items: [], nextCursor: null };
+        } else if (query.type === "followings") {
+          // キャッシュがない = フォローしているユーザーがいない、または投稿がない
+          return { items: [], nextCursor: null };
         }
       }
       const where = buildRoutesWhere(query, user?.id, ids);

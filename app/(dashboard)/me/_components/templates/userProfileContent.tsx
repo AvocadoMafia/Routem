@@ -72,7 +72,7 @@ export default function UserProfileContent({
         {activeTab === 'routes' && (
           <>
             {routes.map((route, idx) => (
-              <div key={route.id ?? idx} className="aspect-[4/5]">
+              <div key={idx} className="aspect-[4/5]">
                 <RouteCardGraphical route={route} />
               </div>
             ))}
@@ -84,7 +84,7 @@ export default function UserProfileContent({
           likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
-                <div key={route.id ?? idx} className="aspect-[4/5]">
+                <div key={idx} className="aspect-[4/5]">
                   <RouteCardGraphical route={route} />
                 </div>
               ))}
@@ -104,7 +104,7 @@ export default function UserProfileContent({
           historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
-                <div key={route.id ?? idx} className="aspect-[4/5]">
+                <div key={idx} className="aspect-[4/5]">
                   <RouteCardGraphical route={route} />
                 </div>
               ))}

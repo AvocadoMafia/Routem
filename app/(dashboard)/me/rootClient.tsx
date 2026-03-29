@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
-import UserProfileHeader from '@/features/users/components/templates/userProfileHeader'
-import UserProfileContent from '@/features/users/components/templates/userProfileContent'
-import { Tab } from '@/features/users/components/ingredients/tabNavigation'
+import UserProfileHeader from './_components/templates/userProfileHeader'
+import UserProfileContent from './_components/templates/userProfileContent'
+import { Tab } from './_components/ingredients/tabNavigation'
 
 // カーソルベースのレスポンス型
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
@@ -191,7 +191,6 @@ export default function RootClient() {
         bio={currentUser.bio as string}
         iconUrl={currentUser.icon?.url}
         bgUrl={currentUser.background?.url}
-        mode="self"
       />
 
       <UserProfileContent

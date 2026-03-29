@@ -1,22 +1,18 @@
 import CoverImage from '../ingredients/coverImage'
 import UserAvatar from '../ingredients/userAvatar'
 import { UserName, UserBio } from '../ingredients/profileInfo'
-import ActionButtons, { ProfileMode } from '../ingredients/actionButtons'
+import ActionButtons from '../ingredients/actionButtons'
 
 export default function UserProfileHeader({
   name,
   bio,
   iconUrl,
   bgUrl,
-  mode = 'public',
-  followingId,
 }: {
   name?: string
   bio?: string
   iconUrl?: string
   bgUrl?: string
-  mode?: ProfileMode
-  followingId?: string
 }) {
   return (
     <>
@@ -29,7 +25,7 @@ export default function UserProfileHeader({
               <UserName name={name} />
             </div>
           </div>
-          <ActionButtons mode={mode} followingId={followingId} />
+          <ActionButtons />
         </div>
         
         {/* bio section - separated from name/avatar row to prevent pushing name up when bio is long */}

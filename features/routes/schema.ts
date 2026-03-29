@@ -13,7 +13,7 @@ export const GetRoutesSchema = z.object({
         .default(DEFAULT_LIMIT)
         .optional(),
     cursor: z.string().optional(),
-    type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts"]).optional(),
+    type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts", "followings"]).optional(),
     targetId: z.string().uuid().optional(),
     orderBy: z.enum(["createdAt", "updatedAt"]).optional(),
 });
