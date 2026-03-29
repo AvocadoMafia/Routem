@@ -149,6 +149,51 @@ export default function RouteSettingsSection({
                 </div>
 
                 <div className="grid grid-cols-1 gap-10">
+
+                    {/* Thumbnail */}
+                    <div className="space-y-3">
+                        <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
+                            <ImageIcon size={16} /> Thumbnail
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            id="thumbnail-upload-section"
+                            onChange={handleImageUpload}
+                        />
+                        <div
+                            className="group relative border-2 border-dashed border-grass rounded-3xl p-10 flex flex-col items-center justify-center text-foreground-1 hover:bg-background-0 hover:border-accent-0/30 cursor-pointer transition-all min-h-[240px] overflow-hidden"
+                            onClick={() => document.getElementById('thumbnail-upload-section')?.click()}
+                        >
+                            {thumbnailImageSrc ? (
+                                <>
+                                    <div className="absolute inset-0">
+                                        <Image
+                                            src={thumbnailImageSrc}
+                                            alt="Thumbnail preview"
+                                            fill
+                                            className="object-cover"
+                                            unoptimized
+                                        />
+                                    </div>
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span className="text-white font-bold bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm">
+                                            Change Image
+                                        </span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="w-16 h-16 bg-grass rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        {uploading ? <Loader2 className="animate-spin text-foreground-1" size={28} /> : <ImageIcon size={32} className="text-foreground-1" />}
+                                    </div>
+                                    <span className="font-bold">Add Thumbnail</span>
+                                    <span className="text-xs text-foreground-1/60 mt-1">Recommended: 16:9 ratio</span>
+                                </>
+                            )}
+                        </div>
+                    </div>
                     {/* Title */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
@@ -290,6 +335,31 @@ export default function RouteSettingsSection({
                     </div>
 
                     <div className="grid grid-cols-1 gap-10">
+                        {/*Visibility*/}
+                        <div className="space-y-3">
+                            <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
+                                <Users size={16} /> Visibility
+                            </label>
+                            <div className="grid grid-cols-2 bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
+                                <button
+                                    onClick={() => setVisibility('PUBLIC')}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PUBLIC' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                >
+                                    Public
+                                </button>
+                                <button
+                                    onClick={() => setVisibility('PRIVATE')}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PRIVATE' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                >
+                                    Private
+                                </button>
+                            </div>
+                            <p className="text-xs text-foreground-1/60 px-1">
+                                {visibility === 'PUBLIC' && "Everyone can view this route."}
+                                {visibility === 'PRIVATE' && "Only you can view this route. (Depends on your collaborator policy settings.)"}
+                            </p>
+                        </div>
+
                         {/* Collaborator Policy */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
@@ -321,6 +391,8 @@ export default function RouteSettingsSection({
                                 {collaboratorPolicy === 'CAN_EDIT' && "Collaborators can view and edit this route."}
                             </p>
                         </div>
+
+
 
                         {/* Invite URL (Only for existing routes and if not disabled) */}
                         {routeId && collaboratorPolicy !== 'DISABLED' && (
@@ -370,50 +442,7 @@ export default function RouteSettingsSection({
                         )}
                     </div>
 
-                    {/* Thumbnail */}
-                    <div className="space-y-3">
-                        <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                            <ImageIcon size={16} /> Thumbnail
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            id="thumbnail-upload-section"
-                            onChange={handleImageUpload}
-                        />
-                        <div
-                            className="group relative border-2 border-dashed border-grass rounded-3xl p-10 flex flex-col items-center justify-center text-foreground-1 hover:bg-background-0 hover:border-accent-0/30 cursor-pointer transition-all min-h-[240px] overflow-hidden"
-                            onClick={() => document.getElementById('thumbnail-upload-section')?.click()}
-                        >
-                            {thumbnailImageSrc ? (
-                                <>
-                                    <div className="absolute inset-0">
-                                        <Image
-                                            src={thumbnailImageSrc}
-                                            alt="Thumbnail preview"
-                                            fill
-                                            className="object-cover"
-                                            unoptimized
-                                        />
-                                    </div>
-                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <span className="text-white font-bold bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm">
-                                            Change Image
-                                        </span>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="w-16 h-16 bg-grass rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        {uploading ? <Loader2 className="animate-spin text-foreground-1" size={28} /> : <ImageIcon size={32} className="text-foreground-1" />}
-                                    </div>
-                                    <span className="font-bold">Add Thumbnail</span>
-                                    <span className="text-xs text-foreground-1/60 mt-1">Recommended: 16:9 ratio</span>
-                                </>
-                            )}
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TrendingRoutesList from "@/app/(public)/_components/(trending)/templates/trendingRoutesList";
 import TrendingUsersList from "@/app/(public)/_components/(trending)/templates/trendingUsersList";
 import TrendingTagsList from "@/app/(public)/_components/(trending)/templates/trendingTagsList";
@@ -12,28 +12,40 @@ import {CiRoute} from "react-icons/ci";
 
 type TrendingTab = 'routes' | 'users' | 'tags';
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 export default function TrendingSection() {
-    const [routes, setRoutes] = useState<Route[] | null>(null);
+    const [routes, setRoutes] = useState<Route[]>([]);
     const [users, setUsers] = useState<User[] | null>(null);
     const [tags, setTags] = useState<string[] | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<TrendingTab>('routes');
+    const nextCursorRef = useRef<string | null>(null);
 
     useEffect(() => {
         let cancelled = false;
         async function load() {
             setLoading(true);
             setError(null);
+            setHasMore(true);
+            nextCursorRef.current = null;
             try {
-                const [routesData, usersData, tagsData] = await Promise.all([
-                    getDataFromServerWithJson<Route[]>('/api/v1/routes?limit=10'),
+                const [routesRes, usersData, tagsData] = await Promise.all([
+                    getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?type=trending&limit=15'),
                     getDataFromServerWithJson<User[]>('/api/v1/users?limit=6'),
                     getDataFromServerWithJson<string[]>('/api/v1/tags?limit=10')
                 ]);
 
                 if (!cancelled) {
-                    setRoutes(routesData);
+                    if (routesRes) {
+                        setRoutes(routesRes.items);
+                        nextCursorRef.current = routesRes.nextCursor;
+                        if (!routesRes.nextCursor) setHasMore(false);
+                    }
                     setUsers(usersData);
                     setTags(tagsData);
                 }
@@ -47,18 +59,43 @@ export default function TrendingSection() {
         return () => { cancelled = true };
     }, []);
 
+    const fetchMoreRoutes = async () => {
+        if (isFetching || !hasMore || routes.length === 0 || !nextCursorRef.current) return;
+        setIsFetching(true);
+        try {
+            const cursor = encodeURIComponent(nextCursorRef.current);
+            const res = await getDataFromServerWithJson<CursorResponse<Route>>(`/api/v1/routes?type=trending&limit=15&cursor=${cursor}`);
+
+            if (res && res.items.length > 0) {
+                setRoutes(prev => {
+                    const existingIds = new Set(prev.map(r => r.id));
+                    const filtered = res.items.filter(r => !existingIds.has(r.id));
+                    return [...prev, ...filtered];
+                });
+                nextCursorRef.current = res.nextCursor;
+                if (!res.nextCursor) setHasMore(false);
+            } else {
+                setHasMore(false);
+            }
+        } catch (e) {
+            console.error("Failed to fetch more trending routes:", e);
+        } finally {
+            setIsFetching(false);
+        }
+    };
+
     if (loading) return <div className="w-full h-full flex items-center justify-center">Loading trending...</div>;
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>;
 
     return (
-        <div className={'w-full h-full overflow-hidden flex flex-col'}>
+        <div className={'w-full md:h-full h-fit'}>
             {/* モバイル用 Sticky Header & Tabs */}
             <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 flex flex-col gap-2">
-                <div className="px-4 py-3 flex items-center gap-2">
+                <div className="px-2 py-3 flex items-center gap-2">
                     <HiFire className="text-accent-0 w-5 h-5" />
                     <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Trending</h1>
                 </div>
-                <div className="flex items-center px-4 overflow-x-auto no-scrollbar">
+                <div className="flex items-center px-2 overflow-x-auto no-scrollbar">
                     <button
                         onClick={() => setActiveTab('routes')}
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1'}`}
@@ -86,34 +123,32 @@ export default function TrendingSection() {
                 </div>
             </div>
 
-            <div className={'flex-1 w-full overflow-hidden flex flex-col lg:flex-row gap-8 lg:gap-12'}>
-                {/* モバイル表示: アクティブなタブに応じて切り替え */}
-                <div className="md:hidden w-full h-full overflow-y-auto no-scrollbar">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeTab}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.2 }}
-                            className="p-4"
-                        >
-                            {activeTab === 'routes' && <TrendingRoutesList routes={routes || []} hideHeader />}
-                            {activeTab === 'users' && <TrendingUsersList users={users || []} mobileMode />}
-                            {activeTab === 'tags' && <TrendingTagsList tags={tags || []} mobileMode />}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
+            {/* モバイル表示: アクティブなタブに応じて切り替え */}
+            <div className="md:hidden w-full h-fit">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />}
+                        {activeTab === 'users' && <TrendingUsersList users={users || []}  />}
+                        {activeTab === 'tags' && <TrendingTagsList tags={tags || []} />}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
 
-                {/* デスクトップ表示: 既存のレイアウト */}
-                <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
-                    <TrendingRoutesList routes={routes || []} />
-                    <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
-                        <TrendingUsersList users={users || []} />
-                        <TrendingTagsList tags={tags || []} />
-                    </div>
+            {/* デスクトップ表示: 既存のレイアウト */}
+            <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
+                <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />
+                <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
+                    <TrendingUsersList users={users || []} />
+                    <TrendingTagsList tags={tags || []} />
                 </div>
             </div>
+
         </div>
     );
 }

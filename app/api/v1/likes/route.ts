@@ -6,8 +6,9 @@ import { CreateLikeSchema, GetLikesQuerySchema } from "@/features/likes/schema";
 import { likesService } from "@/features/likes/service";
 
 // GET /api/v1/likes
-// Query: route=bool&user=bool&comment=bool&take=int
+// Query: route=bool&user=bool&comment=bool&take=int&cursor=string
 // Returns the current user's like records with optional includes.
+// Response: { items: LikeRecord[], nextCursor: string | null }
 export async function GET(req: NextRequest) {
   return handleRequest(async () => {
     const supabase = await createClient(req);
@@ -17,12 +18,16 @@ export async function GET(req: NextRequest) {
     const searchParams = Object.fromEntries(new URL(req.url).searchParams);
     const parsed = await validateParams(GetLikesQuerySchema, searchParams);
 
-    const items = await likesService.getLikes(user.id, {
+    // If userId is provided in query, use it (for public profile), otherwise use current user
+    const targetUserId = parsed.userId || user.id;
+
+    const result = await likesService.getLikes(targetUserId, {
       include: { route: !!parsed.route, user: !!parsed.user, comment: !!parsed.comment },
       take: parsed.take ?? 30,
+      cursor: parsed.cursor,
     });
 
-    return NextResponse.json(items, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   });
 }
 

@@ -6,6 +6,9 @@ import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
 
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+
 export default function LikesSection() {
 
     type LikeRecord = { id: string; createdAt: string; route: Route }
@@ -18,8 +21,8 @@ export default function LikesSection() {
 
 
     useEffect(() => {
-        getDataFromServerWithJson<LikeRecord[]>('/api/v1/likes?route=true&take=30').then(
-            (items) => setLikes((items || []).filter((it: any) => it.route))
+        getDataFromServerWithJson<CursorResponse<LikeRecord>>('/api/v1/likes?route=true&take=30').then(
+            (res) => setLikes((res?.items || []).filter((it: any) => it.route))
         )
     }, [])
 
@@ -32,7 +35,7 @@ export default function LikesSection() {
 
 
     return (
-        <div className={'w-full h-full flex flex-row relative overflow-hidden'}>
+        <div className={'w-full md:h-full h-fit flex flex-row relative md:overflow-hidden'}>
             {/* 全面背景装飾 */}
             <AnimatePresence custom={direction} initial={false}>
                 <motion.div
@@ -63,7 +66,7 @@ export default function LikesSection() {
             
             <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
 
-            <div className="relative z-10 w-full h-full flex flex-row">
+            <div className="relative z-10 w-full md:h-full h-fit flex flex-row">
                 <LikedRoutesList routes={routes} likes={likes} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
                 <div className="flex-1 h-full relative md:block hidden">
                     <FocusingRouteViewer routeOnFocus={routeOnFocus} focusedRouteIdx={focusedRouteIdx} setFocusedRouteIdx={setFocusedRouteIdx} routesLength={routes.length}/>

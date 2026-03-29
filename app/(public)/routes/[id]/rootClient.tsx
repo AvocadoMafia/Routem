@@ -11,7 +11,10 @@ import ViewModeSelector from "./_components/ingredients/viewModeSelector";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
-import { postDataToServerWithJson } from "@/lib/client/helpers";
+import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
+
+// カーソルベースのレスポンス型
+type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
 type Props = {
   route: Route;
@@ -46,10 +49,18 @@ function getFlattenedItems(route: Route) {
 }
 
 export default function RootClient({ route, currentUser }: Props) {
-  const items = useMemo(() => getFlattenedItems(route), [route]);
+    const items = useMemo(() => getFlattenedItems(route), [route.id]);
   const [viewMode, setViewMode] = useState<"diagram" | "details" | "map">("details");
   const [infoTab, setInfoTab] = useState<"comments" | "related">("comments");
   const [isMobile, setIsMobile] = useState(false);
+
+  // 関連記事 (Related Routes) の状態管理
+  const [relatedRoutes, setRelatedRoutes] = useState<Route[]>([]);
+  const [relatedLoading, setRelatedLoading] = useState<boolean>(true);
+  const [isFetchingRelated, setIsFetchingRelated] = useState<boolean>(false);
+  const [relatedHasMore, setRelatedHasMore] = useState<boolean>(true);
+  const relatedCursorRef = useRef<string | null>(null);
+
   const scrollDirection = useUiStore((state) => state.scrollDirection);
   const [yOffset, setYOffset] = useState(0);
 
@@ -72,6 +83,58 @@ export default function RootClient({ route, currentUser }: Props) {
       setYOffset(50);
     }
   }, []);
+
+  // 関連記事の初期フェッチ
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRelated() {
+      if (!route.id) return;
+      setRelatedLoading(true);
+      setRelatedHasMore(true);
+      relatedCursorRef.current = null;
+      try {
+        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15`;
+        const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
+        if (!cancelled && res) {
+          setRelatedRoutes(res.items);
+          relatedCursorRef.current = res.nextCursor;
+          if (!res.nextCursor) setRelatedHasMore(false);
+        }
+      } catch (e) {
+        console.error("Failed to load related routes:", e);
+      } finally {
+        if (!cancelled) setRelatedLoading(false);
+      }
+    }
+    loadRelated();
+    return () => { cancelled = true };
+  }, [route.id]);
+
+  const fetchMoreRelatedRoutes = async () => {
+    if (isFetchingRelated || !relatedHasMore || !route.id || !relatedCursorRef.current) return;
+    setIsFetchingRelated(true);
+    try {
+      const cursor = encodeURIComponent(relatedCursorRef.current);
+      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&cursor=${cursor}`;
+      const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
+
+      if (res && res.items.length > 0) {
+        setRelatedRoutes(prev => {
+          const existingIds = new Set(prev.map(r => r.id));
+          const filtered = res.items.filter(r => !existingIds.has(r.id));
+          return [...prev, ...filtered];
+        });
+        relatedCursorRef.current = res.nextCursor;
+        if (!res.nextCursor) setRelatedHasMore(false);
+      } else {
+        setRelatedHasMore(false);
+      }
+    } catch (e) {
+      console.error("Failed to fetch more related routes:", e);
+    } finally {
+      setIsFetchingRelated(false);
+    }
+  };
 
   useEffect(() => {
     updateOffset();
@@ -125,6 +188,11 @@ export default function RootClient({ route, currentUser }: Props) {
             viewMode={viewMode}
             isMobile={isMobile}
             onItemClick={handleDiagramClick}
+            relatedRoutes={relatedRoutes}
+            relatedLoading={relatedLoading}
+            isFetchingRelated={isFetchingRelated}
+            fetchMoreRelated={fetchMoreRelatedRoutes}
+            relatedHasMore={relatedHasMore}
           />
         </motion.div>
 
@@ -146,6 +214,11 @@ export default function RootClient({ route, currentUser }: Props) {
             isMobile={isMobile}
             scrollContainerRef={scrollContainerRef}
             itemRefs={itemRefs}
+            relatedRoutes={relatedRoutes}
+            relatedLoading={relatedLoading}
+            isFetchingRelated={isFetchingRelated}
+            fetchMoreRelated={fetchMoreRelatedRoutes}
+            relatedHasMore={relatedHasMore}
           />
 
           {/* MAP VIEW */}

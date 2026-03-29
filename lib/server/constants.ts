@@ -4,7 +4,7 @@
 
 // ページネーション
 export const MAX_LIMIT = 100
-export const DEFAULT_LIMIT = 20
+export const DEFAULT_LIMIT = 15
 
 /**
  * limitパラメータを安全な範囲にクランプ

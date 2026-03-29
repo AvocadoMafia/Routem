@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // publicに追加した場合はここにパスを追加する
-const publicPaths = ['/', '/about', '/contact']
+const publicPaths = ['/', '/about', '/routes', '/search', '/contact']
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

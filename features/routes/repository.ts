@@ -29,12 +29,13 @@ export type RouteWithRelations = Prisma.RouteGetPayload<{
 }>;
 
 export const routesRepository = {
-  findMany: async (where: Prisma.RouteWhereInput, limit?: number): Promise<RouteWithRelations[]> => {
+  findMany: async (where: Prisma.RouteWhereInput, limit?: number, offset?: number, orderBy?: Prisma.RouteOrderByWithRelationInput): Promise<RouteWithRelations[]> => {
     try {
       return (await getPrisma().route.findMany({
         where,
         take: limit,
-        orderBy: {
+        skip: offset,
+        orderBy: orderBy ?? {
           createdAt: "desc",
         },
         include: ROUTE_INCLUDE,
@@ -105,6 +106,16 @@ export const routesRepository = {
         where: { id },
         include: ROUTE_INCLUDE,
       })) as RouteWithRelations | null;
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  count: async (where: Prisma.RouteWhereInput): Promise<number> => {
+    try {
+      return await getPrisma().route.count({
+        where,
+      });
     } catch (e) {
       throw e;
     }

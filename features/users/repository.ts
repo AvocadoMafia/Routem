@@ -1,7 +1,7 @@
-
 import {getPrisma} from "@/lib/config/server";
 import {UpdateUserType, GetUsersType} from "@/features/users/schema";
 import { Prisma } from "@prisma/client";
+import { buildCursorWhere } from "@/lib/server/cursor";
           
 
 export const USER_SELECT = {
@@ -32,6 +32,11 @@ export const usersRepository = {
             include: {
                 icon: true,
                 background: true,
+                _count: {
+                    select: {
+                        routes: true
+                    }
+                }
             }
         });
 
@@ -204,19 +209,26 @@ export const usersRepository = {
     }
   },
 
-  // 動的include対応のFollowレコード取得
+  // 動的include対応のFollowレコード取得（カーソルベース）
   findFollowRecords: async (
     userId: string,
-    opts: { include?: { following?: boolean; follower?: boolean }; take?: number }
+    opts: { include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string }
   ) => {
     try {
       const include: any = {};
       if (opts.include?.following) include.following = { select: USER_SELECT };
       if (opts.include?.follower) include.follower = { select: USER_SELECT };
 
+      // カーソル条件を構築
+      const cursorWhere = buildCursorWhere(opts.cursor);
+      const where: any = {
+        followerId: userId,
+        ...cursorWhere,
+      };
+
       return await getPrisma().follow.findMany({
-        where: { followerId: userId },
-        orderBy: { createdAt: 'desc' },
+        where,
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: opts.take ?? 30,
         include: Object.keys(include).length ? include : undefined,
       });

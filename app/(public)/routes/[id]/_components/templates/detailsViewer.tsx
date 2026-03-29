@@ -27,6 +27,11 @@ type Props = {
   currentUser?: User | null;
   scrollContainerRef: RefObject<HTMLDivElement | null>;
   itemRefs: RefObject<(HTMLDivElement | null)[]>;
+  relatedRoutes: Route[];
+  relatedLoading: boolean;
+  isFetchingRelated: boolean;
+  fetchMoreRelated: () => Promise<void>;
+  relatedHasMore: boolean;
 };
 
 export default function DetailsViewer({
@@ -40,6 +45,11 @@ export default function DetailsViewer({
   currentUser,
   scrollContainerRef,
   itemRefs,
+  relatedRoutes,
+  relatedLoading,
+  isFetchingRelated,
+  fetchMoreRelated,
+  relatedHasMore,
 }: Props) {
   const isLikedByMe = !!(currentUser && route.likes?.some((like) => like.userId === currentUser.id));
 
@@ -55,7 +65,7 @@ export default function DetailsViewer({
       <RouteHeader route={route} currentUser={currentUser} />
 
       {items.map((item, idx) => (
-        <div key={item.id}>
+        <div key={idx}>
           {item.type === "node" ? (
             <WaypointItem
               idx={idx}
@@ -158,7 +168,13 @@ export default function DetailsViewer({
                     transition={{ duration: 0.3 }}
                     className="w-full"
                   >
-                    <RelatedArticles />
+                    <RelatedArticles 
+                      routes={relatedRoutes}
+                      loading={relatedLoading}
+                      fetchingMore={isFetchingRelated}
+                      fetchMore={fetchMoreRelated}
+                      hasMore={relatedHasMore}
+                    />
                   </motion.div>
                 )}
               </AnimatePresence>

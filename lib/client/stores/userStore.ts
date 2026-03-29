@@ -37,7 +37,10 @@ const initialUser: User = {
         routeThumbId: null,
     },
     uploadedImages: [],
-    likes: []
+    likes: [],
+    _count: {
+        routes: 0
+    }
 }
 
 type StoreConfig = {

@@ -1,30 +1,30 @@
 import React from 'react'
 import { HiHeart, HiEye, HiClock, HiBanknotes } from 'react-icons/hi2'
-import {Route} from "@/lib/client/types";
 import Image from 'next/image';
 import Link from "next/link";
+import { Route } from '@/lib/types/domain';
 
-
-export type Props = {
-  route: Route
-  rank?: number
-  onClick?: () => void
+export type RouteCardGraphicalProps = {
+  route: Route;
+  isLinkCard?: boolean;
+  isFocused?: boolean;
+  onClick?: () => void;
+  rank?: number;
 }
 
-export default function RouteCardGraphical(props: Props) {
+export default function RouteCardGraphical({route, isLinkCard = true, isFocused = false, onClick, rank}: RouteCardGraphicalProps) {
 
-  return (
-    <Link
-      href={`/routes/${props.route?.id}`}
-      onClick={props.onClick}
-      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5"
-      aria-label={props.rank ? `Rank ${props.rank}: ${props.route?.title}` : props.route?.title}
+  const content = (
+    <div
+      onClick={onClick}
+      className={`group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`}
+      aria-label={route?.title}
     >
       {/* Background Thumbnail Image with Margin (via container padding) */}
       <div className="relative w-full h-full rounded-xl overflow-hidden">
         <Image
-          src={props.route?.thumbnail?.url || '/mockImages/Kyoto.jpg'}
-          alt={`${props.route?.title} thumbnail`}
+          src={route?.thumbnail?.url || '/map.jpg'}
+          alt={`${route?.title} thumbnail`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           unoptimized
@@ -40,32 +40,33 @@ export default function RouteCardGraphical(props: Props) {
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
           {/* Top section: Rank on the right */}
           <div className="flex justify-end items-start">
-            {props.rank && (
-              <span className="theme-reversed w-8 h-8 flex items-center justify-center rounded-full bg-background-1 text-foreground-0 text-xs font-bold border border-black/10 shadow-sm">
-                #{props.rank}
+            {/* rank props used to be here, but we should probably pass it explicitly if needed */}
+              {rank && (
+                  <span className="theme-reversed w-8 h-8 flex items-center justify-center rounded-full bg-background-1 text-foreground-0 text-xs font-bold border border-black/10 shadow-sm">
+                #{rank}
               </span>
-            )}
+              )}
           </div>
 
           {/* Bottom section: Title and Meta Info */}
           <div className="space-y-3">
             <div className="space-y-1">
               <h4 className="text-lg font-bold leading-tight drop-shadow-sm line-clamp-2">
-                {props.route?.title}
+                {route?.title}
               </h4>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
-                <span className="text-xs font-bold normal-case tracking-normal">@{props.route?.author.name}</span>
+                <span className="text-xs font-bold normal-case tracking-normal">@{route?.author.name}</span>
                 <span className="opacity-60">•</span>
-                <span className="truncate">{props.route?.routeFor}</span>
+                <span className="truncate">{route?.routeFor}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                   <HiHeart className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums">{props.route?.likes?.length ?? 0}</span>
+                  <span className="tabular-nums">{route?.likes?.length ?? 0}</span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                   <HiEye className="w-4 h-4 text-accent-0" />
-                  <span className="tabular-nums">{props.route?.views?.length ?? 0}</span>
+                  <span className="tabular-nums">{route?.views?.length ?? 0}</span>
                 </div>
               </div>
 
@@ -85,6 +86,16 @@ export default function RouteCardGraphical(props: Props) {
           </div>
         </div>
       </div>
-    </Link>
-  )
+    </div>
+  );
+
+  if (isLinkCard) {
+    return (
+      <Link href={`/routes/${route?.id}`} className="block w-full h-full">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

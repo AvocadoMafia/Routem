@@ -12,8 +12,9 @@ const ViewSchema = z.object({
 });
 
 // GET /api/v1/views
-// Query: route=bool&user=bool&take=int
+// Query: route=bool&user=bool&take=int&cursor=string
 // Returns current user's view records with optional includes
+// Response: { items: ViewRecord[], nextCursor: string | null }
 export async function GET(req: NextRequest) {
   return handleRequest(async () => {
     const supabase = await createClient(req);
@@ -23,12 +24,13 @@ export async function GET(req: NextRequest) {
     const searchParams = Object.fromEntries(new URL(req.url).searchParams);
     const parsed = await validateParams(GetViewsQuerySchema, searchParams);
 
-    const items = await viewsService.getViews(user.id, {
+    const result = await viewsService.getViews(user.id, {
       include: { route: !!parsed.route, user: !!parsed.user },
       take: parsed.take ?? 30,
+      cursor: parsed.cursor,
     });
 
-    return NextResponse.json(items, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   });
 }
 

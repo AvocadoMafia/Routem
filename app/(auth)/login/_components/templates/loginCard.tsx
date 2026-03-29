@@ -5,6 +5,7 @@ import {FaGoogle} from "react-icons/fa";
 import {useState} from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/auth/supabase/client";
+import { getClientAuthRedirectUrl } from "@/lib/auth/redirectUrl";
 
 export default function LoginCard() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function LoginCard() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: getClientAuthRedirectUrl(),
       },
     });
 

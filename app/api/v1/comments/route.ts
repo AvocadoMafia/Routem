@@ -5,17 +5,24 @@ import {validateParams} from "@/lib/server/validateParams";
 import {CreateCommentSchema, DeleteCommentSchema, GetCommentsSchema} from "@/features/comments/schema";
 import {commentsService} from "@/features/comments/service";
 
+// GET /api/v1/comments
+// Response: { items: Comment[], nextCursor: string | null }
 export async function GET(req: NextRequest) {
     return handleRequest(async () => {
-        const routeId = req.nextUrl.searchParams.get('routeId');
+        const searchParams = Object.fromEntries(new URL(req.url).searchParams);
+        const parsed = await validateParams(GetCommentsSchema, searchParams);
 
-        if (!routeId) {
+        if (!parsed.routeId) {
             throw new Error("routeId is required");
         }
 
-        const comments = await commentsService.getCommentsByRouteId(routeId);
+        const result = await commentsService.getCommentsByRouteId(
+            parsed.routeId,
+            parsed.take,
+            parsed.cursor
+        );
 
-        return NextResponse.json(comments, {status: 200})
+        return NextResponse.json(result, {status: 200})
     })
 }
 

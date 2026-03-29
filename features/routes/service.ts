@@ -1,39 +1,172 @@
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
 import { User } from "@supabase/supabase-js";
-import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType } from "@/features/routes/schema";
+import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType, SearchRoutesType } from "@/features/routes/schema";
 import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
-import { getMeilisearch } from "@/lib/config/server";
+import { getMeilisearch, getRedisClient } from "@/lib/config/server";
+import { DEFAULT_LIMIT } from "@/lib/server/constants";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import crypto from "crypto";
 import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
+import { sliceByScoreCursor, encodeScoreCursor } from "@/lib/server/cursor";
 
 export const routesService = {
   getRoutes: async (
     user: User | null,
     query: GetRoutesType,
-  ): Promise<RouteWithRelations[]> => {
+  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null }> => {
     try {
       let ids: string[] | undefined = undefined;
-      if (query.q) {
-        const meilisearch = getMeilisearch();
-        const index = await meilisearch.getIndex("routes");
-        const search = await index.search(query.q);
-        ids = search.hits.map((hit) => hit.id);
-        if (ids.length === 0) {
-          return [];
+      let nextCursor: string | null = null;
+
+      // クエリ指定が limit と cursor 以外にない、または明示的におすすめが指定された場合
+      const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && k !== 'cursor' && query[k as keyof GetRoutesType] !== undefined).length === 0;
+
+      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related" || query.type === "trending" || query.type === "followings") {
+        const redis = getRedisClient();
+        let redisKey = "recommend:global";
+
+        if (query.type === "user_recommend" && user) {
+          redisKey = `recommend:user:${user.id}`;
+        } else if (query.type === "followings" && user) {
+          redisKey = `recommend:followings:${user.id}`;
+        } else if (query.type === "related" && query.targetId) {
+          redisKey = `recommend:related:${query.targetId}`;
+        } else if (query.type === "trending") {
+          redisKey = "recommend:trending";
+        }
+
+        const cachedData = await redis.get(redisKey);
+        if (cachedData) {
+          const scored = JSON.parse(cachedData) as { id: string, score: number }[];
+          const limit = query.limit ?? DEFAULT_LIMIT;
+
+          // スコアベースのカーソルページネーション
+          const sliced = sliceByScoreCursor(scored, query.cursor, limit);
+          ids = sliced.items.map(s => s.id);
+          nextCursor = sliced.nextCursor;
+
+          if (ids.length === 0) return { items: [], nextCursor: null };
+        } else if (query.type === "followings") {
+          // キャッシュがない = フォローしているユーザーがいない、または投稿がない
+          return { items: [], nextCursor: null };
         }
       }
       const where = buildRoutesWhere(query, user?.id, ids);
 
-      const result = await routesRepository.findMany(where, query.limit);
+      let orderBy: Prisma.RouteOrderByWithRelationInput | undefined = undefined;
+      if (query.orderBy === "updatedAt") {
+        orderBy = { updatedAt: "desc" };
+      } else if (query.orderBy === "createdAt") {
+        orderBy = { createdAt: "desc" };
+      }
+
+      const result = await routesRepository.findMany(where, query.limit, undefined, orderBy);
       if (ids) {
         const sortedResult = ids
           .map((id) => result.find((route) => route.id === id))
           .filter((route) => route !== undefined); // DBから消えていた場合のundefinedを除外
 
-        return sortedResult;
+        return { items: sortedResult, nextCursor };
       }
-      return result;
+      return { items: result, nextCursor };
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  // Search Routes - limit-offset pagination
+  searchRoutes: async (
+    user: User | null,
+    query: SearchRoutesType,
+  ): Promise<{ items: RouteWithRelations[]; total: number }> => {
+    try {
+      const limit = query.limit ?? DEFAULT_LIMIT;
+      const offset = query.offset ?? 0;
+
+      let ids: string[] = [];
+      let total = 0;
+
+      if (query.q) {
+        const meilisearch = getMeilisearch();
+        const index = await meilisearch.getIndex("routes");
+        
+        const search = await index.search(query.q, {
+          limit,
+          offset,
+        });
+        
+        ids = search.hits.map((hit) => hit.id);
+        total = search.estimatedTotalHits || 0;
+        
+        if (ids.length === 0) {
+          return { items: [], total };
+        }
+
+        // Set where clause with search ids
+        const where: Prisma.RouteWhereInput = {
+          id: { in: ids },
+          visibility: RouteVisibility.PUBLIC,
+        };
+
+        // Filter by routeFor
+        if (query.routeFor) {
+          where.routeFor = query.routeFor as any;
+        }
+
+        // Filter by month
+        if (query.month) {
+          where.month = Number(query.month);
+        }
+
+        // Fetch routes in meilisearch result order
+        const result = await routesRepository.findMany(where, ids.length);
+        
+        // Sort by meilisearch order
+        const sortedResult = ids
+          .map((id) => result.find((route) => route.id === id))
+          .filter((route) => route !== undefined);
+
+        return { items: sortedResult, total };
+      } else {
+        // No query, return based on database
+        const where: Prisma.RouteWhereInput = {
+          visibility: RouteVisibility.PUBLIC,
+        };
+
+        // Filter by routeFor
+        if (query.routeFor) {
+          where.routeFor = query.routeFor as any;
+        }
+
+        // Filter by month
+        if (query.month) {
+          where.month = Number(query.month);
+        }
+
+        // Fetch routes with limit and offset
+        let orderBy: Prisma.RouteOrderByWithRelationInput = { createdAt: "desc" };
+        if (query.orderBy === "latest") {
+          orderBy = { createdAt: "desc" };
+        } else if (query.orderBy === "likes") {
+          // For likes ordering, fetch with default order then sort in memory
+          orderBy = { createdAt: "desc" };
+        } else if (query.orderBy === "relevant") {
+          orderBy = { createdAt: "desc" }; // fallback for DB path
+        }
+
+        // Get total count
+        total = await routesRepository.count(where);
+        
+        // Fetch routes
+        const result = await routesRepository.findMany(where, limit, offset, orderBy);
+        
+        // Sort by likes count if requested
+        if (query.orderBy === "likes") {
+          result.sort((a, b) => b.likes.length - a.likes.length);
+        }
+        
+        return { items: result, total };
+      }
     } catch (e) {
       throw e;
     }

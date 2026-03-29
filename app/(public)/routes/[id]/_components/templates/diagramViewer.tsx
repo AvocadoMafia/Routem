@@ -18,6 +18,11 @@ type Props = {
   viewMode: "diagram" | "details" | "map";
   isMobile: boolean;
   onItemClick: (index: number) => void;
+  relatedRoutes: any[]; // Or properly import Route type
+  relatedLoading: boolean;
+  isFetchingRelated: boolean;
+  fetchMoreRelated: () => Promise<void>;
+  relatedHasMore: boolean;
 };
 
 export default function DiagramViewer({
@@ -26,6 +31,11 @@ export default function DiagramViewer({
   viewMode,
   isMobile,
   onItemClick,
+  relatedRoutes,
+  relatedLoading,
+  isFetchingRelated,
+  fetchMoreRelated,
+  relatedHasMore,
 }: Props) {
   const isInfoAreaFocused = !isMobile && viewMode !== "map" && focusIndex >= items.length;
 
@@ -52,7 +62,7 @@ export default function DiagramViewer({
 
             {items.map((item, idx) => (
               <DiagramCard
-                key={item.id}
+                key={idx}
                 item={item}
                 idx={idx}
                 isFocused={focusIndex === idx}
@@ -68,7 +78,14 @@ export default function DiagramViewer({
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
-            <RelatedArticles compact />
+            <RelatedArticles 
+              routes={relatedRoutes}
+              loading={relatedLoading}
+              fetchingMore={isFetchingRelated}
+              fetchMore={fetchMoreRelated}
+              hasMore={relatedHasMore}
+              compact 
+            />
           </motion.div>
         )}
       </AnimatePresence>

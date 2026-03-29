@@ -165,12 +165,12 @@ function ExploreContent() {
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-6 md:gap-12 pb-24 md:pb-0">
-                                    {MOCK_ROUTES.map((route, index) => (
+                                    {MOCK_ROUTES.map((route, idx) => (
                                         <motion.div
-                                            key={route.id}
+                                            key={idx}
                                             initial={{ opacity: 0, x: 20 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.4 + (index * 0.1), duration: 0.6, ease: "easeOut" }}
+                                            transition={{ delay: 0.4 + (idx * 0.1), duration: 0.6, ease: "easeOut" }}
                                         >
                                             <RouteCardBasic route={route} />
                                         </motion.div>

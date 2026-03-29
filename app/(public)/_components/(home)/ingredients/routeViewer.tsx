@@ -19,7 +19,7 @@ export default function RouteViewer(props: Props) {
           <Link href={`/routes/${route.id}`} className="block group">
             <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
               <Image
-                src={route.thumbnail?.url ?? '/map.png'}
+                src={route.thumbnail?.url ?? '/map.jpg'}
                 alt={route.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"

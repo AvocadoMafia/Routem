@@ -1,4 +1,5 @@
 import {getPrisma} from "@/lib/config/server";
+import { buildCursorWhere } from "@/lib/server/cursor";
 
 export const commentsRepository = {
     getMyComments: async (userId: string, take?: number, without?: string[]) => {
@@ -51,13 +52,20 @@ export const commentsRepository = {
         }
     },
 
-    getCommentsByRouteId: async (routeId: string) => {
+    getCommentsByRouteId: async (routeId: string, take?: number, cursor?: string) => {
         try {
             const prisma = getPrisma();
+
+            // カーソル条件を構築
+            const cursorWhere = buildCursorWhere(cursor);
+            const where: any = {
+                routeId,
+                ...cursorWhere,
+            };
+
             return prisma.comment.findMany({
-                where: {
-                    routeId,
-                },
+                where,
+                take,
                 include: {
                     user: {
                         select: {
@@ -68,9 +76,7 @@ export const commentsRepository = {
                     },
                     likes: true,
                 },
-                orderBy: {
-                    createdAt: "desc",
-                },
+                orderBy: [{ createdAt: "desc" }, { id: "desc" }],
             });
         } catch (e) {
             throw e;

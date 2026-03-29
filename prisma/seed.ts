@@ -2,6 +2,8 @@ import 'dotenv/config';
 import { PrismaClient, RouteVisibility, RouteFor, TransitMode, SpotSource, CurrencyCode } from "@prisma/client";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
+import { getMeilisearch } from "@/lib/config/server";
+import { translateJa2En } from "@/lib/translation/translateJa2En";
 
 const dbType = process.env.DB_TYPE || 'local';
 const connectionString = dbType === 'vercel'
@@ -71,131 +73,130 @@ async function main() {
         });
     }
 
-    // Seed routes
-    const routes = [
-        {
-            id: '11111111-1111-1111-1111-111111111111',
-            title: 'Kyoto Temples Walk',
-            description: 'A relaxing walk through famous temples in Kyoto.',
-            authorId: '00000000-0000-0000-0000-000000000001',
-            tags: ['History', 'Walk', 'Temple'],
-            month: 4,
-            routeFor: RouteFor.EVERYONE,
-            budget: { amount: 3000, currency: CurrencyCode.JPY },
-            nodes: [
-                { order: 1, spotId: 'a1111111-1111-1111-1111-111111111111', details: 'Start at the main hall.' }
-            ]
-        },
-        {
-            id: '22222222-2222-2222-2222-222222222222',
-            title: 'Nara Deer Park Stroll',
-            description: 'Visit Nara Park and enjoy the friendly deer.',
-            authorId: '00000000-0000-0000-0000-000000000002',
-            tags: ['Nature', 'Walk'],
-            month: 5,
-            routeFor: RouteFor.FAMILY,
-            budget: { amount: 2000, currency: CurrencyCode.JPY },
-            nodes: [
-                { order: 1, spotId: 'a2222222-2222-2222-2222-222222222222', details: 'Feed the deer.' }
-            ]
-        },
-        {
-            id: '33333333-3333-3333-3333-333333333333',
-            title: 'Osaka Street Food Tour',
-            description: 'Sample takoyaki and okonomiyaki around Dotonbori.',
-            authorId: '00000000-0000-0000-0000-000000000003',
-            tags: ['Food'],
-            month: 10,
-            routeFor: RouteFor.COUPLE,
-            budget: { amount: 5000, currency: CurrencyCode.JPY },
-            nodes: [
-                { order: 1, spotId: 'a3333333-3333-3333-3333-333333333333', details: 'Try takoyaki here.' }
-            ]
-        },
-        {
-            id: '44444444-4444-4444-4444-444444444444',
-            title: 'Tokyo Skyscraper Views',
-            description: 'Modern architecture and high-rise views in Shinjuku.',
-            authorId: '00000000-0000-0000-0000-000000000004',
-            tags: ['Culture', 'General'],
-            month: 12,
-            routeFor: RouteFor.FRIENDS,
-            budget: { amount: 4000, currency: CurrencyCode.JPY },
-            nodes: [
-                { order: 1, spotId: 'a4444444-4444-4444-4444-444444444444', details: 'A peaceful garden in the city.' }
-            ]
-        },
-        {
-            id: '55555555-5555-5555-5555-555555555555',
-            title: 'Fukuoka Waterfront Stroll',
-            description: 'Relax by the pond at Ohori Park.',
-            authorId: '00000000-0000-0000-0000-000000000005',
-            tags: ['Nature', 'Walk'],
-            month: 6,
-            routeFor: RouteFor.SOLO,
-            budget: { amount: 1500, currency: CurrencyCode.JPY },
-            nodes: [
-                { order: 1, spotId: 'a5555554-5555-5555-5555-555555555555', details: 'A beautiful park with a large pond.' }
-            ]
-        },
-        {
-            id: '66666666-6666-6666-6666-666666666666',
-            title: 'Hokkaido Lake Tour',
-            description: 'Stunning scenery at Lake Toya.',
-            authorId: '00000000-0000-0000-0000-000000000001',
-            tags: ['Nature'],
-            month: 8,
-            routeFor: RouteFor.EVERYONE,
-            budget: { amount: 10000, currency: CurrencyCode.JPY },
-            nodes: [
-                { order: 1, spotId: 'a6666666-6666-6666-6666-666666666666', details: 'Volcanic lake with an island.' }
-            ]
-        },
-    ];
+    // Seed 40 dummy routes
+    for (let i = 1; i <= 40; i++) {
+        const routeId = `11111111-1111-4111-a111-${i.toString().padStart(12, '0')}`;
+        const authorId = users[(i % users.length)].id;
+        const tag = tagNames[i % tagNames.length];
+        const spot = spotsData[i % spotsData.length];
 
-    for (const r of routes) {
-        await prisma.route.upsert({
-            where: { id: r.id },
+        const route = await prisma.route.upsert({
+            where: { id: routeId },
             update: {
-                title: r.title,
-                description: r.description,
-                authorId: r.authorId,
+                title: `Dummy Route ${i}`,
+                description: `This is dummy route number ${i} for pagination testing.`,
+                authorId: authorId,
                 visibility: RouteVisibility.PUBLIC,
-                month: r.month,
-                routeFor: r.routeFor,
+                month: (i % 12) + 1,
+                routeFor: Object.values(RouteFor)[i % Object.values(RouteFor).length] as RouteFor,
                 tags: {
-                    set: r.tags.map(tagName => ({ name: tagName }))
+                    set: [{ name: tag }]
                 },
             },
             create: {
-                id: r.id,
-                title: r.title,
-                description: r.description,
-                authorId: r.authorId,
+                id: routeId,
+                title: `Dummy Route ${i}`,
+                description: `This is dummy route number ${i} for pagination testing.`,
+                authorId: authorId,
                 visibility: RouteVisibility.PUBLIC,
-                month: r.month,
-                routeFor: r.routeFor,
+                month: (i % 12) + 1,
+                routeFor: Object.values(RouteFor)[i % Object.values(RouteFor).length] as RouteFor,
                 tags: {
-                    connect: r.tags.map(tagName => ({ name: tagName }))
+                    connect: [{ name: tag }]
                 },
                 budget: {
                     create: {
-                        amount: r.budget.amount,
-                        currency: r.budget.currency,
-                        baseAmount: r.budget.amount,
+                        amount: 1000 * i,
+                        currency: CurrencyCode.JPY,
+                        baseAmount: 1000 * i,
                         baseCurrency: CurrencyCode.JPY,
                     }
                 },
                 routeNodes: {
-                    create: r.nodes.map(node => ({
-                        order: node.order,
-                        details: node.details,
-                        spotId: node.spotId,
-                    }))
+                    create: [{
+                        order: 1,
+                        details: `Start point for route ${i}`,
+                        spotId: spot.id,
+                    }]
                 }
             },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        icon: true,
+                    },
+                },
+                thumbnail: true,
+                routeNodes: {
+                    include: {
+                        spot: true,
+                        transitSteps: true,
+                        images: true,
+                    },
+                },
+                likes: true,
+                views: true,
+                collaborators: true,
+                budget: true,
+                tags: true,
+            }
         });
+
+        // Sync to Meilisearch
+        try {
+            await syncToMeilisearch(route);
+            console.log(`[${i}/40] Synced route "${route.title}" to Meilisearch`);
+        } catch (error) {
+            console.error(`Failed to sync route ${routeId} to Meilisearch:`, error);
+        }
     }
+}
+
+// Sync route to Meilisearch index (same as in routesService.ts)
+async function syncToMeilisearch(route: any) {
+    const en_texts = (await translateJa2En([
+        route.title,
+        route.description,
+        ...route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
+        ...route.tags.map((t: any) => t.name)
+    ])).filter(Boolean);
+
+    const meilisearch = getMeilisearch();
+    const routesIndex = meilisearch.index("routes");
+
+    const documents = [{
+        id: route.id,
+        title: route.title,
+        description: route.description,
+        authorId: route.authorId,
+        visibility: route.visibility,
+        createdAt: route.createdAt?.getTime(),
+        updatedAt: route.updatedAt?.getTime(),
+        routeNodes: route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
+        tags: route.tags.map((t: any) => t.name),
+        month: route.month,
+        routeFor: route.routeFor,
+        budget: route.budget ? Number(route.budget.amount) : undefined,
+        searchText: [
+            route.title,
+            route.description,
+            ...route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
+            ...route.tags.map((t: any) => t.name),
+            ...en_texts,
+        ].join(" ")
+    }];
+
+    await routesIndex.updateDocuments(documents, { primaryKey: "id" });
+
+    // タグをMeilisearchのtagsインデックスに追加
+    const tagsIndex = meilisearch.index("tags");
+    const tagDocuments = route.tags.map((t: any) => ({
+        id: t.name,
+        name: t.name
+    }));
+    await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
 }
 
 //実行処理

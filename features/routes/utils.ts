@@ -27,13 +27,30 @@ export function buildRoutesWhere(query: GetRoutesType, user_id?: string, search_
         where.createdAt = { gte: query.createdAfter };
     }
 
-    // visibility
-    // 1. 自分が投稿者の場合: 指定があればそれに従う。指定がなければ全件。
-    // 2. 他人の場合: PUBLICのみ表示。
-    if (!isOwner) {
-        where.visibility = RouteVisibility.PUBLIC;
-    } else if (query.visibility) {
-        where.visibility = query.visibility as RouteVisibility;
+    // 権限フィルタリング
+    // 1. 自分が投稿者の場合: 全件表示。
+    // 2. 他人の記事、あるいは不特定の記事取得時:
+    //    - visibility='PUBLIC' のもの。
+    //    - または、自分がコラボレーターに入っていて、かつ collaboratorPolicy が DISABLED 以外。
+    if (isOwner) {
+        // 自分の記事取得時は追加フィルタリング不要
+    } else {
+        where.OR = [
+            { visibility: RouteVisibility.PUBLIC },
+        ];
+
+        if (user_id) {
+            where.OR.push({
+                collaborators: {
+                    some: {
+                        userId: user_id
+                    }
+                },
+                collaboratorPolicy: {
+                    not: RouteCollaboratorPolicy.DISABLED
+                }
+            });
+        }
     }
 
     return where;

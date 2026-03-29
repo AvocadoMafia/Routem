@@ -3,15 +3,17 @@ import {BiHash} from "react-icons/bi";
 import {User} from "@/lib/client/types";
 import Image from 'next/image';
 import {IoPersonAdd} from "react-icons/io5";
+import Link from "next/link";
 
 export type Props = {
   user: User
+    isLinkCard?: boolean,
   onClick?: () => void
 }
 
 export default function FeaturedUserCard(props: Props) {
 
-  return (
+  const content = (
     <div
       onClick={props.onClick}
       className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 text-left cursor-pointer"
@@ -43,18 +45,7 @@ export default function FeaturedUserCard(props: Props) {
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
           {/* Top section: Follow button on the left, Rank on the right */}
-          <div className="flex justify-between items-start">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                // Follow logic here
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/80 text-[#232323] backdrop-blur-md rounded-full hover:bg-accent-0 hover:text-white hover:border-accent-0 transition-all duration-300"
-            >
-              <IoPersonAdd className="w-5 h-5 transition-transform" />
-              <span className="text-[10px] font-bold tracking-[0.3em] uppercase">Follow</span>
-            </button>
-
+          <div className="flex justify-start items-start">
             <div className="theme-reversed flex items-center justify-center w-10 h-10 bg-background-1 text-foreground-0 text-xs font-bold rounded-full border border-black/10 shadow-sm">
               1st
             </div>
@@ -93,4 +84,14 @@ export default function FeaturedUserCard(props: Props) {
       </div>
     </div>
   )
+
+    if (props.isLinkCard) {
+        return (
+            <Link href={`/users/${props.user.id}`} className="block w-full h-full">
+                {content}
+            </Link>
+        )
+    }
+
+    return content;
 }

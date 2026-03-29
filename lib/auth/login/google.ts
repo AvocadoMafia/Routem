@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/auth/supabase/client";
-
+import { getClientAuthRedirectUrl } from "@/lib/auth/redirectUrl";
 
 export async function loginWithGoogle() {
   const supabase = createClient();
@@ -8,7 +8,7 @@ export async function loginWithGoogle() {
     provider: "google",
     // プロバイダごとの追加オプションを指定
     options: {
-      redirectTo: `${location.origin}/auth/callback`,
+      redirectTo: getClientAuthRedirectUrl(),
       queryParams: {
         access_type: "offline",
         prompt: "consent select_account",

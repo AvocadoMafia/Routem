@@ -7,8 +7,8 @@ export async function GET(req: NextRequest) {
     return handleRequest(async () => {
         const url = new URL(req.url);
         const q = (url.searchParams.get("q") || "").toString();
-        const rawLimit = Number(url.searchParams.get("limit") || 10);
-        const limit = clampLimit(rawLimit, 10);
+        const rawLimit = Number(url.searchParams.get("limit") || 15);
+        const limit = clampLimit(rawLimit, 15);
 
         const meilisearch = getMeilisearch();
         const index = meilisearch.index("tags");

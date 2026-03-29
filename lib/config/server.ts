@@ -5,12 +5,14 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { Meilisearch } from "meilisearch";
+import { createClient, RedisClientType } from "redis";
 
 
 declare global{
 var meilisearch:Meilisearch;
 var prisma: PrismaClient;
 var  s3Client: S3Client;
+var redisClient: RedisClientType;
 }
 
 export function getMeilisearch(){ 
@@ -86,4 +88,36 @@ export function getS3Client() {
     });
 
     return globalThis.s3Client;
+}
+
+
+/**
+ * Redisクライアントをシングルトンで取得する関数
+ * 環境変数 REDIS_URL (例: redis://localhost:6379) を使用します
+ */
+export function getRedisClient() {
+    if (globalThis.redisClient) return globalThis.redisClient;
+
+    const redisUrl = process.env.REDIS_URL;
+
+    console.log("REDIS_URL", redisUrl);
+
+    globalThis.redisClient = createClient({
+        url: redisUrl,
+    });
+
+    // 接続エラーのハンドリング
+    globalThis.redisClient.on("error", (err) => {
+        console.error("Redis Client Error", err);
+    });
+
+    // 非同期で接続を開始するが、クライアント自体は即座に返す
+    // 使用側で await client.connect() が必要になる場合もあるが、
+    // node-redis v4以降では最初に一度 connect() を呼ぶ必要がある。
+    // ここで直接 connect() を呼ぶ (非同期)
+    globalThis.redisClient.connect().catch((err) => {
+        console.error("Redis Connection Error", err);
+    });
+
+    return globalThis.redisClient;
 }
