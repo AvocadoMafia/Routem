@@ -16,7 +16,7 @@ import FollowingsSection from "@/app/(public)/_components/(followings)/following
 // カーソルベースのレスポンス型
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
-export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followers'
+export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followings'
 
 export default function RootClient() {
 
@@ -146,7 +146,7 @@ export default function RootClient() {
                     case 'likes': return (
                         <LikesSection />
                     )
-                    case 'followers': return (
+                    case 'followings': return (
                         <FollowingsSection/>
                     )
                 }
