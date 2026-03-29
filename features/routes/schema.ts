@@ -12,7 +12,7 @@ export const GetRoutesSchema = z
     limit: z.coerce.number().max(100).default(20),
     visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
     collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-    q: z.string().default(""),
+    q: z.string().optional().default(""),
     lat: z.coerce.number().optional(),
     lon: z.coerce.number().optional(),
     who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
