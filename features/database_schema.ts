@@ -28,8 +28,6 @@ export const WaypointSchema = z
     },
   );
 
-export const PostWaypointSchema = WaypointSchema.omit({ id: true });
-
 export const TransportationSchema = z.object({
   type: z.literal("transportation"),
   method: z.enum(["WALK", "TRAIN", "BUS", "CAR", "OTHER"]),
