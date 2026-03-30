@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { Route } from "@/lib/client/types";
 import Image from "next/image";
-import { HiEye, HiClock, HiBanknotes, HiPencilSquare } from "react-icons/hi2";
+import { HiEye, HiClock, HiBanknotes, HiPencilSquare, HiTrash, HiShare, HiCheck, HiClipboard, HiLockClosed, HiGlobeAlt, HiUser, HiUsers } from "react-icons/hi2";
 import { motion } from "framer-motion";
 import LikeButton from "./likeButton";
+import ShareButton from "./shareButton";
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
+import {getMonthName} from "@/lib/client/helpers";
 
 type RouteHeaderProps = {
   route: Route;
@@ -14,13 +17,49 @@ type RouteHeaderProps = {
 };
 
 export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [isCopying, setIsCopying] = useState(false);
+
   const author = route.author;
   const isAuthor = currentUser?.id === route.authorId;
   const isCollaborator = route.collaborators?.some(c => c.userId === currentUser?.id);
   const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === 'CAN_EDIT');
 
+  const handleGenerateInvite = async () => {
+    try {
+      const res = await fetch(`/api/v1/routes/${route.id}/invite`, { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to generate invite');
+      const data = await res.json();
+      const url = `${window.location.origin}/invites/${data.token}`;
+      setInviteUrl(url);
+    } catch (error) {
+      console.error(error);
+      alert('Failed to generate invite URL');
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!inviteUrl) return;
+    await navigator.clipboard.writeText(inviteUrl);
+    setIsCopying(true);
+    setTimeout(() => setIsCopying(false), 2000);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this route?')) return;
+    try {
+      const res = await fetch(`/api/v1/routes?id=${route.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete route');
+      window.location.href = '/';
+    } catch (error) {
+      console.error(error);
+      alert('Failed to delete route');
+    }
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start border-b py-8 border-grass">
+    <div className="flex flex-col border-b py-8 border-grass">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
       {/* サムネイル画像 - PCでは左側、モバイルでは上部 */}
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
@@ -41,14 +80,25 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
 
       {/* タイトルと基本情報 - PCでは右側、モバイルでは下部 */}
       <div className="flex flex-col gap-4 flex-1 min-w-0">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-bold text-accent-0 uppercase tracking-[0.3em]">
-            {route.routeFor || "EVERYONE"}
-          </span>
-          <span className="text-foreground-1/20">•</span>
-          <span className="text-[10px] font-bold text-foreground-1 uppercase tracking-[0.3em]">
-            {new Date(route.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
-          </span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-foreground-0">
+          <div className="flex items-center gap-2">
+            For
+            <span className="text-xs font-bold text-accent-0 uppercase tracking-[0.3em]">
+              {route.routeFor || "EVERYONE"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            In
+            <span className="text-xs font-bold text-accent-0 uppercase tracking-[0.3em]">
+              {getMonthName(route.month || 0)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            CreatedAt
+            <span className="text-xs font-bold text-accent-0 uppercase tracking-[0.3em]">
+              {new Date(route.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
+            </span>
+          </div>
         </div>
 
         <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground-0 tracking-tight leading-tight uppercase line-clamp-2">
@@ -61,6 +111,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
               routeId={route.id} 
               initialLikesCount={route.likes?.length ?? 0} 
             />
+            <ShareButton variant="compact" />
             <div className="flex items-center text-foreground-1">
               <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
                 {route.views?.length ?? 0} views
@@ -83,17 +134,6 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
         </div>
 
         <div className="flex flex-wrap gap-2 mt-1">
-          {canEdit && (
-            <Link
-              href={`/articles/${route.id}/edit`}
-              className="flex items-center gap-2 px-3 py-1 bg-accent-0 text-white rounded-lg shadow-sm hover:bg-accent-0/90 transition-all active:scale-95"
-            >
-              <HiPencilSquare className="w-4 h-4" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                Edit Route
-              </span>
-            </Link>
-          )}
           <div className="flex items-center gap-2 px-2.5 py-1 bg-foreground-0/5 rounded-lg border border-foreground-0/5">
             <HiClock className="w-3.5 h-3.5 text-accent-0" />
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground-1">
@@ -112,6 +152,82 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
           "{route.description}"
         </p>
       </div>
+      </div>
+
+      {/* アクションバー - 公開設定とユーザー権限、操作ボタン */}
+      {(isAuthor || isCollaborator) && (
+        <div className="mt-8 pt-6 border-t border-foreground-0/10 flex flex-wrap items-center justify-between gap-4 w-full">
+          {/* ステータス情報 */}
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
+              {route.visibility === 'PUBLIC' ? (
+                <><HiGlobeAlt className="w-3.5 h-3.5 text-accent-0" /> Visibility: Public</>
+              ) : (
+                <><HiLockClosed className="w-3.5 h-3.5 text-accent-0" /> Visibility: Private</>
+              )}
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
+              {isAuthor ? (
+                <><HiUser className="w-3.5 h-3.5 text-accent-0" /> Role: Owner</>
+              ) : isCollaborator ? (
+                <><HiUsers className="w-3.5 h-3.5 text-accent-0" /> Role: Collaborator</>
+              ) : (
+                <><HiEye className="w-3.5 h-3.5 text-accent-0" /> Role: Viewer</>
+              )}
+            </div>
+          </div>
+
+          {/* 操作ボタン */}
+          <div className="flex flex-wrap items-center gap-3">
+            {canEdit && (
+              <Link
+                href={`/articles/${route.id}/edit`}
+                className="flex items-center gap-2 px-4 py-2 bg-accent-0 text-white rounded-xl shadow-md hover:bg-accent-0/90 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+              >
+                <HiPencilSquare className="w-4 h-4" />
+                Edit
+              </Link>
+            )}
+
+            {isAuthor && (
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-600 rounded-xl hover:bg-red-500/20 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+              >
+                <HiTrash className="w-4 h-4" />
+                Delete
+              </button>
+            )}
+
+            {route.collaboratorPolicy !== 'DISABLED' && (isAuthor || isCollaborator) && (
+              <div className="flex items-center gap-2">
+                {!inviteUrl ? (
+                  <button
+                    onClick={handleGenerateInvite}
+                    className="flex items-center gap-2 px-4 py-2 bg-foreground-0 text-white rounded-xl shadow-md hover:bg-foreground-0/90 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+                  >
+                    <HiShare className="w-4 h-4" />
+                    Invite Link
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 pl-4 pr-1 py-1 bg-foreground-0/5 rounded-xl border border-foreground-0/10">
+                    <span className="text-[10px] text-foreground-1 font-mono truncate max-w-[120px] md:max-w-[200px]">
+                      {inviteUrl}
+                    </span>
+                    <button
+                      onClick={handleCopy}
+                      className="p-2 hover:bg-foreground-0/10 rounded-lg transition-colors text-accent-0"
+                      title="Copy link"
+                    >
+                      {isCopying ? <HiCheck className="w-4 h-4" /> : <HiClipboard className="w-4 h-4" />}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

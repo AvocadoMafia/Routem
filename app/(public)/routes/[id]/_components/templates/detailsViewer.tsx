@@ -13,6 +13,7 @@ import RouteHeader from "../ingredients/routeHeader";
 import AuthorSection from "../ingredients/authorSection";
 import CategoryTags from "../ingredients/categoryTags";
 import LikeButton from "../ingredients/likeButton";
+import ShareButton from "../ingredients/shareButton";
 import CommentSection from "./commentSection";
 import { getTransitIcon } from "../ingredients/transitIcon";
 
@@ -94,12 +95,15 @@ export default function DetailsViewer({
       {/* ルートを気に入った場合のいいねボタン */}
       <div className="flex flex-col items-center gap-6">
         <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-foreground-1">Did you enjoy this route?</span>
-        <LikeButton 
-          routeId={route.id} 
-          initialLikesCount={route.likes?.length ?? 0} 
-          initialIsLiked={isLikedByMe}
-          variant="large" 
-        />
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <LikeButton 
+            routeId={route.id} 
+            initialLikesCount={route.likes?.length ?? 0} 
+            initialIsLiked={isLikedByMe}
+            variant="large" 
+          />
+          <ShareButton variant="large" />
+        </div>
       </div>
 
       {/* 情報エリア (投稿者, カテゴリー, タグ, コメント/関連記事) */}

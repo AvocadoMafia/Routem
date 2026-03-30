@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { routesService } from "@/features/routes/service";
 import { validateParams } from "@/lib/server/validateParams";
-import { GetRoutesSchema } from "@/features/routes/schema";
+import { GetRoutesSchema, PostRouteSchema, PatchRouteSchema, DeleteRouteSchema } from "@/features/routes/schema";
 import { createClient } from "@/lib/auth/supabase/server";
-import { PostRouteSchema } from "@/features/routes/schema";
-import { PatchRouteSchema } from "@/features/routes/schema";
 
 
 
@@ -64,5 +62,21 @@ export async function PATCH(req: NextRequest) {
 
     const result = await routesService.patchRoute(parsed_body, user.id);
     return NextResponse.json(result, { status: 200 });
+  });
+}
+
+
+
+export async function DELETE(req: NextRequest) {
+  return await handleRequest(async () => {
+    const supabase = await createClient(req);
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (!user || error) {
+      throw new Error("unauthorized")
+    }
+    const search_params = Object.fromEntries(new URL(req.url).searchParams);
+    const parsed_params = await validateParams(DeleteRouteSchema, search_params);
+    await routesService.deleteRoute(parsed_params, user.id);
+    return NextResponse.json(null, { status: 204 });
   });
 }
