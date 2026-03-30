@@ -127,8 +127,9 @@ export default function RootClient({ id }: { id: string }) {
 
   if (isLoading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center">
+      <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-grass"></div>
+        <p className="text-foreground-1 font-bold uppercase tracking-[0.2em] animate-pulse">LOADING...</p>
       </div>
     )
   }
@@ -160,8 +161,8 @@ export default function RootClient({ id }: { id: string }) {
           followers: '0', 
           following: '0' 
         }}
-        routes={userRoutes}
-        likedRoutes={likedRoutes}
+        routes={isLoadingRoutes ? null : userRoutes}
+        likedRoutes={isLoadingRoutes ? null : likedRoutes}
         mode="public"
         fetchMore={fetchMore}
         hasMore={activeTab === 'routes' ? hasMoreRoutes : hasMoreLikes}

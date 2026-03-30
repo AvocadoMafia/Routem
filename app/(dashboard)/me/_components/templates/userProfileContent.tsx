@@ -2,7 +2,7 @@ import TabNavigation, { Tab } from '../ingredients/tabNavigation'
 import ProfileStats from '../ingredients/profileStats'
 import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import RouteCardGraphicalSkeleton from '@/app/_components/common/ingredients/routeCardGraphicalSkeleton'
-import { MdFavoriteBorder, MdHistory } from 'react-icons/md'
+import {MdFavoriteBorder, MdHistory, MdRoute} from 'react-icons/md'
 import React, { useEffect, useRef } from 'react'
 
 export default function UserProfileContent({
@@ -10,8 +10,8 @@ export default function UserProfileContent({
   onChangeTab,
   stats,
   routes,
-  likedRoutes = [],
-  historyRoutes = [],
+  likedRoutes,
+  historyRoutes,
   mode = 'public',
   fetchMore,
   hasMore,
@@ -20,9 +20,9 @@ export default function UserProfileContent({
   activeTab: Tab
   onChangeTab: (t: Tab) => void
   stats: { routes: number; followers: number | string; following: number | string }
-  routes: any[]
-  likedRoutes?: any[]
-  historyRoutes?: any[]
+  routes?: any[] | null
+  likedRoutes?: any[] | null
+  historyRoutes?: any[] | null
   mode?: 'self' | 'public'
   fetchMore?: () => Promise<void>
   hasMore?: boolean
@@ -70,18 +70,31 @@ export default function UserProfileContent({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-20">
         {activeTab === 'routes' && (
-          <>
-            {routes.map((route, idx) => (
-              <div key={idx} className="aspect-[4/5]">
-                <RouteCardGraphical route={route} />
+          routes === null ? (
+            dummyCards
+          ) : routes && routes.length > 0 ? (
+            <>
+              {routes.map((route, idx) => (
+                <div key={idx} className="aspect-[4/5]">
+                  <RouteCardGraphical route={route} />
+                </div>
+              ))}
+              {hasMore && dummyCards}
+            </>
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
+                <MdRoute size={32} className="text-foreground-1" />
               </div>
-            ))}
-            {hasMore && dummyCards}
-          </>
+              <p className="text-foreground-1 font-medium">No liked routes yet.</p>
+            </div>
+          )
         )}
 
         {activeTab === 'likes' && (
-          likedRoutes.length > 0 ? (
+          likedRoutes === null ? (
+            dummyCards
+          ) : likedRoutes && likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
                 <div key={idx} className="aspect-[4/5]">
@@ -101,7 +114,9 @@ export default function UserProfileContent({
         )}
 
         {activeTab === 'history' && mode === 'self' && (
-          historyRoutes.length > 0 ? (
+          historyRoutes === null ? (
+            dummyCards
+          ) : historyRoutes && historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
                 <div key={idx} className="aspect-[4/5]">

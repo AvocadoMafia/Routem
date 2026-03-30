@@ -201,9 +201,9 @@ export default function RootClient() {
           followers: '0', 
           following: '0' 
         }}
-        routes={userRoutes}
-        likedRoutes={likedRoutes}
-        historyRoutes={historyRoutes}
+        routes={!isInitialized ? null : userRoutes}
+        likedRoutes={!isInitialized ? null : likedRoutes}
+        historyRoutes={!isInitialized ? null : historyRoutes}
         mode="self"
         fetchMore={fetchMore}
         hasMore={getHasMore()}

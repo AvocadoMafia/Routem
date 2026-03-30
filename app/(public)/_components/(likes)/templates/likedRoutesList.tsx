@@ -1,4 +1,5 @@
 import RouteCardWidely from "@/app/_components/common/templates/routeCardWidely";
+import RouteCardWidelySkeleton from "@/app/_components/common/ingredients/routeCardWidelySkeleton";
 import {Route} from "@/lib/types/domain";
 import {useEffect, useMemo, useRef} from "react";
 import Link from "next/link";
@@ -9,8 +10,8 @@ import { HiHeart } from "react-icons/hi2";
 type LikeRecord = { id: string; createdAt: string | Date; route: Route }
 
 type Props = {
-    routes: Route[]
-    likes: LikeRecord[]
+    routes?: Route[]
+    likes?: LikeRecord[]
     focusedRouteIdx: number;
     setFocusedRouteIdx: (idx: number) => void;
 }
@@ -37,6 +38,7 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
 
     // モバイル（md以下）: いいね日（yyyy/mm/dd, JST）でグルーピング
     const groupedByDate = useMemo(() => {
+        if (!likes) return [];
         const map = new Map<string, LikeRecord[]>();
         likes.forEach(like => {
             const key = formatDateToYmdInTz(new Date(like.createdAt as any));
@@ -48,10 +50,28 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
         return Array.from(map.entries());
     }, [likes]);
 
+    if (!routes || !likes) {
+        return (
+            <div className={'md:w-1/3 w-full min-w-[340px] md:h-full h-fit md:p-3 no-scrollbar '}>
+                {/* モバイル用 Sticky Header */}
+                <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
+                    <HiHeart className="text-accent-0 w-5 h-5" />
+                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                </div>
+
+                <div className={'flex flex-col gap-4 h-full md:p-3'}>
+                    {Array.from({ length: 10 }).map((_, i) => (
+                        <RouteCardWidelySkeleton key={i} />
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className={'md:w-1/3 w-full min-w-[340px] md:h-full h-fit md:p-3 no-scrollbar '}>
             {/* モバイル用 Sticky Header */}
-            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 mb-2 flex items-center gap-2">
+            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
                 <HiHeart className="text-accent-0 w-5 h-5" />
                 <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
             </div>

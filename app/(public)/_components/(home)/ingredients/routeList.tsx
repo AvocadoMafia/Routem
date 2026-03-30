@@ -5,22 +5,23 @@ import {useEffect, useRef} from "react";
 
 
 type Props = {
-  routes: Route[]
+  routes?: Route[]
   focusedIndex: number;
   setFocusedIndex: (index: number) => void;
-    fetchMore: () => Promise<void>;
-    hasMore: boolean;
-    isFetching?: boolean;
+  fetchMore?: () => Promise<void>;
+  hasMore?: boolean;
+  isFetching?: boolean;
 };
 
 export default function RouteList(props: Props) {
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!props.fetchMore || !props.hasMore) return;
     const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && props.hasMore && !props.isFetching) {
-            props.fetchMore();
+            props.fetchMore?.();
           }
         },
         { threshold: 0.1 }
@@ -45,6 +46,18 @@ export default function RouteList(props: Props) {
           observerTarget={observerTarget}
       />
   ));
+
+  if (!props.routes) {
+    return (
+        <div
+            className="flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
+        >
+            {Array.from({ length: 6 }).map((_, i) => (
+                <RouteCardHorizontalSkeleton key={i} />
+            ))}
+        </div>
+    )
+  }
 
   return (
     <div

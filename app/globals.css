@@ -159,6 +159,15 @@ body {
     animation: shimmer 2s infinite linear;
 }
 
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
 /* NProgress styles - positioned below header */
 #nprogress {
     pointer-events: none;

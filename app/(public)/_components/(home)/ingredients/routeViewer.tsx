@@ -6,11 +6,11 @@ import {Route} from "@/lib/client/types";
 
 type Props = {
   focusedIndex: number;
-  routes: Route[]
+  routes?: Route[];
 };
 
 export default function RouteViewer(props: Props) {
-  const route = props.focusedIndex !== null ? props.routes[props.focusedIndex] : null;
+  const route = (props.routes && props.focusedIndex !== null) ? props.routes[props.focusedIndex] : null;
 
   return (
     <div className={'flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-6 backdrop-blur-xs overflow-hidden px-6 border-l border-grass/20'}>
@@ -88,8 +88,26 @@ export default function RouteViewer(props: Props) {
           </div>
         </>
       ) : (
-        <div className="flex h-full items-center justify-center text-foreground-1/40 italic">
-          Select a route to view details
+        <div className="w-full flex flex-col gap-6">
+          <div className="w-full aspect-video rounded-xl bg-background-0/50 shimmer" />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <div className="w-3/4 h-8 bg-background-0 rounded shimmer" />
+              <div className="w-1/4 h-4 bg-background-0 rounded shimmer" />
+            </div>
+            <div className="flex gap-4">
+              <div className="w-24 h-6 rounded-full bg-background-0 shimmer" />
+              <div className="w-24 h-6 rounded-full bg-background-0 shimmer" />
+            </div>
+            <div className="mt-4 flex flex-col gap-3">
+              <div className="w-1/3 h-6 bg-background-0 rounded shimmer" />
+              <div className="flex flex-col gap-2">
+                <div className="w-full h-4 bg-background-0 rounded shimmer" />
+                <div className="w-full h-4 bg-background-0 rounded shimmer" />
+                <div className="w-2/3 h-4 bg-background-0 rounded shimmer" />
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

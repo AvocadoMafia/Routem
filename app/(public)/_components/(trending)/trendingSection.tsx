@@ -9,6 +9,9 @@ import { getDataFromServerWithJson } from "@/lib/client/helpers";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiFire, HiUsers, HiHashtag } from "react-icons/hi2";
 import {CiRoute} from "react-icons/ci";
+import RouteCardBasicSkeleton from "@/app/_components/common/ingredients/routeCardBasicSkeleton";
+import TrendingUserCardSkeleton from "@/app/(public)/_components/(trending)/ingredients/trendingUserCardSkeleton";
+import {MdRoute} from "react-icons/md";
 
 type TrendingTab = 'routes' | 'users' | 'tags';
 
@@ -84,7 +87,6 @@ export default function TrendingSection() {
         }
     };
 
-    if (loading) return <div className="w-full h-full flex items-center justify-center">Loading trending...</div>;
     if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>;
 
     return (
@@ -100,7 +102,7 @@ export default function TrendingSection() {
                         onClick={() => setActiveTab('routes')}
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1'}`}
                     >
-                        <CiRoute size={16} />
+                        <MdRoute size={16} />
                         <span>ROUTES</span>
                         {activeTab === 'routes' && <motion.div layoutId="trendingTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />}
                     </button>
@@ -109,7 +111,7 @@ export default function TrendingSection() {
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'users' ? 'text-accent-0' : 'text-foreground-1'}`}
                     >
                         <HiUsers size={16} />
-                        <span>USERS</span>
+                        <span>TRAVELERS</span>
                         {activeTab === 'users' && <motion.div layoutId="trendingTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />}
                     </button>
                     <button
@@ -124,7 +126,7 @@ export default function TrendingSection() {
             </div>
 
             {/* モバイル表示: アクティブなタブに応じて切り替え */}
-            <div className="md:hidden w-full h-fit">
+            <div className="md:hidden w-full h-fit px-4 py-6">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
@@ -133,22 +135,33 @@ export default function TrendingSection() {
                         exit={{ opacity: 0, x: -10 }}
                         transition={{ duration: 0.2 }}
                     >
-                        {activeTab === 'routes' && <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />}
-                        {activeTab === 'users' && <TrendingUsersList users={users || []}  />}
-                        {activeTab === 'tags' && <TrendingTagsList tags={tags || []} />}
+                        {activeTab === 'routes' && (
+                            <TrendingRoutesList 
+                                routes={loading ? undefined : routes} 
+                                fetchMore={fetchMoreRoutes} 
+                                hasMore={hasMore} 
+                                isFetching={isFetching} 
+                            />
+                        )}
+                        {activeTab === 'users' && <TrendingUsersList users={loading ? undefined : users || []}  />}
+                        {activeTab === 'tags' && <TrendingTagsList tags={loading ? undefined : tags || []} />}
                     </motion.div>
                 </AnimatePresence>
             </div>
 
             {/* デスクトップ表示: 既存のレイアウト */}
             <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
-                <TrendingRoutesList routes={routes} fetchMore={fetchMoreRoutes} hasMore={hasMore} isFetching={isFetching} />
+                <TrendingRoutesList 
+                    routes={loading ? undefined : routes} 
+                    fetchMore={fetchMoreRoutes} 
+                    hasMore={hasMore} 
+                    isFetching={isFetching} 
+                />
                 <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
-                    <TrendingUsersList users={users || []} />
-                    <TrendingTagsList tags={tags || []} />
+                    <TrendingUsersList users={loading ? undefined : users || []} />
+                    <TrendingTagsList tags={loading ? undefined : tags || []} />
                 </div>
             </div>
-
         </div>
     );
 }

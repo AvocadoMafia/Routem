@@ -1,6 +1,5 @@
 'use client'
 
-import {useState, useEffect} from "react";
 import {Route} from "@/lib/client/types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
@@ -8,16 +7,52 @@ import 'swiper/css';
 import { HiHeart } from "react-icons/hi2";
 
 type Props = {
-    routes: Route[];
+    routes?: Route[];
+    fetchMore?: () => Promise<void>;
+    hasMore?: boolean;
+    isFetching?: boolean;
 };
 
 export default function MapViewerOnMobile(props: Props) {
+    if (!props.routes) {
+        return (
+            <div className="w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg overflow-hidden">
+                <div className="w-full h-full rounded-2xl bg-background-1 flex flex-col">
+                    <div className="w-full h-[275px] bg-background-0/50 shimmer" />
+                    <div className="p-6 flex flex-col gap-4">
+                        <div className="w-3/4 h-8 bg-background-0 rounded shimmer" />
+                        <div className="w-1/2 h-6 bg-background-0 rounded shimmer" />
+                        <div className="w-full h-20 bg-background-0 rounded shimmer" />
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const dummySlides = Array.from({ length: 5 }).map((_, i) => (
+        <SwiperSlide key={`dummy-${i}`}>
+            <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden bg-background-1">
+                <div className="w-full h-[275px] bg-background-0/50 shimmer" />
+                <div className="p-6 flex flex-col gap-4">
+                    <div className="w-3/4 h-8 bg-background-0 rounded shimmer" />
+                    <div className="w-1/2 h-6 bg-background-0 rounded shimmer" />
+                    <div className="w-full h-20 bg-background-0 rounded shimmer" />
+                </div>
+            </div>
+        </SwiperSlide>
+    ));
+
     return (
         <div className={'w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
             <Swiper
                 slidesPerView={1}
                 spaceBetween={16}
                 className="w-full h-full rounded-2xl overflow-hidden text-foreground-0"
+                onSlideChange={(swiper) => {
+                    if (props.routes && swiper.activeIndex >= props.routes.length - 1 && props.hasMore && !props.isFetching) {
+                        props.fetchMore?.();
+                    }
+                }}
             >
                 {props.routes.map((route, idx) => (
                     <SwiperSlide key={route.id ?? idx}>
@@ -94,6 +129,7 @@ export default function MapViewerOnMobile(props: Props) {
                         </div>
                     </SwiperSlide>
                 ))}
+                {props.hasMore && dummySlides}
             </Swiper>
         </div>
     );

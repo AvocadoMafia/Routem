@@ -5,7 +5,7 @@ import { HiFire } from "react-icons/hi2";
 import { useEffect, useRef } from "react";
 
 type Props = {
-    routes: Route[];
+    routes?: Route[];
     fetchMore?: () => Promise<void>;
     hasMore?: boolean;
     isFetching?: boolean;
@@ -45,6 +45,23 @@ export default function TrendingRoutesList({ routes, fetchMore, hasMore, isFetch
             observerTarget={observerTarget}
         />
     ));
+
+    if (!routes) {
+        return (
+            <div className={`w-full lg:w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>
+                <h2 className="md:flex hidden text-base font-bold uppercase tracking-[0.3em] text-foreground-0 mb-2 items-center gap-2">
+                    <HiFire className="text-accent-0 w-5 h-5" />
+                    Trending Routes
+                </h2>
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <RouteCardBasicSkeleton key={i} />
+                ))}
+                <div className="flex items-center justify-center py-10">
+                    <p className="text-foreground-1 font-bold uppercase tracking-[0.2em] animate-pulse">LOADING...</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className={`w-full lg:w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>

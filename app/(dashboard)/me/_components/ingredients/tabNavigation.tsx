@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { MdGridOn, MdFavoriteBorder, MdHistory } from 'react-icons/md'
+import {MdGridOn, MdFavoriteBorder, MdHistory, MdRoute} from 'react-icons/md'
 
 export type Tab = 'routes' | 'likes' | 'history'
 
@@ -18,7 +18,7 @@ export default function TabNavigation({
         onClick={() => onChange('routes')}
         className={`flex items-center gap-2 pb-4 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
       >
-        <MdGridOn size={18} />
+        <MdRoute size={18} />
         <span>ROUTES</span>
         {activeTab === 'routes' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />}
       </button>

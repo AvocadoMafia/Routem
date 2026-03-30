@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@prisma/config": "^7.3.0",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/nprogress": "^0.2.3",

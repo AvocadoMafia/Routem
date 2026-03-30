@@ -2,16 +2,18 @@ import TabNavigation, { Tab } from '../ingredients/tabNavigation'
 import ProfileStats from '../ingredients/profileStats'
 import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import RouteCardGraphicalSkeleton from '@/app/_components/common/ingredients/routeCardGraphicalSkeleton'
-import { MdFavoriteBorder, MdHistory } from 'react-icons/md'
+import { MdFavoriteBorder, MdHistory, MdGridOn } from 'react-icons/md'
 import React, { useEffect, useRef } from 'react'
+import FuckingOctopus from '@/app/_components/common/ingredients/fuckingOctopus'
+import FuckingSquid from '@/app/_components/common/ingredients/fuckingSquid'
 
 export default function UserProfileContent({
   activeTab,
   onChangeTab,
   stats,
   routes,
-  likedRoutes = [],
-  historyRoutes = [],
+  likedRoutes,
+  historyRoutes,
   mode = 'public',
   fetchMore,
   hasMore,
@@ -20,9 +22,9 @@ export default function UserProfileContent({
   activeTab: Tab
   onChangeTab: (t: Tab) => void
   stats: { routes: number; followers: number | string; following: number | string }
-  routes: any[]
-  likedRoutes?: any[]
-  historyRoutes?: any[]
+  routes?: any[] | null
+  likedRoutes?: any[] | null
+  historyRoutes?: any[] | null
   mode?: 'self' | 'public'
   fetchMore?: () => Promise<void>
   hasMore?: boolean
@@ -70,18 +72,30 @@ export default function UserProfileContent({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-20">
         {activeTab === 'routes' && (
-          <>
-            {routes.map((route, idx) => (
-              <div key={route.id ?? idx} className="aspect-[4/5]">
-                <RouteCardGraphical route={route} />
-              </div>
-            ))}
-            {hasMore && dummyCards}
-          </>
+          routes === null ? (
+            dummyCards
+          ) : routes && routes.length > 0 ? (
+            <>
+              {routes.map((route, idx) => (
+                <div key={route.id ?? idx} className="aspect-[4/5]">
+                  <RouteCardGraphical route={route} />
+                </div>
+              ))}
+              {hasMore && dummyCards}
+            </>
+          ) : (
+            <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+              <FuckingOctopus className="w-[300px] h-[300px] text-foreground-1" />
+              <h2 className="text-foreground-0 font-bold uppercase text-xl mt-4">NO ROUTES CREATED.</h2>
+              <p className="text-foreground-1 mt-2">You haven't created any routes yet, right?</p>
+            </div>
+          )
         )}
 
         {activeTab === 'likes' && (
-          likedRoutes.length > 0 ? (
+          likedRoutes === null ? (
+            dummyCards
+          ) : likedRoutes && likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
                 <div key={route.id ?? idx} className="aspect-[4/5]">
@@ -91,17 +105,18 @@ export default function UserProfileContent({
               {hasMore && dummyCards}
             </>
           ) : (
-            <div className="col-span-full py-20 text-center">
-              <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
-                <MdFavoriteBorder size={32} className="text-foreground-1" />
-              </div>
-              <p className="text-foreground-1 font-medium">No liked routes yet.</p>
+            <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+              <FuckingSquid className="w-[300px] h-[300px] text-foreground-1" />
+              <h2 className="text-foreground-0 font-bold uppercase text-xl mt-4">NO LIKED ROUTES FOUND.</h2>
+              <p className="text-foreground-1 mt-2">You haven't liked any routes yet, right?</p>
             </div>
           )
         )}
 
         {activeTab === 'history' && mode === 'self' && (
-          historyRoutes.length > 0 ? (
+          historyRoutes === null ? (
+            dummyCards
+          ) : historyRoutes && historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
                 <div key={route.id ?? idx} className="aspect-[4/5]">
@@ -111,11 +126,12 @@ export default function UserProfileContent({
               {hasMore && dummyCards}
             </>
           ) : (
-            <div className="col-span-full py-20 text-center">
-              <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+              <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mb-4">
                 <MdHistory size={32} className="text-foreground-1" />
               </div>
-              <p className="text-foreground-1 font-medium">No browsing history yet.</p>
+              <h2 className="text-foreground-0 font-bold uppercase text-xl">NO BROWSING HISTORY.</h2>
+              <p className="text-foreground-1 mt-2">You haven't browsed any routes yet.</p>
             </div>
           )
         )}

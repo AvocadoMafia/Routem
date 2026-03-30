@@ -5,6 +5,9 @@ import {getDataFromServerWithJson} from "@/lib/client/helpers";
 import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
+import FuckingSquid from "@/app/_components/common/ingredients/fuckingSquid";
+import {HiHeart} from "react-icons/hi2";
+import RouteCardWidelySkeleton from "@/app/_components/common/ingredients/routeCardWidelySkeleton";
 
 // カーソルベースのレスポンス型
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
@@ -13,8 +16,8 @@ export default function LikesSection() {
 
     type LikeRecord = { id: string; createdAt: string; route: Route }
 
-    const [likes, setLikes] = useState<LikeRecord[]>([]);
-    const routes: Route[] = likes.map(l => l.route);
+    const [likes, setLikes] = useState<LikeRecord[] | null>(null);
+    const routes: Route[] = likes ? likes.map(l => l.route) : [];
 
     const [focusedRouteIdx, setFocusedRouteIdx] = useState<number>(0);
     const prevIndexRef = useRef<number>(0);
@@ -23,7 +26,7 @@ export default function LikesSection() {
     useEffect(() => {
         getDataFromServerWithJson<CursorResponse<LikeRecord>>('/api/v1/likes?route=true&take=30').then(
             (res) => setLikes((res?.items || []).filter((it: any) => it.route))
-        )
+        ).catch(() => setLikes([]))
     }, [])
 
     useEffect(() => {
@@ -33,6 +36,17 @@ export default function LikesSection() {
     const routeOnFocus = routes[focusedRouteIdx];
     const direction = focusedRouteIdx > prevIndexRef.current ? 'up' : 'down';
 
+    if (likes !== null && likes.length === 0) return (
+        <div className="w-full h-full flex flex-col items-center justify-center gap-2 relative">
+            <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
+                <HiHeart className="text-accent-0 w-5 h-5" />
+                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+            </div>
+            <FuckingSquid className={'w-[300px] h-[300px] text-foreground-1'}/>
+            <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>NO LIKED ROUTES FOUND.</h2>
+            <p className={'text-foreground-1'}>You haven't liked any routes yet, right?</p>
+        </div>
+    )
 
     return (
         <div className={'w-full md:h-full h-fit flex flex-row relative md:overflow-hidden'}>
@@ -67,7 +81,7 @@ export default function LikesSection() {
             <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
 
             <div className="relative z-10 w-full md:h-full h-fit flex flex-row">
-                <LikedRoutesList routes={routes} likes={likes} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
+                <LikedRoutesList routes={likes ? routes : undefined} likes={likes ?? undefined} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
                 <div className="flex-1 h-full relative md:block hidden">
                     <FocusingRouteViewer routeOnFocus={routeOnFocus} focusedRouteIdx={focusedRouteIdx} setFocusedRouteIdx={setFocusedRouteIdx} routesLength={routes.length}/>
                 </div>
