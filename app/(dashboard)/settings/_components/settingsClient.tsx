@@ -11,7 +11,7 @@ export default function SettingsClient() {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const { user, login } = userStore()
+  const { user, login, logout } = userStore()
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -30,9 +30,11 @@ export default function SettingsClient() {
 
   const handleLogout = async () => {
     setIsLoading(true)
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
+    await logout(
+      undefined,
+      () => router.push('/login'),
+      (error) => setMessage({ type: 'error', text: error?.message || 'ログアウトに失敗しました' })
+    )
     setIsLoading(false)
   }
 
@@ -68,9 +70,7 @@ export default function SettingsClient() {
     try {
       const res = await fetch('/api/v1/users/me', { method: 'DELETE' })
       if (res.ok) {
-        const supabase = createClient()
-        await supabase.auth.signOut()
-        router.push('/login')
+        await logout(undefined, () => router.push('/login'))
       } else {
         const data = await res.json()
         setMessage({ type: 'error', text: data.error || 'アカウントの削除に失敗しました' })

@@ -19,7 +19,7 @@ type LightUser = {
 }
 
 // Followレコード（バックから返すフォローそのもの）
-type FollowRecord = { id: string; createdAt: string; following: LightUser }
+type FollowRecord = { id: string; createdAt: string; target: LightUser }
 
 // カーソルベースのレスポンス型
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
@@ -51,7 +51,7 @@ export default function FollowingsSection() {
             try {
                 const [routesRes, followRes] = await Promise.all([
                     getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?type=followings&limit=15'),
-                    getDataFromServerWithJson<CursorResponse<FollowRecord>>('/api/v1/followings?following=true&take=15'),
+                    getDataFromServerWithJson<CursorResponse<FollowRecord>>('/api/v1/follows?type=following&take=15'),
                 ])
                 if (!cancelled) {
                     if (routesRes) {
@@ -60,7 +60,7 @@ export default function FollowingsSection() {
                         if (!routesRes.nextCursor) setHasMoreRoutes(false);
                     }
                     if (followRes) {
-                        setFollowings(followRes.items.map(fr => fr.following));
+                        setFollowings(followRes.items.map(fr => fr.target));
                         followingsCursorRef.current = followRes.nextCursor;
                         if (!followRes.nextCursor) setHasMoreFollowings(false);
                     }
@@ -107,9 +107,9 @@ export default function FollowingsSection() {
         setIsFetching(true);
         try {
             const cursor = encodeURIComponent(followingsCursorRef.current);
-            const res = await getDataFromServerWithJson<CursorResponse<FollowRecord>>(`/api/v1/followings?following=true&take=15&cursor=${cursor}`);
+            const res = await getDataFromServerWithJson<CursorResponse<FollowRecord>>(`/api/v1/follows?type=following&take=15&cursor=${cursor}`);
             if (res && res.items.length > 0) {
-                const newFollowings = res.items.map(fr => fr.following);
+                const newFollowings = res.items.map(fr => fr.target);
                 setFollowings(prev => {
                     const existingIds = new Set(prev.map(u => u.id));
                     const filtered = newFollowings.filter(u => !existingIds.has(u.id));

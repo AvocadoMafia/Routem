@@ -61,10 +61,10 @@ const BoolParam = z
   .union([z.literal("true"), z.literal("false"), z.boolean()])
   .transform((v) => v === true || v === "true");
 
-// Followings GET query: following? follower? take? cursor?
-export const GetFollowingsQuerySchema = z.object({
-  following: BoolParam.optional(),
-  follower: BoolParam.optional(),
+// Follows GET query: type? userId? take? cursor?
+export const GetFollowsQuerySchema = z.object({
+  type: z.enum(["following", "follower"]).default("following"),
+  userId: z.string().uuid().optional(), // 省略時は自分
   take: z
     .union([z.string().regex(/^\d+$/), z.number()])
     .transform((n: any) => (typeof n === "string" ? Number(n) : n))
@@ -73,5 +73,5 @@ export const GetFollowingsQuerySchema = z.object({
     .optional(),
   cursor: z.string().optional(),
 });
-export type GetFollowingsQuery = z.infer<typeof GetFollowingsQuerySchema>;
+export type GetFollowsQuery = z.infer<typeof GetFollowsQuerySchema>;
 
