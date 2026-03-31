@@ -2,6 +2,8 @@ import TabNavigation, { Tab } from '../ingredients/tabNavigation'
 import ProfileStats from '../ingredients/profileStats'
 import RouteCardGraphical from '@/app/_components/common/templates/routeCardGraphical'
 import RouteCardGraphicalSkeleton from '@/app/_components/common/ingredients/routeCardGraphicalSkeleton'
+import RouteCardWidely from '@/app/_components/common/templates/routeCardWidely'
+import RouteCardWidelySkeleton from '@/app/_components/common/ingredients/routeCardWidelySkeleton'
 import { MdFavoriteBorder, MdHistory, MdGridOn } from 'react-icons/md'
 import React, { useEffect, useRef } from 'react'
 import FuckingOctopus from '@/app/_components/common/ingredients/fuckingOctopus'
@@ -57,12 +59,20 @@ export default function UserProfileContent({
 
   // ダミーカードの生成（15個）
   const dummyCards = Array.from({ length: 15 }).map((_, i) => (
-    <div key={`dummy-${i}`} className="aspect-[4/5]">
-      <RouteCardGraphicalSkeleton 
-        isFirst={i === 0}
-        observerTarget={observerTarget}
-      />
-    </div>
+    <React.Fragment key={`dummy-${i}`}>
+      <div className="hidden md:block aspect-[4/5]">
+        <RouteCardGraphicalSkeleton 
+          isFirst={i === 0}
+          observerTarget={observerTarget}
+        />
+      </div>
+      <div className="block md:hidden">
+        <RouteCardWidelySkeleton 
+          isFirst={i === 0}
+          observerTarget={observerTarget}
+        />
+      </div>
+    </React.Fragment>
   ));
 
   return (
@@ -70,16 +80,21 @@ export default function UserProfileContent({
       <ProfileStats routes={stats.routes} followers={stats.followers} following={stats.following} />
       <TabNavigation activeTab={activeTab} onChange={onChangeTab} mode={mode} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-20">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3 pb-20">
         {activeTab === 'routes' && (
           routes === null ? (
             dummyCards
           ) : routes && routes.length > 0 ? (
             <>
               {routes.map((route, idx) => (
-                <div key={route.id ?? idx} className="aspect-[4/5]">
-                  <RouteCardGraphical route={route} />
-                </div>
+                <React.Fragment key={route.id ?? idx}>
+                  <div className="hidden md:block aspect-[4/5]">
+                    <RouteCardGraphical route={route} />
+                  </div>
+                  <div className="block md:hidden">
+                    <RouteCardWidely route={route} />
+                  </div>
+                </React.Fragment>
               ))}
               {hasMore && dummyCards}
             </>
@@ -98,9 +113,14 @@ export default function UserProfileContent({
           ) : likedRoutes && likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
-                <div key={route.id ?? idx} className="aspect-[4/5]">
-                  <RouteCardGraphical route={route} />
-                </div>
+                <React.Fragment key={route.id ?? idx}>
+                  <div className="hidden md:block aspect-[4/5]">
+                    <RouteCardGraphical route={route} />
+                  </div>
+                  <div className="block md:hidden">
+                    <RouteCardWidely route={route} />
+                  </div>
+                </React.Fragment>
               ))}
               {hasMore && dummyCards}
             </>
@@ -119,9 +139,14 @@ export default function UserProfileContent({
           ) : historyRoutes && historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
-                <div key={route.id ?? idx} className="aspect-[4/5]">
-                  <RouteCardGraphical route={route} />
-                </div>
+                <React.Fragment key={route.id ?? idx}>
+                  <div className="hidden md:block aspect-[4/5]">
+                    <RouteCardGraphical route={route} />
+                  </div>
+                  <div className="block md:hidden">
+                    <RouteCardWidely route={route} />
+                  </div>
+                </React.Fragment>
               ))}
               {hasMore && dummyCards}
             </>

@@ -25,12 +25,14 @@ export default function UserProfileHeader({
               <UserName name={name} />
             </div>
           </div>
-          <ActionButtons />
         </div>
         
-        {/* bio section - separated from name/avatar row to prevent pushing name up when bio is long */}
-        <div className="mb-8">
-          <UserBio bio={bio} />
+        {/* bio and actions section */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div className="max-w-[800px]">
+            <UserBio bio={bio} />
+          </div>
+          <ActionButtons />
         </div>
       </div>
     </>

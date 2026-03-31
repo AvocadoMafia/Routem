@@ -24,7 +24,7 @@ model User {
   collaborations  RouteCollaborator[]
   likes           Like[]
   comments        Comment[]
-  //これは逆で正しい
+  // これは逆で正しい
   followings      Follow[]            @relation("follower")
   followers       Follow[]            @relation("following")
   searchHistories SearchHistory[]
@@ -88,14 +88,14 @@ model Route {
   description String
   thumbnail   Image?   @relation("RouteThumbnail")
 
-  //追加したやつ
+  // 追加したやつ
   budget   Budget?
   routeFor RouteFor @default(EVERYONE)
   month    Int?
   tags     Tag[]
 
   authorId String @db.Uuid
-  author   User   @relation(references: [id], fields: [authorId])
+  author   User   @relation(references: [id], fields: [authorId], onDelete: Cascade)
 
   visibility    RouteVisibility     @default(PRIVATE)
   routeNodes    RouteNode[]
@@ -238,7 +238,7 @@ enum RouteVisibility {
 // 画像の利用目的
 enum ImageType {
   USER_ICON // ユーザーアイコン
-  USER_BG //ユーザー背景画像
+  USER_BG // ユーザー背景画像
   ROUTE_THUMBNAIL // ルートのサムネイル
   NODE_IMAGE // 地点（経由地）の写真
   OTHER // その他

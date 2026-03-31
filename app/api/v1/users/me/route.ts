@@ -40,3 +40,26 @@ export async function PATCH(req: NextRequest) {
 
     })
 }
+
+export async function DELETE(req: NextRequest) {
+    return handleRequest(async () => {
+        const supabase = await createClient(req);
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+            throw new Error("Unauthorized");
+        }
+
+        // Prisma側のデータを削除 (Cascadeにより関連データも削除される)
+        await usersService.deleteUser(user.id);
+
+        // Supabase Auth側のユーザーを削除
+        const { supabaseAdmin } = await import("@/lib/auth/supabase/admin");
+        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+        
+        if (deleteError) {
+            throw deleteError;
+        }
+
+        return NextResponse.json({ message: "User deleted successfully" }, { status: 200 });
+    });
+}

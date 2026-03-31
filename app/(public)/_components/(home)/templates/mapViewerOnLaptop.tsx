@@ -10,6 +10,7 @@ import {Route} from "@/lib/client/types";
 import getClientMapboxAccessToken from "@/lib/config/client";
 import { useMemo } from "react";
 import { MapPin } from "lucide-react";
+import { useRouteGeometry } from "@/lib/client/hooks/useRouteGeometry";
 
 type Props = {
     routes?: Route[];
@@ -29,14 +30,14 @@ export default function MapViewerOnLaptop(props: Props) {
     const mapRef = useRef<MapRef>(null);
 
     const mapboxAccessToken = getClientMapboxAccessToken()
+    const focusedRoute = props.routes ? props.routes[focusedRouteIndex] : undefined;
+    const routeGeometry = useRouteGeometry(focusedRoute);
 
     useEffect(() => {
         if (mapboxAccessToken) {
             mapboxgl.accessToken = mapboxAccessToken;
         }
     }, [mapboxAccessToken]);
-
-    const focusedRoute = props.routes ? props.routes[focusedRouteIndex] : undefined;
 
     useEffect(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length === 0 || !mapRef.current) return;
@@ -70,6 +71,15 @@ export default function MapViewerOnLaptop(props: Props) {
 
     const lineData = useMemo(() => {
         if (!focusedRoute || !focusedRoute.routeNodes || focusedRoute.routeNodes.length < 2) return null;
+
+        if (routeGeometry) {
+            return {
+                type: 'Feature',
+                properties: {},
+                geometry: routeGeometry
+            };
+        }
+
         const coordinates = (focusedRoute.routeNodes as RouteNodeWithSpot[])
             .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
             .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
@@ -84,7 +94,7 @@ export default function MapViewerOnLaptop(props: Props) {
                 coordinates: coordinates
             }
         };
-    }, [focusedRoute]);
+    }, [focusedRoute, routeGeometry]);
 
     if(!mapboxAccessToken) {
         console.error("Mapbox access token is missing!");
@@ -140,7 +150,7 @@ export default function MapViewerOnLaptop(props: Props) {
                                                 "line-cap": "round"
                                             }}
                                             paint={{
-                                                "line-color": "red",
+                                                "line-color": "#ff6363",
                                                 "line-width": 4,
                                                 "line-opacity": 0.6
                                             }}

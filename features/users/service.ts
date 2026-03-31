@@ -40,6 +40,18 @@ export const usersService = {
     }
   },
 
+  deleteUser: async (id: string) => {
+    try {
+      const user = await usersRepository.deleteUser(id);
+      if (!user) {
+        throw new Error("Delete failed");
+      }
+      return user;
+    } catch (e) {
+      throw e;
+    }
+  },
+
   /**
    * フォローの切り替え（トランザクション使用）
    * TOCTOU脆弱性防止のため、チェックと更新を単一トランザクションで実行

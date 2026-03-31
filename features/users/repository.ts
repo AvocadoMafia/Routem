@@ -46,6 +46,16 @@ export const usersRepository = {
     }
   },
 
+  deleteUser: async (id: string) => {
+    try {
+      return await getPrisma().user.delete({
+        where: { id: id },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
   updateUser: async (id: string, data: UpdateUserType) => {
     try {
       return getPrisma().$transaction(async (tx) => {

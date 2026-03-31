@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import { Map, Marker, Source, Layer, MapRef } from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import { Route } from "@/lib/client/types";
 import { MapPin } from "lucide-react";
 import getClientMapboxAccessToken from "@/lib/config/client";
+import { useRouteGeometry } from "@/lib/client/hooks/useRouteGeometry";
 
 type Props = {
   route: Route;
@@ -16,6 +17,7 @@ type Props = {
 export default function MapViewer({ route, focusIndex, items }: Props) {
   const mapRef = useRef<MapRef>(null);
   const mapboxAccessToken = getClientMapboxAccessToken();
+  const routeGeometry = useRouteGeometry(route);
 
   useEffect(() => {
     if (mapboxAccessToken) {
@@ -73,6 +75,16 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
 
   const lineData = useMemo(() => {
     if (!route || !route.routeNodes || route.routeNodes.length < 2) return null;
+
+    if (routeGeometry) {
+      return {
+        type: 'Feature',
+        properties: {},
+        geometry: routeGeometry
+      };
+    }
+
+    // Fallback to straight lines if routeGeometry is not available
     const coordinates = route.routeNodes
       .filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
       .map(node => [node.spot.longitude as number, node.spot.latitude as number]);
@@ -87,7 +99,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
         coordinates: coordinates
       }
     };
-  }, [route]);
+  }, [route, routeGeometry]);
 
   if (!mapboxAccessToken) return (
     <div className="absolute inset-0 bg-background-1 flex items-center justify-center">
@@ -140,7 +152,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
                 "line-cap": "round"
               }}
               paint={{
-                "line-color": "#2D1FF6",
+                "line-color": "#ff6363",
                 "line-width": 4,
                 "line-opacity": 0.6
               }}
