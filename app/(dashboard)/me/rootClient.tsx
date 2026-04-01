@@ -67,6 +67,7 @@ export default function RootClient() {
       if (activeTab === 'history' && history.length > 0) return
 
       setIsLoadingRoutes(true)
+      setIsFetching(true)
       try {
         if (activeTab === 'routes') {
           const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&type=user_posts`)
@@ -94,13 +95,14 @@ export default function RootClient() {
         console.error(`Failed to fetch ${activeTab}:`, error)
       } finally {
         setIsLoadingRoutes(false)
+        setIsFetching(false)
       }
     }
 
     fetchInitialData()
   }, [isInitialized, currentUser?.id, activeTab, userRoutes.length, likes.length, history.length])
 
-  const fetchMore = async () => {
+  const fetchMore = useCallback(async () => {
     if (isFetching || !currentUser?.id) return
 
     if (activeTab === 'routes' && hasMoreRoutes && routesCursorRef.current) {
@@ -167,7 +169,7 @@ export default function RootClient() {
         setIsFetching(false)
       }
     }
-  }
+  }, [isFetching, currentUser?.id, activeTab, hasMoreRoutes, hasMoreLikes, hasMoreHistory])
 
   if (!isInitialized) {
     return (

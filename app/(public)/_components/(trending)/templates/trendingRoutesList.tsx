@@ -48,7 +48,7 @@ export default function TrendingRoutesList({ routes, fetchMore, hasMore, isFetch
 
     if (!routes) {
         return (
-            <div className={`w-full lg:w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>
+            <div className={`w-full md:w-[30vw] md:max-w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>
                 <h2 className="md:flex hidden text-base font-bold uppercase tracking-[0.3em] text-foreground-0 mb-2 items-center gap-2">
                     <HiFire className="text-accent-0 w-5 h-5" />
                     Trending Routes
@@ -64,7 +64,7 @@ export default function TrendingRoutesList({ routes, fetchMore, hasMore, isFetch
     }
 
     return (
-        <div className={`w-full lg:w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>
+        <div className={`w-full md:w-[55vw] md:max-w-[900px] md:h-full md:overflow-y-scroll h-fit flex flex-col gap-6 md:py-16 py-2 no-scrollbar`}>
             <h2 className="md:flex hidden text-base font-bold uppercase tracking-[0.3em] text-foreground-0 mb-2 items-center gap-2">
                 <HiFire className="text-accent-0 w-5 h-5" />
                 Trending Routes
