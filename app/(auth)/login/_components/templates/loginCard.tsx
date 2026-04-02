@@ -39,108 +39,100 @@ export default function LoginCard() {
           }}
           className="w-full h-full flex flex-col md:flex-row rounded-2xl items-center justify-center text-foreground-0 relative"
       >
-        {/* 左側：画像 + ロゴ + 見出し */}
-        <div className="w-full md:w-1/2 md:min-w-[500px] h-full md:h-auto p-3 overflow-hidden flex flex-col justify-center items-center gap-6 md:block hidden @container relative z-10 opacity-100 backdrop-blur-xs">
-            <h2 className={'text-[4cqw] text-foreground-0/80 text-center'}>Routem, Travel Itinerary Sharing Platform</h2>
-            <h1 className={'text-[10cqw] text-foreground-0 leading-snug text-center font-bold'}>Why not record <br /> your great voyage here?</h1>
-            <div className={'flex flex-col gap-4 items-center'}>
-                <h3 className={'text-2xl w-fit text-foreground-0/60 font-bold'}>Don't Have Account?</h3>
-                <Link href="/signup">
-                    <h3 className={'text-2xl w-fit text-foreground-0 pb-1 px-2 border-b-2 border-foreground-0 hover:opacity-80 transition-opacity'}>Create Account →</h3>
-                </Link>
-            </div>
-        </div>
+
 
           {/*背景画像*/}
-          <div className={'flex w-full md:min-w-[500px] md:w-1/2 h-full md:h-fit absolute inset-0 md:inset-auto md:top-0 md:bottom-0 md:left-0 md:m-auto items-center justify-center z-0 md:z-auto opacity-20 md:opacity-100'}>
-              <img className={'lg:w-4/5 w-full aspect-video'} src={'/brushStroke_2.png'}/>
+          <div className={'absolute inset-0 w-full h-full'}>
+              <img className={'w-full h-full'} src={'/mockImages/mountain.jpg'}/>
           </div>
 
         {/* 右側：フォーム */}
         <div
-            className="w-full md:w-auto md:flex-1 md:h-full h-fit box-border p-6 overflow-hidden relative grid place-items-center @container z-10">
-          <div className="w-full max-w-sm space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground-0">Sign in</h2>
-              <p className="mt-2 text-sm text-foreground-1">Please enter your details.</p>
+            className="absolute md:w-1/2 w-full h-full md:top-0 md:right-0 z-10 p-6">
+          <div className="w-full h-full flex justify-center items-center bg-background-1/80 rounded-2xl border-1.5 border-background-1 p-3 backdrop-blur-sm">
+            <div className="w-full max-w-sm space-y-8">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight text-foreground-0">Sign in</h2>
+                <p className="mt-2 text-sm text-foreground-1">Please enter your details.</p>
+              </div>
+
+              <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="email-address" className="block text-sm font-medium text-foreground-0/80">
+                      Email address
+                    </label>
+                    <input
+                        id="email-address"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="mt-1 block w-full px-3 py-2 border border-foreground-1/30 rounded-md shadow-sm focus:outline-none focus:ring-foreground-0 focus:border-foreground-0 sm:text-sm"
+                        placeholder="you@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" id="password-label" className="block text-sm font-medium text-foreground-0/80">
+                      Password
+                    </label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="mt-1 block w-full px-3 py-2 border border-foreground-1/30 rounded-md shadow-sm focus:outline-none focus:ring-foreground-0 focus:border-foreground-0 sm:text-sm"
+                        placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                    <div className="text-accent-warning text-sm text-center">
+                      {error}
+                    </div>
+                )}
+
+                <div className="space-y-4">
+                  <button
+                      type="submit"
+                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-background-1 bg-accent-0 hover:bg-accent-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
+                  >
+                    Sign in
+                  </button>
+
+                  <div className="md:hidden text-center">
+                    <span className="text-sm text-foreground-1">Don't have an account? </span>
+                    <Link href="/signup" className="text-sm font-medium text-foreground-0 hover:underline">
+                      Sign up
+                    </Link>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-foreground-1/30"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-background-1 text-foreground-0/80">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <button
+                      type="button"
+                      onClick={handleGoogleLogin}
+                      className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-foreground-1/30 rounded-md shadow-sm text-sm font-medium text-foreground-0 bg-background-1 hover:bg-background-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
+                  >
+                    <FaGoogle className="w-5 h-5 text-accent-warning" />
+                    <span>Google</span>
+                  </button>
+                </div>
+              </form>
             </div>
-
-            <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="email-address" className="block text-sm font-medium text-foreground-0/80">
-                    Email address
-                  </label>
-                  <input
-                      id="email-address"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 border border-foreground-1/30 rounded-md shadow-sm focus:outline-none focus:ring-foreground-0 focus:border-foreground-0 sm:text-sm"
-                      placeholder="you@example.com"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" id="password-label" className="block text-sm font-medium text-foreground-0/80">
-                    Password
-                  </label>
-                  <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="mt-1 block w-full px-3 py-2 border border-foreground-1/30 rounded-md shadow-sm focus:outline-none focus:ring-foreground-0 focus:border-foreground-0 sm:text-sm"
-                      placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              {error && (
-                  <div className="text-accent-warning text-sm text-center">
-                    {error}
-                  </div>
-              )}
-
-              <div className="space-y-4">
-                <button
-                    type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-background-1 bg-accent-0 hover:bg-accent-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
-                >
-                  Sign in
-                </button>
-
-                <div className="md:hidden text-center">
-                  <span className="text-sm text-foreground-1">Don't have an account? </span>
-                  <Link href="/signup" className="text-sm font-medium text-foreground-0 hover:underline">
-                    Sign up
-                  </Link>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-foreground-1/30"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-background-1 text-foreground-0/80">Or continue with</span>
-                  </div>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={handleGoogleLogin}
-                    className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-foreground-1/30 rounded-md shadow-sm text-sm font-medium text-foreground-0 bg-background-1 hover:bg-background-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
-                >
-                  <FaGoogle className="w-5 h-5 text-accent-warning" />
-                  <span>Google</span>
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       </motion.div>
