@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, MdArrowBack } from 'react-icons/md'
+import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, MdArrowBack, MdLanguage, MdLocationOn, MdSave } from 'react-icons/md'
 import { createClient } from '@/lib/auth/supabase/client'
 import { userStore } from '@/lib/client/stores/userStore'
+import { patchDataToServerWithJson } from '@/lib/client/helpers'
 
 export default function SettingsClient() {
   const router = useRouter()
@@ -15,18 +16,44 @@ export default function SettingsClient() {
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [language, setLanguage] = useState('')
+  const [location, setLocation] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   useEffect(() => {
     setMounted(true)
     if (!user || user.id === '') {
       login(undefined, (u) => {
-        if (!u) router.push('/login')
+        if (!u) {
+          router.push('/login')
+        } else {
+          setLanguage(u.language || 'ja')
+          setLocation(u.location || '')
+        }
       })
+    } else {
+      setLanguage(user.language || 'ja')
+      setLocation(user.location || '')
     }
   }, [user, login, router])
 
   if (!mounted) return null
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    const profile = {
+      language,
+      location: location || null
+    }
+    await userStore.getState().edit(
+      profile,
+      undefined,
+      () => setMessage({ type: 'success', text: 'プロフィールを更新しました' }),
+      (error) => setMessage({ type: 'error', text: error?.message || '更新に失敗しました' })
+    )
+    setIsLoading(false)
+  }
 
   const handleLogout = async () => {
     setIsLoading(true)
@@ -102,6 +129,58 @@ export default function SettingsClient() {
         )}
 
         <div className="space-y-6">
+          {/* Profile Settings */}
+          <section className="bg-background-1 rounded-3xl p-6 border border-grass/10">
+            <h2 className="text-sm font-black text-foreground-1 mb-4 uppercase tracking-wider">プロフィール設定</h2>
+            <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-grass/10 rounded-xl flex items-center justify-center text-grass">
+                    <MdLanguage size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold mb-1">言語 (Language)</div>
+                    <select
+                      value={language}
+                      onChange={(e) => setLanguage(e.target.value)}
+                      className="w-full bg-background-2 border border-grass/10 rounded-xl px-4 py-2 focus:outline-none focus:border-grass transition-colors appearance-none"
+                    >
+                      <option value="ja">日本語 (Japanese)</option>
+                      <option value="en">English</option>
+                      <option value="ko">한국어 (Korean)</option>
+                      <option value="zh">中文 (Chinese)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-grass/10 rounded-xl flex items-center justify-center text-grass">
+                    <MdLocationOn size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold mb-1">所在地 (Location)</div>
+                    <input
+                      type="text"
+                      placeholder="例: 東京, 日本"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full bg-background-2 border border-grass/10 rounded-xl px-4 py-2 focus:outline-none focus:border-grass transition-colors"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 bg-grass text-white font-bold py-2.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+              >
+                <MdSave size={20} />
+                設定を保存
+              </button>
+            </form>
+          </section>
+
           {/* Theme Section */}
           <section className="bg-background-1 rounded-3xl p-6 border border-grass/10">
             <h2 className="text-sm font-black text-foreground-1 mb-4 uppercase tracking-wider">表示設定</h2>

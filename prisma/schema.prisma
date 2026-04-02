@@ -17,6 +17,8 @@ model User {
   gender          String?
   age             Int?
   bio             String?
+  language        String              @default("ja")
+  location        String?
   icon            Image?              @relation("UserIcon")
   background      Image?              @relation("UserBackground")
   uploadedImages  Image[]             @relation("UserUploads")

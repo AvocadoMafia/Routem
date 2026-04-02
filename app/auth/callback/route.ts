@@ -72,6 +72,8 @@ export async function GET(request: NextRequest) {
           id: supabaseUser.id,
           name: displayName,
           bio: undefined,
+          language: (supabaseUser.user_metadata?.locale as string | undefined) ?? 'ja',
+          location: undefined,
           icon: {
             create: {
               url: iconUrl,
