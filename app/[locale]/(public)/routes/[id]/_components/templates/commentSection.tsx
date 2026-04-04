@@ -8,6 +8,7 @@ import CommentItem from "../ingredients/commentItem";
 import CommentItemSkeleton from "../ingredients/commentItemSkeleton";
 import { getDataFromServerWithJson, postDataToServerWithJson } from "@/lib/client/helpers";
 import { Comment } from "@/lib/client/types";
+import { useTranslations } from "next-intl";
 
 type CommentSectionProps = {
   isMobile: boolean;
@@ -15,6 +16,8 @@ type CommentSectionProps = {
 };
 
 export default function CommentSection({ isMobile, routeId }: CommentSectionProps) {
+  const t = useTranslations('comments');
+  const tRoutes = useTranslations('routes');
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
@@ -107,10 +110,10 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
           <div className="flex items-center gap-3">
             <MessageSquare className="w-4 h-4 text-accent-0" />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">
-              Comments
+              {tRoutes('comments')}
             </span>
           </div>
-          <h2 className="text-2xl font-bold text-foreground-0">Discussion</h2>
+          <h2 className="text-2xl font-bold text-foreground-0">{tRoutes('comments')}</h2>
         </div>
       )}
 
@@ -134,7 +137,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
             ))}
           </>
         ) : (
-          <div className="text-foreground-1 text-sm text-center py-10 italic">No comments yet.</div>
+          <div className="text-foreground-1 text-sm text-center py-10 italic">{t('noComments')}</div>
         )}
       </div>
 

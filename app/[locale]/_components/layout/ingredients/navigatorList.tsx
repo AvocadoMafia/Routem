@@ -6,6 +6,7 @@ import { useState } from "react";
 import { MdEdit, MdExplore, MdInfo, MdLogin, MdKeyboardArrowDown, MdSearch } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 import { userStore } from "@/lib/client/stores/userStore";
+import { useTranslations } from "next-intl";
 
 
 type Props = {
@@ -13,6 +14,8 @@ type Props = {
 }
 
 export default function NavigatorList({ onSearchClick }: Props) {
+    const t = useTranslations('navigation');
+    const tAuth = useTranslations('auth');
 
     const user = userStore(store => store.user);
     const isLoggedIn = user && user.id !== '';
@@ -20,16 +23,22 @@ export default function NavigatorList({ onSearchClick }: Props) {
 
     const [openMenu, setOpenMenu] = useState<string | null>(null);
 
+    const getMenuLabel = (key: string) => {
+        if (key === 'Explore') return t('explore');
+        if (key === 'About') return t('about');
+        return key;
+    };
+
     const menuItems = {
         Explore: [
-            { name: 'Popular', path: '/explore/popular' },
-            { name: 'Recent', path: '/explore/recent' },
-            { name: 'Trending', path: '/explore/trending' },
+            { nameKey: 'popular', path: '/explore/popular' },
+            { nameKey: 'recent', path: '/explore/recent' },
+            { nameKey: 'trending', path: '/explore/trending' },
         ],
         About: [
-            { name: 'Our Story', path: '/about/story' },
-            { name: 'Team', path: '/about/team' },
-            { name: 'Contact', path: '/about/contact' },
+            { nameKey: 'ourStory', path: '/about/story' },
+            { nameKey: 'team', path: '/about/team' },
+            { nameKey: 'contact', path: '/about/contact' },
         ]
     };
 
@@ -43,11 +52,11 @@ export default function NavigatorList({ onSearchClick }: Props) {
                         onMouseEnter={() => setOpenMenu(item)}
                         onMouseLeave={() => setOpenMenu(null)}
                     >
-                        <button 
-                            onClick={() => router.push(`/${item.toLowerCase()}`)} 
+                        <button
+                            onClick={() => router.push(`/${item.toLowerCase()}`)}
                             className={'flex items-center gap-1 text-foreground-1 hover:text-foreground-0 transition-colors cursor-pointer whitespace-nowrap py-2'}
                         >
-                            {item}
+                            {getMenuLabel(item)}
                             <MdKeyboardArrowDown className={`transition-transform duration-200 ${openMenu === item ? 'rotate-180' : ''}`} />
                         </button>
 
@@ -65,7 +74,7 @@ export default function NavigatorList({ onSearchClick }: Props) {
                                             onClick={() => router.push(subItem.path)}
                                             className={'w-full text-left px-4 py-2 hover:bg-background-0 transition-colors text-foreground-0 whitespace-nowrap cursor-pointer'}
                                         >
-                                            {subItem.name}
+                                            {t(subItem.nameKey as keyof IntlMessages['navigation'])}
                                         </button>
                                     ))}
                                 </motion.div>
@@ -78,13 +87,13 @@ export default function NavigatorList({ onSearchClick }: Props) {
             <div className={'flex items-center md:gap-6 md:justify-end justify-between'}>
                 {isLoggedIn ? (
                     <>
-                        <motion.button 
-                            onClick={() => router.push('/articles/new')} 
+                        <motion.button
+                            onClick={() => router.push('/articles/new')}
                             className={'bg-accent-0 md:bg-accent-0 text-white md:py-1.5 md:px-4 p-2 rounded-full md:rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2 md:text-white max-md:bg-transparent max-md:text-foreground-0 max-md:hover:bg-grass'}
                             whileHover={{scale:1.02}}
                             whileTap={{scale:0.98}}
                         >
-                            <span className={'md:block hidden'}>Edit Route</span>
+                            <span className={'md:block hidden'}>{t('createRoute')}</span>
                             <AiOutlineEdit className={'text-2xl md:text-xl'}/>
                         </motion.button>
                         
@@ -109,13 +118,13 @@ export default function NavigatorList({ onSearchClick }: Props) {
                         </motion.button>
                     </>
                 ) : (
-                    <motion.button 
-                        onClick={() => router.push('/login')} 
+                    <motion.button
+                        onClick={() => router.push('/login')}
                         className={'bg-background-1 text-foreground-0 py-1.5 px-4 border border-grass rounded-lg font-medium hover:bg-grass transition-colors cursor-pointer'}
                         whileHover={{scale:1.02}}
                         whileTap={{scale:0.98}}
                     >
-                        Log in
+                        {tAuth('signIn')}
                     </motion.button>
                 )}
             </div>

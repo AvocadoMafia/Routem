@@ -1,14 +1,19 @@
+"use client";
+
 import {MdClose, MdExplore, MdSearch} from "react-icons/md";
 import {InputAdornment, MenuItem, TextField} from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {useEffect, useState} from "react";
+import { useTranslations } from "next-intl";
 
 interface ExploreCardProps {
     isSidebar?: boolean;
 }
 
 export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
+    const t = useTranslations('explore');
+    const tFilter = useTranslations('filter');
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
@@ -99,9 +104,9 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                         <MdExplore className="text-white text-2xl" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-foreground-0">Explore</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground-0">{t('explore')}</h1>
                         <p className="text-[10px] font-bold text-accent-0 tracking-[0.2em] uppercase">
-                            Find your next story
+                            {t('findYourNextStory')}
                         </p>
                     </div>
                 </div>
@@ -118,8 +123,8 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
 
             <div className="grid grid-cols-1 gap-8">
                 <TextField
-                    label="What"
-                    placeholder="Nature, Onsen, Driving..."
+                    label={t('what')}
+                    placeholder={t('whatPlaceholder')}
                     fullWidth
                     variant="outlined"
                     InputLabelProps={{ shrink: true }}
@@ -127,8 +132,8 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                 />
 
                 <TextField
-                    label="Where"
-                    placeholder="Nagano, Japan"
+                    label={t('where')}
+                    placeholder={t('wherePlaceholder')}
                     fullWidth
                     variant="outlined"
                     InputLabelProps={{ shrink: true }}
@@ -137,7 +142,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
 
                 <div className="grid grid-cols-2 gap-8">
                     <TextField
-                        label="When"
+                        label={t('when')}
                         type="date"
                         InputLabelProps={{ shrink: true }}
                         fullWidth
@@ -145,7 +150,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                     />
                     <TextField
                         select
-                        label="Who"
+                        label={t('who')}
                         fullWidth
                         defaultValue="solo"
                         sx={textFieldSx}
@@ -153,15 +158,15 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                             shrink: true,
                         }}
                     >
-                        <MenuItem value="solo">Solo</MenuItem>
-                        <MenuItem value="friends">Friends</MenuItem>
-                        <MenuItem value="family">Family</MenuItem>
-                        <MenuItem value="couple">Couple</MenuItem>
+                        <MenuItem value="solo">{tFilter('solo')}</MenuItem>
+                        <MenuItem value="friends">{tFilter('friends')}</MenuItem>
+                        <MenuItem value="family">{tFilter('family')}</MenuItem>
+                        <MenuItem value="couple">{tFilter('couples')}</MenuItem>
                     </TextField>
                 </div>
 
                 <TextField
-                    label="Budget"
+                    label={t('budget')}
                     type="number"
                     fullWidth
                     sx={textFieldSx}
@@ -175,12 +180,12 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                 />
             </div>
 
-            <button 
+            <button
                 onClick={handleSearch}
                 className="group relative w-full py-5 mt-2 bg-foreground-0 text-background-0 rounded-2xl font-bold overflow-hidden transition-all duration-300 hover:bg-accent-0 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/10"
             >
                 <span className="relative z-10 tracking-widest uppercase text-sm">
-                    Search Routes
+                    {t('searchRoutes')}
                 </span>
                 <div className="absolute right-6 top-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
                     <motion.span

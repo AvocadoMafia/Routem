@@ -2,6 +2,7 @@
 
 import { FiRotateCcw, FiUsers, FiCalendar } from 'react-icons/fi';
 import FilterSelect from '@/app/[locale]/(public)/search/_components/ingredients/filterSelect';
+import { useTranslations } from 'next-intl';
 
 export type FilterState = {
     orderBy: string;
@@ -14,37 +15,40 @@ type Props = {
     onFiltersChange: (filters: FilterState) => void;
 }
 
-const SORT_OPTIONS = [
-    { value: 'relevant', label: 'Most Relevant' },
-    { value: 'latest', label: 'Latest' },
-    { value: 'likes', label: 'Most Liked' },
-];
-
-const ROUTE_FOR_OPTIONS = [
-    { value: '', label: 'All' },
-    { value: 'family', label: 'Family' },
-    { value: 'couples', label: 'Couples' },
-    { value: 'friends', label: 'Friends' },
-    { value: 'solo', label: 'Solo' },
-];
-
-const MONTH_OPTIONS = [
-    { value: '', label: 'All Seasons' },
-    { value: '1', label: 'January' },
-    { value: '2', label: 'February' },
-    { value: '3', label: 'March' },
-    { value: '4', label: 'April' },
-    { value: '5', label: 'May' },
-    { value: '6', label: 'June' },
-    { value: '7', label: 'July' },
-    { value: '8', label: 'August' },
-    { value: '9', label: 'September' },
-    { value: '10', label: 'October' },
-    { value: '11', label: 'November' },
-    { value: '12', label: 'December' },
-];
-
 export default function SearchFilters({ filters, onFiltersChange }: Props) {
+    const t = useTranslations('filter');
+    const tCommon = useTranslations('common');
+    const tMonths = useTranslations('months');
+
+    const SORT_OPTIONS = [
+        { value: 'relevant', label: t('mostRelevant') },
+        { value: 'latest', label: t('latest') },
+        { value: 'likes', label: t('mostLiked') },
+    ];
+
+    const ROUTE_FOR_OPTIONS = [
+        { value: '', label: tCommon('all') },
+        { value: 'family', label: t('family') },
+        { value: 'couples', label: t('couples') },
+        { value: 'friends', label: t('friends') },
+        { value: 'solo', label: t('solo') },
+    ];
+
+    const MONTH_OPTIONS = [
+        { value: '', label: t('allSeasons') },
+        { value: '1', label: tMonths('jan') },
+        { value: '2', label: tMonths('feb') },
+        { value: '3', label: tMonths('mar') },
+        { value: '4', label: tMonths('apr') },
+        { value: '5', label: tMonths('may') },
+        { value: '6', label: tMonths('jun') },
+        { value: '7', label: tMonths('jul') },
+        { value: '8', label: tMonths('aug') },
+        { value: '9', label: tMonths('sep') },
+        { value: '10', label: tMonths('oct') },
+        { value: '11', label: tMonths('nov') },
+        { value: '12', label: tMonths('dec') },
+    ];
     const handleFilterChange = (key: keyof FilterState, value: string) => {
         onFiltersChange({
             ...filters,
@@ -56,12 +60,12 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
         <div className="h-full flex flex-col p-6 gap-8 bg-background-0/50 backdrop-blur-sm">
             <div className="hidden md:flex items-center gap-3 border-b border-grass pb-6">
                 <div className="w-1 h-6 bg-accent-0 rounded-full"></div>
-                <h3 className="text-xl font-black text-foreground-0 uppercase tracking-[0.2em]">Filter</h3>
+                <h3 className="text-xl font-black text-foreground-0 uppercase tracking-[0.2em]">{t('filter')}</h3>
             </div>
 
             <div className="flex-1 space-y-10 h-fit no-scrollbar">
                 <FilterSelect
-                    label="Sort By"
+                    label={t('sortBy')}
                     icon={<FiRotateCcw size={18} />}
                     value={filters.orderBy}
                     options={SORT_OPTIONS}
@@ -69,7 +73,7 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
                 />
 
                 <FilterSelect
-                    label="Route Type"
+                    label={t('routeType')}
                     icon={<FiUsers size={18} />}
                     value={filters.routeFor}
                     options={ROUTE_FOR_OPTIONS}
@@ -77,7 +81,7 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
                 />
 
                 <FilterSelect
-                    label="Season"
+                    label={t('season')}
                     icon={<FiCalendar size={18} />}
                     value={filters.month}
                     options={MONTH_OPTIONS}
@@ -86,12 +90,12 @@ export default function SearchFilters({ filters, onFiltersChange }: Props) {
             </div>
             
             <div className="pt-6 border-t border-grass mt-auto">
-                <button 
+                <button
                     onClick={() => onFiltersChange({ orderBy: 'relevant', routeFor: '', month: '' })}
                     className="w-full py-3 rounded-xl border border-grass text-foreground-1 text-sm font-bold hover:bg-background-2 transition-colors flex items-center justify-center gap-2"
                 >
                     <FiRotateCcw size={14} />
-                    Reset All
+                    {t('resetAll')}
                 </button>
             </div>
         </div>

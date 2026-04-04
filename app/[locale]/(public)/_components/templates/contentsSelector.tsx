@@ -4,14 +4,15 @@ import { motion } from "framer-motion";
 import { HiSparkles, HiFire, HiHeart, HiUsers } from "react-icons/hi2";
 import { selectedType } from "@/app/[locale]/(public)/rootClient";
 import { HiHome } from "react-icons/hi";
+import { useTranslations } from "next-intl";
 
-const SELECTOR_ITEMS = [
-    { label: 'Home', icon: HiHome, selected: 'home'},
-    { label: 'Photos', icon: HiSparkles, selected: 'photos' },
-    { label: 'Trending', icon: HiFire, selected: 'trending' },
-    { label: 'Likes', icon: HiHeart, selected: 'likes' },
-    { label: 'Followings', icon: HiUsers, selected: 'followings' },
-];
+const SELECTOR_KEYS = [
+    { key: 'home', icon: HiHome, selected: 'home'},
+    { key: 'photos', icon: HiSparkles, selected: 'photos' },
+    { key: 'trending', icon: HiFire, selected: 'trending' },
+    { key: 'likes', icon: HiHeart, selected: 'likes' },
+    { key: 'followings', icon: HiUsers, selected: 'followings' },
+] as const;
 
 type Props = {
     selected: selectedType
@@ -19,10 +20,19 @@ type Props = {
 }
 
 export default function ContentsSelector(props: Props) {
+    const t = useTranslations('tabs');
+    const tNav = useTranslations('navigation');
+
+    const getLabel = (key: string) => {
+        if (key === 'home') return tNav('home');
+        if (key === 'followings') return tNav('following');
+        if (key === 'trending') return tNav('trending');
+        return t(key as 'photos' | 'likes');
+    };
 
     return (
         <div className={'shrink-0 w-fit h-fit bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
-            {SELECTOR_ITEMS.map((item, idx) => {
+            {SELECTOR_KEYS.map((item, idx) => {
                 const isSelected = props.selected === item.selected;
                 return (
                     <button
@@ -43,7 +53,7 @@ export default function ContentsSelector(props: Props) {
                                 className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-white' : 'text-accent-0 group-hover:text-accent-0'}`}
                             />
                             <span className={`text-[10px] font-bold uppercase tracking-[0.3em] transition-colors duration-300 md:block ${isSelected ? 'text-white block' : 'hidden text-foreground-1 group-hover:text-foreground-0'}`}>
-                                {item.label}
+                                {getLabel(item.key)}
                             </span>
                         </div>
                     </button>

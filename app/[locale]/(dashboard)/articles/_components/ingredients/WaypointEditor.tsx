@@ -3,6 +3,7 @@
 import { Waypoint } from "@/lib/client/types";
 import { Image as ImageIcon, Loader2, X, CheckCircle2, MapPin, Search, Home } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface WaypointEditorProps {
     item: Waypoint;
@@ -17,6 +18,9 @@ interface MapboxSuggestion {
 }
 
 export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) {
+    const t = useTranslations('routeEditor');
+    const tUpload = useTranslations('upload');
+    const tRoutes = useTranslations('routes');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -118,7 +122,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
             const dataUrl = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result as string);
-                reader.onerror = () => reject(new Error("ファイルの読み込みに失敗しました"));
+                reader.onerror = () => reject(new Error(tUpload('loadFailed')));
                 reader.readAsDataURL(file);
             });
             bitmap = await new Promise<ImageBitmap>((resolve, reject) => {
@@ -127,7 +131,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                     try {
                         const canvas = document.createElement("canvas");
                         const ctx = canvas.getContext("2d");
-                        if (!ctx) return reject(new Error("Canvasがサポートされていません"));
+                        if (!ctx) return reject(new Error(tUpload('canvasNotSupported')));
                         const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
                         const w = Math.max(1, Math.round(img.width * scale));
                         const h = Math.max(1, Math.round(img.height * scale));
@@ -135,14 +139,14 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                         canvas.height = h;
                         ctx.drawImage(img, 0, 0, w, h);
                         const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/webp", quality));
-                        if (!blob) return reject(new Error("WEBPへの変換に失敗しました"));
+                        if (!blob) return reject(new Error(tUpload('conversionFailed')));
                         const wb = await createImageBitmap(blob);
                         resolve(wb);
                     } catch (e) {
                         reject(e);
                     }
                 };
-                img.onerror = () => reject(new Error("画像の読み込みに失敗しました"));
+                img.onerror = () => reject(new Error(tUpload('loadFailed')));
                 img.src = dataUrl;
             });
         }
@@ -150,7 +154,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
         // Draw to canvas with resize
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        if (!ctx) throw new Error("Canvasがサポートされていません");
+        if (!ctx) throw new Error(tUpload('canvasNotSupported'));
         const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
         const w = Math.max(1, Math.round(bitmap.width * scale));
         const h = Math.max(1, Math.round(bitmap.height * scale));
@@ -159,14 +163,14 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
         ctx.drawImage(bitmap, 0, 0, w, h);
 
         const out = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/webp", quality));
-        if (!out) throw new Error("WEBPへの変換に失敗しました");
+        if (!out) throw new Error(tUpload('conversionFailed'));
         return out;
     }
 
     const handleClick = () => {
         setError(null);
         if (images.length >= MAX_IMAGES) {
-            setError(`画像は最大${MAX_IMAGES}枚までです。`);
+            setError(tUpload('maxImages', { count: MAX_IMAGES }));
             return;
         }
         fileInputRef.current?.click();
@@ -178,13 +182,13 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
         setError(null);
 
         if (images.length >= MAX_IMAGES) {
-            setError(`画像は最大${MAX_IMAGES}枚までです。`);
+            setError(tUpload('maxImages', { count: MAX_IMAGES }));
             return;
         }
 
         const maxSize = 10 * 1024 * 1024; // 10MB
         if (!file.type.startsWith("image/")) {
-            setError("画像ファイルを選択してください。");
+            setError(tUpload('invalidFile'));
             return;
         }
 
@@ -193,7 +197,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
 
             const webpBlob = await convertToWebP(file, { quality: 0.85, maxSide: 2560 });
             if (webpBlob.size > maxSize) {
-                throw new Error("変換後ファイルが大きすぎます（最大10MB）。");
+                throw new Error(tUpload('fileTooLarge'));
             }
 
             const qs = new URLSearchParams({
@@ -204,24 +208,24 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
 
             const presignRes = await fetch(`/api/v1/uploads?${qs}`, { method: "GET" });
             const presignData = await presignRes.json();
-            if (!presignRes.ok) throw new Error(presignData?.error || "アップロード用URLの取得に失敗しました");
+            if (!presignRes.ok) throw new Error(presignData?.error || tUpload('uploadUrlFailed'));
 
             const { uploadUrl, publicUrl } = presignData as { uploadUrl: string; publicUrl?: string };
-            if (!uploadUrl) throw new Error("uploadUrl が取得できませんでした");
+            if (!uploadUrl) throw new Error(tUpload('uploadUrlFailed'));
 
             const putRes = await fetch(uploadUrl, {
                 method: "PUT",
                 headers: { "Content-Type": "image/webp" },
                 body: webpBlob,
             });
-            if (!putRes.ok) throw new Error("画像のアップロードに失敗しました");
+            if (!putRes.ok) throw new Error(tUpload('uploadFailed'));
 
             if (publicUrl) {
                 const next = [...images, publicUrl].slice(0, MAX_IMAGES);
                 onUpdate({ images: next });
             }
         } catch (err: any) {
-            setError(err?.message ?? "画像のアップロードに失敗しました");
+            setError(err?.message ?? tUpload('uploadFailed'));
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = "";
@@ -238,7 +242,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
             {/* --- カスタム地点検索 --- */}
             <div className="space-y-3 relative" ref={searchContainerRef}>
                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                    <Search size={16} /> Waypoint Search
+                    <Search size={16} /> {t('waypointSearch')}
                 </label>
 
                 <div className="relative group/search">
@@ -253,7 +257,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                             setShowSuggestions(true);
                         }}
                         onFocus={() => setShowSuggestions(true)}
-                        placeholder="Search a place (e.g. 東京タワー)"
+                        placeholder={tRoutes('searchPlaceholder')}
                         className="w-full pl-14 pr-6 py-5 bg-background-0 border-2 border-grass rounded-[1.5rem] focus:outline-none focus:bg-background-1 focus:border-accent-0 focus:ring-4 focus:ring-accent-0/5 transition-all text-base font-semibold text-foreground-0 placeholder:text-foreground-1/40"
                     />
 
@@ -288,7 +292,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                 <div className="flex items-center gap-3 text-xs text-foreground-1/70">
                     {typeof item.lat === "number" && typeof item.lng === "number" && (
                         <span className="text-accent-0 font-bold flex items-center gap-1">
-                            <CheckCircle2 size={12} /> Location Selected
+                            <CheckCircle2 size={12} /> {t('locationSelected')}
                         </span>
                     )}
                 </div>
@@ -297,7 +301,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
             {/* 画像アップロード・表示エリア（既存） */}
             <div className="space-y-3">
                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                    <ImageIcon size={16} /> Visuals
+                    <ImageIcon size={16} /> {t('visuals')}
                 </label>
                 <input
                     ref={fileInputRef}
@@ -331,7 +335,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                                 ))}
                                 {images.length < MAX_IMAGES && (
                                     <div className="rounded-xl border border-dashed border-grass/60 flex items-center justify-center text-sm text-foreground-1">
-                                        {uploading ? <Loader2 className="animate-spin" size={20} /> : "+ Add"}
+                                        {uploading ? <Loader2 className="animate-spin" size={20} /> : `+ ${t('addImage')}`}
                                     </div>
                                 )}
                             </div>
@@ -346,8 +350,8 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                                     <ImageIcon size={32} className="text-foreground-1" />
                                 )}
                             </div>
-                            <span className="font-bold">Add Image</span>
-                            <span className="text-xs text-foreground-1/60 mt-1">Any image accepted; saved as WEBP (max 3)</span>
+                            <span className="font-bold">{t('addImage')}</span>
+                            <span className="text-xs text-foreground-1/60 mt-1">{t('imageDescription')}</span>
                         </>
                     )}
                 </div>

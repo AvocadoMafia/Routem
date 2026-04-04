@@ -28,8 +28,8 @@ export default function SignupCard() {
       >
         {/* 右側（入れ替え後：左側）：画像 + ロゴ + 見出し */}
         <div className="w-full md:w-1/2 md:min-w-[500px] h-full md:h-auto p-3 overflow-hidden flex flex-col justify-center items-center gap-6 md:block hidden @container relative z-10 opacity-100 backdrop-blur-xs">
-          <h2 className={'text-[4cqw] text-foreground-0/80 text-center'}>Routem, Travel Itinerary Sharing Platform</h2>
-          <h1 className={'text-[10cqw] text-foreground-0 leading-snug text-center font-bold'}>Start your new <br /> adventure with us today.</h1>
+          <h2 className={'text-[4cqw] text-foreground-0/80 text-center'}>{t('platformDescription')}</h2>
+          <h1 className={'text-[10cqw] text-foreground-0 leading-snug text-center font-bold'}>{t('welcomeHeadline')}</h1>
           <div className={'flex flex-col gap-4 items-center'}>
             <h3 className={'text-2xl w-fit text-foreground-0/60 font-bold'}>{t('hasAccount')}</h3>
             <Link href="/login">

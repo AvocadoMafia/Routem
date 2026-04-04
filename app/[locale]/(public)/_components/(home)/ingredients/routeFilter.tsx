@@ -3,8 +3,11 @@
 import { HiArrowsUpDown, HiMapPin, HiGlobeAsiaAustralia, HiTag, HiArrowsRightLeft } from "react-icons/hi2";
 import { Box, TextField, Select, MenuItem, FormControl, InputLabel, InputAdornment, OutlinedInput } from "@mui/material";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function RouteFilter() {
+    const t = useTranslations('filter');
+    const tCommon = useTranslations('common');
     const [location, setLocation] = useState("");
     const [category, setCategory] = useState("all");
     const [distance, setDistance] = useState<string | number>("");
@@ -19,8 +22,8 @@ export default function RouteFilter() {
                     {/* 地名検索 */}
                     <Box className={'flex flex-col gap-2'}>
                         <TextField
-                            label="Location"
-                            placeholder="Search by area..."
+                            label={t('location')}
+                            placeholder={t('searchByArea')}
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             size="small"
@@ -62,11 +65,11 @@ export default function RouteFilter() {
 
                     {/* カテゴリ */}
                     <FormControl size="small" sx={{ width: { xs: 200, md: 220 } }}>
-                        <InputLabel id="category-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>Category</InputLabel>
+                        <InputLabel id="category-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>{t('category')}</InputLabel>
                         <Select
                             labelId="category-label"
                             value={category}
-                            label="Category"
+                            label={t('category')}
                             onChange={(e) => setCategory(e.target.value as string)}
                             MenuProps={{
                                 PaperProps: {
@@ -99,18 +102,18 @@ export default function RouteFilter() {
                                 />
                             }
                         >
-                            <MenuItem value="all">All Categories</MenuItem>
-                            <MenuItem value="history">History</MenuItem>
-                            <MenuItem value="beach">Beach</MenuItem>
-                            <MenuItem value="food">Food</MenuItem>
-                            <MenuItem value="city">City</MenuItem>
-                            <MenuItem value="nature">Nature</MenuItem>
+                            <MenuItem value="all">{t('allCategories')}</MenuItem>
+                            <MenuItem value="history">{t('history')}</MenuItem>
+                            <MenuItem value="beach">{t('beach')}</MenuItem>
+                            <MenuItem value="food">{t('food')}</MenuItem>
+                            <MenuItem value="city">{t('city')}</MenuItem>
+                            <MenuItem value="nature">{t('nature')}</MenuItem>
                         </Select>
                     </FormControl>
 
                     {/* 距離入力 */}
                     <TextField
-                        label="Max Distance"
+                        label={t('maxDistance')}
                         placeholder="0"
                         type="number"
                         size="small"
@@ -150,18 +153,18 @@ export default function RouteFilter() {
                                     <HiArrowsRightLeft className={'w-4 h-4'} style={{ color: 'var(--foreground-1)', opacity: 0.7 }} />
                                 </InputAdornment>
                             ),
-                            endAdornment: <InputAdornment position="end">km</InputAdornment>
+                            endAdornment: <InputAdornment position="end">{tCommon('km')}</InputAdornment>
                         }}
                         InputLabelProps={{ shrink: true }}
                     />
 
                     {/* 居住地・国フィルター */}
                     <FormControl size="small" sx={{ width: { xs: 200, md: 220 } }}>
-                        <InputLabel id="resident-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>Resident Area</InputLabel>
+                        <InputLabel id="resident-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>{t('residentArea')}</InputLabel>
                         <Select
                             labelId="resident-label"
                             value={resident}
-                            label="Resident Area"
+                            label={t('residentArea')}
                             onChange={(e) => setResident(e.target.value as string)}
                             MenuProps={{
                                 PaperProps: {
@@ -194,19 +197,19 @@ export default function RouteFilter() {
                                 />
                             }
                         >
-                            <MenuItem value="all">All Users</MenuItem>
-                            <MenuItem value="my-area">My Region</MenuItem>
-                            <MenuItem value="my-country">My Country</MenuItem>
+                            <MenuItem value="all">{t('allUsers')}</MenuItem>
+                            <MenuItem value="my-area">{t('myRegion')}</MenuItem>
+                            <MenuItem value="my-country">{t('myCountry')}</MenuItem>
                         </Select>
                     </FormControl>
 
                     {/* 並べ替え */}
                     <FormControl size="small" sx={{ minWidth: { xs: 200, md: 220 }, marginLeft: 'auto' }}>
-                        <InputLabel id="sort-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>Sort by</InputLabel>
+                        <InputLabel id="sort-label" shrink sx={{ color: 'var(--foreground-1)', '&.Mui-focused': { color: 'var(--foreground-1)' }}}>{t('sortBy')}</InputLabel>
                         <Select
                             labelId="sort-label"
                             value={sort}
-                            label="Sort by"
+                            label={t('sortBy')}
                             onChange={(e) => setSort(e.target.value as string)}
                             MenuProps={{
                                 PaperProps: {
@@ -239,10 +242,10 @@ export default function RouteFilter() {
                                 />
                             }
                         >
-                            <MenuItem value="likes">Most Liked</MenuItem>
-                            <MenuItem value="views">Most Viewed</MenuItem>
-                            <MenuItem value="newest">Newest First</MenuItem>
-                            <MenuItem value="oldest">Oldest First</MenuItem>
+                            <MenuItem value="likes">{t('mostLiked')}</MenuItem>
+                            <MenuItem value="views">{t('mostViewed')}</MenuItem>
+                            <MenuItem value="newest">{t('newestFirst')}</MenuItem>
+                            <MenuItem value="oldest">{t('oldestFirst')}</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>

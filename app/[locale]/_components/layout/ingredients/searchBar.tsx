@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MdSearch, MdArrowBack } from 'react-icons/md'
 import {getDataFromServerWithJson, postDataToServerWithJson} from "@/lib/client/helpers";
+import { useTranslations } from "next-intl";
 
 interface SearchBarProps {
   onBack?: () => void
@@ -12,6 +13,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarProps) {
+  const t = useTranslations('searchBar');
   const [isFocused, setIsFocused] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>([])
@@ -78,7 +80,7 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
           <MdSearch className={'text-xl text-foreground-1'} />
           <input
             type="text"
-            placeholder="Search routes..."
+            placeholder={t('placeholder')}
             className={'bg-transparent border-none outline-none w-full text-foreground-0 placeholder:text-foreground-1'}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
@@ -98,7 +100,7 @@ export default function SearchBar({ onBack, isMobileOnly = false }: SearchBarPro
             className={'absolute top-[calc(100%+8px)] left-0 w-full bg-background-1 border border-grass rounded-xl shadow-lg py-2 z-50 overflow-hidden'}
           >
             <div className={'px-4 py-2 text-xs font-bold text-foreground-1 uppercase tracking-wider'}>
-              Suggestions
+              {t('suggestions')}
             </div>
             {suggestions.map((suggestion, index) => (
               <button

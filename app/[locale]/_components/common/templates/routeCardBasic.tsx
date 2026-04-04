@@ -1,8 +1,11 @@
+'use client'
+
 import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import { HiHeart, HiEye, HiCalendarDays, HiUsers, HiCurrencyDollar } from "react-icons/hi2";
 import { Link } from "@/i18n/navigation";
 import { formatDateToYmdInTz } from "@/lib/datetime/format";
+import { useTranslations } from "next-intl";
 
 export type RouteCardBasicProps = {
     route: Route;
@@ -12,6 +15,7 @@ export type RouteCardBasicProps = {
 }
 
 export default function RouteCardBasic({ route, isLinkCard = true, isFocused = false, onClick }: RouteCardBasicProps) {
+    const t = useTranslations('routes');
     const content = (
         <div
             className={`group w-full h-[440px] sm:h-[320px] overflow-hidden rounded-2xl flex flex-col sm:flex-row shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`}
@@ -54,12 +58,12 @@ export default function RouteCardBasic({ route, isLinkCard = true, isFocused = f
                 <div className="w-full flex items-center gap-2 flex-wrap">
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background-0/80">
                         <HiUsers className="w-3 h-3 text-foreground-1" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">For</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{t('forWho')}</span>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{route.routeFor.toLowerCase()}</span>
                     </div>
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background-0/80">
                         <HiCurrencyDollar className="w-3 h-3 text-foreground-1" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">Budget</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{t('budget')}</span>
                         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">
                             {route.budget ? `${route.budget.amount.toLocaleString()} ${route.budget.currency}` : '---'}
                         </span>

@@ -1,3 +1,5 @@
+'use client'
+
 import TabNavigation, { Tab } from '../ingredients/tabNavigation'
 import ProfileStats from '../ingredients/profileStats'
 import RouteCardGraphical from '@/app/[locale]/_components/common/templates/routeCardGraphical'
@@ -8,6 +10,7 @@ import { MdFavoriteBorder, MdHistory, MdGridOn } from 'react-icons/md'
 import React, { useEffect, useRef } from 'react'
 import FuckingOctopus from '@/app/[locale]/_components/common/ingredients/fuckingOctopus'
 import FuckingSquid from '@/app/[locale]/_components/common/ingredients/fuckingSquid'
+import { useTranslations } from 'next-intl'
 
 export default function UserProfileContent({
   activeTab,
@@ -32,6 +35,7 @@ export default function UserProfileContent({
   hasMore?: boolean
   isFetching?: boolean
 }) {
+  const t = useTranslations('profile')
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -95,8 +99,8 @@ export default function UserProfileContent({
           ) : (
             <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
               <FuckingOctopus className="w-[300px] h-[300px] text-foreground-1" />
-              <h2 className="text-foreground-0 font-bold uppercase text-xl mt-4">NO ROUTES CREATED.</h2>
-              <p className="text-foreground-1 mt-2">You haven't created any routes yet, right?</p>
+              <h2 className="text-foreground-0 font-bold uppercase text-xl mt-4">{t('noRoutesCreated').toUpperCase()}</h2>
+              <p className="text-foreground-1 mt-2">{t('noRoutesCreatedDesc')}</p>
             </div>
           )
         )}
@@ -121,8 +125,8 @@ export default function UserProfileContent({
           ) : (
             <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
               <FuckingSquid className="w-[300px] h-[300px] text-foreground-1" />
-              <h2 className="text-foreground-0 font-bold uppercase text-xl mt-4">NO LIKED ROUTES FOUND.</h2>
-              <p className="text-foreground-1 mt-2">You haven't liked any routes yet, right?</p>
+              <h2 className="text-foreground-0 font-bold uppercase text-xl mt-4">{t('noLikedRoutesTitle').toUpperCase()}</h2>
+              <p className="text-foreground-1 mt-2">{t('noLikedRoutesDesc')}</p>
             </div>
           )
         )}
@@ -149,8 +153,8 @@ export default function UserProfileContent({
               <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mb-4">
                 <MdHistory size={32} className="text-foreground-1" />
               </div>
-              <h2 className="text-foreground-0 font-bold uppercase text-xl">NO BROWSING HISTORY.</h2>
-              <p className="text-foreground-1 mt-2">You haven't browsed any routes yet.</p>
+              <h2 className="text-foreground-0 font-bold uppercase text-xl">{t('noHistoryTitle').toUpperCase()}</h2>
+              <p className="text-foreground-1 mt-2">{t('noHistoryDesc')}</p>
             </div>
           )
         )}

@@ -10,6 +10,7 @@ import ShareButton from "./shareButton";
 import { Link } from "@/i18n/navigation";
 import { User } from "@supabase/supabase-js";
 import {getMonthName} from "@/lib/client/helpers";
+import { useTranslations } from "next-intl";
 
 type RouteHeaderProps = {
   route: Route;
@@ -17,6 +18,9 @@ type RouteHeaderProps = {
 };
 
 export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
+  const t = useTranslations('routes');
+  const tCommon = useTranslations('common');
+  const tEditor = useTranslations('routeEditor');
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [isCopying, setIsCopying] = useState(false);
 
@@ -46,7 +50,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this route?')) return;
+    if (!confirm(t('deleteConfirm'))) return;
     try {
       const res = await fetch(`/api/v1/routes?id=${route.id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete route');
@@ -82,19 +86,19 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       <div className="flex flex-col gap-4 flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-foreground-0">
           <div className="flex items-center gap-2">
-            For
+            {t('forWho')}
             <span className="text-xs font-bold text-accent-0 uppercase tracking-[0.3em]">
-              {route.routeFor || "EVERYONE"}
+              {route.routeFor || tEditor('targetEveryone')}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            In
+            {t('inMonth')}
             <span className="text-xs font-bold text-accent-0 uppercase tracking-[0.3em]">
               {getMonthName(route.month || 0)}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            CreatedAt
+            {t('createdAt')}
             <span className="text-xs font-bold text-accent-0 uppercase tracking-[0.3em]">
               {new Date(route.createdAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}
             </span>
@@ -114,7 +118,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             <ShareButton variant="compact" />
             <div className="flex items-center text-foreground-1">
               <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
-                {route.views?.length ?? 0} views
+                {route.views?.length ?? 0} {t('views')}
               </span>
             </div>
           </div>
@@ -161,18 +165,18 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
               {route.visibility === 'PUBLIC' ? (
-                <><HiGlobeAlt className="w-3.5 h-3.5 text-accent-0" /> Visibility: Public</>
+                <><HiGlobeAlt className="w-3.5 h-3.5 text-accent-0" /> {t('visibility')}: {tCommon('public')}</>
               ) : (
-                <><HiLockClosed className="w-3.5 h-3.5 text-accent-0" /> Visibility: Private</>
+                <><HiLockClosed className="w-3.5 h-3.5 text-accent-0" /> {t('visibility')}: {tCommon('private')}</>
               )}
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
               {isAuthor ? (
-                <><HiUser className="w-3.5 h-3.5 text-accent-0" /> Role: Owner</>
+                <><HiUser className="w-3.5 h-3.5 text-accent-0" /> {t('roleOwner')}</>
               ) : isCollaborator ? (
-                <><HiUsers className="w-3.5 h-3.5 text-accent-0" /> Role: Collaborator</>
+                <><HiUsers className="w-3.5 h-3.5 text-accent-0" /> {t('roleCollaborator')}</>
               ) : (
-                <><HiEye className="w-3.5 h-3.5 text-accent-0" /> Role: Viewer</>
+                <><HiEye className="w-3.5 h-3.5 text-accent-0" /> {t('roleViewer')}</>
               )}
             </div>
           </div>
@@ -185,7 +189,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
                 className="flex items-center gap-2 px-4 py-2 bg-accent-0 text-white rounded-xl shadow-md hover:bg-accent-0/90 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
               >
                 <HiPencilSquare className="w-4 h-4" />
-                Edit
+                {tCommon('edit')}
               </Link>
             )}
 
@@ -195,7 +199,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
                 className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-600 rounded-xl hover:bg-red-500/20 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
               >
                 <HiTrash className="w-4 h-4" />
-                Delete
+                {tCommon('delete')}
               </button>
             )}
 
@@ -207,7 +211,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
                     className="flex items-center gap-2 px-4 py-2 bg-foreground-0 text-white rounded-xl shadow-md hover:bg-foreground-0/90 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
                   >
                     <HiShare className="w-4 h-4" />
-                    Invite Link
+                    {t('inviteLink')}
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 pl-4 pr-1 py-1 bg-foreground-0/5 rounded-xl border border-foreground-0/10">

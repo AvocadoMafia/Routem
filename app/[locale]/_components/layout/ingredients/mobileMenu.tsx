@@ -22,14 +22,14 @@ const MOCK_FOLLOWING = [
 
 const MENU_ITEMS = {
     Explore: [
-        { name: 'Popular', path: '/explore/popular' },
-        { name: 'Recent', path: '/explore/recent' },
-        { name: 'Trending', path: '/explore/trending' },
+        { nameKey: 'popular', path: '/explore/popular' },
+        { nameKey: 'recent', path: '/explore/recent' },
+        { nameKey: 'trending', path: '/explore/trending' },
     ],
     About: [
-        { name: 'Our Story', path: '/about/story' },
-        { name: 'Team', path: '/about/team' },
-        { name: 'Contact', path: '/about/contact' },
+        { nameKey: 'ourStory', path: '/about/story' },
+        { nameKey: 'team', path: '/about/team' },
+        { nameKey: 'contact', path: '/about/contact' },
     ]
 };
 
@@ -134,7 +134,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                             onClick={() => toggleAccordion(item)}
                                             className={'w-full flex items-center justify-between p-3 hover:bg-background-0 rounded-xl transition-colors font-bold text-foreground-0 cursor-pointer'}
                                         >
-                                            <span>{item === 'Explore' ? t('explore') : item}</span>
+                                            <span>{item === 'Explore' ? t('explore') : t('about')}</span>
                                             <MdKeyboardArrowDown
                                                 size={24}
                                                 className={`text-foreground-1 transition-transform duration-200 ${openAccordion === item ? 'rotate-180' : ''}`}
@@ -154,7 +154,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                                             onClick={() => handleNavigate(subItem.path)}
                                                             className={'w-full text-left p-3 text-foreground-1 hover:text-accent-0 transition-colors cursor-pointer'}
                                                         >
-                                                            {subItem.name}
+                                                            {t(subItem.nameKey as keyof IntlMessages['navigation'])}
                                                         </button>
                                                     ))}
                                                 </motion.div>

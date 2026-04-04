@@ -3,6 +3,7 @@
 import { Route } from '@/lib/client/types';
 import RouteCardBasic from '@/app/[locale]/_components/common/templates/routeCardBasic';
 import RouteCardBasicSkeleton from '@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton';
+import { useTranslations } from 'next-intl';
 
 type Props = {
     routes: Route[];
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export default function ResultsGrid({ routes, isFetching, hasMore, total, observerTarget }: Props) {
+    const t = useTranslations('routes');
     const showDummy =  hasMore;
     const isEmpty = routes.length === 0 && !isFetching;
 
@@ -20,7 +22,7 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
         <div className={'w-full p-6'}>
             {isEmpty ? (
                 <div className="flex items-center justify-center py-20">
-                    <p className="text-slate-500 text-lg">結果が見つかりませんでした</p>
+                    <p className="text-slate-500 text-lg">{t('noResults')}</p>
                 </div>
             ) : (
                 <>

@@ -1,5 +1,8 @@
+"use client";
+
 import { Transportation } from "@/lib/client/types";
 import { Footprints, TrainFront, Bus, Car, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface TransportationEditorProps {
     item: Transportation;
@@ -7,20 +10,24 @@ interface TransportationEditorProps {
 }
 
 export default function TransportationEditor({ item, onUpdate }: TransportationEditorProps) {
+    const t = useTranslations('transport');
+
+    const transportModes = [
+        { id: 'WALK', labelKey: 'walk', icon: <Footprints size={20} /> },
+        { id: 'TRAIN', labelKey: 'train', icon: <TrainFront size={20} /> },
+        { id: 'BUS', labelKey: 'bus', icon: <Bus size={20} /> },
+        { id: 'CAR', labelKey: 'car', icon: <Car size={20} /> },
+        { id: 'OTHER', labelKey: 'other', icon: <Sparkles size={20} /> },
+    ];
+
     return (
         <div className="space-y-4">
             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                Transportation Mode
+                {t('mode')}
             </label>
             {/* 交通手段を選択するボタングリッド */}
             <div className="grid grid-cols-5 gap-3">
-                {[
-                    { id: 'WALK', label: 'Walk', icon: <Footprints size={20} /> },
-                    { id: 'TRAIN', label: 'Train', icon: <TrainFront size={20} /> },
-                    { id: 'BUS', label: 'Bus', icon: <Bus size={20} /> },
-                    { id: 'CAR', label: 'Car', icon: <Car size={20} /> },
-                    { id: 'OTHER', label: 'Other', icon: <Sparkles size={20} /> },
-                ].map((m) => (
+                {transportModes.map((m) => (
                     <button
                         key={m.id}
                         onClick={() => onUpdate({ method: m.id as any })}
@@ -35,7 +42,7 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
                         <div className={`${item.method === m.id ? 'scale-110' : ''} transition-transform`}>
                             {m.icon}
                         </div>
-                        <span className="text-xs font-bold">{m.label}</span>
+                        <span className="text-xs font-bold">{t(m.labelKey as keyof IntlMessages['transport'])}</span>
                     </button>
                 ))}
             </div>

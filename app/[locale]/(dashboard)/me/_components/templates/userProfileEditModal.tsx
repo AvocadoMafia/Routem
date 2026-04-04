@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MdClose, MdPhotoCamera } from 'react-icons/md'
 import Image from 'next/image'
 import { userStore } from '@/lib/client/stores/userStore'
+import { useTranslations } from 'next-intl'
 
 interface UserProfileEditModalProps {
   isOpen: boolean
@@ -12,6 +13,8 @@ interface UserProfileEditModalProps {
 }
 
 export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEditModalProps) {
+  const t = useTranslations('profile')
+  const tCommon = useTranslations('common')
   const { user, edit } = userStore()
   const [name, setName] = useState(user?.name || '')
   const [bio, setBio] = useState(user?.bio || '')
@@ -101,7 +104,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
             className="relative w-full max-w-2xl bg-background-1 rounded-3xl overflow-hidden shadow-2xl"
           >
             <div className="flex items-center justify-between p-6 border-b border-grass/20">
-              <h2 className="text-xl font-bold">Edit Profile</h2>
+              <h2 className="text-xl font-bold">{t('editProfile')}</h2>
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-grass/10 rounded-full transition-colors"
@@ -191,24 +194,24 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
 
               <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-bold mb-2 text-foreground-1">Name</label>
+                  <label className="block text-sm font-bold mb-2 text-foreground-1">{t('name')}</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full bg-background-0 border border-grass/30 rounded-xl px-4 py-3 focus:outline-none focus:border-grass transition-colors"
-                    placeholder="Your name"
+                    placeholder={t('namePlaceholder')}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold mb-2 text-foreground-1">Bio</label>
+                  <label className="block text-sm font-bold mb-2 text-foreground-1">{t('bio')}</label>
                   <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     className="w-full bg-background-0 border border-grass/30 rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-grass transition-colors"
-                    placeholder="Tell us about yourself"
+                    placeholder={t('bioPlaceholder')}
                   />
                 </div>
 
@@ -220,14 +223,14 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                     onClick={onClose}
                     className="px-6 py-2.5 font-bold hover:bg-grass/10 rounded-xl transition-colors"
                   >
-                    Cancel
+                    {tCommon('cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="px-8 py-2.5 bg-accent-0 text-background-1 font-bold rounded-xl hover:opacity-90 transition-opacity shadow-md shadow-accent-0/20 disabled:opacity-50"
                   >
-                    {isSubmitting ? 'Saving...' : 'Save Changes'}
+                    {isSubmitting ? t('saving') : t('saveChanges')}
                   </button>
                 </div>
               </div>

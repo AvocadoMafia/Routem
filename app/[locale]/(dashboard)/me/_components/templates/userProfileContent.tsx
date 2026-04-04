@@ -1,3 +1,5 @@
+'use client'
+
 import TabNavigation, { Tab } from '../ingredients/tabNavigation'
 import ProfileStats from '../ingredients/profileStats'
 import RouteCardGraphical from '@/app/[locale]/_components/common/templates/routeCardGraphical'
@@ -6,6 +8,7 @@ import RouteCardWidely from '@/app/[locale]/_components/common/templates/routeCa
 import RouteCardWidelySkeleton from '@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton'
 import {MdFavoriteBorder, MdHistory, MdRoute} from 'react-icons/md'
 import React, { useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function UserProfileContent({
   activeTab,
@@ -30,6 +33,7 @@ export default function UserProfileContent({
   hasMore?: boolean
   isFetching?: boolean
 }) {
+  const t = useTranslations('profile')
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -95,7 +99,7 @@ export default function UserProfileContent({
               <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
                 <MdRoute size={32} className="text-foreground-1" />
               </div>
-              <p className="text-foreground-1 font-medium">No liked routes yet.</p>
+              <p className="text-foreground-1 font-medium">{t('noRoutes')}</p>
             </div>
           )
         )}
@@ -122,7 +126,7 @@ export default function UserProfileContent({
               <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
                 <MdFavoriteBorder size={32} className="text-foreground-1" />
               </div>
-              <p className="text-foreground-1 font-medium">No liked routes yet.</p>
+              <p className="text-foreground-1 font-medium">{t('noLikedRoutes')}</p>
             </div>
           )
         )}
@@ -149,7 +153,7 @@ export default function UserProfileContent({
               <div className="w-16 h-16 bg-grass rounded-full flex items-center justify-center mx-auto mb-4">
                 <MdHistory size={32} className="text-foreground-1" />
               </div>
-              <p className="text-foreground-1 font-medium">No browsing history yet.</p>
+              <p className="text-foreground-1 font-medium">{t('noHistory')}</p>
             </div>
           )
         )}

@@ -1,4 +1,7 @@
+"use client";
+
 import { CheckCircle2, AlertCircle, Edit3, Settings, ChevronRight, Rocket, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ActionBarProps {
     isSettingsComplete: boolean;
@@ -27,6 +30,10 @@ export default function ActionBar({
     message,
     onClearMessage
 }: ActionBarProps) {
+    const t = useTranslations('routeEditor');
+    const tCommon = useTranslations('common');
+    const tNav = useTranslations('navigation');
+
     return (
         <div className="h-fit flex flex-col border-b border-grass bg-background-1/60 backdrop-blur sticky top-0 z-20">
             <div className="flex items-center justify-between p-4 gap-4">
@@ -46,7 +53,7 @@ export default function ActionBar({
                     ) : isSettingsComplete ? (
                         <div className="flex items-center gap-2 text-accent-0 bg-accent-0/20 px-3 py-1.5 rounded-full border border-accent-0/40 animate-in fade-in slide-in-from-left-2 duration-500">
                             <CheckCircle2 size={16} />
-                            <span className="text-xs font-bold tracking-tight">Publication Settings Ready</span>
+                            <span className="text-xs font-bold tracking-tight">{t('publicationReady')}</span>
                         </div>
                     ) : null}
                 </div>
@@ -60,7 +67,7 @@ export default function ActionBar({
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeSection === 'edit' ? 'bg-accent-0 text-white shadow-md' : 'text-foreground-1 hover:bg-grass/10'}`}
                         >
                             <Edit3 size={14} />
-                            <span>Edit Route</span>
+                            <span>{t('editRoute')}</span>
                         </button>
 
                         <div className="px-1 text-foreground-1">
@@ -73,7 +80,7 @@ export default function ActionBar({
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeSection === 'settings' ? 'bg-accent-0 text-white shadow-md' : 'text-foreground-1 hover:bg-grass/10'}`}
                         >
                             <Settings size={14} />
-                            <span>Settings</span>
+                            <span>{tNav('settings')}</span>
                         </button>
                     </div>
 
@@ -91,7 +98,7 @@ export default function ActionBar({
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
                         )}
                         <Rocket size={16} className={isSettingsComplete && !publishing ? 'animate-bounce' : ''} />
-                        <span>{publishing ? 'Publishing...' : 'Publish'}</span>
+                        <span>{publishing ? tCommon('publishing') : tCommon('publish')}</span>
                     </button>
                 </div>
             </div>

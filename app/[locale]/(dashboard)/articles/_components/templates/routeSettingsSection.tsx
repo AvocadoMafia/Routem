@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface RouteSettingsSectionProps {
     title: string;
@@ -64,6 +65,10 @@ export default function RouteSettingsSection({
     budget, setBudget,
     tags, setTags
 }: RouteSettingsSectionProps) {
+    const t = useTranslations('routeEditor');
+    const tRoutes = useTranslations('routes');
+    const tCommon = useTranslations('common');
+    const tMonths = useTranslations('months');
 
     const [inviteUrl, setInviteUrl] = useState<string | null>(null);
     const [generating, setGenerating] = useState(false);
@@ -139,11 +144,11 @@ export default function RouteSettingsSection({
                         <div className="flex items-center gap-2 mb-2">
                             <Settings size={18} className="text-accent-0" />
                             <span className="text-xs font-bold uppercase tracking-widest text-accent-0">
-                                Route Settings
+                                {t('routeSettings')}
                             </span>
                         </div>
                         <h2 className="text-3xl font-black text-foreground-0 tracking-tight">
-                            Publication Settings
+                            {t('publicationSettings')}
                         </h2>
                     </div>
                 </div>
@@ -153,7 +158,7 @@ export default function RouteSettingsSection({
                     {/* Thumbnail */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                            <ImageIcon size={16} /> Thumbnail
+                            <ImageIcon size={16} /> {t('thumbnail')}
                         </label>
                         <input
                             type="file"
@@ -179,7 +184,7 @@ export default function RouteSettingsSection({
                                     </div>
                                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                         <span className="text-white font-bold bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm">
-                                            Change Image
+                                            {t('changeThumbnail')}
                                         </span>
                                     </div>
                                 </>
@@ -188,8 +193,8 @@ export default function RouteSettingsSection({
                                     <div className="w-16 h-16 bg-grass rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                         {uploading ? <Loader2 className="animate-spin text-foreground-1" size={28} /> : <ImageIcon size={32} className="text-foreground-1" />}
                                     </div>
-                                    <span className="font-bold">Add Thumbnail</span>
-                                    <span className="text-xs text-foreground-1/60 mt-1">Recommended: 16:9 ratio</span>
+                                    <span className="font-bold">{t('addThumbnail')}</span>
+                                    <span className="text-xs text-foreground-1/60 mt-1">{t('thumbnailRecommend')}</span>
                                 </>
                             )}
                         </div>
@@ -197,45 +202,54 @@ export default function RouteSettingsSection({
                     {/* Title */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                            Route Title
+                            {t('routeTitle')}
                         </label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-xl font-medium"
-                            placeholder="Enter route title..."
+                            placeholder={t('routeTitlePlaceholder')}
                         />
                     </div>
 
                     {/* Bio */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                            <MessageSquare size={16} /> Description
+                            <MessageSquare size={16} /> {tRoutes('description')}
                         </label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl h-32 focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base leading-relaxed resize-none"
-                            placeholder="Short description of your route..."
+                            placeholder={t('routeDescPlaceholder')}
                         />
                     </div>
 
                     {/* Who is it for */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                            <Users size={16} /> Who is it for?
+                            <Users size={16} /> {t('whoIsItFor')}
                         </label>
                         <div className="grid grid-cols-3 md:grid-cols-5 gap-2 bg-background-0 border border-grass rounded-2xl p-1">
-                            {(['EVERYONE', 'FAMILY', 'FRIENDS', 'COUPLE', 'SOLO'] as const).map((opt) => (
-                                <button
-                                    key={opt}
-                                    onClick={() => setRouteFor(opt)}
-                                    className={`py-3 rounded-xl text-[10px] font-bold transition-all ${routeFor === opt ? 'bg-accent-0 text-white' : 'text-foreground-1 hover:bg-grass/10'}`}
-                                >
-                                    {opt}
-                                </button>
-                            ))}
+                            {(['EVERYONE', 'FAMILY', 'FRIENDS', 'COUPLE', 'SOLO'] as const).map((opt) => {
+                                const labelMap: Record<string, string> = {
+                                    EVERYONE: t('targetEveryone'),
+                                    FAMILY: t('targetFamily'),
+                                    FRIENDS: t('targetFriends'),
+                                    COUPLE: t('targetCouple'),
+                                    SOLO: t('targetSolo')
+                                };
+                                return (
+                                    <button
+                                        key={opt}
+                                        onClick={() => setRouteFor(opt)}
+                                        className={`py-3 rounded-xl text-[10px] font-bold transition-all ${routeFor === opt ? 'bg-accent-0 text-white' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    >
+                                        {labelMap[opt]}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -243,16 +257,16 @@ export default function RouteSettingsSection({
                         {/* Month */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                <Calendar size={16} /> Month
+                                <Calendar size={16} /> {t('month')}
                             </label>
                             <select
                                 value={month}
                                 onChange={(e) => setMonth(Number(e.target.value))}
                                 className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium appearance-none"
                             >
-                                <option value={0}>Any month</option>
-                                {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((name, i) => (
-                                    <option key={i + 1} value={i + 1}>{name}</option>
+                                <option value={0}>{t('anyMonth')}</option>
+                                {(['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const).map((key, i) => (
+                                    <option key={i + 1} value={i + 1}>{tMonths(key)}</option>
                                 ))}
                             </select>
                         </div>
@@ -260,7 +274,7 @@ export default function RouteSettingsSection({
                         {/* Budget */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                <Banknote size={16} /> Budget
+                                <Banknote size={16} /> {t('budget')}
                             </label>
                             <div className="flex gap-2">
                                 <select
@@ -286,7 +300,7 @@ export default function RouteSettingsSection({
                     {/* Tags */}
                     <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                            <Tag size={16} /> Tags
+                            <Tag size={16} /> {t('tags')}
                         </label>
                         <div className="relative">
                             <input
@@ -300,7 +314,7 @@ export default function RouteSettingsSection({
                                     }
                                 }}
                                 className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium"
-                                placeholder="Press Enter to add tags..."
+                                placeholder={t('tagsPlaceholder')}
                             />
                             {tagSuggestions.length > 0 && (
                                 <div className="absolute top-full left-0 w-full mt-2 bg-background-1 border border-grass rounded-2xl shadow-xl z-20 overflow-hidden">
@@ -338,57 +352,57 @@ export default function RouteSettingsSection({
                         {/*Visibility*/}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                <Users size={16} /> Visibility
+                                <Users size={16} /> {tRoutes('visibility')}
                             </label>
                             <div className="grid grid-cols-2 bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
                                     onClick={() => setVisibility('PUBLIC')}
                                     className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PUBLIC' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
-                                    Public
+                                    {tCommon('public')}
                                 </button>
                                 <button
                                     onClick={() => setVisibility('PRIVATE')}
                                     className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PRIVATE' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
-                                    Private
+                                    {tCommon('private')}
                                 </button>
                             </div>
                             <p className="text-xs text-foreground-1/60 px-1">
-                                {visibility === 'PUBLIC' && "Everyone can view this route."}
-                                {visibility === 'PRIVATE' && "Only you can view this route. (Depends on your collaborator policy settings.)"}
+                                {visibility === 'PUBLIC' && tRoutes('visibilityPublic')}
+                                {visibility === 'PRIVATE' && tRoutes('visibilityPrivate')}
                             </p>
                         </div>
 
                         {/* Collaborator Policy */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                <Users size={16} /> Collaborator Policy
+                                <Users size={16} /> {t('collaboratorPolicy')}
                             </label>
                             <div className="grid grid-cols-3 bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
                                     onClick={() => setCollaboratorPolicy('DISABLED')}
                                     className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'DISABLED' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
-                                    Disabled
+                                    {t('policyDisabled')}
                                 </button>
                                 <button
                                     onClick={() => setCollaboratorPolicy('VIEW_ONLY')}
                                     className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'VIEW_ONLY' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
-                                    View Only
+                                    {t('policyViewOnly')}
                                 </button>
                                 <button
                                     onClick={() => setCollaboratorPolicy('CAN_EDIT')}
                                     className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'CAN_EDIT' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
-                                    Can Edit
+                                    {t('policyCanEdit')}
                                 </button>
                             </div>
                             <p className="text-xs text-foreground-1/60 px-1">
-                                {collaboratorPolicy === 'DISABLED' && "Collaboration is disabled."}
-                                {collaboratorPolicy === 'VIEW_ONLY' && "Collaborators can view this route even if it is private."}
-                                {collaboratorPolicy === 'CAN_EDIT' && "Collaborators can view and edit this route."}
+                                {collaboratorPolicy === 'DISABLED' && t('policyDisabledDesc')}
+                                {collaboratorPolicy === 'VIEW_ONLY' && t('policyViewOnlyDesc')}
+                                {collaboratorPolicy === 'CAN_EDIT' && t('policyCanEditDesc')}
                             </p>
                         </div>
 
@@ -398,7 +412,7 @@ export default function RouteSettingsSection({
                         {routeId && collaboratorPolicy !== 'DISABLED' && (
                             <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                    <Link size={16} /> Invitation URL
+                                    <Link size={16} /> {t('invitationUrl')}
                                 </label>
                                 <div className="flex gap-3">
                                     {inviteUrl ? (
@@ -409,7 +423,7 @@ export default function RouteSettingsSection({
                                             <button
                                                 onClick={copyToClipboard}
                                                 className="p-2 text-accent-0 hover:bg-accent-0/10 rounded-xl transition-colors"
-                                                title="Copy to clipboard"
+                                                title={tCommon('copy')}
                                             >
                                                 {copied ? <Check size={20} /> : <Copy size={20} />}
                                             </button>
@@ -421,7 +435,7 @@ export default function RouteSettingsSection({
                                             className="flex-1 px-5 py-4 bg-accent-0 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-0/90 transition-all disabled:opacity-50"
                                         >
                                             {generating ? <Loader2 size={20} className="animate-spin" /> : <Link size={20} />}
-                                            Generate Invitation URL
+                                            {t('generateInviteUrl')}
                                         </button>
                                     )}
                                 </div>
@@ -430,12 +444,12 @@ export default function RouteSettingsSection({
                         {!routeId && collaboratorPolicy !== 'DISABLED' && (
                             <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                    <Link size={16} /> Invitation URL
+                                    <Link size={16} /> {t('invitationUrl')}
                                 </label>
                                 <div className="px-5 py-4 bg-background-0 border border-grass border-dashed rounded-2xl flex items-center gap-3">
                                     <AlertCircle size={18} className="text-foreground-1/40" />
                                     <p className="text-sm text-foreground-1/60 font-medium">
-                                        Invitation URLs can be generated after saving the route.
+                                        {t('inviteUrlAfterSave')}
                                     </p>
                                 </div>
                             </div>

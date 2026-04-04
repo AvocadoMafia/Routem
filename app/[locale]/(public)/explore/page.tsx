@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import { Route } from "@/lib/client/types";
+import { useTranslations } from "next-intl";
 
 // モックデータ
 const MOCK_ROUTES: any[] = [
@@ -53,6 +54,7 @@ const MOCK_ROUTES: any[] = [
 ];
 
 function ExploreContent() {
+    const t = useTranslations('explore');
     const searchParams = useSearchParams();
     const hasParams = Array.from(searchParams.keys()).length > 0;
 
@@ -157,11 +159,11 @@ function ExploreContent() {
                                     <div className="flex items-center gap-4">
                                         <div className="h-8 md:h-10 w-1 bg-accent-0 rounded-full" />
                                         <h2 className="text-3xl md:text-5xl font-bold text-foreground-0 tracking-tight">
-                                            Discovery
+                                            {t('discovery')}
                                         </h2>
                                     </div>
                                     <p className="text-foreground-1 text-xs md:text-sm tracking-[0.1em] font-medium ml-5">
-                                        Showing results for <span className="text-accent-0 font-bold">"{searchParams.get('where')}"</span> — {MOCK_ROUTES.length} routes found
+                                        {t('showingResultsFor')} <span className="text-accent-0 font-bold">"{searchParams.get('where')}"</span> — {t('routesFound', { count: MOCK_ROUTES.length })}
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-6 md:gap-12 pb-24 md:pb-0">
@@ -185,9 +187,14 @@ function ExploreContent() {
     );
 }
 
+function ExplorePageFallback() {
+    const t = useTranslations('common');
+    return <div>{t('loading')}</div>;
+}
+
 export default function ExplorePage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<ExplorePageFallback />}>
             <ExploreContent />
         </Suspense>
     );

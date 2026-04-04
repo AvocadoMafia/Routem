@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { List, Map as MapIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   viewMode: "diagram" | "details" | "map";
@@ -18,6 +19,8 @@ export default function ViewModeSelector({
   scrollDirection,
   yOffset,
 }: Props) {
+  const t = useTranslations('viewMode');
+
   return (
     <motion.div
       animate={{
@@ -36,7 +39,7 @@ export default function ViewModeSelector({
         } ${!isMobile && "hidden"}`}
       >
         <List className="w-3.5 h-3.5" />
-        <span>DIAGRAM</span>
+        <span>{t('diagram').toUpperCase()}</span>
       </button>
       <button
         onClick={() => setViewMode("details")}
@@ -47,7 +50,7 @@ export default function ViewModeSelector({
         }`}
       >
         <List className="w-3.5 h-3.5" />
-        <span>DETAILS</span>
+        <span>{t('details').toUpperCase()}</span>
       </button>
       <button
         onClick={() => setViewMode("map")}
@@ -58,7 +61,7 @@ export default function ViewModeSelector({
         }`}
       >
         <MapIcon className="w-3.5 h-3.5" />
-        <span>MAP VIEW</span>
+        <span>{t('mapView').toUpperCase()}</span>
       </button>
     </motion.div>
   );
