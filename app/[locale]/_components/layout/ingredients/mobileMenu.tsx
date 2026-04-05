@@ -42,6 +42,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const t = useTranslations('navigation')
     const tAuth = useTranslations('auth')
     const tProfile = useTranslations('profile')
+    const tCommon = useTranslations('common')
 
     const handleNavigate = (path: string) => {
         router.push(path)
@@ -73,7 +74,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                 <img className={'h-7 w-7'} src={'/logo.svg'} alt={'Routem'}/>
                                 <div className={'w-fit h-fit flex flex-col'}>
                                     <span className={'text-xl font-bold'}>Routem</span>
-                                    <span className={'text-xs text-foreground-1/80'}>ver. 1.0β</span>
+                                    <span className={'text-xs text-foreground-1/80'}>{tCommon('version')}</span>
                                 </div>
                             </div>
                             <button onClick={onClose} className={'p-2 hover:bg-grass rounded-full transition-colors cursor-pointer'}>

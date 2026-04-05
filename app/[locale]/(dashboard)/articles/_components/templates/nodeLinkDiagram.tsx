@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef, useCallback } from "react";
 import { RouteItem } from "@/lib/client/types";
 import { Plus, Settings as SettingsIcon, Loader2, Edit3, Rocket, ChevronRight } from "lucide-react";
@@ -7,6 +9,7 @@ import RouteNode from "../ingredients/RouteNode";
 import InlineAddMenu from "../ingredients/InlineAddMenu";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 interface NodeLinkDiagramProps {
     items: RouteItem[];
@@ -43,6 +46,8 @@ export default function NodeLinkDiagram({
     // 挿入メニューを表示しているアイテムのインデックス
     const [addingAfterIndex, setAddingAfterIndex] = useState<number | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+    const t = useTranslations('common');
+    const tRoutes = useTranslations('routes');
 
     const scrollDirection = useUiStore((state) => state.scrollDirection);
     const [yOffset, setYOffset] = useState(0);
@@ -118,7 +123,7 @@ export default function NodeLinkDiagram({
                         ) : (
                             <Rocket size={16} className={isSettingsComplete ? 'animate-bounce' : ''} />
                         )}
-                        <span>{publishing ? '...' : 'Publish'}</span>
+                        <span>{publishing ? t('publishing') : t('publish')}</span>
                     </button>
                 </div>
 
@@ -231,7 +236,7 @@ export default function NodeLinkDiagram({
                     className="w-full py-4 bg-accent-0 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-0/90 active:scale-[0.98] transition-all shadow-[0_10px_20px_rgba(45,31,246,0.2)]"
                 >
                     <Plus size={20} strokeWidth={3} />
-                    <span>Add Waypoint</span>
+                    <span>{tRoutes('addWaypoint')}</span>
                 </button>
             </motion.div>
         </div>

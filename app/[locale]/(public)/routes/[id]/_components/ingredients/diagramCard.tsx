@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import TransitIcon from "./transitIcon";
+import { useTranslations } from "next-intl";
 
 type DiagramCardProps = {
   item: {
@@ -21,6 +22,8 @@ export default function DiagramCard({
   isFocused,
   onItemClick,
 }: DiagramCardProps) {
+  const t = useTranslations('routes');
+  const tCommon = useTranslations('common');
   return (
     <div className="relative z-10 flex items-center gap-4">
       {/* アイコン部分 (Node風) */}
@@ -58,7 +61,7 @@ export default function DiagramCard({
             }`}
           >
             {item.type === "node"
-              ? `Waypoint ${Math.floor(idx / 2) + 1}`
+              ? `${t('waypoint')} ${Math.floor(idx / 2) + 1}`
               : item.data.mode}
           </span>
           <p
@@ -67,8 +70,8 @@ export default function DiagramCard({
             }`}
           >
             {item.type === "node"
-              ? item.data.spot?.name || "Waypoint"
-              : `${item.data.duration || "0"} min`}
+              ? item.data.spot?.name || t('waypoint')
+              : `${item.data.duration || "0"} ${tCommon('min')}`}
           </p>
         </div>
       </motion.button>

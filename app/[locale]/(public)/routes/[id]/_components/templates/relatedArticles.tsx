@@ -5,6 +5,7 @@ import RouteCardWidely from "@/app/[locale]/_components/common/templates/routeCa
 import RouteCardWidelySkeleton from "@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton";
 import { Route } from "@/lib/client/types";
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   routes: Route[];
@@ -15,15 +16,16 @@ type Props = {
     compact?: boolean;
 };
 
-export default function RelatedArticles({ 
-  routes, 
-  loading, 
+export default function RelatedArticles({
+  routes,
+  loading,
   fetchingMore: isFetching,
-  fetchMore, 
-  hasMore, 
-  compact = false 
+  fetchMore,
+  hasMore,
+  compact = false
 }: Props) {
   const observerTarget = useRef<HTMLDivElement>(null);
+  const t = useTranslations('routes');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -60,10 +62,10 @@ export default function RelatedArticles({
       <div className="flex flex-col gap-2 px-1 hidden md:flex">
         <div className="flex items-center gap-2 text-accent-0">
           <BookOpen className="w-4 h-4" />
-          <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">Related Articles</span>
+          <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">{t('relatedArticles')}</span>
         </div>
         <h2 className={`font-bold text-foreground-0 ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
-          おすすめの記事
+          {t('recommendedArticles')}
         </h2>
       </div>
 
@@ -76,7 +78,7 @@ export default function RelatedArticles({
       
       {!loading && routes.length === 0 && (
         <div className="w-full py-10 text-center text-foreground-1/50 italic">
-          No related articles found.
+          {t('noRelatedArticles')}
         </div>
       )}
     </div>

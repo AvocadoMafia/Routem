@@ -9,5 +9,5 @@ import { locales, defaultLocale } from './config';
 export const { Link, redirect, usePathname, useRouter, getPathname } = createNavigation({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed', // デフォルトロケール(ja)はプレフィックスなし
+  localePrefix: 'as-needed', // デフォルトロケール(en)はプレフィックスなし
 });

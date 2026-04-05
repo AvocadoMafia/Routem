@@ -1,5 +1,8 @@
+"use client";
+
 import { Plus, MapPin, Navigation } from "lucide-react";
 import { RefObject } from "react";
+import { useTranslations } from "next-intl";
 
 interface InlineAddMenuProps {
     isAdding: boolean;
@@ -9,6 +12,7 @@ interface InlineAddMenuProps {
 }
 
 export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }: InlineAddMenuProps) {
+    const t = useTranslations('routes');
     return (
         <div className="relative flex items-center justify-center group/link z-20 w-full h-full">
             {/* 
@@ -68,7 +72,7 @@ export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }
                             <div className="w-8 h-8 bg-accent-0/10 rounded-lg flex items-center justify-center text-accent-0 group-hover/btn:scale-110 transition-transform">
                                 <MapPin size={16} />
                             </div>
-                            <span className="text-xs font-bold text-foreground-0">Waypoint</span>
+                            <span className="text-xs font-bold text-foreground-0">{t('waypoint')}</span>
                         </button>
 
                         <div className="w-px bg-grass my-1" />
@@ -84,7 +88,7 @@ export default function InlineAddMenu({ isAdding, menuRef, onToggle, onAddItem }
                             <div className="w-8 h-8 bg-accent-0/10 rounded-lg flex items-center justify-center text-accent-0 group-hover/btn:scale-110 transition-transform">
                                 <Navigation size={16} />
                             </div>
-                            <span className="text-xs font-bold text-foreground-0">Transport</span>
+                            <span className="text-xs font-bold text-foreground-0">{t('transport')}</span>
                         </button>
                     </div>
                 )}

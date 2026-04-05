@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { HiShare, HiCheck } from "react-icons/hi2";
+import { useTranslations } from "next-intl";
 
 type ShareButtonProps = {
   variant?: "compact" | "large";
@@ -9,6 +10,8 @@ type ShareButtonProps = {
 
 export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
   const [isCopying, setIsCopying] = useState(false);
+  const t = useTranslations('common');
+  const tRoutes = useTranslations('routes');
 
   const handleShare = async () => {
     // Web Share API
@@ -47,7 +50,7 @@ export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
           <HiShare className="w-6 h-6 text-accent-0 group-hover:scale-125 transition-transform" />
         )}
         <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-0">
-          {isCopying ? "Copied!" : "Share this route"}
+          {isCopying ? t('copied') : tRoutes('shareThis')}
         </span>
       </button>
     );
@@ -57,7 +60,7 @@ export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
     <button 
       onClick={handleShare}
       className="flex items-center gap-1.5 text-foreground-1 hover:text-accent-0 transition-colors"
-      title="Share"
+      title={t('share')}
     >
       {isCopying ? (
         <HiCheck className="w-3.5 h-3.5" />
@@ -65,7 +68,7 @@ export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
         <HiShare className="w-3.5 h-3.5" />
       )}
       <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
-        {isCopying ? "Copied!" : "Share"}
+        {isCopying ? t('copied') : t('share')}
       </span>
     </button>
   );

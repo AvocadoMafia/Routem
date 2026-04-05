@@ -3,6 +3,7 @@
 import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 type WaypointItemProps = {
   idx: number;
@@ -12,6 +13,7 @@ type WaypointItemProps = {
 };
 
 export default function WaypointItem({ idx, data, isFocused, itemRef }: WaypointItemProps) {
+  const t = useTranslations('routes');
   return (
     <div
       ref={itemRef}
@@ -24,11 +26,11 @@ export default function WaypointItem({ idx, data, isFocused, itemRef }: Waypoint
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-accent-0" />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">
-              Waypoint {Math.floor(idx / 2) + 1}
+              {t('waypoint')} {Math.floor(idx / 2) + 1}
             </span>
           </div>
           <h2 className="text-2xl md:text-4xl font-medium text-foreground-0 tracking-[0.05em] uppercase leading-tight break-words">
-            {data.spot?.name || "Waypoint"}
+            {data.spot?.name || t('waypoint')}
           </h2>
         </div>
 
@@ -57,7 +59,7 @@ export default function WaypointItem({ idx, data, isFocused, itemRef }: Waypoint
 
         <div className="max-w-2xl">
           <p className="text-lg md:text-xl leading-relaxed text-foreground-0/80 font-normal whitespace-pre-wrap break-words">
-            {data.details || "No description provided."}
+            {data.details || t('noDescription')}
           </p>
         </div>
       </div>

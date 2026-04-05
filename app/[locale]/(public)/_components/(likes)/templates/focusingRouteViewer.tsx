@@ -1,9 +1,12 @@
+"use client";
+
 import {Route} from "@/lib/types/domain";
 import {useEffect, useRef} from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
 import {HiHeart, HiEye, HiUsers, HiCurrencyDollar, HiArrowRight} from "react-icons/hi2";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 type Props = {
     routeOnFocus: Route
@@ -33,6 +36,8 @@ const variants = {
 
 export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setFocusedRouteIdx, routesLength}: Props) {
     const prevIndexRef = useRef<number>(0);
+    const t = useTranslations('common');
+    const tRoutes = useTranslations('routes');
     const SCROLL_THRESHOLD = 10;
     const WHEEL_COOLDOWN_MS = 150; // timeout to prevent rapid successive index changes
     const wheelTimeoutRef = useRef<number | null>(null);
@@ -135,18 +140,18 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                     <div className="flex items-center gap-3">
                                         <div className="px-3 py-1.5 bg-background-0 rounded-lg flex items-center gap-2 border border-background-2/50">
                                             <HiUsers className="w-4 h-4 text-foreground-1" />
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-0">{routeOnFocus.routeFor || 'Everyone'}</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-0">{routeOnFocus.routeFor || t('everyone')}</span>
                                         </div>
                                         <div className="px-3 py-1.5 bg-background-0 rounded-lg flex items-center gap-2 border border-background-2/50">
                                             <HiCurrencyDollar className="w-4 h-4 text-foreground-1" />
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-0">
-                                                {routeOnFocus.budget ? `${routeOnFocus.budget.amount.toLocaleString()} ${routeOnFocus.budget.currency}` : 'Flexible'}
+                                                {routeOnFocus.budget ? `${routeOnFocus.budget.amount.toLocaleString()} ${routeOnFocus.budget.currency}` : t('flexible')}
                                             </span>
                                         </div>
                                     </div>
 
                                     <p className="text-foreground-1 text-sm leading-relaxed line-clamp-4">
-                                        "{routeOnFocus.description || 'No description provided.'}"
+                                        "{routeOnFocus.description || tRoutes('noDescription')}"
                                     </p>
                                 </div>
                             </div>
@@ -155,7 +160,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                 href={`/routes/${routeOnFocus.id}`}
                                 className="w-full mt-6 py-3.5 bg-accent-0 text-white font-bold rounded-xl text-sm flex items-center justify-center gap-2 hover:bg-accent-1 transition-all shadow-lg shadow-accent-0/20 hover:shadow-accent-0/30 active:scale-[0.98]"
                             >
-                                View Detailed Route <HiArrowRight className="w-5 h-5" />
+                                {tRoutes('viewDetailedRoute')} <HiArrowRight className="w-5 h-5" />
                             </Link>
                         </div>
                     </div>

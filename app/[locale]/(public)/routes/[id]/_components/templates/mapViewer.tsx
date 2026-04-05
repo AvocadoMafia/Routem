@@ -7,6 +7,7 @@ import { Route } from "@/lib/client/types";
 import { MapPin } from "lucide-react";
 import getClientMapboxAccessToken from "@/lib/config/client";
 import { useRouteGeometry } from "@/lib/client/hooks/useRouteGeometry";
+import { useTranslations } from "next-intl";
 
 type Props = {
   route: Route;
@@ -18,6 +19,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
   const mapRef = useRef<MapRef>(null);
   const mapboxAccessToken = getClientMapboxAccessToken();
   const routeGeometry = useRouteGeometry(route);
+  const t = useTranslations('errors');
 
   useEffect(() => {
     if (mapboxAccessToken) {
@@ -103,7 +105,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
 
   if (!mapboxAccessToken) return (
     <div className="absolute inset-0 bg-background-1 flex items-center justify-center">
-      <p className="text-foreground-1 text-sm font-bold uppercase tracking-widest">Mapbox Access Token Required</p>
+      <p className="text-foreground-1 text-sm font-bold uppercase tracking-widest">{t('mapboxRequired')}</p>
     </div>
   );
 
