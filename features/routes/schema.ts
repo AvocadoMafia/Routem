@@ -14,15 +14,15 @@ export const GetRoutesSchema = z
     collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
     q: z.string().optional().default(""),
     lat: z.coerce.number().optional(),
-    lon: z.coerce.number().optional(),
+    lng: z.coerce.number().optional(),
     who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
     when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
   })
   .refine(
     (data) => {
       return (
-        (data.lat != undefined && data.lon != undefined) ||
-        (data.lat == undefined && data.lon == undefined)
+        (data.lat != undefined && data.lng != undefined) ||
+        (data.lat == undefined && data.lng == undefined)
       );
     },
     {

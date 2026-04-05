@@ -112,7 +112,7 @@ export function buildRouteNodesFromItems(
                 create: {
                   name: item.name,
                   latitude: item.lat,
-                  longitude: item.lon,
+                  longitude: item.lng,
                   source: item.source,
                   sourceId: item.sourceId,
                 },
@@ -125,7 +125,7 @@ export function buildRouteNodesFromItems(
                 create: {
                   name: item.name,
                   latitude: item.lat,
-                  longitude: item.lon,
+                  longitude: item.lng,
                 },
               },
             };
@@ -134,7 +134,7 @@ export function buildRouteNodesFromItems(
               create: {
                 name: item.name,
                 latitude: item.lat,
-                longitude: item.lon,
+                longitude: item.lng,
               },
             };
           }

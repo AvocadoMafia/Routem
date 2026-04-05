@@ -11,7 +11,7 @@ export const WaypointSchema = z
       .optional(),
     memo: z.string(),
     lat: z.number().optional(),
-    lon: z.number().optional(),
+    lng: z.number().optional(),
     source: z.enum(["MAPBOX", "USER"]).optional(),
     sourceId: z.string().optional(),
   })
