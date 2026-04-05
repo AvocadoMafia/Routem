@@ -4,6 +4,7 @@ import {
   GetRoutesType,
   PatchRouteType,
   postRouteType,
+  RoutesDocumentsType,
 } from "@/features/routes/schema";
 import {
   buildCreateRouteData,
@@ -14,6 +15,7 @@ import { getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
 import crypto from "crypto";
+import { exchangeRatesRepository } from "../exchangeRates/repository";
 
 export const routesService = {
   // user:Userではなくuser_idを受け取ることで、testしやすくしている。
@@ -27,15 +29,37 @@ export const routesService = {
       const meilisearch = getMeilisearch();
       const index = await meilisearch.getIndex("routes");
 
+      // Budget用のドル換算フィルタ
+      // findManyはあえて全件取得にしてcacheしている
+      const exchange_rates = await exchangeRatesRepository.findMany();
+      const rate_to_usd = exchange_rates.find((r) => {
+        return r.currencyCode === query.budget?.currencyCode;
+      })?.rateToUsd;
+
+      const min_budget_in_usd =
+        query.budget?.minAmount && rate_to_usd ? query.budget.minAmount * rate_to_usd : undefined;
+      const max_budget_in_usd =
+        query.budget?.maxAmount && rate_to_usd ? query.budget.maxAmount * rate_to_usd : undefined;
+
+      const filter_conditions = [];
+      if (min_budget_in_usd !== undefined) {
+        filter_conditions.push(`budgetInUsd >= ${min_budget_in_usd}`);
+      }
+      if (max_budget_in_usd !== undefined) {
+        filter_conditions.push(`budgetInUsd <= ${max_budget_in_usd}`);
+      }
+
+      const filter = filter_conditions.length > 0 ? filter_conditions.join(" AND ") : undefined;
+
       // Where検索用の緯度経度近い順ソート
       const sort =
-        (query.lat != undefined && query.lon != undefined) ||
-        (query.lat == undefined && query.lon == undefined)
-          ? [`_geoPoint(${query.lat},${query.lon}):asc`]
+        query.lat != undefined && query.lng != undefined
+          ? [`_geoPoint(${query.lat},${query.lng}):asc`]
           : undefined;
 
       const search = await index.search(query.q, {
         ...(sort && { sort }),
+        filter: filter,
       });
       ids = search.hits.map((hit) => hit.id);
       if (ids.length === 0) {
@@ -214,10 +238,17 @@ async function syncToMeilisearch(route: RouteWithRelations) {
     ])
   ).filter(Boolean);
 
+  const exchange_rates = await exchangeRatesRepository.findMany();
+  const rate_to_usd = exchange_rates.find(
+    (r) => r.currencyCode === route.budget?.localCurrencyCode,
+  )?.rateToUsd;
+  const budget_in_usd =
+    route.budget?.amount && rate_to_usd ? route.budget.amount * rate_to_usd : undefined;
+
   const meilisearch = getMeilisearch();
   const routesIndex = meilisearch.index("routes");
 
-  const documents = [
+  const documents: RoutesDocumentsType = [
     {
       id: route.id,
       title: route.title,
@@ -226,14 +257,18 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       visibility: route.visibility,
       createdAt: route.createdAt?.getTime(),
       updatedAt: route.updatedAt?.getTime(),
-      routeNodes: route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+      spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
       tags: route.tags.map((t) => t.name),
       month: route.month,
       routeFor: route.routeFor,
-      budget: route.budget ? Number(route.budget.amount) : undefined,
+
+      budgetInLocalCurrency: route.budget?.amount,
+      localCurrencyCode: route.budget?.localCurrencyCode,
+      budgetInUsd: budget_in_usd,
+
       _geo: {
-        lat: route.routeNodes[0]?.spot.latitude,
-        lon: route.routeNodes[0]?.spot.longitude,
+        lat: route.routeNodes[0]?.spot.latitude ?? undefined,
+        lng: route.routeNodes[0]?.spot.longitude ?? undefined,
       },
       searchText: [
         route.title,
