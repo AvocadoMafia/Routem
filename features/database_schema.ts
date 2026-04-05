@@ -18,8 +18,8 @@ export const WaypointSchema = z
   .refine(
     (data) => {
       return (
-        (data.lat != undefined && data.lon != undefined) ||
-        (data.lat == undefined && data.lon == undefined)
+        (data.lat != undefined && data.lng != undefined) ||
+        (data.lat == undefined && data.lng == undefined)
       );
     },
     {
