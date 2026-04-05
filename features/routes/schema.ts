@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TransportationSchema, WaypointSchema } from "../database_schema";
 
+// TODO:型の重複部分をnon-optionalにして共通化するべき
 export const GetRoutesSchema = z
   .object({
     authorId: z.string().uuid().optional(),
@@ -17,6 +18,29 @@ export const GetRoutesSchema = z
     lng: z.coerce.number().optional(),
     who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
     when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
+    budget: z
+      .object({
+        currencyCode: z.enum([
+          "JPY",
+          "USD",
+          "EUR",
+          "GBP",
+          "KRW",
+          "TWD",
+          "CNY",
+          "THB",
+          "VND",
+          "SGD",
+          "MYR",
+          "PHP",
+          "AUD",
+          "CAD",
+          "OTHER",
+        ]),
+        minAmount: z.number().min(0),
+        maxAmount: z.number().min(0),
+      })
+      .optional(),
   })
   .refine(
     (data) => {
@@ -46,7 +70,7 @@ export const PostRouteSchema = z.object({
   who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
   when: z.array(z.int().min(1).max(12)).min(1).max(12),
   budget: z.object({
-    currency: z.enum([
+    currencyCode: z.enum([
       "JPY",
       "USD",
       "EUR",
@@ -64,7 +88,6 @@ export const PostRouteSchema = z.object({
       "OTHER",
     ]),
     amount: z.number().min(0),
-    note: z.string().optional(),
   }),
   tags: z.array(z.string()).min(1, "At least one tag is required"),
 });
@@ -89,7 +112,7 @@ export const PatchRouteSchema = z.object({
   when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
   budget: z
     .object({
-      currency: z.enum([
+      currencyCode: z.enum([
         "JPY",
         "USD",
         "EUR",
@@ -107,7 +130,6 @@ export const PatchRouteSchema = z.object({
         "OTHER",
       ]),
       amount: z.number().min(0),
-      note: z.string().optional(),
     })
     .optional(),
   tags: z.array(z.string()).min(1).optional(),
@@ -119,3 +141,49 @@ export const DeleteRouteSchema = z.object({
 });
 
 export type DeleteRouteType = z.infer<typeof DeleteRouteSchema>;
+
+const RoutesDocumentsSchema = z.array(
+  z.object({
+    // id以外全部undefined許容してる。これはsyncToMeiliをPostとPatchで共用しているから
+    id: PatchRouteSchema.shape.id,
+    title: PatchRouteSchema.shape.title,
+    description: PatchRouteSchema.shape.description,
+    authorId: z.string().uuid().optional(),
+    visibility: PatchRouteSchema.shape.visibility,
+    createdAt: z.number().optional(),
+    updatedAt: z.number().optional(),
+    spotNames: z.array(z.string()).optional(),
+    tags: PatchRouteSchema.shape.tags,
+    month: PatchRouteSchema.shape.when,
+    routeFor: PatchRouteSchema.shape.who,
+
+    budgetInLocalCurrency: z.number().min(0).optional(),
+    localCurrencyCode: z
+      .enum([
+        "JPY",
+        "USD",
+        "EUR",
+        "GBP",
+        "KRW",
+        "TWD",
+        "CNY",
+        "THB",
+        "VND",
+        "SGD",
+        "MYR",
+        "PHP",
+        "AUD",
+        "CAD",
+        "OTHER",
+      ])
+      .optional(),
+    budgetInUsd: z.number().min(0).optional(),
+    _geo: z.object({
+      lat: z.number().optional(),
+      lng: z.number().optional(),
+    }),
+    searchText: z.array(z.string()).optional,
+  }),
+);
+
+export type RoutesDocumentsType = z.infer<typeof RoutesDocumentsSchema>;
