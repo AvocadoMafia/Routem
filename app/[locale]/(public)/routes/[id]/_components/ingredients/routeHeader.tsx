@@ -38,7 +38,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       setInviteUrl(url);
     } catch (error) {
       console.error(error);
-      alert('Failed to generate invite URL');
+      alert(t('failedToInvite'));
     }
   };
 
@@ -57,7 +57,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       window.location.href = '/';
     } catch (error) {
       console.error(error);
-      alert('Failed to delete route');
+      alert(t('failedToDelete'));
     }
   };
 
@@ -141,13 +141,13 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
           <div className="flex items-center gap-2 px-2.5 py-1 bg-foreground-0/5 rounded-lg border border-foreground-0/5">
             <HiClock className="w-3.5 h-3.5 text-accent-0" />
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground-1">
-              2.5h
+              {route.duration ?? "2.5h"}
             </span>
           </div>
           <div className="flex items-center gap-2 px-2.5 py-1 bg-foreground-0/5 rounded-lg border border-foreground-0/5">
             <HiBanknotes className="w-3.5 h-3.5 text-accent-0" />
             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground-1">
-              ¥3,500
+              ¥{route.budget?.toLocaleString() ?? "3,500"}
             </span>
           </div>
         </div>

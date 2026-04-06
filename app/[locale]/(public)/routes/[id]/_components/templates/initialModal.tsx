@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Route } from "@/lib/client/types";
 import Image from "next/image";
 import { useInitialModal } from "../hooks/useInitialModal";
+import { useTranslations } from "next-intl";
 
 export default function InitialModal({ route }: { route: Route }) {
+    const t = useTranslations('routes');
     const { isVisible } = useInitialModal();
 
     return (
@@ -57,7 +59,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             <div className="flex items-center justify-center gap-6">
                                 <div className="h-px w-12 bg-white/20" />
                                 <p className="text-[10px] font-bold tracking-[0.3em] text-white/80 uppercase">
-                                    Curated by {route.author.name}
+                                    {t('curatedBy', { name: route.author.name })}
                                 </p>
                                 <div className="h-px w-12 bg-white/20" />
                             </div>
@@ -70,7 +72,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             transition={{ delay: 0.8, duration: 0.6 }}
                             className="absolute bottom-16 flex flex-col items-center gap-6"
                         >
-                            <span className="text-[9px] font-medium tracking-[0.5em] uppercase text-white/40">Discover</span>
+                            <span className="text-[9px] font-medium tracking-[0.5em] uppercase text-white/40">{t('discover')}</span>
                             <div className="w-px h-16 bg-gradient-to-b from-white/40 to-transparent" />
                         </motion.div>
                     </div>

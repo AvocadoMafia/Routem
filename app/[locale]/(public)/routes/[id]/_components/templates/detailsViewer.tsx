@@ -6,6 +6,7 @@ import { HiHeart } from "react-icons/hi2";
 import { motion, AnimatePresence } from "framer-motion";
 import { ReactNode, RefObject } from "react";
 import { User } from "@supabase/supabase-js";
+import { useTranslations } from "next-intl";
 import RelatedArticles from "./relatedArticles";
 import WaypointItem from "../ingredients/waypointItem";
 import TransitItem from "../ingredients/transitItem";
@@ -52,6 +53,7 @@ export default function DetailsViewer({
   fetchMoreRelated,
   relatedHasMore,
 }: Props) {
+  const t = useTranslations('routes');
   const isLikedByMe = !!(currentUser && route.likes?.some((like) => like.userId === currentUser.id));
 
   return (
@@ -94,7 +96,7 @@ export default function DetailsViewer({
       
       {/* ルートを気に入った場合のいいねボタン */}
       <div className="flex flex-col items-center gap-6">
-        <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-foreground-1">Did you enjoy this route?</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-foreground-1">{t('enjoyRoute')}</span>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <LikeButton 
             routeId={route.id} 
@@ -136,7 +138,7 @@ export default function DetailsViewer({
                 >
                   <div className="flex items-center gap-2">
                     <MessageSquare className="w-4 h-4" />
-                    <span>Comments</span>
+                    <span>{t('comments')}</span>
                   </div>
                   {infoTab === "comments" && (
                     <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />
@@ -150,7 +152,7 @@ export default function DetailsViewer({
                 >
                   <div className="flex items-center gap-2">
                     <BookOpen className="w-4 h-4" />
-                    <span>Related Articles</span>
+                    <span>{t('relatedArticles')}</span>
                   </div>
                   {infoTab === "related" && (
                     <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />

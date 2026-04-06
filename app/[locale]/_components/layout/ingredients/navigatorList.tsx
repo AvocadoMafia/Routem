@@ -74,7 +74,7 @@ export default function NavigatorList({ onSearchClick }: Props) {
                                             onClick={() => router.push(subItem.path)}
                                             className={'w-full text-left px-4 py-2 hover:bg-background-0 transition-colors text-foreground-0 whitespace-nowrap cursor-pointer'}
                                         >
-                                            {t(subItem.nameKey as keyof IntlMessages['navigation'])}
+                                            {t(subItem.nameKey as keyof IntlMessages['navigation'] as string)}
                                         </button>
                                     ))}
                                 </motion.div>

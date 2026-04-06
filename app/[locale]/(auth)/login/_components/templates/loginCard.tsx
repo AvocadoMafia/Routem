@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/auth/supabase/client";
 import { getClientAuthRedirectUrl } from "@/lib/auth/redirectUrl";
+import LoginBackground from "../ingredients/loginBackground";
 
 export default function LoginCard() {
   const [email, setEmail] = useState("");
@@ -45,24 +46,22 @@ export default function LoginCard() {
 
 
           {/*背景画像*/}
-          <div className={'absolute inset-0 w-full h-full'}>
-              <img className={'w-full h-full'} src={'/mockImages/mountain.jpg'}/>
-          </div>
+          <LoginBackground />
 
         {/* 右側：フォーム */}
         <div
-            className="absolute md:w-1/2 w-full h-full md:top-0 md:right-0 z-10 p-6">
-          <div className="w-full h-full flex justify-center items-center bg-background-1/80 rounded-2xl border-1.5 border-background-1 p-3 backdrop-blur-sm">
+            className="absolute md:w-1/2 w-full h-full md:top-0 md:right-0 m-auto z-10 p-6">
+          <div className="w-full h-full flex justify-center items-center p-3">
             <div className="w-full max-w-sm space-y-8">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-foreground-0">{t('signIn')}</h2>
-                <p className="mt-2 text-sm text-foreground-1">{t('pleaseEnterDetails')}</p>
+              <div className="text-center flex flex-col gap-2">
+                <h2 className="text-5xl font-syne font-bold text-foreground-0">Sign In</h2>
+                <p className={'text-md font-semibold'}>welcome back, traveler.</p>
               </div>
 
               <form className="mt-8 space-y-6" onSubmit={handleLogin}>
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="email-address" className="block text-sm font-medium text-foreground-0/80">
+                    <label htmlFor="email-address" className="block text-sm font-bold text-foreground-0">
                       {t('email')}
                     </label>
                     <input
@@ -73,12 +72,12 @@ export default function LoginCard() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-foreground-1/30 rounded-md shadow-sm focus:outline-none focus:ring-foreground-0 focus:border-foreground-0 sm:text-sm"
+                        className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/20 bg-background-1/30 focus:outline-none focus:border-white transition-all"
                         placeholder={t('emailPlaceholder')}
                     />
                   </div>
                   <div>
-                    <label htmlFor="password" id="password-label" className="block text-sm font-medium text-foreground-0/80">
+                    <label htmlFor="password" id="password-label" className="block text-sm font-bold text-foreground-0">
                       {t('password')}
                     </label>
                     <input
@@ -89,7 +88,7 @@ export default function LoginCard() {
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-foreground-1/30 rounded-md shadow-sm focus:outline-none focus:ring-foreground-0 focus:border-foreground-0 sm:text-sm"
+                        className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/20 bg-background-1/30 focus:outline-none focus:border-white transition-all"
                         placeholder="••••••••"
                     />
                   </div>
@@ -104,14 +103,14 @@ export default function LoginCard() {
                 <div className="space-y-4">
                   <button
                       type="submit"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-background-1 bg-accent-0 hover:bg-accent-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
+                      className="w-full flex justify-center py-3 px-6 bg-background-1 backdrop-blur-sm rounded-full font-bold border-1 border-background-1 hover:border-white transition-all"
                   >
                     {t('signIn')}
                   </button>
 
-                  <div className="md:hidden text-center">
-                    <span className="text-sm text-foreground-1">{t('noAccount')} </span>
-                    <Link href="/signup" className="text-sm font-medium text-foreground-0 hover:underline">
+                  <div className="text-center">
+                    <span className="text-sm text-foreground-0/90">{t('noAccount')} </span>
+                    <Link href="/signup" className="text-sm font-medium text-foreground-0 hover:underline hover:text-accent-0">
                       {t('signUp')}
                     </Link>
                   </div>
@@ -121,16 +120,16 @@ export default function LoginCard() {
                       <div className="w-full border-t border-foreground-1/30"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-background-1 text-foreground-0/80">{t('continueWith')}</span>
+                      <span className="px-2 text-foreground-0/90 font-bold">{t('continueWith')}</span>
                     </div>
                   </div>
 
                   <button
                       type="button"
                       onClick={handleGoogleLogin}
-                      className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-foreground-1/30 rounded-md shadow-sm text-sm font-medium text-foreground-0 bg-background-1 hover:bg-background-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground-0 transition-colors"
+                      className="w-full flex justify-center gap-3 py-3 px-6 border-1 border-white/20 backdrop-blur-sm rounded-full font-bold hover:border-white transition-all"
                   >
-                    <FaGoogle className="w-5 h-5 text-accent-warning" />
+                    <FaGoogle className="w-5 h-5 text-accent-0" />
                     <span>{t('google')}</span>
                   </button>
                 </div>
