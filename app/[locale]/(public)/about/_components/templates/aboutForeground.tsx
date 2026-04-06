@@ -2,7 +2,7 @@
 
 import { userStore } from "@/lib/client/stores/userStore";
 import { useRouter } from "next/navigation";
-import Footer from "@/app/_components/layout/templates/footer";
+import Footer from "@/app/[locale]/_components/layout/templates/footer";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 

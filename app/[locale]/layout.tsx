@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Syne } from "next/font/google";
+import { Roboto, Syne, Outfit } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -21,6 +21,12 @@ const roboto = Roboto({
 const syne = Syne({
   subsets: ["latin"],
   variable: "--font-syne",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -51,7 +57,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${roboto.variable} ${syne.variable} font-sans`}>
+      <body className={`${roboto.variable} ${syne.variable} ${outfit.variable} font-sans`}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"

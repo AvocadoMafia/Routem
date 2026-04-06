@@ -76,6 +76,7 @@ html, body {
 /*うぉ*/
 @theme inline {
     --font-syne: var(--font-syne);
+    --font-outfit: var(--font-outfit);
     --color-background-0: var(--background-0);
     --color-background-1: var(--background-1);
     --color-foreground-0: var(--foreground-0);
