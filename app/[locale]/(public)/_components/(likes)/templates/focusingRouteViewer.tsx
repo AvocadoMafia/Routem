@@ -16,23 +16,6 @@ type Props = {
 }
 
 
-const variants = {
-    enter: (direction: 'up' | 'down') => ({
-        y: direction === 'up' ? 600 : -600,
-        opacity: 0,
-        position: "absolute" as const,
-    }),
-    center: {
-        y: 0,
-        opacity: 1,
-        position: "absolute" as const,
-    },
-    exit: (direction: 'up' | 'down') => ({
-        y: direction === 'up' ? -600 : 600,
-        opacity: 0,
-        position: "absolute" as const,
-    }),
-};
 
 export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setFocusedRouteIdx, routesLength}: Props) {
     const prevIndexRef = useRef<number>(0);
@@ -81,11 +64,21 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                     className="aspect-video w-[85%] max-w-[850px] h-auto max-h-[85%] bg-background-0 absolute inset-0 m-auto rounded-3xl p-1.5 overflow-hidden shadow-2xl"
                     onWheel={handleScroll}
                     key={focusedRouteIdx}
-                    custom={direction}
-                    variants={variants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
+                    initial={{
+                        y: direction === 'up' ? 600 : -600,
+                        opacity: 0,
+                        position: "absolute" as const,
+                    }}
+                    animate={{
+                        y: 0,
+                        opacity: 1,
+                        position: "absolute" as const,
+                    }}
+                    exit={{
+                        y: direction === 'up' ? -600 : 600,
+                        opacity: 0,
+                        position: "absolute" as const,
+                    }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
                     <div className="w-full h-full bg-background-1 rounded-[1.25rem] relative overflow-hidden flex flex-row">

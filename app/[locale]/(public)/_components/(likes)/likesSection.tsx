@@ -54,15 +54,9 @@ export default function LikesSection() {
             <AnimatePresence custom={direction} initial={false}>
                 <motion.div
                     key={focusedRouteIdx}
-                    custom={direction}
-                    variants={{
-                        enter: { opacity: 0 },
-                        center: { opacity: 1 },
-                        exit: { opacity: 0 },
-                    }}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
                     className="fixed inset-0 z-0 overflow-hidden pointer-events-none md:block hidden"
                 >

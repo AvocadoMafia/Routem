@@ -8,7 +8,7 @@ export default function SignupTypography() {
         <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
             className="flex flex-col items-end gap-3"
         >
           <div className={'flex items-center gap-6'}>
