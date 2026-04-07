@@ -12,8 +12,7 @@ import { Tab } from './_components/ingredients/tabNavigation'
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
 export default function RootClient() {
-  const router = useRouter()
-  const { user: currentUser, login } = userStore()
+  const { user: currentUser} = userStore()
   const [userRoutes, setUserRoutes] = useState<any[]>([])
   const [likes, setLikes] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>([])
@@ -23,7 +22,6 @@ export default function RootClient() {
   const [hasMoreLikes, setHasMoreLikes] = useState(true)
   const [hasMoreHistory, setHasMoreHistory] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
-  const [isInitialized, setIsInitialized] = useState(false)
 
   // カーソル管理
   const routesCursorRef = useRef<string | null>(null)
@@ -33,31 +31,8 @@ export default function RootClient() {
   const likedRoutes = likes.map(l => l.route).filter(Boolean)
   const historyRoutes = history.map(v => v.route).filter(Boolean)
 
-  useEffect(() => {
-    const init = async () => {
-      if (!currentUser || currentUser.id === '') {
-        login(
-          undefined,
-          (user) => {
-            if (!user) {
-              router.push('/login')
-            } else {
-              setIsInitialized(true)
-            }
-          },
-          () => {
-            router.push('/login')
-          }
-        )
-      } else {
-        setIsInitialized(true)
-      }
-    }
-    init()
-  }, [currentUser, router, login])
 
   useEffect(() => {
-    if (!isInitialized || !currentUser?.id) return
 
     const fetchInitialData = async () => {
       // 既にデータがある場合は、タブ切り替え時に再取得しない（無限スクロールで追加分がある場合を考慮）
@@ -100,7 +75,7 @@ export default function RootClient() {
     }
 
     fetchInitialData()
-  }, [isInitialized, currentUser?.id, activeTab, userRoutes.length, likes.length, history.length])
+  }, [currentUser?.id, activeTab, userRoutes.length, likes.length, history.length])
 
   const fetchMore = useCallback(async () => {
     if (isFetching || !currentUser?.id) return
@@ -171,13 +146,6 @@ export default function RootClient() {
     }
   }, [isFetching, currentUser?.id, activeTab, hasMoreRoutes, hasMoreLikes, hasMoreHistory])
 
-  if (!isInitialized) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-grass"></div>
-      </div>
-    )
-  }
 
   const getHasMore = () => {
     if (activeTab === 'routes') return hasMoreRoutes
@@ -203,9 +171,9 @@ export default function RootClient() {
           followers: '0', 
           following: '0' 
         }}
-        routes={!isInitialized ? null : userRoutes}
-        likedRoutes={!isInitialized ? null : likedRoutes}
-        historyRoutes={!isInitialized ? null : historyRoutes}
+        routes={userRoutes}
+        likedRoutes={likedRoutes}
+        historyRoutes={historyRoutes}
         mode="self"
         fetchMore={fetchMore}
         hasMore={getHasMore()}

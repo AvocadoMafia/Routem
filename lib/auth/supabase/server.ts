@@ -3,9 +3,9 @@ import { createServerClient } from '@supabase/ssr'
 import { type NextRequest, NextResponse } from 'next/server'
 import {cookies} from "next/dist/server/request/cookies";
 
-export async function createClient(request: NextRequest) {
+export async function createClient(request?: NextRequest | { headers: Headers }) {
   // 1. まずスマホからの「ヘッダー」を確認する
-  const authHeader = request.headers.get('Authorization')
+  const authHeader = request?.headers.get('Authorization')
 
   if (authHeader) {
     // A. ヘッダーがある場合（スマホからのアクセス）

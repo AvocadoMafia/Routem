@@ -24,6 +24,7 @@ export default function LoginForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
+        //login成功したらredirectUrlに遷移
         redirectTo: getClientAuthRedirectUrl(),
       },
     });

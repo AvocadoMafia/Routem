@@ -8,12 +8,12 @@ import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, 
 import { createClient } from '@/lib/auth/supabase/client'
 import { userStore } from '@/lib/client/stores/userStore'
 import { localeNames, type Locale } from '@/i18n/config'
+import {deleteDataToServerWithJson} from "@/lib/client/helpers";
 
-export default function SettingsClient() {
+export default function RootClient() {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  const { user, login, logout } = userStore()
+  const { logout } = userStore()
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -21,28 +21,11 @@ export default function SettingsClient() {
   const [location, setLocation] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
+
   const t = useTranslations('settings')
   const tAuth = useTranslations('auth')
   const tProfile = useTranslations('profile')
 
-  useEffect(() => {
-    setMounted(true)
-    if (!user || user.id === '') {
-      login(undefined, (u) => {
-        if (!u) {
-          router.push('/login')
-        } else {
-          setLanguage(u.language || 'ja')
-          setLocation(u.location || '')
-        }
-      })
-    } else {
-      setLanguage(user.language || 'ja')
-      setLocation(user.location || '')
-    }
-  }, [user, login, router])
-
-  if (!mounted) return null
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -97,16 +80,9 @@ export default function SettingsClient() {
 
   const handleDeleteAccount = async () => {
     if (!confirm(t('deleteAccountConfirm'))) return
-
     setIsLoading(true)
     try {
-      const res = await fetch('/api/v1/users/me', { method: 'DELETE' })
-      if (res.ok) {
-        await logout(undefined, () => router.push('/login'))
-      } else {
-        const data = await res.json()
-        setMessage({ type: 'error', text: data.error || t('deleteAccountFailed') })
-      }
+      await deleteDataToServerWithJson('/api/v1/users/me')
     } catch (error) {
       setMessage({ type: 'error', text: t('updateFailed') })
     } finally {
