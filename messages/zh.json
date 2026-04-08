@@ -60,7 +60,11 @@
     "welcomeHeadline": "今天开始新的冒险",
     "platformDescription": "Routem - 旅行路线分享平台",
     "emailPlaceholder": "you@example.com",
-    "google": "Google"
+    "google": "Google",
+    "checkEmail": "请检查您的电子邮件",
+    "checkEmailDescription": "我们已向您的邮箱发送了确认邮件。请点击邮件中的链接以完成注册。",
+    "backToSignIn": "返回登录",
+    "captchaRequired": "请完成验证码验证"
   },
   "navigation": {
     "home": "首页",

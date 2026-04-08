@@ -60,7 +60,11 @@
     "welcomeHeadline": "오늘 새로운 모험을 시작하세요",
     "platformDescription": "Routem - 여행 일정 공유 플랫폼",
     "emailPlaceholder": "you@example.com",
-    "google": "Google"
+    "google": "Google",
+    "checkEmail": "이메일을 확인해 주세요",
+    "checkEmailDescription": "입력하신 이메일 주소로 인증 메일을 보냈습니다. 메일 안의 링크를 클릭하여 회원가입을 완료해 주세요.",
+    "backToSignIn": "로그인으로 돌아가기",
+    "captchaRequired": "CAPTCHA 인증을 완료해 주세요"
   },
   "navigation": {
     "home": "홈",

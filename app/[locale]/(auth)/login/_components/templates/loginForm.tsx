@@ -8,21 +8,34 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/auth/supabase/client";
 import { getClientAuthRedirectUrl } from "@/lib/auth/redirectUrl";
 import {useRouter} from "next/navigation";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const router = useRouter();
 
   const t = useTranslations('auth');
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+
+    if (!captchaToken) {
+      setError(t('captchaRequired'));
+      return;
+    }
+
     const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: {
+        captchaToken,
+      }
     })
 
     if (error) {
@@ -34,7 +47,8 @@ export default function LoginForm() {
 
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -130,6 +144,20 @@ export default function LoginForm() {
             )}
 
             <div className="space-y-4">
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.88, ease: "easeOut" }}
+                className="flex justify-center"
+              >
+                <Turnstile
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                  onSuccess={(token) => setCaptchaToken(token)}
+                  onExpire={() => setCaptchaToken(null)}
+                  onError={() => setCaptchaToken(null)}
+                />
+              </motion.div>
+
               <motion.button
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
