@@ -7,16 +7,31 @@ import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/auth/supabase/client";
 import { getClientAuthRedirectUrl } from "@/lib/auth/redirectUrl";
+import {useRouter} from "next/navigation";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const router = useRouter();
+
   const t = useTranslations('auth');
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    // Login logic here
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    router.push('/');
+
   };
 
   const handleGoogleLogin = async () => {

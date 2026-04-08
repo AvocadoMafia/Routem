@@ -5,16 +5,38 @@ import { FaGoogle } from "react-icons/fa";
 import { useState } from "react";
 import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
+import {createClient} from "@/lib/auth/supabase/client";
+import {getClientAuthRedirectUrl} from "@/lib/auth/redirectUrl";
 
 export default function SignupForm() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const supabase = createClient();
 
   const t = useTranslations('auth');
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     // Signup logic here
+
+    const {data, error} = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name: username,
+        },
+        emailRedirectTo: getClientAuthRedirectUrl(),
+      }
+    })
+
+    if(error) {
+      setError(error.message);
+      return;
+    }
+
+
   }
 
   return (
@@ -45,9 +67,29 @@ export default function SignupForm() {
           >
             <div className="space-y-4">
               <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+              >
+                <label htmlFor="username" className="block text-sm font-bold text-foreground-0">
+                  {t('username')}
+                </label>
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
+                    placeholder={t('usernamePlaceholder')}
+                />
+              </motion.div>
+              <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 0.8, ease: "easeOut" }}
               >
                 <label htmlFor="email-address" className="block text-sm font-bold text-foreground-0">
                   {t('email')}
@@ -67,7 +109,7 @@ export default function SignupForm() {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
               >
                 <label htmlFor="password" id="password-label" className="block text-sm font-bold text-foreground-0">
                   {t('password')}
@@ -90,7 +132,7 @@ export default function SignupForm() {
                 <motion.div
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.85 }}
+                  transition={{ duration: 0.3, delay: 1.0 }}
                   className="text-accent-warning text-sm text-center"
                 >
                   {error}
@@ -101,7 +143,7 @@ export default function SignupForm() {
               <motion.button
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
+                  transition={{ duration: 0.5, delay: 1.1, ease: "easeOut" }}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   type="submit"
@@ -113,7 +155,7 @@ export default function SignupForm() {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 1.0, ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 1.2, ease: "easeOut" }}
                 className="text-center"
               >
                 <span className="text-sm text-foreground-0/90">{t('hasAccount')} </span>
@@ -125,7 +167,7 @@ export default function SignupForm() {
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 1.1, ease: "easeOut" }}
+                transition={{ duration: 0.5, delay: 1.3, ease: "easeOut" }}
                 className="relative"
               >
                 <div className="absolute inset-0 flex items-center">
@@ -139,7 +181,7 @@ export default function SignupForm() {
               <motion.button
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 1.2, ease: "easeOut" }}
+                  transition={{ duration: 0.5, delay: 1.4, ease: "easeOut" }}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   type="button"
