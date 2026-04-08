@@ -13,7 +13,7 @@ import {deleteDataToServerWithJson} from "@/lib/client/helpers";
 export default function RootClient() {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
-  const { logout } = userStore()
+  const logout = userStore(state => state.logout)
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')

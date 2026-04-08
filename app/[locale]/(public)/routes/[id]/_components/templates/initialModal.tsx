@@ -59,7 +59,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             <div className="flex items-center justify-center gap-6">
                                 <div className="h-px w-12 bg-white/20" />
                                 <p className="text-[10px] font-bold tracking-[0.3em] text-white/80 uppercase">
-                                    {t('curatedBy', { name: route.author.name })}
+                                    {t('createdBy', { name: route.author.name })}
                                 </p>
                                 <div className="h-px w-12 bg-white/20" />
                             </div>

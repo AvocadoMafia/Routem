@@ -15,7 +15,8 @@ interface UserProfileEditModalProps {
 export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEditModalProps) {
   const t = useTranslations('profile')
   const tCommon = useTranslations('common')
-  const { user, edit } = userStore()
+  const user = userStore(state => state.user)
+  const edit = userStore(state => state.edit)
   const [name, setName] = useState(user?.name || '')
   const [bio, setBio] = useState(user?.bio || '')
   const [iconUrl, setIconUrl] = useState(user?.icon?.url || '')

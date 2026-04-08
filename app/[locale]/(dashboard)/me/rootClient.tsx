@@ -12,7 +12,7 @@ import { Tab } from './_components/ingredients/tabNavigation'
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
 export default function RootClient() {
-  const { user: currentUser} = userStore()
+  const currentUser = userStore(state => state.user)
   const [userRoutes, setUserRoutes] = useState<any[]>([])
   const [likes, setLikes] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>([])

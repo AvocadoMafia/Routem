@@ -11,7 +11,7 @@ import { Tab } from './_components/ingredients/tabNavigation'
 
 export default function RootClient({ id }: { id: string }) {
   const router = useRouter()
-  const { user: currentUser } = userStore()
+  const currentUser = userStore(state => state.user)
   const [targetUser, setTargetUser] = useState<User | null>(null)
   const [userRoutes, setUserRoutes] = useState<any[]>([])
   const [likedRoutes, setLikedRoutes] = useState<any[]>([])
