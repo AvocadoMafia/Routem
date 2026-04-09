@@ -17,10 +17,9 @@ export async function GET(req: NextRequest) {
       error,
     } = await supabase.auth.getUser();
     if (error) throw new Error("auth error");
-    const user_id = user?.id;
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
-    const data = await routesService.getRoutes(user_id, parsed_params);
+    const data = await routesService.getRoutes(parsed_params);
     return NextResponse.json(data, { status: 200 });
   });
 }
