@@ -87,7 +87,7 @@ export default function TrendingSection() {
         }
     };
 
-    if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>;
+    if (error) return <div className="w-full h-full flex items-center justify-center text-accent-0">{error}</div>;
 
     return (
         <div className={'w-full md:h-full h-fit'}>

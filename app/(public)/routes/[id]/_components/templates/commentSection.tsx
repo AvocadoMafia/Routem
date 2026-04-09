@@ -119,7 +119,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
 
       <div className="flex flex-col gap-6">
         {error ? (
-          <div className="text-red-500 text-sm text-center py-10">{error}</div>
+          <div className="text-accent-0 text-sm text-center py-10">{error}</div>
         ) : comments.length > 0 ? (
           <>
             {comments.map((comment, idx) => (

@@ -111,7 +111,6 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
               routeId={route.id} 
               initialLikesCount={route.likes?.length ?? 0} 
             />
-            <ShareButton variant="compact" />
             <div className="flex items-center text-foreground-1">
               <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
                 {route.views?.length ?? 0} views
@@ -192,7 +191,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             {isAuthor && (
               <button
                 onClick={handleDelete}
-                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-600 rounded-xl hover:bg-red-500/20 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+                className="flex items-center gap-2 px-4 py-2 bg-accent-0/10 text-accent-0 rounded-xl hover:bg-accent-0/20 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
               >
                 <HiTrash className="w-4 h-4" />
                 Delete

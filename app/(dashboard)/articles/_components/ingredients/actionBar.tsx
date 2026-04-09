@@ -32,7 +32,7 @@ export default function ActionBar({
             <div className="flex items-center justify-between p-4 gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     {message ? (
-                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border animate-in fade-in slide-in-from-left-2 duration-300 max-w-full group ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-transparent text-red-600 border-red-500/50' : 'bg-transparent text-accent-0 border-accent-0/50'}`}>
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border animate-in fade-in slide-in-from-left-2 duration-300 max-w-full group ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-transparent text-accent-0 border-accent-0/50' : 'bg-transparent text-accent-0 border-accent-0/50'}`}>
                             {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={14} className="shrink-0" /> : <CheckCircle2 size={14} className="shrink-0" />}
                             <span className="text-[11px] font-bold tracking-tight truncate">{message}</span>
                             <button

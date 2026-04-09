@@ -212,7 +212,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                   />
                 </div>
 
-                {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
+                {error && <p className="text-accent-0 text-sm font-bold">{error}</p>}
 
                 <div className="flex justify-end gap-3 pt-4">
                   <button

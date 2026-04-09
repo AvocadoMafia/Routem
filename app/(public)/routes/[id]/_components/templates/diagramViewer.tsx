@@ -41,11 +41,11 @@ export default function DiagramViewer({
 
   return (
     <div
-      className={`w-full h-full overflow-y-scroll p-6 backdrop-blur-2xl z-10 transition-all duration-500 ${
+      className={`w-full h-full overflow-y-scroll no-scrollbar p-6 backdrop-blur-2xl z-10 transition-all duration-500 ${
         viewMode === "diagram"
           ? "opacity-100 translate-x-0"
           : "max-md:hidden max-md:opacity-0 max-md:-translate-x-full"
-      } ${viewMode === "map" ? "md:border-l" : "md:border-r"} border-foreground-0/5`}
+      } ${viewMode === "map" ? "md:border-l" : "md:border-r"} border-grass`}
     >
       <AnimatePresence mode="wait">
         {!isInfoAreaFocused ? (

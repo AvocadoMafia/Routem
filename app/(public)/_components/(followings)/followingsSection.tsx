@@ -171,7 +171,7 @@ export default function FollowingsSection() {
         />
     ));
 
-    if (error) return <div className="w-full h-full flex items-center justify-center text-red-500">{error}</div>
+    if (error) return <div className="w-full h-full flex items-center justify-center text-accent-0">{error}</div>
 
     if (loading) return (
         <div className="w-full md:h-full h-fit md:overflow-hidden flex md:flex-row flex-col">

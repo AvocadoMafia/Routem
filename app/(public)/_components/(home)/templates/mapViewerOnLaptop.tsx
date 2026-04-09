@@ -99,7 +99,7 @@ export default function MapViewerOnLaptop(props: Props) {
     if(!mapboxAccessToken) {
         console.error("Mapbox access token is missing!");
         return (
-            <div className="w-full h-[600px] flex items-center justify-center bg-gray-100 text-red-500 border border-red-200 rounded-2xl">
+            <div className="w-full h-[600px] flex items-center justify-center bg-gray-100 text-accent-0 border border-accent-0/20 rounded-2xl">
                 <p>マップボックスのアクセストークンが存在しません。環境変数 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN を確認してください。</p>
             </div>
         )

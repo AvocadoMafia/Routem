@@ -78,26 +78,26 @@ export default function PhotoContainer(props: { test: number }) {
                   group-hover:opacity-100
                   group-hover:translate-y-0
                   flex flex-col justify-end
-                  p-6
+                  p-3 md:p-6
                 "
             >
-                <div className="flex flex-col gap-3 items-start">
-                    <div className={'flex items-center gap-2'}>
-                        <LuMapPin className={'text-accent-0 w-3.5 h-3.5'}/>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
+                <div className="flex flex-col gap-2 md:gap-3 items-start">
+                    <div className={'flex items-center gap-1.5 md:gap-2'}>
+                        <LuMapPin className={'text-accent-0 w-3 h-3 md:w-3.5 md:h-3.5'}/>
+                        <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
                             {location}
                         </span>
                     </div>
 
-                    <h3 className={'text-xl md:text-2xl font-bold text-white leading-tight'}>
+                    <h3 className={'text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight'}>
                         {routeTitle}
                     </h3>
 
-                    <div className="w-full h-px bg-white/10 my-1" />
+                    <div className="w-full h-px bg-white/10 my-0.5 md:my-1" />
 
                     <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-2">
-                            <div className="relative w-6 h-6 rounded-full overflow-hidden border border-white/20">
+                        <div className="flex items-center gap-1.5 md:gap-2">
+                            <div className="relative w-5 h-5 md:w-6 md:h-6 rounded-full overflow-hidden border border-white/20">
                                 <Image
                                     src="/mockImages/userIcon_1.jpg"
                                     alt="user"
@@ -106,11 +106,11 @@ export default function PhotoContainer(props: { test: number }) {
                                     unoptimized
                                 />
                             </div>
-                            <span className="text-xs font-bold text-white/80">@mock_user</span>
+                            <span className="text-[10px] md:text-xs font-bold text-white/80">@mock_user</span>
                         </div>
                         <div className="flex flex-col items-end">
-                            <span className="text-[8px] font-bold uppercase tracking-[0.3em] text-white/40 mb-0.5">Explore</span>
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent-0">View Route →</span>
+                            <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-white/40 mb-0.5">Explore</span>
+                            <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-accent-0">View Route →</span>
                         </div>
                     </div>
                 </div>

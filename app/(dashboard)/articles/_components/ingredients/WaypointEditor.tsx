@@ -351,7 +351,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                         </>
                     )}
                 </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
+                {error && <p className="text-sm text-accent-0">{error}</p>}
             </div>
         </div>
     );

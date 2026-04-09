@@ -98,7 +98,7 @@ export default function HomeSection() {
 
     if (error) return (
         <div className="w-full h-full flex flex-col items-center gap-20 py-12">
-            <div className={'w-full text-red-500 text-sm'}>{error}</div>
+            <div className={'w-full text-accent-0 text-sm'}>{error}</div>
         </div>
     )
 

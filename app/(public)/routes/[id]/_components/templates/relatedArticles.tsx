@@ -57,14 +57,11 @@ export default function RelatedArticles({
 
   return (
     <div className="flex flex-col gap-8 w-full">
-      <div className="flex flex-col gap-2 px-1 hidden md:flex">
+      <div className="flex-col gap-2 px-1 hidden md:flex">
         <div className="flex items-center gap-2 text-accent-0">
           <BookOpen className="w-4 h-4" />
           <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em]">Related Articles</span>
         </div>
-        <h2 className={`font-bold text-foreground-0 ${compact ? 'text-xl' : 'text-2xl md:text-3xl'}`}>
-          おすすめの記事
-        </h2>
       </div>
 
       <div className={`grid gap-4 ${compact ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2'}`}>
