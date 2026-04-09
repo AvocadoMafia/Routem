@@ -17,22 +17,27 @@ export default function UserProfileHeader({
   return (
     <>
       <CoverImage url={bgUrl} />
-      <div className="w-full h-fit max-w-[1200px] mx-auto px-6 relative">
+      <div className="w-full h-fit max-w-[1200px] mx-auto px-6">
         <div className="relative -mt-16 md:-mt-24 mb-4 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-          <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6">
+          <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6 relative">
             <UserAvatar url={iconUrl} name={name} />
             <div className="mb-2">
               <UserName name={name} />
             </div>
           </div>
+          <div className="hidden md:block">
+            <ActionButtons />
+          </div>
         </div>
         
         {/* bio and actions section */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-          <div className="max-w-[800px]">
+        <div className="mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4 relative">
+          <div className="max-w-[800px] flex flex-col gap-4">
             <UserBio bio={bio} />
+            <div className="md:hidden">
+              <ActionButtons />
+            </div>
           </div>
-          <ActionButtons />
         </div>
       </div>
     </>

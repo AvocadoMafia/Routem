@@ -274,6 +274,7 @@
     "accountActions": "アカウント操作",
     "language": "言語",
     "darkMode": "ダークモード",
+    "lightMode": "ライトモード",
     "changePassword": "パスワード変更",
     "newPassword": "新しいパスワード",
     "confirmNewPassword": "新しいパスワード（確認）",

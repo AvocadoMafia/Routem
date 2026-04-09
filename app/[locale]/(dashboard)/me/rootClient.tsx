@@ -155,7 +155,7 @@ export default function RootClient() {
   }
 
   return (
-    <div className="w-full h-fit">
+    <div className="w-full h-fit flex flex-col">
       <UserProfileHeader
         name={currentUser.name}
         bio={currentUser.bio as string}

@@ -9,6 +9,7 @@ export default function ActionButtons() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const t = useTranslations('profile')
 
   // Avoid hydration mismatch
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function ActionButtons() {
   }, [])
 
   return (
-    <div className="flex items-center gap-3 pb-2">
+    <div className="flex items-center gap-3 pb-2 ">
       <Link
         href="/settings"
         className="p-2.5 bg-background-1 border border-grass rounded-xl hover:bg-grass transition-colors cursor-pointer shadow-sm flex items-center justify-center"

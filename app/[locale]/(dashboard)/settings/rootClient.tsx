@@ -21,23 +21,6 @@ export default function RootClient() {
   const [location, setLocation] = useState('')
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
-  useEffect(() => {
-    setMounted(true)
-    if (!user || user.id === '') {
-      login(undefined, (u) => {
-        if (!u) {
-          router.push('/login')
-        } else {
-          setLanguage(u.language || 'ja')
-          setLocation(u.location || '')
-        }
-      })
-    } else {
-      setLanguage(user.language || 'ja')
-      setLocation(user.location || '')
-    }
-  }, [user, login, router])
-
   const t = useTranslations('settings')
   const tAuth = useTranslations('auth')
   const tProfile = useTranslations('profile')
@@ -188,7 +171,7 @@ export default function RootClient() {
                   {theme === 'dark' ? <MdDarkMode size={24} /> : <MdLightMode size={24} />}
                 </div>
                 <div>
-                  <div className="font-bold">{t('darkMode')}</div>
+                  <div className="font-bold">{theme === 'dark' ? t('darkMode') : t('lightMode')}</div>
                 </div>
               </div>
               <button
@@ -260,8 +243,8 @@ export default function RootClient() {
                 className="w-full flex items-center justify-between p-4 bg-accent-0/10 rounded-2xl hover:bg-accent-0/20 transition-colors group"
               >
                 <div className="flex items-center gap-4">
-                  <MdDelete size={24} className="text-red-500" />
-                  <span className="font-bold text-red-500">{t('deleteAccount')}</span>
+                  <MdDelete size={24} className="text-accent-0" />
+                  <span className="font-bold text-accent-0">{t('deleteAccount')}</span>
                 </div>
                 <MdChevronRight size={24} className="text-accent-0" />
               </button>

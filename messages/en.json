@@ -274,6 +274,7 @@
     "accountActions": "Account Actions",
     "language": "Language",
     "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
     "changePassword": "Change Password",
     "newPassword": "New password",
     "confirmNewPassword": "Confirm new password",

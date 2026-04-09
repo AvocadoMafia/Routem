@@ -274,6 +274,7 @@
     "accountActions": "계정 작업",
     "language": "언어",
     "darkMode": "다크 모드",
+    "lightMode": "라이트 모드",
     "changePassword": "비밀번호 변경",
     "newPassword": "새 비밀번호",
     "confirmNewPassword": "새 비밀번호 확인",

@@ -16,93 +16,23 @@ export default function AboutForeground() {
 
     return (
         <div className={'absolute w-full h-fit z-[10]'}>
-            <section className={'w-full h-screen flex justify-center py-4'}>
-                <div className={'flex flex-col items-center'}>
-                    <h1 className={'md:text-[5vw] text-2xl font-syne font-extrabold text-foreground-0'}>{t('planTogether')}</h1>
-                    <h1 className={'md:text-[5vw] text-2xl font-syne font-extrabold text-accent-0'}>{t('travelSmarter')}</h1>
+            <section className={'w-full h-screen grid grid-rows-2 grid-cols-1'}>
+                <div className={'flex justify-start items-start p-16'}>
+                    <h1 className={'w-fit text-8xl font-bold tracking-wide font-syne'}><span className={'text-accent-0'}>誰か</span>の旅を、<br/>あなたの旅に。</h1>
+                </div>
+                <div className={'flex justify-end items-end p-16'}>
+                    <h1 className={'w-fit text-8xl font-bold tracking-wide font-syne'}><span className={'text-accent-1'}>あなた</span>の旅を、<br/>誰かの旅に。</h1>
                 </div>
             </section>
-            <section className={'w-full h-fit p-12 bg-background-0/75 backdrop-blur-sm flex justify-center'}>
-                <div className={'w-full max-w-[1000px] flex flex-col gap-12 border-t-1 border-foreground-1/60 py-6'}>
-                    <p className={'h-fit text-2xl text-foreground-1'}>{t('heroQuote')}</p>
-                    <div className={'w-full h-fit flex gap-12'}>
-                        <ul className={'w-fit h-fit'}>
-                            <li className={'px-3 py-6 border-t-1 border-foreground-0/30 flex gap-6 items-center'}>
-                                <span className={'text-4xl font-syne font-extrabold text-foreground-1'}>{t('languages')}</span>
-                                <span className={'text-lg text-foreground-1/60'}>{t('languagesDesc')}</span>
-                            </li>
-                            <li className={'px-3 py-6 border-t-1 border-foreground-0/30 flex gap-6 items-center'}>
-                                <span className={'text-4xl font-syne font-extrabold text-foreground-1'}>Web + App</span>
-                                <span className={'text-lg text-foreground-1/60'}>{t('platforms')}</span>
-                            </li>
-                            <li className={'px-3 py-6 border-t-1 border-foreground-0/30 flex gap-6 items-center'}>
-                                <span className={'text-4xl font-syne font-extrabold text-foreground-1'}>{t('mapSns')}</span>
-                                <span className={'text-lg text-foreground-1/60'}>{t('connectPosts')}</span>
-                            </li>
-                        </ul>
-                        <div className={'flex-1 h-fit flex flex-col gap-3'}>
-                            <span className={'text-foreground-1/60 text-sm italic'}>{t('aboutRoutem')}</span>
-                            <p className={'text-foreground-1'}>{t('aboutDescription')}</p>
-                        </div>
-                    </div>
-                </div>
+
+
+            <section className={'w-full h-fit bg-background-0/75 backdrop-blur-sm flex justify-center relative @container'}>
+                <img className={'w-full object-cover'} src={'/lp/map.svg'}/>
+                <img className={'absolute w-[6cqw] top-[14cqw] left-[16cqw]'} src={'/lp/pinBig.svg'}/>
+                <img className={'absolute w-[6cqw] top-[9.5cqw] left-[53.8cqw]'} src={'/lp/pinBig.svg'}/>
             </section>
-            <section className={'w-full h-fit p-12 bg-background-0 flex justify-center'}>
-                <div className={'w-full max-w-[1000px] flex flex-col gap-12'}>
-                    <h2 className={'px-3 py-2 border-l-4 border-accent-0 text-4xl font-bold text-foreground-0'}>{t('problemTitle')}</h2>
-                    <div className={'w-full h-fit grid grid-cols-2 gap-12'}>
-                        <p className={'text-foreground-1'}>{t('problemDesc1')}</p>
-                        <p className={'text-foreground-1'}>{t('problemDesc2')}</p>
-                    </div>
-                    <div className={'w-full h-fit grid grid-cols-2 gap-12 border-t-1 border-foreground-0/30'}>
-                        <div className={'p-3 flex flex-col gap-3'}>
-                            <span className={'text-sm text-foreground-1/60'}>{t('editorsNote')}</span>
-                            <div className={'bg-foreground-1/15 w-full h-fit p-6 rounded-xl flex flex-col gap-3'}>
-                                <span className={'font-syne text-4xl font-extrabold text-foreground-1/30'}>{t('statPercent')}</span>
-                                <p className={'text-foreground-1/60 text-sm'}>{t('statDesc')}</p>
-                            </div>
-                        </div>
-                        <div className={'p-3 flex flex-col gap-3'}>
-                            <span className={'text-sm text-foreground-1/60'}>{t('solution')}</span>
-                            <p className={'text-foreground-0 text-lg font-bold'}>{t('solutionTitle')}</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <section className={'w-full h-fit flex flex-col'}>
-                <div className={'w-full h-fit flex justify-center bg-accent-0 py-12'}>
-                    <div className={'w-full max-w-[1000px] h-fit flex gap-12'}>
-                        <h2 className={'text-5xl text-white font-bold leading-relaxed'}>{t('featureTitle')}</h2>
-                        <div className={'flex-1 border-l-1 border-white/50 p-6'}>
-                            <p className={'text-white/75 leading-relaxed'}>{t('featureDesc')}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className={'w-full h-fit flex justify-center bg-background-0/75 backdrop-blur-sm'}>
-                    <ul className={'w-full max-w-[1000px] h-fit space-y-3 py-6'}>
-                        <li className={'w-full max-w-[1000px] h-32 flex gap-12 p-6 border-t-1 border-foreground-0/30'}>
-                            <p className={'w-32 h-fit text-accent-0 tracking-widest'}>{t('routeCreation')}</p>
-                            <p className={'w-48 h-fit text-2xl text-foreground-0 font-semibold'}>{t('routeCreationTitle')}</p>
-                            <p className={'flex-1 h-fit text-foreground-1'}>{t('routeCreationDesc')}</p>
-                        </li>
-                        <li className={'w-full max-w-[1000px] h-32 flex gap-12 p-6 border-t-1 border-foreground-0/30'}>
-                            <p className={'w-32 h-fit text-accent-0 tracking-widest'}>{t('smartSearch')}</p>
-                            <p className={'w-48 h-fit text-2xl text-foreground-0 font-semibold'}>{t('smartSearchTitle')}</p>
-                            <p className={'flex-1 h-fit text-foreground-1'}>{t('smartSearchDesc')}</p>
-                        </li>
-                        <li className={'w-full max-w-[1000px] h-32 flex gap-12 p-6 border-t-1 border-foreground-0/30'}>
-                            <p className={'w-32 h-fit text-accent-0 tracking-widest'}>{t('copyEdit')}</p>
-                            <p className={'w-48 h-fit text-2xl text-foreground-0 font-semibold'}>{t('copyEditTitle')}</p>
-                            <p className={'flex-1 h-fit text-foreground-1'}>{t('copyEditDesc')}</p>
-                        </li>
-                        <li className={'w-full max-w-[1000px] h-32 flex gap-12 p-6 border-t-1 border-foreground-0/30'}>
-                            <p className={'w-32 h-fit text-accent-0 tracking-widest'}>{t('community')}</p>
-                            <p className={'w-48 h-fit text-2xl text-foreground-0 font-semibold'}>{t('communityTitle')}</p>
-                            <p className={'flex-1 h-fit text-foreground-1'}>{t('communityDesc')}</p>
-                        </li>
-                    </ul>
-                </div>
-            </section>
+
+
             <section className={'w-full h-fit p-12 bg-foreground-1/15 backdrop-blur-sm flex justify-center'}>
                 <div className={'w-full max-w-[1000px] h-fit flex flex-col gap-6'}>
                     <h2 className={'text-5xl text-foreground-0 text-center font-bold leading-relaxed border-y border-foreground-0/30 w-full py-3'}>{t('stepsTitle')}</h2>

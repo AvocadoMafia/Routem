@@ -12,6 +12,7 @@ html, body {
     --foreground-0: #48484e;
     --foreground-1: #63636e;
     --accent-0: #ff6363;
+    --accent-1: #0cecfa;
     --grass: #e6e8ed;
     --accent-warning: #fb123e;
 }
@@ -22,6 +23,7 @@ html, body {
     --foreground-0: #ededed;
     --foreground-1: #aeaeae;
     --accent-0: #ff6363;
+    --accent-1: #0cecfa;
     --grass: #474747;
     --accent-warning: #fb123e;
 }
@@ -35,6 +37,7 @@ html, body {
     --foreground-0: #ededed;
     --foreground-1: #aeaeae;
     --accent-0: #ff6363;
+    --accent-1: #0cecfa;
     --grass: #474747;
     --accent-warning: #fb123e;
 }
@@ -46,6 +49,7 @@ html, body {
     --foreground-0: #ededed;
     --foreground-1: #aeaeae;
     --accent-0: #ff6363;
+    --accent-1: #0cecfa;
     --grass: #474747;
     --accent-warning: #fb123e;
 }
@@ -56,6 +60,7 @@ html, body {
     --foreground-0: #48484e;
     --foreground-1: #63636e;
     --accent-0: #ff6363;
+    --accent-1: #0cecfa;
     --grass: #e6e8ed;
     --accent-warning: #fb123e;
 }
@@ -69,6 +74,7 @@ html, body {
     --foreground-0: #48484e;
     --foreground-1: #63636e;
     --accent-0: #ff6363;
+    --accent-1: #0cecfa;
     --grass: #e6e8ed;
     --accent-warning: #fb123e;
 }
@@ -82,8 +88,7 @@ html, body {
     --color-foreground-0: var(--foreground-0);
     --color-foreground-1: var(--foreground-1);
     --color-accent-0: var(--accent-0);
-    --color-accent-0: var(--accent-0);
-    --color-accent-0: var(--accent-0);
+    --color-accent-1: var(--accent-1);
     --color-grass: var(--grass);
     --color-accent-warning: var(--accent-warning);
 }

@@ -274,6 +274,7 @@
     "accountActions": "账户操作",
     "language": "语言",
     "darkMode": "深色模式",
+    "lightMode": "浅色模式",
     "changePassword": "更改密码",
     "newPassword": "新密码",
     "confirmNewPassword": "确认新密码",
