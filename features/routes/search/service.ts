@@ -8,12 +8,14 @@ export const routesSearchService = {
   /**
    * @abstract 5W1Hや予算などの条件でルートを検索するサービス
    * @note ルート検索はMeilisearchを使って行う。検索条件に合致するルートのIDをMeilisearchから取得し、そのIDをもとにPrismaでDBからルートの詳細情報を取得して返す。
+   * @param query GetRoutesSearchType
+   * @param nextCursor numberであることに注意 Meilisearchはoffset based paginationなので、cursorはoffsetとして扱う。limitはそのままlimit。
+   * @returns { data: RouteWithRelations[]; nextCursor: number | null}
    */
   getRoutesSearch: async (
     query: GetRoutesSearchType,
-  ): Promise<{ data: RouteWithRelations[]; nextCursor: number | undefined }> => {
+  ): Promise<{ data: RouteWithRelations[]; nextCursor: number | null }> => {
     try {
-      // TODO: cursor basedにする
       let ids: string[] | undefined = undefined;
 
       const meilisearch = getMeilisearch();
@@ -73,7 +75,7 @@ export const routesSearchService = {
       });
       ids = search.hits.map((hit) => hit.id);
 
-      const next_cursor = search.hits.length === query.limit ? offset + query.limit : undefined;
+      const next_cursor = search.hits.length === query.limit ? offset + query.limit : null;
 
       if (ids.length === 0) {
         return {

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const GetRoutesSearchSchema = z
   .object({
-    limit: z.coerce.number().max(100).default(20),
+    limit: z.coerce.number().min(1).max(100).default(20),
     q: z.string().default(""),
     lat: z.coerce.number().optional(),
     lng: z.coerce.number().optional(),
