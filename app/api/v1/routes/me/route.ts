@@ -1,5 +1,5 @@
 import { GetRoutesMeSchema } from "@/features/routes/me/schema";
-import { routesMeservice } from "@/features/routes/me/service";
+import { routesMeService } from "@/features/routes/me/service";
 import { createClient } from "@/lib/auth/supabase/server";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { validateParams } from "@/lib/server/validateParams";
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const user_id = user?.id;
     if (!user_id) throw new Error("user not found");
     const parsed_params = await validateParams(GetRoutesMeSchema, { userId: user_id });
-    const data = await routesMeservice.getRoutesMe(parsed_params);
+    const data = await routesMeService.getRoutesMe(parsed_params);
     return NextResponse.json(data, { status: 200 });
   });
 }

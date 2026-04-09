@@ -1,7 +1,7 @@
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
 import { GetRoutesMeType } from "./schema";
 
-export const routesMeservice = {
+export const routesMeService = {
   getRoutesMe: async (
     query: GetRoutesMeType,
   ): Promise<{ data: RouteWithRelations[]; nextCursor: string | null }> => {
