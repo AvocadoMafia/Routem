@@ -20,63 +20,17 @@ import { exchangeRatesRepository } from "../exchangeRates/repository";
 export const routesService = {
   // user:Userではなくuser_idを受け取ることで、testしやすくしている。
   getRoutes: async (
-    user_id: string | undefined,
     query: GetRoutesType,
-  ): Promise<RouteWithRelations[]> => {
+  ): Promise<{ data: RouteWithRelations[]; nextCursor: string | null }> => {
     try {
-      let ids: string[] | undefined = undefined;
+      const where = buildRoutesWhere(query);
 
-      const meilisearch = getMeilisearch();
-      const index = await meilisearch.getIndex("routes");
+      const result = await routesRepository.findMany(where, query.limit, query.cursor);
 
-      // Budget用のドル換算フィルタ
-      // findManyはあえて全件取得にしてcacheしている
-      const exchange_rates = await exchangeRatesRepository.findMany();
-      const rate_to_usd = exchange_rates.find((r) => {
-        return r.currencyCode === query.budget?.currencyCode;
-      })?.rateToUsd;
+      // validationしてlimitを１以上にしているので、0件のときはnextCursorはnullになる。
+      const nextCursor = result.length === query.limit ? result[result.length - 1].id : null; // cursor paginationのために最後の要素のidを返す必要がある。これがないと、次ページ以降が取れない。
 
-      const min_budget_in_usd =
-        query.budget?.minAmount && rate_to_usd ? query.budget.minAmount * rate_to_usd : undefined;
-      const max_budget_in_usd =
-        query.budget?.maxAmount && rate_to_usd ? query.budget.maxAmount * rate_to_usd : undefined;
-
-      const filter_conditions = [];
-      if (min_budget_in_usd !== undefined) {
-        filter_conditions.push(`budgetInUsd >= ${min_budget_in_usd}`);
-      }
-      if (max_budget_in_usd !== undefined) {
-        filter_conditions.push(`budgetInUsd <= ${max_budget_in_usd}`);
-      }
-
-      const filter = filter_conditions.length > 0 ? filter_conditions.join(" AND ") : undefined;
-
-      // Where検索用の緯度経度近い順ソート
-      const sort =
-        query.lat != undefined && query.lng != undefined
-          ? [`_geoPoint(${query.lat},${query.lng}):asc`]
-          : undefined;
-
-      const search = await index.search(query.q, {
-        ...(sort && { sort }),
-        filter: filter,
-      });
-      ids = search.hits.map((hit) => hit.id);
-      if (ids.length === 0) {
-        return [];
-      }
-
-      const where = buildRoutesWhere(query, user_id, ids);
-
-      const result = await routesRepository.findMany(where, query.limit);
-      if (ids) {
-        const sortedResult = ids
-          .map((id) => result.find((route) => route.id === id))
-          .filter((route) => route !== undefined); // DBから消えていた場合のundefinedを除外
-
-        return sortedResult;
-      }
-      return result;
+      return { data: result, nextCursor: nextCursor };
     } catch (e) {
       throw e;
     }

@@ -2,58 +2,11 @@ import { z } from "zod";
 import { TransportationSchema, WaypointSchema } from "../database_schema";
 
 // TODO:型の重複部分をnon-optionalにして共通化するべき
-export const GetRoutesSchema = z
-  .object({
-    authorId: z.string().uuid().optional(),
-    createdAfter: z
-      .string()
-      .datetime()
-      .optional()
-      .transform((val) => (val ? new Date(val) : undefined)),
-    limit: z.coerce.number().max(100).default(20),
-    visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
-    collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-    q: z.string().optional().default(""),
-    lat: z.coerce.number().optional(),
-    lng: z.coerce.number().optional(),
-    who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
-    when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
-    budget: z
-      .object({
-        currencyCode: z.enum([
-          "JPY",
-          "USD",
-          "EUR",
-          "GBP",
-          "KRW",
-          "TWD",
-          "CNY",
-          "THB",
-          "VND",
-          "SGD",
-          "MYR",
-          "PHP",
-          "AUD",
-          "CAD",
-          "OTHER",
-        ]),
-        minAmount: z.number().min(0),
-        maxAmount: z.number().min(0),
-      })
-      .optional(),
-  })
-  .refine(
-    (data) => {
-      return (
-        (data.lat != undefined && data.lng != undefined) ||
-        (data.lat == undefined && data.lng == undefined)
-      );
-    },
-    {
-      message: "lat, lonはセットで必要です",
-      path: ["lat"],
-    },
-  );
+export const GetRoutesSchema = z.object({
+  authorId: z.string().uuid().optional(),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  cursor: z.string().uuid().optional(),
+});
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
 
 export const PostRouteSchema = z.object({

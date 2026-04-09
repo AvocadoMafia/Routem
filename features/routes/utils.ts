@@ -14,47 +14,15 @@ import {
  * @param query
  * @param user_id 閲覧者のユーザーID
  */
-export function buildRoutesWhere(
-  query: GetRoutesType,
-  user_id?: string,
-  search_ids?: string[],
-): Prisma.RouteWhereInput {
-  const isOwner = !!(user_id && query.authorId && user_id === query.authorId);
-
+export function buildRoutesWhere(query: GetRoutesType): Prisma.RouteWhereInput {
   const where: Prisma.RouteWhereInput = {};
 
-  // searchIds
-  if (search_ids) {
-    where.id = { in: search_ids };
-  }
+  // GET/routesでは公開routeのみ取得できるようにする。
+  where.visibility = RouteVisibility.PUBLIC;
 
   // authorId
   if (query.authorId) {
     where.authorId = query.authorId;
-  }
-
-  // createdAfter (schema.tsでDateに変換済み)
-  if (query.createdAfter instanceof Date) {
-    where.createdAt = { gte: query.createdAfter };
-  }
-
-  //   5W1H who
-  if (query.who) {
-    where.routeFor = query.who;
-  }
-
-  //   5W1H when
-  if (query.when) {
-    where.month = { hasSome: query.when };
-  }
-
-  // visibility
-  // 1. 自分が投稿者の場合: 指定があればそれに従う。指定がなければ全件。
-  // 2. 他人の場合: PUBLICのみ表示。
-  if (!isOwner) {
-    where.visibility = RouteVisibility.PUBLIC;
-  } else if (query.visibility) {
-    where.visibility = query.visibility as RouteVisibility;
   }
 
   return where;
