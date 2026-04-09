@@ -18,6 +18,9 @@ const setupMeilisearch = async () => {
     await routes_index.updateFilterableAttributes([
       "_geo",
       "visibility",
+      "routeFor",
+      "month",
+      "budgetInUsd",
       "authorId",
       "companionType",
       "id",
