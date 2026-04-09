@@ -7,7 +7,7 @@ export const routesMeService = {
   ): Promise<{ data: RouteWithRelations[]; nextCursor: string | null }> => {
     const data = await routesRepository.findMany(
       {
-        authorId: query.userId,
+        OR: [{ authorId: query.userId }, { collaborators: { some: { userId: query.userId } } }],
       },
       query.limit,
       query.cursor,
