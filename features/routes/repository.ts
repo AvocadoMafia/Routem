@@ -44,10 +44,12 @@ export const routesRepository = {
           },
           skip: 1, // cursorの値は結果に含めない
         }),
-        orderBy: {
-          createdAt: "desc",
-          id: "desc",
-        },
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+          { id: "desc" },
+        ],
         include: ROUTE_INCLUDE,
       })) as RouteWithRelations[];
     } catch (e) {
