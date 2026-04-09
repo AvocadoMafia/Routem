@@ -9,7 +9,9 @@ export const routesSearchService = {
    * @abstract 5W1Hや予算などの条件でルートを検索するサービス
    * @note ルート検索はMeilisearchを使って行う。検索条件に合致するルートのIDをMeilisearchから取得し、そのIDをもとにPrismaでDBからルートの詳細情報を取得して返す。
    */
-  getRoutesSearch: async (query: GetRoutesSearchType): Promise<RouteWithRelations[]> => {
+  getRoutesSearch: async (
+    query: GetRoutesSearchType,
+  ): Promise<{ data: RouteWithRelations[]; nextCursor: number | undefined }> => {
     try {
       // TODO: cursor basedにする
       let ids: string[] | undefined = undefined;
@@ -60,14 +62,24 @@ export const routesSearchService = {
           ? [`_geoPoint(${query.lat},${query.lng}):asc`]
           : undefined;
 
+      // Meilisearchはページネーションがoffset basedなので、cursorはoffsetとして扱う。limitはそのままlimit。
+      const offset = query.cursor;
+
       const search = await index.search(query.q, {
         ...(sort && { sort }),
         filter: filter,
         limit: query.limit,
+        offset: offset,
       });
       ids = search.hits.map((hit) => hit.id);
+
+      const next_cursor = search.hits.length === query.limit ? offset + query.limit : undefined;
+
       if (ids.length === 0) {
-        return [];
+        return {
+          data: [],
+          nextCursor: next_cursor,
+        };
       }
 
       const where: Prisma.RouteWhereInput = {
@@ -81,7 +93,10 @@ export const routesSearchService = {
         .map((id) => routeMap.get(id))
         .filter((route): route is RouteWithRelations => route !== undefined); // DBから消えていた場合のundefinedを除外
 
-      return sortedResult;
+      return {
+        data: sortedResult,
+        nextCursor: next_cursor,
+      };
     } catch (e) {
       throw e;
     }
