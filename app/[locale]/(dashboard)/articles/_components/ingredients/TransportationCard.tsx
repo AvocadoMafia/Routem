@@ -1,0 +1,61 @@
+'use client'
+
+import { Transportation } from "@/lib/client/types";
+import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+interface TransportationCardProps {
+    item: Transportation;
+    isSelected: boolean;
+    onSelect: () => void;
+    onDelete: () => void;
+}
+
+export default function TransportationCard({ item, isSelected, onSelect, onDelete }: TransportationCardProps) {
+    const t = useTranslations('transport');
+    const tCommon = useTranslations('common');
+
+    const methodLabels: Record<string, string> = {
+        'WALK': t('walk'),
+        'TRAIN': t('train'),
+        'BUS': t('bus'),
+        'CAR': t('car'),
+        'OTHER': t('other'),
+    };
+
+    return (
+        <div
+            className={`
+                flex-1 p-3 pr-12 my-1 rounded-xl cursor-pointer transition-all duration-300 border-l-4 flex items-center justify-between relative min-w-0
+                ${isSelected
+                    ? 'bg-accent-0/5 border-accent-0 shadow-sm'
+                    : 'bg-grass/20 border-grass hover:bg-grass/40'}
+            `}
+            onClick={onSelect}
+        >
+            <div className="flex flex-col min-w-0">
+                <span className={`text-xs font-bold ${isSelected ? 'text-accent-0' : 'text-foreground-1'}`}>
+                    {methodLabels[item.method] || item.method}
+                </span>
+                {/* メモがある場合、プレビューを表示 */}
+                {item.memo && <div className="text-[10px] text-foreground-1/70 truncate mt-0.5">{item.memo}</div>}
+            </div>
+
+            {/*
+              削除ボタン:
+              - 常に右側の固定位置（中央）に配置
+              - 親要素（group/item）にホバーした時のみ表示される
+            */}
+            <button
+                onClick={(e) => {
+                    e.stopPropagation(); // 親要素の onClick (選択処理) を防ぐ
+                    onDelete();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 transition-opacity p-2 text-foreground-1 hover:text-accent-warning"
+                title={tCommon('delete')}
+            >
+                <X size={16} />
+            </button>
+        </div>
+    );
+}

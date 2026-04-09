@@ -94,9 +94,12 @@ export const userStore = create<StoreConfig>((set) => (
 
             try {
                 const supabase = createClient()
-                const {error} = await supabase.auth.signOut()
+                const { data: { session } } = await supabase.auth.getSession()
 
-                if (error) throw error
+                if (session) {
+                    const {error} = await supabase.auth.signOut()
+                    if (error) throw error
+                }
 
                 set({user: initialUser})
                 onSuccess && onSuccess()

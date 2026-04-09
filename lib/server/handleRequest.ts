@@ -5,7 +5,6 @@ export async function handleRequest(fn: () => Promise<Response>){
     try {
         return await fn();
     }catch (error) {
-        console.error(error);
         return handleError(error);
     }
 }
