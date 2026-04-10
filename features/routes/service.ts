@@ -7,7 +7,7 @@ import { DEFAULT_LIMIT } from "@/lib/server/constants";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import crypto from "crypto";
 import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
-import { sliceByScoreCursor, encodeScoreCursor } from "@/lib/server/cursor";
+import { sliceByScoreCursor, encodeScoreCursor, getNextCursor } from "@/lib/server/cursor";
 
 export const routesService = {
   getRoutes: async (
@@ -68,7 +68,7 @@ export const routesService = {
 
         return { items: sortedResult, nextCursor };
       }
-      return { items: result, nextCursor };
+      return { items: result, nextCursor: getNextCursor(result, query.limit ?? DEFAULT_LIMIT) };
     } catch (e) {
       throw e;
     }

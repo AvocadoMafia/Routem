@@ -1,11 +1,14 @@
 import {create} from 'zustand'
 import {ErrorScheme, User} from "@/lib/client/types"
 import {getDataFromServerWithJson, patchDataToServerWithJson, toErrorScheme} from "@/lib/client/helpers";
+import {createClient} from "@/lib/auth/supabase/client";
 
 const initialUser: User = {
     id: '',
     name: '',
     bio: '',
+    language: 'ja',
+    location: '',
     age: 20,
     gender: 'NON_BINARY' as any,
     icon: {
@@ -48,8 +51,9 @@ type StoreConfig = {
     //ユーザー情報の取得、及びその値のセットはzustandに一任し、副作用として引数に指定した関数を発火する。
     //zustand内部の情報の操作を担当する関数では、一貫して三つの関数onStart、onSuccess、onFailureを用意する。
     //onStartにはfetch等での戻り値を、onFailureにはerrorをErrorSchemeにキャストしたものを引数としてoptionalで渡す。
-    login: (onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => void,
-    edit: (profile: {name?: string, bio?:string, background?: string, icon?: string}, onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => void
+    login: (onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>,
+    edit: (profile: {name?: string, bio?:string, background?: string, icon?: string, language?: string, location?: string | null}, onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>,
+    logout: (onStart?: () => void, onSuccess?: () => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>
 }
 
 export const userStore = create<StoreConfig>((set) => (
@@ -82,6 +86,24 @@ export const userStore = create<StoreConfig>((set) => (
                 }
             }catch(e) {
                 //エラーハンドリング処理を書く
+                onFailure && onFailure(toErrorScheme(e))
+            }
+        },
+        logout: async (onStart, onSuccess, onFailure) => {
+            onStart && onStart()
+
+            try {
+                const supabase = createClient()
+                const { data: { session } } = await supabase.auth.getSession()
+
+                if (session) {
+                    const {error} = await supabase.auth.signOut()
+                    if (error) throw error
+                }
+
+                set({user: initialUser})
+                onSuccess && onSuccess()
+            } catch (e) {
                 onFailure && onFailure(toErrorScheme(e))
             }
         },

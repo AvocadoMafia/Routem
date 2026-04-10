@@ -46,6 +46,16 @@ export const usersRepository = {
     }
   },
 
+  deleteUser: async (id: string) => {
+    try {
+      return await getPrisma().user.delete({
+        where: { id: id },
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
   updateUser: async (id: string, data: UpdateUserType) => {
     try {
       return getPrisma().$transaction(async (tx) => {
@@ -114,6 +124,8 @@ export const usersRepository = {
           data: {
             name: data.name,
             bio: data.bio,
+            language: data.language,
+            location: data.location,
           },
           include: {
             icon: true,
@@ -212,7 +224,7 @@ export const usersRepository = {
   // 動的include対応のFollowレコード取得（カーソルベース）
   findFollowRecords: async (
     userId: string,
-    opts: { include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string }
+    opts: { type: "following" | "follower"; include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string }
   ) => {
     try {
       const include: any = {};
@@ -221,8 +233,10 @@ export const usersRepository = {
 
       // カーソル条件を構築
       const cursorWhere = buildCursorWhere(opts.cursor);
+      
+      // typeに応じて followerId か followingId を指定
       const where: any = {
-        followerId: userId,
+        ...(opts.type === "following" ? { followerId: userId } : { followingId: userId }),
         ...cursorWhere,
       };
 

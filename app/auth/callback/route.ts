@@ -62,7 +62,8 @@ export async function GET(request: NextRequest) {
 
       const iconUrl =
           userData.user.user_metadata.avatar_url ||
-          userData.user.user_metadata.picture
+          userData.user.user_metadata.picture ||
+          'https://api.dicebear.com/7.x/avataaars/svg?seed=' + supabaseUser.id
 
       console.log(iconUrl)
 
@@ -72,6 +73,8 @@ export async function GET(request: NextRequest) {
           id: supabaseUser.id,
           name: displayName,
           bio: undefined,
+          language: (supabaseUser.user_metadata?.locale as string | undefined) ?? 'ja',
+          location: undefined,
           icon: {
             create: {
               url: iconUrl,
