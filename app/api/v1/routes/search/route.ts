@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleRequest } from "@/lib/server/handleRequest";
-import { routesService } from "@/features/routes/service";
+import { routesSearchService } from "@/features/routes/search/service";
 import { validateParams } from "@/lib/server/validateParams";
-import { SearchRoutesSchema } from "@/features/routes/schema";
+import { SearchRoutesSchema } from "@/features/routes/search/schema";
 import { createClient } from "@/lib/auth/supabase/server";
 
 // GET /api/v1/routes/search
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const safe_user = error ? null : user;
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(SearchRoutesSchema, search_params);
-    const result = await routesService.searchRoutes(safe_user, parsed_params);
+    const result = await routesSearchService.searchRoutes(safe_user, parsed_params);
     return NextResponse.json(result, { status: 200 });
   });
 }

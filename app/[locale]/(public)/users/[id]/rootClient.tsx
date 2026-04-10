@@ -1,13 +1,15 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { User } from '@/lib/client/types'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
+
+type CursorResponse<T> = { items: T[]; nextCursor: string | null }
 
 export default function RootClient({ id }: { id: string }) {
   const router = useRouter()
@@ -21,6 +23,7 @@ export default function RootClient({ id }: { id: string }) {
   const [hasMoreRoutes, setHasMoreRoutes] = useState(true)
   const [hasMoreLikes, setHasMoreLikes] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
+  const routesCursorRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (currentUser?.id === id) {
@@ -55,9 +58,10 @@ export default function RootClient({ id }: { id: string }) {
       setIsLoadingRoutes(true)
       if (activeTab === 'routes') {
         try {
-          const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=15&offset=0&type=user_posts`)
-          setUserRoutes(res || [])
-          setHasMoreRoutes((res || []).length === 15)
+          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${id}&limit=15&type=user_posts`)
+          setUserRoutes(res?.items || [])
+          routesCursorRef.current = res?.nextCursor || null
+          setHasMoreRoutes(!!res?.nextCursor)
         } catch (error) {
           console.error('Failed to fetch user routes:', error)
         }
@@ -81,18 +85,19 @@ export default function RootClient({ id }: { id: string }) {
   const fetchMore = async () => {
     if (isFetching) return
     
-    if (activeTab === 'routes' && hasMoreRoutes) {
+    if (activeTab === 'routes' && hasMoreRoutes && routesCursorRef.current) {
       setIsFetching(true)
       try {
-        const offset = userRoutes.length
-        const res = await getDataFromServerWithJson<any[]>(`/api/v1/routes?authorId=${id}&limit=15&offset=${offset}&type=user_posts`)
-        if (res && res.length > 0) {
+        const cursor = encodeURIComponent(routesCursorRef.current)
+        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${id}&limit=15&cursor=${cursor}&type=user_posts`)
+        if (res && res.items.length > 0) {
           setUserRoutes(prev => {
             const existingIds = new Set(prev.map(r => r.id));
-            const filtered = res.filter(r => !existingIds.has(r.id));
+            const filtered = res.items.filter(r => !existingIds.has(r.id));
             return [...prev, ...filtered];
           })
-          setHasMoreRoutes(res.length === 15)
+          routesCursorRef.current = res.nextCursor
+          setHasMoreRoutes(!!res.nextCursor)
         } else {
           setHasMoreRoutes(false)
         }

@@ -1,39 +1,16 @@
 import { z } from "zod";
 import { WaypointSchema, TransportationSchema } from "../database_schema";
-import { id } from "zod/v4/locales";
 
 // TODO:型の重複部分をnon-optionalにして共通化するべき
 export const GetRoutesSchema = z.object({
     authorId: z.string().uuid().optional(),
-    createdAfter: z.string().datetime().optional().transform((val) => val ? new Date(val) : undefined),
     limit: z.coerce.number().min(1).max(100).default(20),
     cursor: z.string().optional(),
     type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts", "followings"]).optional(),
     targetId: z.string().uuid().optional(),
-    orderBy: z.enum(["createdAt", "updatedAt"]).optional(),
 });
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
 
-// Search Routes Schema - limit-offset pagination
-export const SearchRoutesSchema = z.object({
-    q: z.string().optional(),
-    limit: z
-        .union([z.string().regex(/^\d+$/), z.number()])
-        .transform((n: any) => (typeof n === "string" ? Number(n) : n))
-        .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
-        .default(DEFAULT_LIMIT)
-        .optional(),
-    offset: z
-        .union([z.string().regex(/^\d+$/), z.number()])
-        .transform((n: any) => (typeof n === "string" ? Number(n) : n))
-        .transform((n) => Math.max(0, n))
-        .default(0)
-        .optional(),
-    orderBy: z.enum(["relevant", "latest", "likes"]).default("relevant").optional(),
-    routeFor: z.string().optional(),
-    month: z.string().optional(),
-});
-export type SearchRoutesType = z.infer<typeof SearchRoutesSchema>;
 
 export const PostRouteSchema = z.object({
   description: z.string(),
@@ -47,7 +24,7 @@ export const PostRouteSchema = z.object({
   visibility: z.enum(["PUBLIC", "PRIVATE"]),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
   who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
-  when: z.array(z.int().min(1).max(12)).min(1).max(12),
+  date: z.string().datetime(),
   budget: z.object({
     currencyCode: z.enum([
       "JPY",
@@ -88,7 +65,7 @@ export const PatchRouteSchema = z.object({
   visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
   who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
-  when: z.array(z.int().min(1).max(12)).min(1).max(12).optional(),
+  date: z.string().datetime().optional(),
   budget: z
     .object({
       currencyCode: z.enum([
@@ -133,7 +110,7 @@ const RoutesDocumentsSchema = z.array(
     updatedAt: z.number().optional(),
     spotNames: z.array(z.string()).optional(),
     tags: PatchRouteSchema.shape.tags,
-    month: PatchRouteSchema.shape.when,
+    month: z.array(z.number().int().min(1).max(12)).optional(),
     routeFor: PatchRouteSchema.shape.who,
 
     budgetInLocalCurrency: z.number().min(0).optional(),
@@ -161,7 +138,7 @@ const RoutesDocumentsSchema = z.array(
       lat: z.number().optional(),
       lng: z.number().optional(),
     }),
-    searchText: z.array(z.string()).optional,
+    searchText: z.string().optional(),
   }),
 );
 

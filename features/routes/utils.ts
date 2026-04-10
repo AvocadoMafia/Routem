@@ -1,4 +1,5 @@
 import { GetRoutesType, PatchRouteType, postRouteType } from "@/features/routes/schema";
+import { buildCursorWhere } from "@/lib/server/cursor";
 import {
   CurrencyCode,
   ImageStatus,
@@ -23,6 +24,12 @@ export function buildRoutesWhere(query: GetRoutesType): Prisma.RouteWhereInput {
   // authorId
   if (query.authorId) {
     where.authorId = query.authorId;
+  }
+
+  // cursor
+  const cursorWhere = buildCursorWhere(query.cursor);
+  if (cursorWhere) {
+    Object.assign(where, cursorWhere);
   }
 
   return where;
@@ -160,14 +167,11 @@ export function buildCreateRouteData(
     },
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
     routeFor: body.who,
-    month: body.when,
+    date: new Date(body.date),
     budget: {
       create: {
-        currency: body.budget.currency as CurrencyCode,
+        localCurrencyCode: body.budget.currencyCode as CurrencyCode,
         amount: body.budget.amount,
-        baseAmount: body.budget.amount, // TODO: 為替レート変換
-        baseCurrency: "JPY",
-        note: body.budget.note,
       },
     },
     tags: {
@@ -204,15 +208,12 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
     }),
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
     routeFor: body.who,
-    month: body.when,
+    date: body.date ? new Date(body.date) : undefined,
     budget: body.budget
       ? {
           update: {
-            currency: body.budget.currency as CurrencyCode,
+            localCurrencyCode: body.budget.currencyCode as CurrencyCode,
             amount: body.budget.amount,
-            baseAmount: body.budget.amount, // TODO: 為替レート変換
-            baseCurrency: "JPY",
-            note: body.budget.note,
           },
         }
       : undefined,

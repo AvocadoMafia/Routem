@@ -56,7 +56,7 @@ export const viewsService = {
           { authorId: userId },
         ],
       };
-      return await routesRepository.findMany(where);
+      return await routesRepository.findMany({ where });
     } catch (e) {
       throw e;
     }

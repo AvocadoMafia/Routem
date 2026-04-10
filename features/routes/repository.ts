@@ -29,22 +29,25 @@ export type RouteWithRelations = Prisma.RouteGetPayload<{
 }>;
 
 export const routesRepository = {
-  findMany: async (
-    where: Prisma.RouteWhereInput,
-    limit?: number,
-    cursor?: string,
-  ): Promise<RouteWithRelations[]> => {
+  findMany: async (params: {
+    where: Prisma.RouteWhereInput;
+    limit?: number;
+    offset?: number;
+    cursor?: string;
+    orderBy?: Prisma.RouteOrderByWithRelationInput | Prisma.RouteOrderByWithRelationInput[];
+  }): Promise<RouteWithRelations[]> => {
     try {
+      const { where, limit, offset, cursor, orderBy } = params;
       return (await getPrisma().route.findMany({
         where,
         take: limit,
+        skip: offset !== undefined ? offset : (cursor ? 1 : undefined),
         ...(cursor && {
           cursor: {
             id: cursor,
           },
-          skip: 1, // cursorの値は結果に含めない
         }),
-        orderBy: [
+        orderBy: orderBy || [
           {
             createdAt: "desc",
           },
@@ -100,17 +103,6 @@ export const routesRepository = {
       return getPrisma().route.deleteMany({
         where,
       });
-    } catch (e) {
-      throw e;
-    }
-  },
-
-  findRoutes: async (args: Prisma.RouteFindManyArgs): Promise<RouteWithRelations[]> => {
-    try {
-      return (await getPrisma().route.findMany({
-        ...args,
-        include: ROUTE_INCLUDE,
-      })) as RouteWithRelations[];
     } catch (e) {
       throw e;
     }

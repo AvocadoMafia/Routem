@@ -1,5 +1,5 @@
-import { GetRoutesSearchSchema } from "@/features/routes/explore/schema";
-import { routesSearchService } from "@/features/routes/explore/service";
+import { GetRoutesExploreSchema } from "@/features/routes/explore/schema";
+import { routesExploreService } from "@/features/routes/explore/service";
 import { createClient } from "@/lib/auth/supabase/server";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { validateParams } from "@/lib/server/validateParams";
@@ -14,9 +14,15 @@ export async function GET(req: NextRequest) {
       error,
     } = await supabase.auth.getUser();
     if (error) throw new Error("auth error");
-    const search_params = Object.fromEntries(new URL(req.url).searchParams);
-    const parsed_params = await validateParams(GetRoutesSearchSchema, search_params);
-    const data = await routesSearchService.getRoutesSearch(parsed_params);
+    const url = new URL(req.url);
+    const searchParams = url.searchParams;
+    const rawParams = Object.fromEntries(searchParams);
+    const whenValues = searchParams.getAll("when");
+    const parsed_params = await validateParams(GetRoutesExploreSchema, {
+      ...rawParams,
+      when: whenValues.length > 1 ? whenValues : searchParams.get("when") ?? undefined,
+    });
+    const data = await routesExploreService.getRoutesExplore(parsed_params);
     return NextResponse.json(data, { status: 200 });
   });
 }

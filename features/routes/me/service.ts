@@ -4,21 +4,20 @@ import { GetRoutesMeType } from "./schema";
 export const routesMeService = {
   getRoutesMe: async (
     query: GetRoutesMeType,
-  ): Promise<{ data: RouteWithRelations[]; nextCursor: string | null }> => {
-    const data = await routesRepository.findMany(
-      {
+  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null }> => {
+    const items = await routesRepository.findMany({
+      where: {
         OR: [{ authorId: query.userId }, { collaborators: { some: { userId: query.userId } } }],
       },
-      query.limit,
-      query.cursor,
-    );
+      limit: query.limit,
+      cursor: query.cursor,
+    });
 
-    // limitの最低を1にしているため、data.length == 0の時はnullになる。
-    const nextCursor = data.length === query.limit ? data[data.length - 1].id : null;
+    const nextCursor = items.length === query.limit ? items[items.length - 1].id : null;
 
     return {
-      data,
-      nextCursor: nextCursor,
+      items,
+      nextCursor,
     };
   },
 };

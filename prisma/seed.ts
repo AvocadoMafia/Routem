@@ -1,22 +1,12 @@
 import 'dotenv/config';
 import { PrismaClient, RouteVisibility, RouteFor, TransitMode, SpotSource, CurrencyCode } from "@prisma/client";
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
-import { getMeilisearch } from "@/lib/config/server";
+import { getPrisma, getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
+import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
+import { RoutesDocumentsType } from "@/features/routes/schema";
 
-const dbType = process.env.DB_TYPE || 'local';
-const connectionString = dbType === 'vercel'
-  ? process.env.VERCEL_DATABASE_URL
-  : process.env.LOCAL_DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error(`Database connection string for type '${dbType}' is not defined.`);
-}
-
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter })
+const prisma = getPrisma();
 
 async function main() {
     // Seed users
@@ -40,7 +30,7 @@ async function main() {
         })
     }
 
-    // Seed tags (replacing categories)
+    // Seed tags (base set)
     const tagNames = [
         'History', 'Nature', 'Culture', 'Food', 'Activity', 'General', 'Walk', 'Temple'
     ];
@@ -78,6 +68,8 @@ async function main() {
         const routeId = `11111111-1111-4111-a111-${i.toString().padStart(12, '0')}`;
         const authorId = users[(i % users.length)].id;
         const tag = tagNames[i % tagNames.length];
+        const extraTag = `Theme-${(i % 6) + 1}`;
+        const routeTags = [tag, extraTag];
         const spot = spotsData[i % spotsData.length];
 
         const route = await prisma.route.upsert({
@@ -87,10 +79,14 @@ async function main() {
                 description: `This is dummy route number ${i} for pagination testing.`,
                 authorId: authorId,
                 visibility: RouteVisibility.PUBLIC,
-                month: (i % 12) + 1,
+                date: new Date(2024, i % 12, 1),
                 routeFor: Object.values(RouteFor)[i % Object.values(RouteFor).length] as RouteFor,
                 tags: {
-                    set: [{ name: tag }]
+                    set: [],
+                    connectOrCreate: routeTags.map((name) => ({
+                        where: { name },
+                        create: { name },
+                    })),
                 },
             },
             create: {
@@ -99,17 +95,18 @@ async function main() {
                 description: `This is dummy route number ${i} for pagination testing.`,
                 authorId: authorId,
                 visibility: RouteVisibility.PUBLIC,
-                month: (i % 12) + 1,
+                date: new Date(2024, i % 12, 1),
                 routeFor: Object.values(RouteFor)[i % Object.values(RouteFor).length] as RouteFor,
                 tags: {
-                    connect: [{ name: tag }]
+                    connectOrCreate: routeTags.map((name) => ({
+                        where: { name },
+                        create: { name },
+                    })),
                 },
                 budget: {
                     create: {
                         amount: 1000 * i,
-                        currency: CurrencyCode.JPY,
-                        baseAmount: 1000 * i,
-                        baseCurrency: CurrencyCode.JPY,
+                        localCurrencyCode: CurrencyCode.JPY,
                     }
                 },
                 routeNodes: {
@@ -120,33 +117,12 @@ async function main() {
                     }]
                 }
             },
-            include: {
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                        icon: true,
-                    },
-                },
-                thumbnail: true,
-                routeNodes: {
-                    include: {
-                        spot: true,
-                        transitSteps: true,
-                        images: true,
-                    },
-                },
-                likes: true,
-                views: true,
-                collaborators: true,
-                budget: true,
-                tags: true,
-            }
+            include: ROUTE_INCLUDE
         });
 
         // Sync to Meilisearch
         try {
-            await syncToMeilisearch(route);
+            await syncToMeilisearch(route as RouteWithRelations);
             console.log(`[${i}/40] Synced route "${route.title}" to Meilisearch`);
         } catch (error) {
             console.error(`Failed to sync route ${routeId} to Meilisearch:`, error);
@@ -155,46 +131,65 @@ async function main() {
 }
 
 // Sync route to Meilisearch index (same as in routesService.ts)
-async function syncToMeilisearch(route: any) {
-    const en_texts = (await translateJa2En([
-        route.title,
-        route.description,
-        ...route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
-        ...route.tags.map((t: any) => t.name)
-    ])).filter(Boolean);
+async function syncToMeilisearch(route: RouteWithRelations) {
+    const en_texts = (
+        await translateJa2En([
+            route.title,
+            route.description,
+            ...route.routeNodes.map((n) => n.spot?.name),
+            ...route.tags.map((t) => t.name),
+        ])
+    ).filter(Boolean);
+
+    const exchange_rates = await exchangeRatesRepository.findMany();
+    const rate_to_usd = exchange_rates.find(
+        (r) => r.currencyCode === route.budget?.localCurrencyCode,
+    )?.rateToUsd;
+    const budget_in_usd =
+        route.budget?.amount && rate_to_usd ? route.budget.amount * rate_to_usd : undefined;
 
     const meilisearch = getMeilisearch();
     const routesIndex = meilisearch.index("routes");
 
-    const documents = [{
-        id: route.id,
-        title: route.title,
-        description: route.description,
-        authorId: route.authorId,
-        visibility: route.visibility,
-        createdAt: route.createdAt?.getTime(),
-        updatedAt: route.updatedAt?.getTime(),
-        routeNodes: route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
-        tags: route.tags.map((t: any) => t.name),
-        month: route.month,
-        routeFor: route.routeFor,
-        budget: route.budget ? Number(route.budget.amount) : undefined,
-        searchText: [
-            route.title,
-            route.description,
-            ...route.routeNodes.map((n: any) => n.spot?.name).filter(Boolean),
-            ...route.tags.map((t: any) => t.name),
-            ...en_texts,
-        ].join(" ")
-    }];
+    const documents: RoutesDocumentsType = [
+        {
+            id: route.id,
+            title: route.title,
+            description: route.description,
+            authorId: route.authorId,
+            visibility: route.visibility,
+            createdAt: route.createdAt?.getTime(),
+            updatedAt: route.updatedAt?.getTime(),
+            spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
+            tags: route.tags.map((t) => t.name),
+            month: route.date ? [route.date.getMonth() + 1] : undefined,
+            routeFor: route.routeFor,
+
+            budgetInLocalCurrency: route.budget?.amount,
+            localCurrencyCode: route.budget?.localCurrencyCode,
+            budgetInUsd: budget_in_usd,
+
+            _geo: {
+                lat: route.routeNodes[0]?.spot.latitude ?? undefined,
+                lng: route.routeNodes[0]?.spot.longitude ?? undefined,
+            },
+            searchText: [
+                route.title,
+                route.description,
+                ...route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+                ...route.tags.map((t) => t.name),
+                ...en_texts,
+            ].join(" "),
+        },
+    ];
 
     await routesIndex.updateDocuments(documents, { primaryKey: "id" });
 
     // タグをMeilisearchのtagsインデックスに追加
     const tagsIndex = meilisearch.index("tags");
-    const tagDocuments = route.tags.map((t: any) => ({
+    const tagDocuments = route.tags.map((t) => ({
         id: t.name,
-        name: t.name
+        name: t.name,
     }));
     await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
 }

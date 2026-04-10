@@ -1,4 +1,4 @@
-import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
+﻿import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
 import {
   DeleteRouteType,
   GetRoutesType,
@@ -11,64 +11,111 @@ import {
   buildRoutesWhere,
   buildUpdateRouteData,
 } from "@/features/routes/utils";
-import { getMeilisearch } from "@/lib/config/server";
+import { getMeilisearch, getRedisClient } from "@/lib/config/server";
+import { getNextCursor, sliceByScoreCursor } from "@/lib/server/cursor";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
-import { RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
+import { Prisma, RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
 import crypto from "crypto";
 import { exchangeRatesRepository } from "../exchangeRates/repository";
 
 export const routesService = {
-  // user:Userではなくuser_idを受け取ることで、testしやすくしている。
   getRoutes: async (
     query: GetRoutesType,
-  ): Promise<{ data: RouteWithRelations[]; nextCursor: string | null }> => {
+  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null }> => {
     try {
+      let routeIds: string[] = [];
+      let nextCursor: string | null = null;
+
+      if (query.type) {
+        const redis = getRedisClient();
+        let redisKey = "";
+        switch (query.type) {
+          case "recommend":
+            redisKey = "recommend:global";
+            break;
+          case "trending":
+            redisKey = "routes:trending";
+            break;
+          case "user_recommend":
+            if (query.targetId) {
+              redisKey = `recommend:user:${query.targetId}`;
+            }
+            break;
+          case "related":
+            if (query.targetId) {
+              redisKey = `recommend:related:${query.targetId}`;
+            }
+            break;
+          case "followings":
+            if (query.targetId) {
+              redisKey = `recommend:followings:${query.targetId}`;
+            }
+            break;
+        }
+
+        if (redisKey) {
+          const cachedData = await redis.get(redisKey);
+          if (cachedData) {
+            const items = JSON.parse(cachedData) as { id: string; score: number }[];
+            const sliced = sliceByScoreCursor(items, query.cursor, query.limit);
+            routeIds = sliced.items.map((item) => item.id);
+            nextCursor = sliced.nextCursor;
+          }
+        }
+      }
+
+      if (routeIds.length > 0) {
+        const where: Prisma.RouteWhereInput = {
+          id: { in: routeIds },
+          visibility: RouteVisibility.PUBLIC,
+        };
+        const result = await routesRepository.findMany({ where });
+
+        const routeMap = new Map(result.map((route) => [route.id, route]));
+        const sortedResult = routeIds
+          .map((id) => routeMap.get(id))
+          .filter((route): route is RouteWithRelations => route !== undefined);
+
+        return { items: sortedResult, nextCursor };
+      }
+
       const where = buildRoutesWhere(query);
+      const result = await routesRepository.findMany({ where, limit: query.limit });
+      nextCursor = getNextCursor(result, query.limit);
 
-      const result = await routesRepository.findMany(where, query.limit, query.cursor);
-
-      // validationしてlimitを１以上にしているので、0件のときはnextCursorはnullになる。
-      const nextCursor = result.length === query.limit ? result[result.length - 1].id : null; // cursor paginationのために最後の要素のidを返す必要がある。これがないと、次ページ以降が取れない。
-
-      return { data: result, nextCursor: nextCursor };
+      return { items: result, nextCursor };
     } catch (e) {
       throw e;
     }
   },
 
-  postRoute: async (parsed_body: postRouteType, user_id: string) => {
+  postRoute: async (parsedBody: postRouteType, userId: string) => {
     try {
-      const data = buildCreateRouteData(parsed_body, user_id);
+      const data = buildCreateRouteData(parsedBody, userId);
       const result = await routesRepository.create(data);
-
       await syncToMeilisearch(result);
-
       return result;
     } catch (e) {
       throw e;
     }
   },
 
-  patchRoute: async (parsed_body: PatchRouteType, user_id: string) => {
+  patchRoute: async (parsedBody: PatchRouteType, userId: string) => {
     try {
-      const data = buildUpdateRouteData(parsed_body);
-      const result = await routesRepository.update(parsed_body.id, user_id, data);
-
+      const data = buildUpdateRouteData(parsedBody);
+      const result = await routesRepository.update(parsedBody.id, userId, data);
       await syncToMeilisearch(result);
-
       return result;
     } catch (e) {
       throw e;
     }
   },
 
-  //deleteManyではincludeでrelationデータを取得することができないので、この関数でのみ戻り値にrelationデータが含まれない。
-  //基本的には問題ないが、もし必要なら事前に取得したのち削除、というフローをとる必要がある。
-  deleteRoute: async (parsed_body: DeleteRouteType, user_id: string) => {
+  deleteRoute: async (parsedBody: DeleteRouteType, userId: string) => {
     try {
       const deleted = await routesRepository.deleteMany({
-        id: parsed_body.id,
-        authorId: user_id,
+        id: parsedBody.id,
+        authorId: userId,
       });
 
       if (deleted.count === 0) {
@@ -77,7 +124,7 @@ export const routesService = {
 
       const meilisearch = getMeilisearch();
       const index = meilisearch.index("routes");
-      await index.deleteDocument(parsed_body.id);
+      await index.deleteDocument(parsedBody.id);
 
       return deleted;
     } catch (e) {
@@ -88,12 +135,10 @@ export const routesService = {
   getRouteDetail: async (id: string, userId: string | null): Promise<RouteWithRelations | null> => {
     try {
       const route = await routesRepository.findUnique(id);
-
       if (!route) {
         return null;
       }
 
-      // 認可チェック
       const isAuthor = route.authorId === userId;
       const isCollaborator = route.collaborators.some((c) => c.userId === userId);
 
@@ -123,7 +168,7 @@ export const routesService = {
       await routesRepository.createInvite({
         route: { connect: { id: routeId } },
         tokenHash,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7日間有効
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
 
       return token;
@@ -144,15 +189,12 @@ export const routesService = {
         throw new Error("Collaboration is disabled for this route");
       }
 
-      // すでに作成者本人の場合は何もしない（または成功扱い）
       if (invite.route.authorId === userId) {
         return invite.routeId;
       }
 
-      // collaboratorに追加 (upsert的に扱う)
       await routesRepository.upsertCollaborator(invite.routeId, userId);
 
-      // 使用回数をインクリメント
       await routesRepository.updateInvite(invite.id, {
         usedCount: { increment: 1 },
       });
@@ -183,7 +225,7 @@ export const routesService = {
 };
 
 async function syncToMeilisearch(route: RouteWithRelations) {
-  const en_texts = (
+  const enTexts = (
     await translateJa2En([
       route.title,
       route.description,
@@ -192,12 +234,12 @@ async function syncToMeilisearch(route: RouteWithRelations) {
     ])
   ).filter(Boolean);
 
-  const exchange_rates = await exchangeRatesRepository.findMany();
-  const rate_to_usd = exchange_rates.find(
+  const exchangeRates = await exchangeRatesRepository.findMany();
+  const rateToUsd = exchangeRates.find(
     (r) => r.currencyCode === route.budget?.localCurrencyCode,
   )?.rateToUsd;
-  const budget_in_usd =
-    route.budget?.amount && rate_to_usd ? route.budget.amount * rate_to_usd : undefined;
+  const budgetInUsd =
+    route.budget?.amount && rateToUsd ? route.budget.amount * rateToUsd : undefined;
 
   const meilisearch = getMeilisearch();
   const routesIndex = meilisearch.index("routes");
@@ -213,13 +255,11 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       updatedAt: route.updatedAt?.getTime(),
       spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
       tags: route.tags.map((t) => t.name),
-      month: route.month,
+      month: route.date ? [route.date.getMonth() + 1] : undefined,
       routeFor: route.routeFor,
-
       budgetInLocalCurrency: route.budget?.amount,
       localCurrencyCode: route.budget?.localCurrencyCode,
-      budgetInUsd: budget_in_usd,
-
+      budgetInUsd,
       _geo: {
         lat: route.routeNodes[0]?.spot.latitude ?? undefined,
         lng: route.routeNodes[0]?.spot.longitude ?? undefined,
@@ -229,14 +269,13 @@ async function syncToMeilisearch(route: RouteWithRelations) {
         route.description,
         ...route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
         ...route.tags.map((t) => t.name),
-        ...en_texts,
+        ...enTexts,
       ].join(" "),
     },
   ];
 
   await routesIndex.updateDocuments(documents, { primaryKey: "id" });
 
-  // タグをMeilisearchのtagsインデックスに追加
   const tagsIndex = meilisearch.index("tags");
   const tagDocuments = route.tags.map((t) => ({
     id: t.name,
