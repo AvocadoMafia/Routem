@@ -29,15 +29,27 @@ export type RouteWithRelations = Prisma.RouteGetPayload<{
 }>;
 
 export const routesRepository = {
-  findMany: async (where: Prisma.RouteWhereInput, limit?: number, offset?: number, orderBy?: Prisma.RouteOrderByWithRelationInput): Promise<RouteWithRelations[]> => {
+  findMany: async (
+    where: Prisma.RouteWhereInput,
+    limit?: number,
+    cursor?: string,
+  ): Promise<RouteWithRelations[]> => {
     try {
       return (await getPrisma().route.findMany({
         where,
         take: limit,
-        skip: offset,
-        orderBy: orderBy ?? {
-          createdAt: "desc",
-        },
+        ...(cursor && {
+          cursor: {
+            id: cursor,
+          },
+          skip: 1, // cursorの値は結果に含めない
+        }),
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+          { id: "desc" },
+        ],
         include: ROUTE_INCLUDE,
       })) as RouteWithRelations[];
     } catch (e) {
@@ -56,7 +68,11 @@ export const routesRepository = {
     }
   },
 
-  update: async (id: string, authorId: string, data: Prisma.RouteUpdateInput): Promise<RouteWithRelations> => {
+  update: async (
+    id: string,
+    authorId: string,
+    data: Prisma.RouteUpdateInput,
+  ): Promise<RouteWithRelations> => {
     try {
       return getPrisma().$transaction(async (tx) => {
         // 存在確認と所有者チェックを兼ねる

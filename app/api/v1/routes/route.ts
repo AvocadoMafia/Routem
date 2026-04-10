@@ -11,16 +11,18 @@ import { createClient } from "@/lib/auth/supabase/server";
 // validationとauthenticationつまり処理に入る前段階の層
 
 // 最近作成されたルートを一覧返却します
-// Response: { items: Route[], nextCursor: string | null }
 export async function GET(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
-    const { data: { user }, error } = await supabase.auth.getUser();
-    const safe_user = error ? null : user;
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (error) throw new Error("auth error");
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
-    const result = await routesService.getRoutes(safe_user, parsed_params);
-    return NextResponse.json(result, {status: 200});
+    const data = await routesService.getRoutes(parsed_params);
+    return NextResponse.json(data, { status: 200 });
   });
 }
 
@@ -31,7 +33,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
     if (error || !user) {
       throw new Error("Unauthorized");
     }
@@ -47,9 +52,12 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   return await handleRequest(async () => {
     const supabase = await createClient(req);
-    const {data:{user}, error} = await supabase.auth.getUser();
-    if(!user || error){
-        throw new Error("unauthorized")
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (!user || error) {
+      throw new Error("unauthorized");
     }
     const body = await req.json();
     const parsed_body = await validateParams(PatchRouteSchema, body);

@@ -1,172 +1,36 @@
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
-import { User } from "@supabase/supabase-js";
-import { GetRoutesType, postRouteType, PatchRouteType, DeleteRouteType, SearchRoutesType } from "@/features/routes/schema";
-import { buildCreateRouteData, buildUpdateRouteData, buildRoutesWhere } from "@/features/routes/utils";
-import { getMeilisearch, getRedisClient } from "@/lib/config/server";
-import { DEFAULT_LIMIT } from "@/lib/server/constants";
+import {
+  DeleteRouteType,
+  GetRoutesType,
+  PatchRouteType,
+  postRouteType,
+  RoutesDocumentsType,
+} from "@/features/routes/schema";
+import {
+  buildCreateRouteData,
+  buildRoutesWhere,
+  buildUpdateRouteData,
+} from "@/features/routes/utils";
+import { getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
 import crypto from "crypto";
-import { RouteVisibility, RouteCollaboratorPolicy, Prisma } from "@prisma/client";
-import { sliceByScoreCursor, encodeScoreCursor, getNextCursor } from "@/lib/server/cursor";
+import { exchangeRatesRepository } from "../exchangeRates/repository";
 
 export const routesService = {
+  // user:Userではなくuser_idを受け取ることで、testしやすくしている。
   getRoutes: async (
-    user: User | null,
     query: GetRoutesType,
-  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null }> => {
+  ): Promise<{ data: RouteWithRelations[]; nextCursor: string | null }> => {
     try {
-      let ids: string[] | undefined = undefined;
-      let nextCursor: string | null = null;
+      const where = buildRoutesWhere(query);
 
-      // クエリ指定が limit と cursor 以外にない、または明示的におすすめが指定された場合
-      const isDefaultRecommend = Object.keys(query).filter(k => k !== 'limit' && k !== 'cursor' && query[k as keyof GetRoutesType] !== undefined).length === 0;
+      const result = await routesRepository.findMany(where, query.limit, query.cursor);
 
-      if (isDefaultRecommend || query.type === "recommend" || query.type === "user_recommend" || query.type === "related" || query.type === "trending" || query.type === "followings") {
-        const redis = getRedisClient();
-        let redisKey = "recommend:global";
+      // validationしてlimitを１以上にしているので、0件のときはnextCursorはnullになる。
+      const nextCursor = result.length === query.limit ? result[result.length - 1].id : null; // cursor paginationのために最後の要素のidを返す必要がある。これがないと、次ページ以降が取れない。
 
-        if (query.type === "user_recommend" && user) {
-          redisKey = `recommend:user:${user.id}`;
-        } else if (query.type === "followings" && user) {
-          redisKey = `recommend:followings:${user.id}`;
-        } else if (query.type === "related" && query.targetId) {
-          redisKey = `recommend:related:${query.targetId}`;
-        } else if (query.type === "trending") {
-          redisKey = "recommend:trending";
-        }
-
-        const cachedData = await redis.get(redisKey);
-        if (cachedData) {
-          const scored = JSON.parse(cachedData) as { id: string, score: number }[];
-          const limit = query.limit ?? DEFAULT_LIMIT;
-
-          // スコアベースのカーソルページネーション
-          const sliced = sliceByScoreCursor(scored, query.cursor, limit);
-          ids = sliced.items.map(s => s.id);
-          nextCursor = sliced.nextCursor;
-
-          if (ids.length === 0) return { items: [], nextCursor: null };
-        } else if (query.type === "followings") {
-          // キャッシュがない = フォローしているユーザーがいない、または投稿がない
-          return { items: [], nextCursor: null };
-        }
-      }
-      const where = buildRoutesWhere(query, user?.id, ids);
-
-      let orderBy: Prisma.RouteOrderByWithRelationInput | undefined = undefined;
-      if (query.orderBy === "updatedAt") {
-        orderBy = { updatedAt: "desc" };
-      } else if (query.orderBy === "createdAt") {
-        orderBy = { createdAt: "desc" };
-      }
-
-      const result = await routesRepository.findMany(where, query.limit, undefined, orderBy);
-      if (ids) {
-        const sortedResult = ids
-          .map((id) => result.find((route) => route.id === id))
-          .filter((route) => route !== undefined); // DBから消えていた場合のundefinedを除外
-
-        return { items: sortedResult, nextCursor };
-      }
-      return { items: result, nextCursor: getNextCursor(result, query.limit ?? DEFAULT_LIMIT) };
-    } catch (e) {
-      throw e;
-    }
-  },
-
-  // Search Routes - limit-offset pagination
-  searchRoutes: async (
-    user: User | null,
-    query: SearchRoutesType,
-  ): Promise<{ items: RouteWithRelations[]; total: number }> => {
-    try {
-      const limit = query.limit ?? DEFAULT_LIMIT;
-      const offset = query.offset ?? 0;
-
-      let ids: string[] = [];
-      let total = 0;
-
-      if (query.q) {
-        const meilisearch = getMeilisearch();
-        const index = await meilisearch.getIndex("routes");
-        
-        const search = await index.search(query.q, {
-          limit,
-          offset,
-        });
-        
-        ids = search.hits.map((hit) => hit.id);
-        total = search.estimatedTotalHits || 0;
-        
-        if (ids.length === 0) {
-          return { items: [], total };
-        }
-
-        // Set where clause with search ids
-        const where: Prisma.RouteWhereInput = {
-          id: { in: ids },
-          visibility: RouteVisibility.PUBLIC,
-        };
-
-        // Filter by routeFor
-        if (query.routeFor) {
-          where.routeFor = query.routeFor as any;
-        }
-
-        // Filter by month
-        if (query.month) {
-          where.month = Number(query.month);
-        }
-
-        // Fetch routes in meilisearch result order
-        const result = await routesRepository.findMany(where, ids.length);
-        
-        // Sort by meilisearch order
-        const sortedResult = ids
-          .map((id) => result.find((route) => route.id === id))
-          .filter((route) => route !== undefined);
-
-        return { items: sortedResult, total };
-      } else {
-        // No query, return based on database
-        const where: Prisma.RouteWhereInput = {
-          visibility: RouteVisibility.PUBLIC,
-        };
-
-        // Filter by routeFor
-        if (query.routeFor) {
-          where.routeFor = query.routeFor as any;
-        }
-
-        // Filter by month
-        if (query.month) {
-          where.month = Number(query.month);
-        }
-
-        // Fetch routes with limit and offset
-        let orderBy: Prisma.RouteOrderByWithRelationInput = { createdAt: "desc" };
-        if (query.orderBy === "latest") {
-          orderBy = { createdAt: "desc" };
-        } else if (query.orderBy === "likes") {
-          // For likes ordering, fetch with default order then sort in memory
-          orderBy = { createdAt: "desc" };
-        } else if (query.orderBy === "relevant") {
-          orderBy = { createdAt: "desc" }; // fallback for DB path
-        }
-
-        // Get total count
-        total = await routesRepository.count(where);
-        
-        // Fetch routes
-        const result = await routesRepository.findMany(where, limit, offset, orderBy);
-        
-        // Sort by likes count if requested
-        if (query.orderBy === "likes") {
-          result.sort((a, b) => b.likes.length - a.likes.length);
-        }
-        
-        return { items: result, total };
-      }
+      return { data: result, nextCursor: nextCursor };
     } catch (e) {
       throw e;
     }
@@ -179,8 +43,8 @@ export const routesService = {
 
       await syncToMeilisearch(result);
 
-      return result
-    }catch(e){
+      return result;
+    } catch (e) {
       throw e;
     }
   },
@@ -231,7 +95,7 @@ export const routesService = {
 
       // 認可チェック
       const isAuthor = route.authorId === userId;
-      const isCollaborator = route.collaborators.some(c => c.userId === userId);
+      const isCollaborator = route.collaborators.some((c) => c.userId === userId);
 
       if (route.visibility === RouteVisibility.PRIVATE && !isAuthor && !isCollaborator) {
         throw new Error("Unauthorized");
@@ -306,7 +170,7 @@ export const routesService = {
       if (!route) return false;
       if (route.authorId === userId) return true;
 
-      const isCollaborator = route.collaborators.some(c => c.userId === userId);
+      const isCollaborator = route.collaborators.some((c) => c.userId === userId);
       if (isCollaborator && route.collaboratorPolicy === RouteCollaboratorPolicy.CAN_EDIT) {
         return true;
       }
@@ -316,49 +180,67 @@ export const routesService = {
       throw e;
     }
   },
-
 };
 
 async function syncToMeilisearch(route: RouteWithRelations) {
-    const en_texts = (await translateJa2En([
+  const en_texts = (
+    await translateJa2En([
+      route.title,
+      route.description,
+      ...route.routeNodes.map((n) => n.spot?.name),
+      ...route.tags.map((t) => t.name),
+    ])
+  ).filter(Boolean);
+
+  const exchange_rates = await exchangeRatesRepository.findMany();
+  const rate_to_usd = exchange_rates.find(
+    (r) => r.currencyCode === route.budget?.localCurrencyCode,
+  )?.rateToUsd;
+  const budget_in_usd =
+    route.budget?.amount && rate_to_usd ? route.budget.amount * rate_to_usd : undefined;
+
+  const meilisearch = getMeilisearch();
+  const routesIndex = meilisearch.index("routes");
+
+  const documents: RoutesDocumentsType = [
+    {
+      id: route.id,
+      title: route.title,
+      description: route.description,
+      authorId: route.authorId,
+      visibility: route.visibility,
+      createdAt: route.createdAt?.getTime(),
+      updatedAt: route.updatedAt?.getTime(),
+      spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
+      tags: route.tags.map((t) => t.name),
+      month: route.month,
+      routeFor: route.routeFor,
+
+      budgetInLocalCurrency: route.budget?.amount,
+      localCurrencyCode: route.budget?.localCurrencyCode,
+      budgetInUsd: budget_in_usd,
+
+      _geo: {
+        lat: route.routeNodes[0]?.spot.latitude ?? undefined,
+        lng: route.routeNodes[0]?.spot.longitude ?? undefined,
+      },
+      searchText: [
         route.title,
         route.description,
-        ...route.routeNodes.map(n => n.spot?.name),
-        ...route.tags.map(t => t.name)
-    ])).filter(Boolean);
+        ...route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+        ...route.tags.map((t) => t.name),
+        ...en_texts,
+      ].join(" "),
+    },
+  ];
 
-    const meilisearch = getMeilisearch();
-    const routesIndex = meilisearch.index("routes");
+  await routesIndex.updateDocuments(documents, { primaryKey: "id" });
 
-    const documents = [{
-        id: route.id,
-        title: route.title,
-        description: route.description,
-        authorId: route.authorId,
-        visibility: route.visibility,
-        createdAt: route.createdAt?.getTime(),
-        updatedAt: route.updatedAt?.getTime(),
-        routeNodes: route.routeNodes.map(n => n.spot?.name).filter(Boolean),
-        tags: route.tags.map(t => t.name),
-        month: route.month,
-        routeFor: route.routeFor,
-        budget: route.budget ? Number(route.budget.amount) : undefined,
-        searchText: [
-            route.title,
-            route.description,
-            ...route.routeNodes.map(n => n.spot?.name).filter(Boolean),
-            ...route.tags.map(t => t.name),
-            ...en_texts,
-        ].join(" ")
-    }];
-
-    await routesIndex.updateDocuments(documents, { primaryKey: "id" });
-
-    // タグをMeilisearchのtagsインデックスに追加
-    const tagsIndex = meilisearch.index("tags");
-    const tagDocuments = route.tags.map(t => ({
-        id: t.name,
-        name: t.name
-    }));
-    await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
+  // タグをMeilisearchのtagsインデックスに追加
+  const tagsIndex = meilisearch.index("tags");
+  const tagDocuments = route.tags.map((t) => ({
+    id: t.name,
+    name: t.name,
+  }));
+  await tagsIndex.addDocuments(tagDocuments, { primaryKey: "id" });
 }
