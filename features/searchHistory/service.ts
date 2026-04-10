@@ -62,7 +62,7 @@ export const searchHistoryService = {
         console.warn("meilisearch suggest fallback", e);
       }
 
-      // Fallback to DB search
+      // Fallback to DB explore
       try {
         const rows = await searchHistoryRepository.findByPrefix(query, limit);
         const list = rows.map((r) => r.query).filter(Boolean) as string[];

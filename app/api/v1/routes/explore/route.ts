@@ -1,5 +1,5 @@
-import { GetRoutesSearchSchema } from "@/features/routes/search/schema";
-import { routesSearchService } from "@/features/routes/search/service";
+import { GetRoutesSearchSchema } from "@/features/routes/explore/schema";
+import { routesSearchService } from "@/features/routes/explore/service";
 import { createClient } from "@/lib/auth/supabase/server";
 import { handleRequest } from "@/lib/server/handleRequest";
 import { validateParams } from "@/lib/server/validateParams";
