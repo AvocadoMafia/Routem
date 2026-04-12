@@ -2,31 +2,37 @@ import { useState, useCallback, useEffect } from "react";
 import { RouteItem, Waypoint, Transportation } from "@/lib/client/types";
 
 export function useRouteEditor() {
-    // ルートを構成するアイテム（経由地・交通手段）のリスト
-    const [items, setItems] = useState<RouteItem[]>([]);
-    // 現在編集中のアイテムのインデックス
+    // items[dayIndex][itemIndex]
+    const [items, setItems] = useState<RouteItem[][]>([]);
+    const [currentDayIndex, setCurrentDayIndex] = useState<number>(0);
     const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-    // 初期化時に最初のWaypointを追加する
+    // 初期化
     useEffect(() => {
         if (items.length === 0) {
             setItems([
-                { type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: 'USER' },
+                [{ type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: 'USER' }],
             ]);
+            setCurrentDayIndex(0);
             setSelectedIndex(0);
         }
     }, [items.length]);
 
     const updateItem = useCallback((index: number, updates: Partial<RouteItem>) => {
-        setItems((prev) =>
-            prev.map((item, i) => (i === index ? { ...item, ...updates } as RouteItem : item))
-        );
-    }, []);
+        setItems((prev) => {
+            const next = [...prev];
+            next[currentDayIndex] = next[currentDayIndex].map((item, i) =>
+                i === index ? { ...item, ...updates } as RouteItem : item
+            );
+            return next;
+        });
+    }, [currentDayIndex]);
 
     // 指定したアイテムを削除する
     const deleteItem = useCallback((index: number) => {
         setItems((prev) => {
-            const filtered = prev.filter((_, i) => i !== index);
+            const nextDays = [...prev];
+            const filtered = nextDays[currentDayIndex].filter((_, i) => i !== index);
 
             // 連続する交通手段を統合 or 削除するなどの正規化
             const next: RouteItem[] = [];
@@ -55,9 +61,10 @@ export function useRouteEditor() {
             } else if (index < selectedIndex) {
                 setSelectedIndex((prevIdx) => Math.max(0, prevIdx - 1));
             }
-            return next;
+            nextDays[currentDayIndex] = next;
+            return nextDays;
         });
-    }, [selectedIndex]);
+    }, [currentDayIndex, selectedIndex]);
 
     // アイテム（経由地または交通手段）を特定のアイテムの後ろに挿入する
     const addItem = useCallback((afterIndex: number, type: 'waypoint' | 'transportation') => {
@@ -80,48 +87,78 @@ export function useRouteEditor() {
             };
         }
 
-        const newItems = [...items];
-        newItems.splice(afterIndex + 1, 0, newItem);
-        setItems(newItems);
+        setItems((prev) => {
+            const next = [...prev];
+            const dayItems = [...next[currentDayIndex]];
+            dayItems.splice(afterIndex + 1, 0, newItem);
+            next[currentDayIndex] = dayItems;
+            return next;
+        });
         setSelectedIndex(afterIndex + 1);
-    }, [items]);
+    }, [currentDayIndex]);
 
     // リストの最後に新しい経由地を追加する（必要に応じて交通手段も自動挿入）
     const addWaypoint = useCallback(() => {
+        const dayItems = items[currentDayIndex] || [];
         const newWaypoint: Waypoint = {
             type: 'waypoint',
             name: `New Waypoint`,
             memo: "",
-            order: items.length + 1,
+            order: dayItems.length + 1,
             source: 'MAPBOX'
         };
 
-        if (items.length > 0) {
-            const newTransport: Transportation = {
-                type: 'transportation',
-                method: 'WALK',
-                memo: "",
-                order: 0,
-            };
-            setItems([...items, newTransport, newWaypoint]);
-            setSelectedIndex(items.length + 1);
-        } else {
-            setItems([...items, newWaypoint]);
-            setSelectedIndex(0);
-        }
-    }, [items]);
+        setItems((prev) => {
+            const next = [...prev];
+            const currentDayItems = [...next[currentDayIndex]];
+            if (currentDayItems.length > 0) {
+                const newTransport: Transportation = {
+                    type: 'transportation',
+                    method: 'WALK',
+                    memo: "",
+                    order: 0,
+                };
+                next[currentDayIndex] = [...currentDayItems, newTransport, newWaypoint];
+            } else {
+                next[currentDayIndex] = [...currentDayItems, newWaypoint];
+            }
+            return next;
+        });
+        setSelectedIndex(dayItems.length > 0 ? dayItems.length + 1 : 0);
+    }, [currentDayIndex, items]);
 
-    const selectedItem = items[selectedIndex];
+    const addDay = useCallback(() => {
+        if (items.length >= 10) return;
+        setItems(prev => [...prev, [{ type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: 'USER' }]]);
+        setCurrentDayIndex(items.length);
+        setSelectedIndex(0);
+    }, [items.length]);
+
+    const removeDay = useCallback((dayIndex: number) => {
+        if (items.length <= 1) return;
+        setItems(prev => {
+            const next = prev.filter((_, i) => i !== dayIndex);
+            return next;
+        });
+        setCurrentDayIndex(prev => Math.max(0, Math.min(prev, items.length - 2)));
+        setSelectedIndex(0);
+    }, [items.length]);
+
+    const selectedItem = items[currentDayIndex]?.[selectedIndex];
 
     return {
         items,
         setItems,
+        currentDayIndex,
+        setCurrentDayIndex,
         selectedIndex,
         setSelectedIndex,
         selectedItem,
         updateItem,
         deleteItem,
         addItem,
-        addWaypoint
+        addWaypoint,
+        addDay,
+        removeDay
     };
 }

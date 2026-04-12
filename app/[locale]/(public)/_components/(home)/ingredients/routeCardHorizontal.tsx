@@ -2,6 +2,8 @@ import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
 
+import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
+
 export type RouteCardHorizontalProps = {
   route: Route;
   isLinkCard?: boolean;
@@ -12,6 +14,8 @@ export type RouteCardHorizontalProps = {
 // 横長のシンプルな旅行ルート サムネイルカード
 export default function RouteCardHorizontal({route, isLinkCard = false, isFocused = false, onClick}: RouteCardHorizontalProps){
   const bgSrc = route.thumbnail?.url  ?? '/map.jpg';
+  const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode);
+  const daysCount = route.routeDates.length;
   
   const content = (
     <div
@@ -63,7 +67,15 @@ export default function RouteCardHorizontal({route, isLinkCard = false, isFocuse
             >
               •
             </span>
-            <span className="truncate">{route.routeFor}</span>
+            <span className="truncate">{localizedBudget}</span>
+            <span
+              className={`transition-colors duration-300 ${
+                isFocused ? 'text-white/40' : 'text-foreground-1/30'
+              }`}
+            >
+              •
+            </span>
+            <span className="truncate">{daysCount} days</span>
           </div>
         </div>
         <div className="shrink-0 text-xs">

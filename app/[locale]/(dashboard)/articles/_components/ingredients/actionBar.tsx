@@ -39,9 +39,9 @@ export default function ActionBar({
             <div className="flex items-center justify-between p-4 gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     {message ? (
-                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border animate-in fade-in slide-in-from-left-2 duration-300 max-w-full group ${message.includes('fail') || message.includes('error') || message.includes('required') ? 'bg-transparent text-accent-0 border-accent-0/50' : 'bg-transparent text-accent-0 border-accent-0/50'}`}>
-                            {message.includes('fail') || message.includes('error') || message.includes('required') ? <AlertCircle size={14} className="shrink-0" /> : <CheckCircle2 size={14} className="shrink-0" />}
-                            <span className="text-[11px] font-bold tracking-tight truncate">{message}</span>
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border animate-in fade-in slide-in-from-left-2 duration-300 max-w-full group ${message.includes('fail') || message.includes('error') || message.includes('required') || message.includes('Error') ? 'bg-transparent text-accent-0 border-accent-0/50' : 'bg-transparent text-accent-0 border-accent-0/50'}`}>
+                            {message.includes('fail') || message.includes('error') || message.includes('required') || message.includes('Error') ? <AlertCircle size={14} className="shrink-0" /> : <CheckCircle2 size={14} className="shrink-0" />}
+                            <span className="text-[11px] font-bold tracking-tight truncate group-hover:whitespace-normal group-hover:overflow-visible group-hover:break-words">{message}</span>
                             <button
                                 onClick={onClearMessage}
                                 className="ml-1 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0"

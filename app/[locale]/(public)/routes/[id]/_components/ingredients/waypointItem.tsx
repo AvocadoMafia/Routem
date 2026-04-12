@@ -9,14 +9,12 @@ type WaypointItemProps = {
   idx: number;
   data: any;
   isFocused: boolean;
-  itemRef: (el: HTMLDivElement | null) => void;
 };
 
-export default function WaypointItem({ idx, data, isFocused, itemRef }: WaypointItemProps) {
+export default function WaypointItem({ idx, data, isFocused }: WaypointItemProps) {
   const t = useTranslations('routes');
   return (
     <div
-      ref={itemRef}
       className={`transition-all duration-700 ease-[0.22,1,0.36,1] ${
         isFocused ? "opacity-100" : "opacity-40"
       }`}

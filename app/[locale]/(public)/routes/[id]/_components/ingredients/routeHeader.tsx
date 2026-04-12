@@ -39,18 +39,8 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode, "3,500");
 
   const routeDate = route.date ? new Date(route.date) : null;
-  const totalDurationMinutes = route.routeNodes.reduce(
-    (routeSum, node) =>
-      routeSum +
-      node.transitSteps.reduce((stepSum, step) => stepSum + (step.duration ?? 0), 0),
-    0,
-  );
-  const formattedDuration =
-    totalDurationMinutes > 0
-      ? totalDurationMinutes >= 60
-        ? `${(totalDurationMinutes / 60).toFixed(1)}h`
-        : `${totalDurationMinutes}m`
-      : "2.5h";
+  const daysCount = route.routeDates.length;
+  const formattedDuration = `${daysCount} ${t("days")}`;
 
   const author = route.author;
   const isAuthor = currentUser?.id === route.authorId;
@@ -106,7 +96,6 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             priority
             unoptimized
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         </motion.div>
 
         <div className="flex flex-col gap-4 flex-1 min-w-0">

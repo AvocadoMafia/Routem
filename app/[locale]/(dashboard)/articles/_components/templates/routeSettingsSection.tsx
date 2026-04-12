@@ -38,14 +38,14 @@ interface RouteSettingsSectionProps {
     // 追加されたパラメータ
     routeFor: 'EVERYONE' | 'FAMILY' | 'FRIENDS' | 'COUPLE' | 'SOLO';
     setRouteFor: (val: 'EVERYONE' | 'FAMILY' | 'FRIENDS' | 'COUPLE' | 'SOLO') => void;
-    month: number;
-    setMonth: (val: number) => void;
+    date: string;
+    setDate: (val: string) => void;
     budget: {
-        currency: string;
+        currencyCode: string;
         amount: number;
         note?: string;
     };
-    setBudget: (val: { currency: string; amount: number; note?: string }) => void;
+    setBudget: (val: { currencyCode: string; amount: number; note?: string }) => void;
     tags: string[];
     setTags: (val: string[]) => void;
 }
@@ -61,7 +61,7 @@ export default function RouteSettingsSection({
     uploading,
 
     routeFor, setRouteFor,
-    month, setMonth,
+    date, setDate,
     budget, setBudget,
     tags, setTags
 }: RouteSettingsSectionProps) {
@@ -254,21 +254,22 @@ export default function RouteSettingsSection({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {/* Month */}
+                        {/* Date */}
                         <div className="space-y-3">
                             <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
-                                <Calendar size={16} /> {t('month')}
+                                <Calendar size={16} /> {t('date')}
                             </label>
-                            <select
-                                value={month}
-                                onChange={(e) => setMonth(Number(e.target.value))}
+                            <input
+                                type="date"
+                                value={date ? date.split('T')[0] : ''}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val) {
+                                        setDate(new Date(val).toISOString());
+                                    }
+                                }}
                                 className="w-full px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium appearance-none"
-                            >
-                                <option value={0}>{t('anyMonth')}</option>
-                                {(['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const).map((key, i) => (
-                                    <option key={i + 1} value={i + 1}>{tMonths(key)}</option>
-                                ))}
-                            </select>
+                            />
                         </div>
 
                         {/* Budget */}
@@ -278,8 +279,8 @@ export default function RouteSettingsSection({
                             </label>
                             <div className="flex gap-2">
                                 <select
-                                    value={budget.currency}
-                                    onChange={(e) => setBudget({ ...budget, currency: e.target.value })}
+                                    value={budget.currencyCode}
+                                    onChange={(e) => setBudget({ ...budget, currencyCode: e.target.value })}
                                     className="w-24 px-3 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium appearance-none text-center"
                                 >
                                     {["JPY", "USD", "EUR", "GBP", "KRW", "TWD", "CNY", "THB", "VND", "SGD", "MYR", "PHP", "AUD", "CAD"].map((c) => (

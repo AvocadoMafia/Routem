@@ -4,6 +4,7 @@ import {HiHeart, HiClock, HiBanknotes, HiEye} from 'react-icons/hi2'
 import Image from 'next/image';
 import { Route } from '@/lib/types/domain';
 import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useTranslations } from "next-intl";
 
 export type FeaturedRouteCardProps = {
   route: Route;
@@ -13,7 +14,9 @@ export type FeaturedRouteCardProps = {
 }
 
 export default function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
+  const t = useTranslations('routes');
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
+  const daysCount = route.routeDates.length;
 
   const content = (
     <div
@@ -54,8 +57,8 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
               </h3>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
                 <span className="text-xs font-bold normal-case tracking-normal">@{route.author.name}</span>
-                <span className="opacity-60">•</span>
-                <span className="truncate">{route.routeFor}</span>
+                <span className="text-white/30">•</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent-0">For {route.routeFor}</span>
               </div>
               <div className="flex items-center gap-3 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                 <div className="flex items-center gap-1">
@@ -71,11 +74,11 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
               </div>
             </div>
 
-            {/* Duration and Cost area (Button-like) */}
+            {/* Period and Cost area (Button-like) */}
             <div className="flex gap-2">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiClock className="w-4 h-4 text-foreground-0" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">2.5h</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">{daysCount} {t('days')}</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />

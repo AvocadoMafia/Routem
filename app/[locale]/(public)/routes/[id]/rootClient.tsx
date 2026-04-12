@@ -24,27 +24,60 @@ type Props = {
 // RouteItemのフラット化された配列を作成するヘルパー
 function getFlattenedItems(route: Route) {
   const items: any[] = [];
-  route.routeNodes.forEach((node, index) => {
-    // 経由地
-    items.push({
-      type: "node",
-      data: node,
-      id: `node-${node.id}`,
-      index: items.length,
-    });
+  
+  if (route.routeDates && route.routeDates.length > 0) {
+    route.routeDates.forEach((date) => {
+      // 日付セパレーター
+      items.push({
+        type: "day_separator",
+        day: date.day,
+        id: `day-${date.id}`,
+        index: items.length,
+      });
 
-    // 交通手段（経由地間の移動）
-    if (node.transitSteps && node.transitSteps.length > 0) {
-      node.transitSteps.forEach((step) => {
+      date.routeNodes.forEach((node) => {
+        // 経由地
         items.push({
-          type: "transit",
-          data: step,
-          id: `transit-${step.id}`,
+          type: "node",
+          data: node,
+          id: `node-${node.id}`,
           index: items.length,
         });
+
+        // 交通手段（経由地間の移動）
+        if (node.transitSteps && node.transitSteps.length > 0) {
+          node.transitSteps.forEach((step) => {
+            items.push({
+              type: "transit",
+              data: step,
+              id: `transit-${step.id}`,
+              index: items.length,
+            });
+          });
+        }
       });
-    }
-  });
+    });
+  } else if ((route as any).routeNodes) {
+    // 旧データ用フォールバック
+    (route as any).routeNodes.forEach((node: any) => {
+      items.push({
+        type: "node",
+        data: node,
+        id: `node-${node.id}`,
+        index: items.length,
+      });
+      if (node.transitSteps && node.transitSteps.length > 0) {
+        node.transitSteps.forEach((step: any) => {
+          items.push({
+            type: "transit",
+            data: step,
+            id: `transit-${step.id}`,
+            index: items.length,
+          });
+        });
+      }
+    });
+  }
   return items;
 }
 

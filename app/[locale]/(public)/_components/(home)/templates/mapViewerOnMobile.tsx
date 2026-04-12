@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import 'swiper/css';
 import { HiHeart } from "react-icons/hi2";
+import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
 
 type Props = {
     routes?: Route[];
@@ -83,7 +84,6 @@ export default function MapViewerOnMobile(props: Props) {
                                         />
                                     </div>
                                     <span>{route.author.name}</span>
-                                    <span>・ {route.routeFor}</span>
                                 </div>
 
                                 <div className="w-fit flex items-center px-2 py-1 gap-2 text-accent-0 bg-accent-0/10 rounded-full">
@@ -108,20 +108,20 @@ export default function MapViewerOnMobile(props: Props) {
                                     </h3>
                                     <div className="grid grid-cols-2 gap-3 text-sm">
                                         <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                                        <span className="block text-foreground-1/40 text-xs">
-                                            Created
-                                        </span>
+                                            <span className="block text-foreground-1/40 text-xs">
+                                                Budget
+                                            </span>
                                             <span className="font-medium text-foreground-1">
-                                            {new Date(route.createdAt).toLocaleDateString()}
-                                        </span>
+                                                <RouteBudgetText route={route} />
+                                            </span>
                                         </div>
                                         <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                                        <span className="block text-foreground-1/40 text-xs">
-                                            Waypoints
-                                        </span>
+                                            <span className="block text-foreground-1/40 text-xs">
+                                                Period
+                                            </span>
                                             <span className="font-medium text-foreground-1">
-                                            {route.routeNodes.length} stops
-                                        </span>
+                                                {route.routeDates.length} days
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -133,4 +133,9 @@ export default function MapViewerOnMobile(props: Props) {
             </Swiper>
         </div>
     );
+}
+
+function RouteBudgetText({ route }: { route: Route }) {
+    const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode);
+    return <>{localizedBudget}</>;
 }

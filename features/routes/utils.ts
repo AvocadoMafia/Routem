@@ -64,82 +64,90 @@ export function mapMethodToTransitMode(method: string): TransitMode {
 }
 
 /**
- * items 配列から Prisma.RouteNodeCreateWithoutRouteInput[] を組み立てる
+ * items 配列から Prisma.RouteDateCreateWithoutRouteInput[] を組み立てる
  */
-export function buildRouteNodesFromItems(
+export function buildRouteDatesFromItems(
   items: postRouteType["items"] | PatchRouteType["items"],
-): Prisma.RouteNodeCreateWithoutRouteInput[] {
+): Prisma.RouteDateCreateWithoutRouteInput[] {
   if (!items) return [];
 
-  const current_nodes: Prisma.RouteNodeCreateWithoutRouteInput[] = [];
-  let current_node: Prisma.RouteNodeCreateWithoutRouteInput | null = null;
+  return items.map((dayItems, dayIndex) => {
+    const routeNodes: Prisma.RouteNodeCreateWithoutRouteDateInput[] = [];
+    let current_node: Prisma.RouteNodeCreateWithoutRouteDateInput | null = null;
 
-  for (const item of items) {
-    if (item.type === "waypoint") {
-      current_node = {
-        order: current_nodes.length,
-        details: item.memo,
-        spot: (() => {
-          // source, sourceIdが存在する時
-          if (item.source && item.sourceId) {
-            return {
-              connectOrCreate: {
-                where: { source_sourceId: { source: item.source, sourceId: item.sourceId } },
+    for (const item of dayItems) {
+      if (item.type === "waypoint") {
+        current_node = {
+          order: routeNodes.length,
+          details: item.memo,
+          spot: (() => {
+            // source, sourceIdが存在する時
+            if (item.source && item.sourceId) {
+              return {
+                connectOrCreate: {
+                  where: { source_sourceId: { source: item.source, sourceId: item.sourceId } },
+                  create: {
+                    name: item.name,
+                    latitude: item.lat,
+                    longitude: item.lng,
+                    source: item.source,
+                    sourceId: item.sourceId,
+                  },
+                },
+              };
+            } else if (item.id) {
+              return {
+                connectOrCreate: {
+                  where: { id: item.id },
+                  create: {
+                    name: item.name,
+                    latitude: item.lat,
+                    longitude: item.lng,
+                  },
+                },
+              };
+            } else {
+              return {
                 create: {
                   name: item.name,
                   latitude: item.lat,
                   longitude: item.lng,
-                  source: item.source,
-                  sourceId: item.sourceId,
                 },
-              },
-            };
-          } else if (item.id) {
-            return {
-              connectOrCreate: {
-                where: { id: item.id },
-                create: {
-                  name: item.name,
-                  latitude: item.lat,
-                  longitude: item.lng,
-                },
-              },
-            };
-          } else {
-            return {
-              create: {
-                name: item.name,
-                latitude: item.lat,
-                longitude: item.lng,
-              },
-            };
-          }
-        })(),
-        transitSteps: { create: [] },
-        images: {
-          create: Array.isArray(item.images)
-            ? item.images.map((url) => ({
-                url,
-                type: ImageType.NODE_IMAGE,
-                status: ImageStatus.ADOPTED,
-              }))
-            : [],
-        },
-      };
-      current_nodes.push(current_node);
-    } else if (item.type === "transportation") {
-      if (current_node && current_node.transitSteps?.create) {
-        (current_node.transitSteps.create as Prisma.TransitStepCreateWithoutRouteNodeInput[]).push({
-          order: (current_node.transitSteps.create as any[]).length,
-          mode: mapMethodToTransitMode(item.method),
-          memo: item.memo,
-          distance: item.distance,
-          duration: item.duration,
-        });
+              };
+            }
+          })(),
+          transitSteps: { create: [] },
+          images: {
+            create: Array.isArray(item.images)
+              ? item.images.map((url) => ({
+                  url,
+                  type: ImageType.NODE_IMAGE,
+                  status: ImageStatus.ADOPTED,
+                }))
+              : [],
+          },
+        };
+        routeNodes.push(current_node);
+      } else if (item.type === "transportation") {
+        if (current_node && current_node.transitSteps?.create) {
+          (current_node.transitSteps.create as Prisma.TransitStepCreateWithoutRouteNodeInput[]).push({
+            order: (current_node.transitSteps.create as any[]).length,
+            mode: mapMethodToTransitMode(item.method),
+            memo: item.memo,
+            distance: item.distance,
+            duration: item.duration,
+          });
+        }
       }
     }
-  }
-  return current_nodes;
+
+    return {
+      day: dayIndex + 1,
+      routeNodes: {
+        create: routeNodes,
+      },
+    };
+  });
 }
 
 /**
@@ -150,7 +158,7 @@ export function buildCreateRouteData(
   authorId: string,
   language: Language,
 ): Prisma.RouteCreateInput {
-  const routeNodes = buildRouteNodesFromItems(body.items);
+  const routeDates = buildRouteDatesFromItems(body.items);
 
   return {
     title: body.title,
@@ -164,8 +172,8 @@ export function buildCreateRouteData(
         status: ImageStatus.ADOPTED,
       },
     },
-    routeNodes: {
-      create: routeNodes,
+    routeDates: {
+      create: routeDates,
     },
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
     routeFor: body.who,
@@ -190,7 +198,7 @@ export function buildCreateRouteData(
  * patchRoute 用の Prisma.RouteUpdateInput を組み立てる
  */
 export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateInput {
-  const routeNodes = body.items ? buildRouteNodesFromItems(body.items) : undefined;
+  const routeDates = body.items ? buildRouteDatesFromItems(body.items) : undefined;
 
   return {
     title: body.title ?? undefined,
@@ -203,10 +211,10 @@ export function buildUpdateRouteData(body: PatchRouteType): Prisma.RouteUpdateIn
           },
         }
       : undefined,
-    ...(routeNodes && {
-      routeNodes: {
+    ...(routeDates && {
+      routeDates: {
         deleteMany: {},
-        create: routeNodes,
+        create: routeDates,
       },
     }),
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,

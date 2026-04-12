@@ -6,8 +6,9 @@ import RelatedArticles from "./relatedArticles";
 import DiagramCard from "../ingredients/diagramCard";
 
 type DiagramItem = {
-  type: "node" | "transit";
-  data: any;
+  type: "node" | "transit" | "day_separator";
+  data?: any;
+  day?: number;
   id: string;
   index: number;
 };
@@ -60,15 +61,30 @@ export default function DiagramViewer({
             {/* 背景の垂直線 */}
             <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-accent-0/20 pointer-events-none" />
 
-            {items.map((item, idx) => (
-              <DiagramCard
-                key={idx}
-                item={item}
-                idx={idx}
-                isFocused={focusIndex === idx}
-                onItemClick={onItemClick}
-              />
-            ))}
+            {items.map((item, idx) => {
+              if (item.type === "day_separator") {
+                return (
+                  <div key={idx} className="relative z-10 py-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-accent-0" />
+                      </div>
+                      <h3 className="text-lg font-black text-foreground-0">Day {item.day}</h3>
+                      <div className="flex-1 h-px bg-accent-0/20" />
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <DiagramCard
+                  key={idx}
+                  item={item as any}
+                  idx={idx}
+                  isFocused={focusIndex === idx}
+                  onItemClick={onItemClick}
+                />
+              );
+            })}
           </motion.div>
         ) : (
           <motion.div

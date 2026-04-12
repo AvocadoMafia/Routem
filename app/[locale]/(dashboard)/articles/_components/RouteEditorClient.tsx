@@ -38,11 +38,11 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
 
     // 追加されたパラメータ
     const [routeFor, setRouteFor] = useState<'EVERYONE' | 'FAMILY' | 'FRIENDS' | 'COUPLE' | 'SOLO'>(initialRoute?.routeFor || 'EVERYONE');
-    const [month, setMonth] = useState<number>(initialRoute?.month ?? 0);
-    const [budget, setBudget] = useState<{ currency: string; amount: number; note?: string }>({
-        currency: initialRoute?.budget?.currency || 'JPY',
+    const [date, setDate] = useState<string>(initialRoute?.date ? new Date(initialRoute.date).toISOString() : new Date().toISOString());
+    const [budget, setBudget] = useState<{ currencyCode: string; amount: number; note?: string }>({
+        currencyCode: initialRoute?.budget?.localCurrencyCode || 'JPY',
         amount: Number(initialRoute?.budget?.amount) || 0,
-        note: initialRoute?.budget?.note || undefined
+        note: undefined
     });
     const [tags, setTags] = useState<string[]>(initialRoute?.tags?.map((t: { name: string }) => t.name) || []);
 
@@ -50,13 +50,17 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
     const {
         items,
         setItems,
+        currentDayIndex,
+        setCurrentDayIndex,
         selectedIndex,
         setSelectedIndex,
         selectedItem,
         updateItem,
         deleteItem,
         addItem,
-        addWaypoint
+        addWaypoint,
+        addDay,
+        removeDay
     } = useRouteEditor();
 
     // RouteNode型定義（Prismaベース）
@@ -71,11 +75,54 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
 
     // 初期値をセットする（編集時、または初期データがある場合）
     useEffect(() => {
-        if (initialRoute?.routeNodes) {
-            const initialItems: RouteItem[] = [];
-            const routeNodes = initialRoute.routeNodes as RouteNodeData[];
-            routeNodes.forEach((node) => {
-                initialItems.push({
+        if (initialRoute?.routeDates && Array.isArray(initialRoute.routeDates) && initialRoute.routeDates.length > 0) {
+            const initialDays: RouteItem[][] = [];
+            const sortedRouteDates = [...initialRoute.routeDates].sort((a, b) => (a.day || 0) - (b.day || 0));
+
+            sortedRouteDates.forEach((date) => {
+                const dayItems: RouteItem[] = [];
+                const sortedNodes = [...(date.routeNodes as RouteNodeData[])].sort((a, b) => a.order - b.order);
+
+                sortedNodes.forEach((node) => {
+                    dayItems.push({
+                        type: 'waypoint',
+                        id: node.id,
+                        name: node.spot.name,
+                        lat: node.spot.latitude || 0,
+                        lng: node.spot.longitude || 0,
+                        memo: node.details || '',
+                        images: node.images?.map((img) => img.url) || [],
+                        source: (node.spot.source as 'MAPBOX' | 'USER') || 'USER',
+                        sourceId: node.spot.sourceId || undefined,
+                        order: node.order
+                    });
+
+                    if (node.transitSteps) {
+                        const sortedSteps = [...node.transitSteps].sort((a, b) => a.order - b.order);
+                        sortedSteps.forEach((step) => {
+                            dayItems.push({
+                                type: 'transportation',
+                                id: step.id,
+                                method: step.mode as any,
+                                memo: step.memo || '',
+                                distance: step.distance || undefined,
+                                duration: step.duration || undefined,
+                                order: step.order
+                            });
+                        });
+                    }
+                });
+                initialDays.push(dayItems);
+            });
+            setItems(initialDays);
+        } else if ((initialRoute as any)?.routeNodes) {
+            // 後方互換性（旧スキーマ用）
+            const dayItems: RouteItem[] = [];
+            const routeNodes = (initialRoute as any).routeNodes as RouteNodeData[];
+            const sortedNodes = [...routeNodes].sort((a, b) => a.order - b.order);
+
+            sortedNodes.forEach((node) => {
+                dayItems.push({
                     type: 'waypoint',
                     id: node.id,
                     name: node.spot.name,
@@ -87,12 +134,14 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                     sourceId: node.spot.sourceId || undefined,
                     order: node.order
                 });
+
                 if (node.transitSteps) {
-                    node.transitSteps.forEach((step) => {
-                        initialItems.push({
+                    const sortedSteps = [...node.transitSteps].sort((a, b) => a.order - b.order);
+                    sortedSteps.forEach((step) => {
+                        dayItems.push({
                             type: 'transportation',
                             id: step.id,
-                            method: step.mode as 'WALK' | 'TRAIN' | 'BUS' | 'CAR' | 'BIKE' | 'FLIGHT' | 'SHIP' | 'OTHER',
+                            method: step.mode as any,
                             memo: step.memo || '',
                             distance: step.distance || undefined,
                             duration: step.duration || undefined,
@@ -101,7 +150,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                     });
                 }
             });
-            setItems(initialItems);
+            setItems([dayItems]);
         }
     }, [initialRoute, setItems]);
 
@@ -143,7 +192,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
     const isTitleSet = title.trim() !== "";
     const isDescriptionSet = description.trim() !== "";
     const isThumbnailSet = thumbnailImageSrc !== undefined;
-    const isWaypointsSet = items.filter(it => it.type === 'waypoint').length >= 2;
+    const isWaypointsSet = items.every(dayItems => dayItems.filter(it => it.type === 'waypoint').length >= 2);
     const isTagsSet = tags.length >= 1;
     const isSettingsComplete = isTitleSet && isDescriptionSet && isThumbnailSet && isWaypointsSet && isTagsSet;
 
@@ -194,38 +243,29 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
             return;
         }
 
-        const waypoints = items.filter(it => it.type === 'waypoint');
-        if (waypoints.length < 2) {
-            setMessage("At least 2 waypoints are required.");
-            return;
-        }
+        const normalizedItems = items.map((dayItems) => {
+            return dayItems.map((item, index) => {
+                const { id, ...rest } = item;
+                const isUuid = id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(id));
 
-        if (items[0].type !== 'waypoint' || items[items.length - 1].type !== 'waypoint') {
-            setMessage("Route must start and end with a waypoint.");
-            return;
-        }
-
-        const normalizedItems = items.map((item, index) => {
-            const { id, ...rest } = item;
-            const isUuid = id && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(id));
-
-            if (item.type === 'waypoint') {
-                if (typeof item.lat !== 'number' || typeof item.lng !== 'number') {
-                    throw new Error(`Waypoint "${item.name}" has no coordinates.`);
+                if (item.type === 'waypoint') {
+                    if (typeof item.lat !== 'number' || typeof item.lng !== 'number') {
+                        throw new Error(`Waypoint "${item.name}" has no coordinates.`);
+                    }
+                    return {
+                        ...(isUuid ? { id } : {}),
+                        ...rest,
+                        order: index,
+                        source: item.source || 'USER'
+                    };
+                } else {
+                    return {
+                        ...(isUuid ? { id } : {}),
+                        ...rest,
+                        order: index
+                    };
                 }
-                return {
-                    ...(isUuid ? { id } : {}),
-                    ...rest,
-                    order: index,
-                    source: item.source || 'USER'
-                };
-            } else {
-                return {
-                    ...(isUuid ? { id } : {}),
-                    ...rest,
-                    order: index
-                };
-            }
+            });
         });
 
         setPublishing(true);
@@ -239,8 +279,8 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                 collaboratorPolicy,
                 thumbnailImageSrc,
                 items: normalizedItems,
-                routeFor,
-                month,
+                who: routeFor,
+                date,
                 budget,
                 tags
             };
@@ -261,7 +301,17 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                 throw new Error('Failed to save');
             }
         } catch (e: any) {
-            setMessage(e?.message ?? 'Save failed');
+            console.error('Save error:', e);
+            if (e?.code === 'VALIDATION_ERROR' && e?.details?.issues) {
+                const issues = e.details.issues as any[];
+                const detailMsg = issues.map((issue: any) => {
+                    const path = issue.path.join('.');
+                    return `${path}: ${issue.message}`;
+                }).join(', ');
+                setMessage(`Validation Error: ${detailMsg}`);
+            } else {
+                setMessage(e?.message ?? 'Save failed');
+            }
         } finally {
             setPublishing(false);
         }
@@ -271,7 +321,15 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         <div className="relative w-full h-full flex flex-row">
             {/* 左側：ダイアグラム */}
             <NodeLinkDiagram
-                items={items}
+                items={items[currentDayIndex] || []}
+                allDaysItems={items}
+                currentDayIndex={currentDayIndex}
+                onSelectDay={(index) => {
+                    setCurrentDayIndex(index);
+                    setSelectedIndex(0);
+                }}
+                onAddDay={addDay}
+                onRemoveDay={removeDay}
                 selectedIndex={selectedIndex}
                 onSelectItem={(index) => {
                     setSelectedIndex(index);
@@ -348,8 +406,8 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                                 routeId={initialRoute?.id}
                                 routeFor={routeFor}
                                 setRouteFor={setRouteFor}
-                                month={month}
-                                setMonth={setMonth}
+                                date={date}
+                                setDate={setDate}
                                 budget={budget}
                                 setBudget={setBudget}
                                 tags={tags}
@@ -400,8 +458,8 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                             routeId={initialRoute?.id}
                             routeFor={routeFor}
                             setRouteFor={setRouteFor}
-                            month={month}
-                            setMonth={setMonth}
+                            date={date}
+                            setDate={setDate}
                             budget={budget}
                             setBudget={setBudget}
                             tags={tags}

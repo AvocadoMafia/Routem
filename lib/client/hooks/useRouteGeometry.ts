@@ -12,32 +12,30 @@ export function useRouteGeometry(route: any, profile: string = 'driving') {
   const mapboxAccessToken = getClientMapboxAccessToken();
 
   useEffect(() => {
-    if (!route || !route.routeNodes || route.routeNodes.length < 2 || !mapboxAccessToken) {
-      setRouteGeometry(null);
-      return;
-    }
-
-    const validNodes = route.routeNodes.filter(
+    const allNodes = route?.routeDates?.flatMap((rd: any) => rd.routeNodes) || route?.routeNodes || [];
+    const validNodes = allNodes.filter(
       (node: any) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null
     );
 
-    if (validNodes.length < 2) {
+    if (validNodes.length < 2 || !mapboxAccessToken) {
       setRouteGeometry(null);
       return;
     }
-
-    // Mapbox Directions API の制限（標準25地点）
-    if (validNodes.length > 25) {
-      console.warn("Too many waypoints for Mapbox Directions API (limit: 25). Falling back to straight lines.");
-      setRouteGeometry(null);
-      return;
-    }
-
-    const coords = validNodes
-      .map((node: any) => `${node.spot.longitude},${node.spot.latitude}`)
-      .join(";");
 
     const fetchRoute = async () => {
+      // Mapbox Directions API の制限（標準25地点）
+      // 25地点を超える場合は、先頭と末尾を含む25地点をサンプリングするか、エラーとする
+      // ここでは簡易的に最初の25地点のみを使用する（本来はチャンク分けして結合するのが望ましい）
+      const nodesToUse = validNodes.length > 25 ? validNodes.slice(0, 25) : validNodes;
+      
+      if (validNodes.length > 25) {
+        console.warn(`Too many waypoints (${validNodes.length}). Only the first 25 are used for geometry.`);
+      }
+
+      const coords = nodesToUse
+        .map((node: any) => `${node.spot.longitude},${node.spot.latitude}`)
+        .join(";");
+
       try {
         const response = await fetch(
           `https://api.mapbox.com/directions/v5/mapbox/${profile}/${coords}?access_token=${mapboxAccessToken}&geometries=geojson&overview=full`
@@ -54,7 +52,7 @@ export function useRouteGeometry(route: any, profile: string = 'driving') {
     };
 
     fetchRoute();
-  }, [route?.id, route?.routeNodes, mapboxAccessToken, profile]);
+  }, [route?.id, route?.routeDates, route?.routeNodes, mapboxAccessToken, profile]);
 
   return routeGeometry;
 }

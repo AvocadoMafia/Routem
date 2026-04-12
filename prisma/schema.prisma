@@ -73,7 +73,7 @@ model Spot {
   longitude Float? // 経度（EPSG:4326）
   latitude  Float? // 緯度（EPSG:4326）
   source    SpotSource? // 由来（例: "osm", "mapbox"）
-  sourceId  String? // 由来元のID（例: OSMのノードID）
+  sourceId  String?     @db.VarChar(500) // 由来元のID（例: OSMのノードID）
 
   // リレーション
   routeNodes RouteNode[] // 表示用のノード（順序付き）
@@ -101,7 +101,7 @@ model Route {
   author   User   @relation(references: [id], fields: [authorId], onDelete: Cascade)
 
   visibility    RouteVisibility     @default(PRIVATE)
-  routeNodes    RouteNode[]
+  routeDates    RouteDate[]
   likes         Like[]
   comments      Comment[]
   views         View[]
@@ -138,21 +138,31 @@ model RouteInvite {
   @@index([routeId])
 }
 
+model RouteDate {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  day        Int // 1日目、2日目...
+  routeId    String      @db.Uuid
+  route      Route       @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  routeNodes RouteNode[]
+
+  @@unique([routeId, day])
+}
+
 model RouteNode {
   id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   order   Int
   images  Image[] @relation("NodeImages")
   details String?
 
-  routeId String @db.Uuid
-  route   Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  routeDateId String    @db.Uuid
+  routeDate   RouteDate @relation(fields: [routeDateId], references: [id], onDelete: Cascade)
 
   spotId String @db.Uuid
   spot   Spot   @relation(fields: [spotId], references: [id])
 
   transitSteps TransitStep[]
 
-  @@unique([routeId, order])
+  @@unique([routeDateId, order])
 }
 
 model TransitStep {

@@ -12,7 +12,11 @@ export type Route = Prisma.RouteGetPayload<{
     thumbnail: true
     likes: true
     views: true
-    routeNodes: { include: { spot: true; transitSteps: true; images: true } }
+    routeDates: {
+      include: {
+        routeNodes: { include: { spot: true; transitSteps: true; images: true } }
+      }
+    }
     tags: true
     collaborators: true
     budget: true

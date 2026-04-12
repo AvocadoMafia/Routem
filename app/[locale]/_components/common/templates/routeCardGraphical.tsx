@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
 import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
+import { useTranslations } from 'next-intl';
 
 export type RouteCardGraphicalProps = {
   route: Route;
@@ -14,7 +15,9 @@ export type RouteCardGraphicalProps = {
 }
 
 export default function RouteCardGraphical({route, isLinkCard = true, isFocused = false, onClick, rank}: RouteCardGraphicalProps) {
+  const t = useTranslations('routes');
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
+  const daysCount = route?.routeDates?.length ?? 0;
 
   const content = (
     <div
@@ -58,8 +61,8 @@ export default function RouteCardGraphical({route, isLinkCard = true, isFocused 
               </h4>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
                 <span className="text-xs font-bold normal-case tracking-normal">@{route?.author.name}</span>
-                <span className="opacity-60">•</span>
-                <span className="truncate">{route?.routeFor}</span>
+                <span className="text-white/30">•</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent-0">For {route?.routeFor}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1 shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
@@ -78,7 +81,7 @@ export default function RouteCardGraphical({route, isLinkCard = true, isFocused 
             <div className="flex gap-2">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiClock className="w-4 h-4 text-foreground-0" />
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">2.5h</span>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">{daysCount} {t('days')}</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />

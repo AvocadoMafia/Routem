@@ -79,6 +79,7 @@ export async function requestToServerWithJson<T>(
             throw {
                 message: json?.message || "不明なエラー",
                 code: json?.code || "UNKNOWN_ERROR",
+                details: json?.details,
             } as ErrorScheme
         }
 

@@ -68,27 +68,28 @@ export default function DetailsViewer({
       <RouteHeader route={route} currentUser={currentUser} />
 
       {items.map((item, idx) => (
-        <div key={idx}>
-          {item.type === "node" ? (
+        <div key={idx} ref={(el) => {
+          if (itemRefs.current) {
+            itemRefs.current[idx] = el;
+          }
+        }}>
+          {item.type === "day_separator" ? (
+            <div className="py-12 flex flex-col gap-4">
+              <div className="flex items-center gap-6">
+                <div className="text-4xl font-black text-accent-0">Day {item.day}</div>
+                <div className="flex-1 h-px bg-accent-0/20" />
+              </div>
+            </div>
+          ) : item.type === "node" ? (
             <WaypointItem
               idx={idx}
               data={item.data}
               isFocused={focusIndex === idx}
-              itemRef={(el) => {
-                if (itemRefs.current) {
-                  itemRefs.current[idx] = el;
-                }
-              }}
             />
           ) : (
             <TransitItem
               data={item.data}
               isFocused={focusIndex === idx}
-              itemRef={(el) => {
-                if (itemRefs.current) {
-                  itemRefs.current[idx] = el;
-                }
-              }}
             />
           )}
         </div>

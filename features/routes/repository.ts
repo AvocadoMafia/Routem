@@ -10,11 +10,15 @@ export const ROUTE_INCLUDE = {
     },
   },
   thumbnail: true,
-  routeNodes: {
+  routeDates: {
     include: {
-      spot: true,
-      transitSteps: true,
-      images: true,
+      routeNodes: {
+        include: {
+          spot: true,
+          transitSteps: true,
+          images: true,
+        },
+      },
     },
   },
   likes: true,

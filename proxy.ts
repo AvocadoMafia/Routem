@@ -58,7 +58,10 @@ export async function proxy(request: NextRequest) {
   // APIルートはセッション更新のみ
   if (pathname.startsWith("/api")) {
     const origin = request.headers.get("origin");
-    if (origin && !origin.includes(process.env.PRODUCTION_URL!)) {
+    const isDev = process.env.NODE_ENV === "development";
+    const allowedOrigin = process.env.PRODUCTION_URL || (isDev ? "localhost:3000" : null);
+
+    if (origin && allowedOrigin && !origin.includes(allowedOrigin)) {
       console.warn(`[Blocked] Unauthorized origin:${origin}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Invalid Origin" }), {
         status: 403,
@@ -67,7 +70,7 @@ export async function proxy(request: NextRequest) {
     }
 
     const secFetchSite = request.headers.get("sec-fetch-site");
-    if (secFetchSite && secFetchSite !== "same-origin") {
+    if (secFetchSite && secFetchSite !== "same-origin" && !isDev) {
       console.warn(`[Blocked] Unauthorized origin:${secFetchSite}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Cross-site request" }), {
         status: 403,

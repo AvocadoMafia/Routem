@@ -121,6 +121,19 @@ async function main() {
                         create: { name },
                     })),
                 },
+                routeDates: {
+                    deleteMany: {},
+                    create: [{
+                        day: 1,
+                        routeNodes: {
+                            create: [{
+                                order: 1,
+                                details: `Start point for route ${i}`,
+                                spotId: spot.id,
+                            }]
+                        }
+                    }]
+                }
             },
             create: {
                 id: routeId,
@@ -143,11 +156,16 @@ async function main() {
                         localCurrencyCode: CurrencyCode.JPY,
                     }
                 },
-                routeNodes: {
+                routeDates: {
                     create: [{
-                        order: 1,
-                        details: `Start point for route ${i}`,
-                        spotId: spot.id,
+                        day: 1,
+                        routeNodes: {
+                            create: [{
+                                order: 1,
+                                details: `Start point for route ${i}`,
+                                spotId: spot.id,
+                            }]
+                        }
                     }]
                 }
             },
@@ -166,11 +184,13 @@ async function main() {
 
 // Sync route to Meilisearch index (same as in routesService.ts)
 async function syncToMeilisearch(route: RouteWithRelations) {
+    const allNodes = route.routeDates.flatMap(rd => rd.routeNodes);
+
     const en_texts = (
         await translateJa2En([
             route.title,
             route.description,
-            ...route.routeNodes.map((n) => n.spot?.name),
+            ...allNodes.map((n) => n.spot?.name),
             ...route.tags.map((t) => t.name),
         ])
     ).filter(Boolean);
@@ -195,7 +215,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
             createdAt: route.createdAt?.getTime(),
             updatedAt: route.updatedAt?.getTime(),
             language: route.language,
-            spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
+            spotNames: allNodes.map((n) => n.spot.name).filter(Boolean),
             tags: route.tags.map((t) => t.name),
             month: route.date ? [route.date.getMonth() + 1] : undefined,
             routeFor: route.routeFor,
@@ -205,13 +225,13 @@ async function syncToMeilisearch(route: RouteWithRelations) {
             budgetInUsd: budget_in_usd,
 
             _geo: {
-                lat: route.routeNodes[0]?.spot.latitude ?? undefined,
-                lng: route.routeNodes[0]?.spot.longitude ?? undefined,
+                lat: allNodes[0]?.spot.latitude ?? undefined,
+                lng: allNodes[0]?.spot.longitude ?? undefined,
             },
             searchText: [
                 route.title,
                 route.description,
-                ...route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+                ...allNodes.map((n) => n.spot?.name).filter(Boolean),
                 ...route.tags.map((t) => t.name),
                 ...en_texts,
             ].join(" "),

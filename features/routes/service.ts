@@ -232,11 +232,13 @@ export const routesService = {
 };
 
 async function syncToMeilisearch(route: RouteWithRelations) {
+  const allNodes = route.routeDates.flatMap(rd => rd.routeNodes);
+
   const enTexts = (
     await translateJa2En([
       route.title,
       route.description,
-      ...route.routeNodes.map((n) => n.spot?.name),
+      ...allNodes.map((n) => n.spot?.name),
       ...route.tags.map((t) => t.name),
     ])
   ).filter(Boolean);
@@ -260,7 +262,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       visibility: route.visibility,
       createdAt: route.createdAt?.getTime(),
       updatedAt: route.updatedAt?.getTime(),
-      spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
+      spotNames: allNodes.map((n) => n.spot.name).filter(Boolean),
       tags: route.tags.map((t) => t.name),
       month: route.date ? [route.date.getMonth() + 1] : undefined,
       routeFor: route.routeFor,
@@ -269,13 +271,13 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       localCurrencyCode: route.budget?.localCurrencyCode,
       budgetInUsd,
       _geo: {
-        lat: route.routeNodes[0]?.spot.latitude ?? undefined,
-        lng: route.routeNodes[0]?.spot.longitude ?? undefined,
+        lat: allNodes[0]?.spot.latitude ?? undefined,
+        lng: allNodes[0]?.spot.longitude ?? undefined,
       },
       searchText: [
         route.title,
         route.description,
-        ...route.routeNodes.map((n) => n.spot?.name).filter(Boolean),
+        ...allNodes.map((n) => n.spot?.name).filter(Boolean),
         ...route.tags.map((t) => t.name),
         ...enTexts,
       ].join(" "),

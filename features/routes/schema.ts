@@ -15,8 +15,8 @@ export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
 export const PostRouteSchema = z.object({
   description: z.string(),
   items: z
-    .array(z.union([WaypointSchema, TransportationSchema]))
-    .min(1, "At least one route item is required"),
+    .array(z.array(z.union([WaypointSchema, TransportationSchema])))
+    .min(1, "At least one day is required"),
   thumbnailImageSrc: z
     .string()
     .startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL"),
@@ -52,7 +52,7 @@ export type postRouteType = z.infer<typeof PostRouteSchema>;
 export const PatchRouteSchema = z.object({
   id: z.string().uuid("Invalid route ID"),
   description: z.string().optional(),
-  items: z.array(z.union([WaypointSchema, TransportationSchema])).optional(),
+  items: z.array(z.array(z.union([WaypointSchema, TransportationSchema]))).optional(),
   thumbnailImageSrc: z
     .string()
     .startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL")

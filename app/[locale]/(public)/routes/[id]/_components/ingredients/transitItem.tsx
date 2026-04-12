@@ -6,13 +6,11 @@ import TransitIcon from "./transitIcon";
 type TransitItemProps = {
   data: any;
   isFocused: boolean;
-  itemRef: (el: HTMLDivElement | null) => void;
 };
 
-export default function TransitItem({ data, isFocused, itemRef }: TransitItemProps) {
+export default function TransitItem({ data, isFocused }: TransitItemProps) {
   return (
     <div
-      ref={itemRef}
       className={`transition-all duration-700 ease-[0.22,1,0.36,1] ${
         isFocused ? "opacity-100" : "opacity-40"
       }`}

@@ -30,4 +30,5 @@ export interface ApiError {
 export interface ErrorScheme {
   message: string
   code: string
+  details?: any
 }

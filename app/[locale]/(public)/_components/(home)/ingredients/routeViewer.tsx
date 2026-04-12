@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import {Route} from "@/lib/client/types";
+import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
 
 type Props = {
   focusedIndex: number;
@@ -11,6 +12,7 @@ type Props = {
 
 export default function RouteViewer(props: Props) {
   const route = (props.routes && props.focusedIndex !== null) ? props.routes[props.focusedIndex] : null;
+  const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode);
 
   return (
     <div className={'flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-6 backdrop-blur-xs overflow-hidden px-6 border-l border-grass/20'}>
@@ -36,6 +38,8 @@ export default function RouteViewer(props: Props) {
               </Link>
               <div className="text-foreground-1/60 mt-1 flex items-center gap-1.5">
                 <span className="text-xs font-bold">by @{route.author.name}</span>
+                <span className="text-xs text-foreground-1/30">•</span>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-accent-0">For {route.routeFor}</span>
               </div>
             </div>
 
@@ -76,12 +80,12 @@ export default function RouteViewer(props: Props) {
               <h3 className="text-lg font-semibold text-foreground-1">Route Info</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">Created</span>
-                  <span className="font-medium text-foreground-1">{new Date(route.createdAt).toLocaleDateString()}</span>
+                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">Budget</span>
+                  <span className="font-medium text-foreground-1">{localizedBudget}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">Waypoints</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">{route.routeNodes.length} stops</span>
+                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">Period</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">{route.routeDates.length} days</span>
                 </div>
               </div>
             </div>

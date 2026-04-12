@@ -29,12 +29,19 @@ export default async function Page({ params }: { params: { id: string } }) {
       views: true,
       tags: true,
       budget: true,
-      routeNodes: {
-        orderBy: { order: 'asc' },
+      routeDates: {
+        orderBy: { day: 'asc' },
         include: {
-          spot: true,
-          images: true,
-          transitSteps: true
+          routeNodes: {
+            orderBy: { order: 'asc' },
+            include: {
+              spot: true,
+              images: true,
+              transitSteps: {
+                orderBy: { order: 'asc' }
+              }
+            }
+          }
         }
       },
       collaborators: true,

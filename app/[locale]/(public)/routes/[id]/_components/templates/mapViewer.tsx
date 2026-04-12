@@ -21,6 +21,10 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
   const routeGeometry = useRouteGeometry(route);
   const t = useTranslations('errors');
 
+  const allRouteNodes = useMemo(() => {
+    return route?.routeDates?.flatMap(rd => rd.routeNodes) || route?.routeNodes || [];
+  }, [route?.routeDates, route?.routeNodes]);
+
   useEffect(() => {
     if (mapboxAccessToken) {
       mapboxgl.accessToken = mapboxAccessToken;
@@ -28,7 +32,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
   }, [mapboxAccessToken]);
 
   useEffect(() => {
-    if (!route || !route.routeNodes || route.routeNodes.length === 0 || !mapRef.current) return;
+    if (!route || allRouteNodes.length === 0 || !mapRef.current) return;
 
     // focusIndexが有効な範囲内かつ、itemsが存在する場合
     if (items && focusIndex !== undefined && focusIndex >= 0 && focusIndex < items.length) {
@@ -48,7 +52,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
     }
 
     // 初期表示またはfocusIndexがWaypoint以外の場合（全体を表示）
-    const coords = route.routeNodes
+    const coords = allRouteNodes
       .filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
       .map(node => [node.spot.longitude as number, node.spot.latitude as number]);
 
@@ -73,10 +77,10 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
         { padding: 80, duration: 2000 }
       );
     }
-  }, [route, focusIndex, items]);
+  }, [route, focusIndex, items, allRouteNodes]);
 
   const lineData = useMemo(() => {
-    if (!route || !route.routeNodes || route.routeNodes.length < 2) return null;
+    if (!route) return null;
 
     if (routeGeometry) {
       return {
@@ -86,8 +90,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
       };
     }
 
-    // Fallback to straight lines if routeGeometry is not available
-    const coordinates = route.routeNodes
+    const coordinates = allRouteNodes
       .filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
       .map(node => [node.spot.longitude as number, node.spot.latitude as number]);
 
@@ -101,7 +104,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
         coordinates: coordinates
       }
     };
-  }, [route, routeGeometry]);
+  }, [routeGeometry, allRouteNodes]);
 
   if (!mapboxAccessToken) return (
     <div className="absolute inset-0 bg-background-1 flex items-center justify-center">
@@ -114,15 +117,15 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
       <Map
         ref={mapRef}
         initialViewState={{
-          latitude: route.routeNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,
-          longitude: route.routeNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,
+          latitude: allRouteNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,
+          longitude: allRouteNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,
           zoom: 11,
         }}
         mapStyle="mapbox://styles/mapbox/streets-v12"
         mapboxAccessToken={mapboxAccessToken}
         style={{ width: "100%", height: "100%" }}
       >
-        {route.routeNodes?.filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
+        {allRouteNodes?.filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
           <Marker
             key={node.id}
             longitude={node.spot.longitude as number}
@@ -145,18 +148,18 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
         ))}
 
         {lineData && (
-          <Source type="geojson" data={lineData as any}>
+          <Source type="geojson" data={lineData}>
             <Layer
-              id={`route-line-${route.id}`}
+              id="route-line"
               type="line"
               layout={{
                 "line-join": "round",
                 "line-cap": "round"
               }}
               paint={{
-                "line-color": "#ff6363",
+                "line-color": "#ff6363", // accent-color-0
                 "line-width": 4,
-                "line-opacity": 0.6
+                "line-opacity": 0.8
               }}
             />
           </Source>
