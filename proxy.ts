@@ -1,7 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { updateSession } from "@/lib/auth/supabase/proxy"
-import createIntlMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale, localeMapping, type Locale } from './i18n/config';
+import { updateSession } from "@/lib/auth/supabase/proxy";
+import createIntlMiddleware from "next-intl/middleware";
+import { NextResponse, type NextRequest } from "next/server";
+import { defaultLocale, localeMapping, locales, type Locale } from "./i18n/config";
 
 /**
  * next-intl ミドルウェア
@@ -9,7 +9,7 @@ import { locales, defaultLocale, localeMapping, type Locale } from './i18n/confi
 const intlMiddleware = createIntlMiddleware({
   locales,
   defaultLocale,
-  localePrefix: 'as-needed',
+  localePrefix: "as-needed",
   localeDetection: true,
 });
 
@@ -18,9 +18,9 @@ const intlMiddleware = createIntlMiddleware({
  */
 function parseAcceptLanguage(header: string): Locale | null {
   const languages = header
-    .split(',')
+    .split(",")
     .map((lang) => {
-      const [code, qValue] = lang.trim().split(';q=');
+      const [code, qValue] = lang.trim().split(";q=");
       return {
         code: code.trim(),
         q: qValue ? parseFloat(qValue) : 1,
@@ -32,7 +32,7 @@ function parseAcceptLanguage(header: string): Locale | null {
     if (localeMapping[code]) {
       return localeMapping[code];
     }
-    const baseCode = code.split('-')[0];
+    const baseCode = code.split("-")[0];
     if (localeMapping[baseCode]) {
       return localeMapping[baseCode];
     }
@@ -41,25 +41,69 @@ function parseAcceptLanguage(header: string): Locale | null {
   return null;
 }
 
+function applyApiSecurityHeaders(res: NextResponse) {
+  res.headers.set("X-Content-Type-Options", "nosniff");
+  res.headers.set("X-Frame-Options", "DENY");
+  res.headers.set("Referrer-Policy", "no-referrer");
+
+  // APIはCSP軽めでOK
+  res.headers.set("Content-Security-Policy", "default-src 'none'");
+
+  return res;
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // APIルートはセッション更新のみ
-  if (pathname.startsWith('/api')) {
-    return await updateSession(request);
+  if (pathname.startsWith("/api")) {
+    const origin = request.headers.get("origin");
+    if (origin && !origin.includes(process.env.PRODUCTION_URL!)) {
+      console.warn(`[Blocked] Unauthorized origin:${origin}`);
+      return new NextResponse(JSON.stringify({ error: "Forbidden: Invalid Origin" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const secFetchSite = request.headers.get("sec-fetch-site");
+    if (secFetchSite && secFetchSite !== "same-origin") {
+      console.warn(`[Blocked] Unauthorized origin:${secFetchSite}`);
+      return new NextResponse(JSON.stringify({ error: "Forbidden: Cross-site request" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const nextResponse = NextResponse.next({
+      request,
+    });
+
+    const sessionResponse = await updateSession(request);
+    sessionResponse.cookies.getAll().forEach((cookie) => {
+      nextResponse.cookies.set(cookie.name, cookie.value, {
+        path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+    });
+
+    applyApiSecurityHeaders(nextResponse);
+
+    return nextResponse;
   }
 
   // OAuth コールバックはセッション更新のみ
-  if (pathname.startsWith('/auth/callback')) {
+  if (pathname.startsWith("/auth/callback")) {
     return await updateSession(request);
   }
 
   // ユーザーのロケール設定をクッキーからチェック
-  const userLocaleCookie = request.cookies.get('NEXT_LOCALE');
+  const userLocaleCookie = request.cookies.get("NEXT_LOCALE");
 
   if (!userLocaleCookie?.value || !locales.includes(userLocaleCookie.value as Locale)) {
     // ゲストユーザー: Accept-Languageヘッダーから検出
-    const acceptLanguage = request.headers.get('Accept-Language');
+    const acceptLanguage = request.headers.get("Accept-Language");
     if (acceptLanguage) {
       const preferredLocale = parseAcceptLanguage(acceptLanguage);
       if (preferredLocale) {
@@ -67,19 +111,19 @@ export async function proxy(request: NextRequest) {
         const intlResponse = intlMiddleware(request);
 
         // 一時的なクッキーを設定
-        intlResponse.cookies.set('NEXT_LOCALE', preferredLocale, {
+        intlResponse.cookies.set("NEXT_LOCALE", preferredLocale, {
           maxAge: 60 * 60 * 24, // ゲストは1日
-          path: '/',
-          sameSite: 'lax',
+          path: "/",
+          sameSite: "lax",
         });
 
         // Supabaseセッションクッキーをコピー
         const sessionResponse = await updateSession(request);
         sessionResponse.cookies.getAll().forEach((cookie) => {
           intlResponse.cookies.set(cookie.name, cookie.value, {
-            path: '/',
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
+            path: "/",
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
           });
         });
 
@@ -97,9 +141,9 @@ export async function proxy(request: NextRequest) {
   // セッションクッキーをintlResponseにコピー
   sessionResponse.cookies.getAll().forEach((cookie) => {
     intlResponse.cookies.set(cookie.name, cookie.value, {
-      path: '/',
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   });
 
@@ -111,4 +155,4 @@ export const config = {
     // 静的ファイルを除外
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
-}
+};
