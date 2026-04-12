@@ -7,6 +7,7 @@ import Image from "next/image";
 import {HiHeart, HiEye, HiUsers, HiCurrencyDollar, HiArrowRight} from "react-icons/hi2";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
 
 type Props = {
     routeOnFocus: Route
@@ -21,6 +22,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
     const prevIndexRef = useRef<number>(0);
     const t = useTranslations('common');
     const tRoutes = useTranslations('routes');
+    const localizedBudget = useLocalizedBudget(routeOnFocus?.budget?.amount, routeOnFocus?.budget?.localCurrencyCode, t('flexible'));
     const SCROLL_THRESHOLD = 10;
     const WHEEL_COOLDOWN_MS = 150; // timeout to prevent rapid successive index changes
     const wheelTimeoutRef = useRef<number | null>(null);
@@ -138,7 +140,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                         <div className="px-3 py-1.5 bg-background-0 rounded-lg flex items-center gap-2 border border-background-2/50">
                                             <HiCurrencyDollar className="w-4 h-4 text-foreground-1" />
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-0">
-                                                {routeOnFocus.budget ? `${routeOnFocus.budget.amount.toLocaleString()} ${routeOnFocus.budget.currency}` : t('flexible')}
+                                                {localizedBudget}
                                             </span>
                                         </div>
                                     </div>

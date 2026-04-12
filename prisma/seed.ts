@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { PrismaClient, RouteVisibility, RouteFor, TransitMode, SpotSource, CurrencyCode } from "@prisma/client";
+import { PrismaClient, RouteVisibility, RouteFor, TransitMode, SpotSource, CurrencyCode, Locale, Language } from "@prisma/client";
 import { getPrisma, getMeilisearch } from "@/lib/config/server";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
@@ -11,21 +11,53 @@ const prisma = getPrisma();
 async function main() {
     // Seed users
     const users =  [
-        {id: '00000000-0000-0000-0000-000000000001', name: 'lychee', bio: 'Travel enthusiast from Kyoto.'},
-        {id: '00000000-0000-0000-0000-000000000002', name: 'avocado', bio: 'Nature lover and hiker.'},
-        {id: '00000000-0000-0000-0000-000000000003', name: 'mango', bio: 'Foodie exploring the world.'},
-        {id: '00000000-0000-0000-0000-000000000004', name: 'papaya', bio: 'Culture seeker.'},
-        {id: '00000000-0000-0000-0000-000000000005', name: 'plum', bio: 'Adventure awaits!'},
+        {
+            id: '00000000-0000-0000-0000-000000000001',
+            name: 'lychee',
+            bio: 'Travel enthusiast from Kyoto.',
+            locale: Locale.JA,
+            language: Language.JA,
+        },
+        {
+            id: '00000000-0000-0000-0000-000000000002',
+            name: 'avocado',
+            bio: 'Nature lover and hiker.',
+            locale: Locale.EN,
+            language: Language.EN,
+        },
+        {
+            id: '00000000-0000-0000-0000-000000000003',
+            name: 'mango',
+            bio: 'Foodie exploring the world.',
+            locale: Locale.KO,
+            language: Language.KO,
+        },
+        {
+            id: '00000000-0000-0000-0000-000000000004',
+            name: 'papaya',
+            bio: 'Culture seeker.',
+            locale: Locale.ZH,
+            language: Language.ZH,
+        },
+        {
+            id: '00000000-0000-0000-0000-000000000005',
+            name: 'plum',
+            bio: 'Adventure awaits!',
+            locale: Locale.JA,
+            language: Language.EN,
+        },
     ]
 
     for(const user of users) {
         await prisma.user.upsert({
             where: { id: user.id },
-            update: { name: user.name, bio: user.bio },
+            update: { name: user.name, bio: user.bio, locale: user.locale, language: user.language },
             create: {
                 id: user.id,
                 name: user.name,
                 bio: user.bio,
+                locale: user.locale,
+                language: user.language,
             }
         })
     }
@@ -81,6 +113,7 @@ async function main() {
                 visibility: RouteVisibility.PUBLIC,
                 date: new Date(2024, i % 12, 1),
                 routeFor: Object.values(RouteFor)[i % Object.values(RouteFor).length] as RouteFor,
+                language: users[(i % users.length)].language,
                 tags: {
                     set: [],
                     connectOrCreate: routeTags.map((name) => ({
@@ -97,6 +130,7 @@ async function main() {
                 visibility: RouteVisibility.PUBLIC,
                 date: new Date(2024, i % 12, 1),
                 routeFor: Object.values(RouteFor)[i % Object.values(RouteFor).length] as RouteFor,
+                language: users[(i % users.length)].language,
                 tags: {
                     connectOrCreate: routeTags.map((name) => ({
                         where: { name },
@@ -160,6 +194,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
             visibility: route.visibility,
             createdAt: route.createdAt?.getTime(),
             updatedAt: route.updatedAt?.getTime(),
+            language: route.language,
             spotNames: route.routeNodes.map((n) => n.spot.name).filter(Boolean),
             tags: route.tags.map((t) => t.name),
             month: route.date ? [route.date.getMonth() + 1] : undefined,

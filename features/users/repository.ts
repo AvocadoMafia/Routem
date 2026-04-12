@@ -124,8 +124,8 @@ export const usersRepository = {
           data: {
             name: data.name,
             bio: data.bio,
+            locale: data.locale,
             language: data.language,
-            location: data.location,
           },
           include: {
             icon: true,

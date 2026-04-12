@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/server/constants";
+import {Language, Locale} from "@prisma/client";
 
-//
 /**
  * APIで使うUserの共通スキーマ
  */
@@ -24,8 +24,8 @@ export const UserSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
   bio: z.string().optional(),
-  language: z.string().optional(),
-  location: z.string().optional(),
+  locale: z.enum(Locale).optional(),
+  language: z.enum(Language).optional(),
   icon: z.string().optional(),
   background: z.string().optional(),
   createdAt: z.date(),
@@ -48,8 +48,8 @@ export const CreateUserSchema = UserSchema.omit({ id: true });
 export const UpdateUserSchema = UserSchema.pick({
   name: true,
   bio: true,
+  locale: true,
   language: true,
-  location: true,
 })
   .extend({
     icon: z.string().optional(), // imageId を受け取る

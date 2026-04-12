@@ -4,8 +4,8 @@ import { MeiliSearch } from "meilisearch";
 dotenv.config();
 
 const setupMeilisearch = async () => {
-  const host = process.env.NEXT_PUBLIC_MEILISEARCH_HOST || "http://127.0.0.1:7700";
-  const apiKey = process.env.MEILISEARCH_ADMIN_KEY || "my_master_key";
+  const host = process.env.MEILISEARCH_URL || "http://127.0.0.1:7700";
+  const apiKey = process.env.MEILISEARCH_APIKEY || "my_master_key";
 
   const client = new MeiliSearch({ host, apiKey });
   const routes_index = client.index("routes");
@@ -22,6 +22,7 @@ const setupMeilisearch = async () => {
       "month",
       "budgetInUsd",
       "authorId",
+      "language",
       "companionType",
       "id",
       "localCurrencyCode",

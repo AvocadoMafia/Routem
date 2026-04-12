@@ -7,8 +7,8 @@ const initialUser: User = {
     id: '',
     name: '',
     bio: '',
-    language: 'ja',
-    location: '',
+    locale: 'JA',
+    language: 'JA',
     age: 20,
     gender: 'NON_BINARY' as any,
     icon: {
@@ -52,7 +52,7 @@ type StoreConfig = {
     //zustand内部の情報の操作を担当する関数では、一貫して三つの関数onStart、onSuccess、onFailureを用意する。
     //onStartにはfetch等での戻り値を、onFailureにはerrorをErrorSchemeにキャストしたものを引数としてoptionalで渡す。
     login: (onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>,
-    edit: (profile: {name?: string, bio?:string, background?: string, icon?: string, language?: string, location?: string | null}, onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>,
+    edit: (profile: {name?: string, bio?:string, background?: string, icon?: string, locale?: User["locale"], language?: User["language"]}, onStart?: () => void, onSuccess?: (user?: User) => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>,
     logout: (onStart?: () => void, onSuccess?: () => void, onFailure?: (error?: ErrorScheme) => void) => Promise<void>
 }
 

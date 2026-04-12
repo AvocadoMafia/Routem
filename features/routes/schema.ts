@@ -112,6 +112,7 @@ const RoutesDocumentsSchema = z.array(
     tags: PatchRouteSchema.shape.tags,
     month: z.array(z.number().int().min(1).max(12)).optional(),
     routeFor: PatchRouteSchema.shape.who,
+    language: z.enum(["JA", "EN", "KO", "ZH"]).optional(),
 
     budgetInLocalCurrency: z.number().min(0).optional(),
     localCurrencyCode: z

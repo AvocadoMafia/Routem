@@ -3,11 +3,15 @@ import { create } from "zustand";
 type SearchEnumsResponse = {
   routeFor: string[];
   currencyCode: string[];
+  locale: string[];
+  language: string[];
 };
 
 type SearchEnumsState = {
   routeFor: string[];
   currencyCode: string[];
+  locale: string[];
+  language: string[];
   isLoading: boolean;
   initialized: boolean;
   fetchEnums: () => Promise<void>;
@@ -16,6 +20,8 @@ type SearchEnumsState = {
 export const searchEnumsStore = create<SearchEnumsState>((set, get) => ({
   routeFor: [],
   currencyCode: [],
+  locale: [],
+  language: [],
   isLoading: false,
   initialized: false,
   fetchEnums: async () => {
@@ -33,6 +39,8 @@ export const searchEnumsStore = create<SearchEnumsState>((set, get) => ({
       set({
         routeFor: data.routeFor ?? [],
         currencyCode: data.currencyCode ?? [],
+        locale: data.locale ?? [],
+        language: data.language ?? [],
         initialized: true,
         isLoading: false,
       });

@@ -3,6 +3,7 @@ import { HiHeart, HiEye, HiClock, HiBanknotes } from 'react-icons/hi2'
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
+import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
 
 export type RouteCardGraphicalProps = {
   route: Route;
@@ -13,6 +14,7 @@ export type RouteCardGraphicalProps = {
 }
 
 export default function RouteCardGraphical({route, isLinkCard = true, isFocused = false, onClick, rank}: RouteCardGraphicalProps) {
+  const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
 
   const content = (
     <div
@@ -80,7 +82,7 @@ export default function RouteCardGraphical({route, isLinkCard = true, isFocused 
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">¥3,500</span>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">{localizedBudget}</span>
               </div>
             </div>
           </div>

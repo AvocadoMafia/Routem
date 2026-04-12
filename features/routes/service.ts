@@ -11,7 +11,7 @@ import {
   buildRoutesWhere,
   buildUpdateRouteData,
 } from "@/features/routes/utils";
-import { getMeilisearch, getRedisClient } from "@/lib/config/server";
+import { getMeilisearch, getPrisma, getRedisClient } from "@/lib/config/server";
 import { getNextCursor, sliceByScoreCursor } from "@/lib/server/cursor";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { Prisma, RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
@@ -91,7 +91,14 @@ export const routesService = {
 
   postRoute: async (parsedBody: postRouteType, userId: string) => {
     try {
-      const data = buildCreateRouteData(parsedBody, userId);
+      const author = await getPrisma().user.findUnique({
+        where: { id: userId },
+        select: { language: true },
+      });
+      if (!author) {
+        throw new Error("User not found");
+      }
+      const data = buildCreateRouteData(parsedBody, userId, author.language);
       const result = await routesRepository.create(data);
       await syncToMeilisearch(result);
       return result;
@@ -257,6 +264,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       tags: route.tags.map((t) => t.name),
       month: route.date ? [route.date.getMonth() + 1] : undefined,
       routeFor: route.routeFor,
+      language: route.language,
       budgetInLocalCurrency: route.budget?.amount,
       localCurrencyCode: route.budget?.localCurrencyCode,
       budgetInUsd,

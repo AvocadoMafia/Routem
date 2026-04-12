@@ -17,8 +17,8 @@ model User {
   gender          String?
   age             Int?
   bio             String?
-  language        String              @default("ja")
-  location        String?
+  locale          Locale              @default(JA)
+  language        Language            @default(JA)
   icon            Image?              @relation("UserIcon")
   background      Image?              @relation("UserBackground")
   uploadedImages  Image[]             @relation("UserUploads")
@@ -94,6 +94,7 @@ model Route {
   budget   Budget?
   routeFor RouteFor @default(EVERYONE)
   date     DateTime
+  language Language
   tags     Tag[]
 
   authorId String @db.Uuid
@@ -293,6 +294,20 @@ enum RouteFor {
   FRIENDS
   COUPLE
   SOLO
+}
+
+enum Locale {
+  JA
+  EN
+  KO
+  ZH
+}
+
+enum Language {
+  JA
+  EN
+  KO
+  ZH
 }
 
 enum CurrencyCode {

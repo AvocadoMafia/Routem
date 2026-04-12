@@ -21,6 +21,15 @@ export async function GET(req: NextRequest) {
     if (error) throw new Error("auth error");
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
+
+    if (
+      user &&
+      (parsed_params.type === "user_recommend" || parsed_params.type === "followings") &&
+      !parsed_params.targetId
+    ) {
+      parsed_params.targetId = user.id;
+    }
+
     const data = await routesService.getRoutes(parsed_params);
     return NextResponse.json(data, { status: 200 });
   });

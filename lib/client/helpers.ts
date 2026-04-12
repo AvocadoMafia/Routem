@@ -1,5 +1,6 @@
 import { ErrorScheme } from "@/lib/client/types"
 import NProgress from "nprogress"
+import { defaultLocale, isValidLocale, type Locale } from "@/i18n/config"
 
 // nprogress設定
 NProgress.configure({
@@ -134,6 +135,12 @@ export async function deleteDataToServerWithJson<T>(
     return requestToServerWithJson<T>(url, "DELETE")
 }
 
+export function dbLocaleToAppLocale(value?: string | null): Locale {
+    if (!value) return defaultLocale
+    const normalized = value.trim().toLowerCase()
+    return isValidLocale(normalized) ? normalized : defaultLocale
+}
+
 
 export function getMonthName(month: number): string {
     const months = [
@@ -153,4 +160,50 @@ export function getMonthName(month: number): string {
     ];
 
     return months[month] ?? "Invalid Month";
+}
+
+const localeCurrencyMap: Record<Locale, string> = {
+    ja: "JPY",
+    en: "USD",
+    ko: "KRW",
+    zh: "CNY",
+}
+
+function isSupportedCurrencyCode(currency: string): boolean {
+    return /^[A-Z]{3}$/.test(currency)
+}
+
+function convertAmount(
+    amount: number,
+    fromCurrency: string,
+    toCurrency: string,
+    rates: Record<string, number>,
+): number | null {
+    if (fromCurrency === toCurrency) return amount
+    const fromRate = rates[fromCurrency]
+    const toRate = rates[toCurrency]
+    if (!fromRate || !toRate) return null
+    const amountInUsd = amount * fromRate
+    return amountInUsd / toRate
+}
+
+export function formatBudgetByLocale(params: {
+    amount: number
+    localCurrencyCode: string
+    locale: Locale
+    rates: Record<string, number>
+}): string {
+    const { amount, localCurrencyCode, locale, rates } = params
+    const targetCurrency = localeCurrencyMap[locale]
+    const converted = convertAmount(amount, localCurrencyCode, targetCurrency, rates)
+
+    if (converted !== null && isSupportedCurrencyCode(targetCurrency)) {
+        return new Intl.NumberFormat(locale, {
+            style: "currency",
+            currency: targetCurrency,
+            maximumFractionDigits: 0,
+        }).format(converted)
+    }
+
+    return `${amount.toLocaleString()} ${localCurrencyCode}`
 }

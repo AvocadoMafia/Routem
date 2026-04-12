@@ -4,7 +4,6 @@ import { Pool } from "pg";
 import { createClient } from "redis";
 
 async function main() {
-    // データベース接続設定 (lib/config/server.ts のロジックを抽出)
     const dbType = process.env.DB_TYPE || "local";
     const connectionString = dbType === "vercel" 
         ? process.env.VERCEL_DATABASE_URL 
@@ -67,7 +66,6 @@ async function main() {
     // 2. User Recommendations (recommend:user:${userId})
     for (const user of users) {
         const userInterestedTagNames = new Set<string>();
-        // ユーザーが「いいね」または「閲覧」した記事のタグを集める
         const likedRoutes = routes.filter(r => user.likes.some(l => l.routeId === r.id));
         const viewedRoutes = routes.filter(r => r.views.some(v => v.userId === user.id));
         
@@ -75,7 +73,7 @@ async function main() {
         viewedRoutes.forEach(r => r.tags.forEach(t => userInterestedTagNames.add(t.name)));
 
         const userScored = routes
-            .filter(r => r.authorId !== user.id) // 自分の記事は除外
+            .filter(r => r.authorId !== user.id) // 自分の記事を排除
             .map(r => {
                 let score = 0;
                 // タグが一致していたら加点
@@ -86,19 +84,17 @@ async function main() {
                 if (user.followings.some(f => f.followingId === r.authorId)) {
                     score += 50;
                 }
-                // 基本スコア（いいね数など）も加味
+                // 基本スコア（いいね数なども加味）
                 const baseScore = r.likes.length * 2 + r.views.length;
-                
-                // 最近の投稿へのブースト (Globalと同様)
+
+                // 最近の投稿へのブースト（Globalと同様）
                 const recentBoost =
                     Date.now() - r.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000
                         ? 20
                         : 0;
 
-                return { id: r.id, score: score + baseScore + recentBoost };
+                return { id: r.id, score: score + baseScore + (r.language === user.language ? 40 : 0) + recentBoost };
             })
-            // スコアが0でも、新着記事などは含めるようにフィルタを緩めるか、
-            // あるいは最低限グローバルなおすすめを混ぜる
             .sort((a, b) => {
                 if (b.score !== a.score) return b.score - a.score;
                 return b.id.localeCompare(a.id);
@@ -116,10 +112,9 @@ async function main() {
         const followingsScored = routes
             .filter(r => followingIds.includes(r.authorId))
             .map(r => {
-                // 基本スコア（いいね数など）
+
                 const baseScore = r.likes.length * 2 + r.views.length;
-                
-                // 最近の投稿へのブースト
+
                 const recentBoost =
                     Date.now() - r.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000
                         ? 50
@@ -135,7 +130,7 @@ async function main() {
         if (followingsScored.length > 0) {
             await redis.set(`recommend:followings:${user.id}`, JSON.stringify(followingsScored));
         } else {
-            // フォローしている人がいない、または投稿がない場合はキーを削除（以前あった場合のため）
+            // フォローしている人がいない、または投稿がない場合のキーを削除（以前あった場合のため）
             await redis.del(`recommend:followings:${user.id}`);
         }
     }
@@ -150,8 +145,8 @@ async function main() {
                 r.tags.forEach(t => {
                     if (currentTagNames.includes(t.name)) commonTags++;
                 });
-                
-                // 関連度（共通タグ）を最優先にしつつ、基本スコアもわずかに加味して
+
+                // 関連度は共通タグ数を最優先にしつつ、基本スコアもわずかに加味して
                 // 全くタグが被らなくても何かしら出るようにする
                 const baseScore = r.likes.length * 0.1 + r.views.length * 0.01;
                 

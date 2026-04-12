@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { useTranslations } from 'next-intl'
-import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, MdArrowBack, MdLanguage, MdLocationOn, MdSave } from 'react-icons/md'
+import { useLocale, useTranslations } from 'next-intl'
+import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, MdArrowBack, MdLanguage, MdSave } from 'react-icons/md'
 import { createClient } from '@/lib/auth/supabase/client'
 import { userStore } from '@/lib/client/stores/userStore'
-import { localeNames, type Locale } from '@/i18n/config'
-import {deleteDataToServerWithJson} from "@/lib/client/helpers";
+import { localeNames } from '@/i18n/config'
+import { searchEnumsStore } from '@/lib/client/stores/searchEnumsStore'
+import { dbLocaleToAppLocale, deleteDataToServerWithJson } from "@/lib/client/helpers";
+import type { User } from '@/lib/client/types'
 
 export default function RootClient() {
   const router = useRouter()
@@ -17,21 +19,47 @@ export default function RootClient() {
   const [isLoading, setIsLoading] = useState(false)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [language, setLanguage] = useState('')
-  const [location, setLocation] = useState('')
+  const user = userStore(state => state.user)
+  const [locale, setLocale] = useState<string>(user.locale || '')
+  const [language, setLanguage] = useState<string>(user.language || '')
+  const localeOptions = searchEnumsStore(state => state.locale)
+  const languageOptions = searchEnumsStore(state => state.language)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
+  const currentLocale = useLocale()
   const t = useTranslations('settings')
   const tAuth = useTranslations('auth')
-  const tProfile = useTranslations('profile')
+
+  const regionDisplayNames = useMemo(
+    () => new Intl.DisplayNames([currentLocale], { type: 'region' }),
+    [currentLocale]
+  )
+  const localeRegionMap: Record<string, string> = {
+    JA: 'JP',
+    EN: 'US',
+    KO: 'KR',
+    ZH: 'CN',
+  }
+  const localeLabel = (value: string) =>
+    regionDisplayNames.of(localeRegionMap[value]) ?? localeRegionMap[value]
+  const languageLabel = (value: string) => localeNames[dbLocaleToAppLocale(value)]
+
+  useEffect(() => {
+    if (user.locale) setLocale(user.locale)
+    if (user.language) setLanguage(user.language)
+  }, [user.locale, user.language])
 
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!locale || !language) {
+      setMessage({ type: 'error', text: t('updateFailed') })
+      return
+    }
     setIsLoading(true)
     const profile = {
-      language,
-      location: location || null
+      locale: locale as User["locale"],
+      language: language as User["language"],
     }
     await userStore.getState().edit(
       profile,
@@ -82,7 +110,7 @@ export default function RootClient() {
     setIsLoading(true)
     try {
       await deleteDataToServerWithJson('/api/v1/users/me')
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: t('updateFailed') })
     } finally {
       setIsLoading(false)
@@ -119,36 +147,40 @@ export default function RootClient() {
                     <MdLanguage size={24} />
                   </div>
                   <div className="flex-1">
+                    <div className="font-bold mb-1">{t('locale')}</div>
+                    <select
+                      value={locale}
+                      onChange={(e) => setLocale(e.target.value)}
+                      className="w-full bg-background-2 border border-grass/10 rounded-xl px-4 py-2 focus:outline-none focus:border-grass transition-colors appearance-none"
+                    >
+                      {localeOptions.map((localeOption) => (
+                        <option key={localeOption} value={localeOption}>
+                          {localeLabel(localeOption)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-grass rounded-xl flex items-center justify-center text-foreground-1">
+                    <MdLanguage size={24} />
+                  </div>
+                  <div className="flex-1">
                     <div className="font-bold mb-1">{t('language')}</div>
                     <select
                       value={language}
                       onChange={(e) => setLanguage(e.target.value)}
                       className="w-full bg-background-2 border border-grass/10 rounded-xl px-4 py-2 focus:outline-none focus:border-grass transition-colors appearance-none"
                     >
-                      {(Object.keys(localeNames) as Locale[]).map((locale) => (
-                        <option key={locale} value={locale}>
-                          {localeNames[locale]}
+                      {languageOptions.map((languageOption) => (
+                        <option key={languageOption} value={languageOption}>
+                          {languageLabel(languageOption)}
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-grass rounded-xl flex items-center justify-center text-foreground-1">
-                    <MdLocationOn size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-bold mb-1">{tProfile('location')}</div>
-                    <input
-                      type="text"
-                      placeholder={tProfile('locationPlaceholder')}
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="w-full bg-background-2 border border-grass/10 rounded-xl px-4 py-2 focus:outline-none focus:border-grass transition-colors"
-                    />
-                  </div>
-                </div>
               </div>
 
               <button
@@ -255,3 +287,4 @@ export default function RootClient() {
     </div>
   )
 }
+

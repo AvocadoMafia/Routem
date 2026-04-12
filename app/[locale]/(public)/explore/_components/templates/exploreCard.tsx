@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { userStore } from "@/lib/client/stores/userStore";
 import { searchEnumsStore } from "@/lib/client/stores/searchEnumsStore";
+import { dbLocaleToAppLocale } from "@/lib/client/helpers";
 
 interface ExploreCardProps {
   isSidebar?: boolean;
@@ -52,7 +53,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const userLanguage = userStore((state) => state.user.language);
+  const user = userStore((state) => state.user);
   const routeForOptions = searchEnumsStore((state) => state.routeFor);
   const currencyOptions = searchEnumsStore((state) => state.currencyCode);
 
@@ -123,10 +124,13 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   useEffect(() => {
     if (currencyCode) return;
     if (!currencyOptions.length) return;
-    const preferred = DEFAULT_CURRENCY_BY_LANGUAGE[userLanguage || ""];
+    const appLocale = user.locale
+      ? dbLocaleToAppLocale(user.locale)
+      : dbLocaleToAppLocale(user.language);
+    const preferred = DEFAULT_CURRENCY_BY_LANGUAGE[appLocale || ""];
     const next = preferred && currencyOptions.includes(preferred) ? preferred : currencyOptions[0];
     setCurrencyCode(next);
-  }, [currencyCode, currencyOptions, userLanguage]);
+  }, [currencyCode, currencyOptions, user.locale, user.language]);
 
   useEffect(() => {
     const onClickOutside = (event: MouseEvent) => {

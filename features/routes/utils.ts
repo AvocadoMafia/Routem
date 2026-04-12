@@ -4,6 +4,7 @@ import {
   CurrencyCode,
   ImageStatus,
   ImageType,
+  Language,
   Prisma,
   RouteCollaboratorPolicy,
   RouteVisibility,
@@ -147,6 +148,7 @@ export function buildRouteNodesFromItems(
 export function buildCreateRouteData(
   body: postRouteType,
   authorId: string,
+  language: Language,
 ): Prisma.RouteCreateInput {
   const routeNodes = buildRouteNodesFromItems(body.items);
 
@@ -168,6 +170,7 @@ export function buildCreateRouteData(
     collaboratorPolicy: (body.collaboratorPolicy as RouteCollaboratorPolicy) ?? undefined,
     routeFor: body.who,
     date: new Date(body.date),
+    language,
     budget: {
       create: {
         localCurrencyCode: body.budget.currencyCode as CurrencyCode,

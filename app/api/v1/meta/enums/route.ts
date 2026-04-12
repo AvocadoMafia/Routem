@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { CurrencyCode, RouteFor } from "@prisma/client";
+import { CurrencyCode, Language, Locale, RouteFor } from "@prisma/client";
 import { handleRequest } from "@/lib/server/handleRequest";
 
 export async function GET() {
@@ -8,6 +8,8 @@ export async function GET() {
       {
         routeFor: Object.values(RouteFor),
         currencyCode: Object.values(CurrencyCode),
+        locale: Object.values(Locale),
+        language: Object.values(Language),
       },
       { status: 200 },
     );

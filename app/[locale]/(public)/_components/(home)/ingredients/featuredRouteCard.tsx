@@ -3,6 +3,7 @@ import React from 'react'
 import {HiHeart, HiClock, HiBanknotes, HiEye} from 'react-icons/hi2'
 import Image from 'next/image';
 import { Route } from '@/lib/types/domain';
+import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
 
 export type FeaturedRouteCardProps = {
   route: Route;
@@ -12,6 +13,7 @@ export type FeaturedRouteCardProps = {
 }
 
 export default function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
+  const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
 
   const content = (
     <div
@@ -77,7 +79,7 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">¥3,500</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">{localizedBudget}</span>
               </div>
             </div>
           </div>
