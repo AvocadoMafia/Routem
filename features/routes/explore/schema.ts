@@ -7,18 +7,22 @@ export const GetRoutesExploreSchema = z
     lat: z.coerce.number().optional(),
     lng: z.coerce.number().optional(),
     who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
+    duration: z.coerce.number().int().min(1).max(365).optional(),
     when: z
-      .preprocess((value) => {
-        if (value === undefined || value === null || value === "") return undefined;
-        if (Array.isArray(value)) return value;
-        if (typeof value === "string") {
-          return value
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean);
-        }
-        return value;
-      }, z.array(z.coerce.number().int().min(1).max(12)).min(1).max(12))
+      .preprocess(
+        (value) => {
+          if (value === undefined || value === null || value === "") return undefined;
+          if (Array.isArray(value)) return value;
+          if (typeof value === "string") {
+            return value
+              .split(",")
+              .map((v) => v.trim())
+              .filter(Boolean);
+          }
+          return value;
+        },
+        z.array(z.coerce.number().int().min(1).max(12)).min(1).max(12),
+      )
       .optional(),
     currencyCode: z
       .enum([

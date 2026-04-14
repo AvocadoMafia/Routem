@@ -232,7 +232,7 @@ export const routesService = {
 };
 
 async function syncToMeilisearch(route: RouteWithRelations) {
-  const allNodes = route.routeDates.flatMap(rd => rd.routeNodes);
+  const allNodes = route.routeDates.flatMap((rd) => rd.routeNodes);
 
   const enTexts = (
     await translateJa2En([
@@ -265,6 +265,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       spotNames: allNodes.map((n) => n.spot.name).filter(Boolean),
       tags: route.tags.map((t) => t.name),
       month: route.date ? [route.date.getMonth() + 1] : undefined,
+      duration: route.routeDates.length,
       routeFor: route.routeFor,
       language: route.language,
       budgetInLocalCurrency: route.budget?.amount,

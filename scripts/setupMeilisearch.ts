@@ -26,6 +26,7 @@ const setupMeilisearch = async () => {
       "companionType",
       "id",
       "localCurrencyCode",
+      "duration",
     ]);
     console.log(" Filterable Attributes の設定完了");
 

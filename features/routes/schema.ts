@@ -1,16 +1,17 @@
 import { z } from "zod";
-import { WaypointSchema, TransportationSchema } from "../database_schema";
+import { TransportationSchema, WaypointSchema } from "../database_schema";
 
 // TODO:型の重複部分をnon-optionalにして共通化するべき
 export const GetRoutesSchema = z.object({
-    authorId: z.string().uuid().optional(),
-    limit: z.coerce.number().min(1).max(100).default(20),
-    cursor: z.string().optional(),
-    type: z.enum(["recommend", "user_recommend", "related", "trending", "user_posts", "followings"]).optional(),
-    targetId: z.string().uuid().optional(),
+  authorId: z.string().uuid().optional(),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  cursor: z.string().optional(),
+  type: z
+    .enum(["recommend", "user_recommend", "related", "trending", "user_posts", "followings"])
+    .optional(),
+  targetId: z.string().uuid().optional(),
 });
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
-
 
 export const PostRouteSchema = z.object({
   description: z.string(),
@@ -111,6 +112,7 @@ const RoutesDocumentsSchema = z.array(
     spotNames: z.array(z.string()).optional(),
     tags: PatchRouteSchema.shape.tags,
     month: z.array(z.number().int().min(1).max(12)).optional(),
+    duration: z.number().int().min(1).max(365).optional(),
     routeFor: PatchRouteSchema.shape.who,
     language: z.enum(["JA", "EN", "KO", "ZH"]).optional(),
 
