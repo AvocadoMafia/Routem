@@ -155,7 +155,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                                             onClick={() => handleNavigate(subItem.path)}
                                                             className={'w-full text-left p-3 text-foreground-1 hover:text-accent-0 transition-colors cursor-pointer'}
                                                         >
-                                                            {t(subItem.nameKey as keyof IntlMessages['navigation'])}
+                                                            {t(subItem.nameKey as any)}
                                                         </button>
                                                     ))}
                                                 </motion.div>

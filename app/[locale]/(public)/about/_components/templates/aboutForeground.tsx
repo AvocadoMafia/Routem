@@ -142,7 +142,7 @@ export default function AboutForeground() {
                             {isLoggedIn ? (
                                 <>
                                     <motion.button
-                                        onClick={() => router.push('/articles/new')}
+                                        onClick={() => router.push('/routes/new')}
                                         className={'bg-accent-0 text-white py-3 px-8 rounded-lg font-bold hover:opacity-90 transition-opacity cursor-pointer'}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}

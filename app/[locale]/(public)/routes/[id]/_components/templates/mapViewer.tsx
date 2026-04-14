@@ -22,8 +22,8 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
   const t = useTranslations('errors');
 
   const allRouteNodes = useMemo(() => {
-    return route?.routeDates?.flatMap(rd => rd.routeNodes) || route?.routeNodes || [];
-  }, [route?.routeDates, route?.routeNodes]);
+    return route?.routeDates?.flatMap(rd => rd.routeNodes) || (route as any)?.routeNodes || [];
+  }, [route?.routeDates, (route as any)?.routeNodes]);
 
   useEffect(() => {
     if (mapboxAccessToken) {
@@ -87,7 +87,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
         type: 'Feature',
         properties: {},
         geometry: routeGeometry
-      };
+      } as any;
     }
 
     const coordinates = allRouteNodes
@@ -103,7 +103,7 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
         type: 'LineString',
         coordinates: coordinates
       }
-    };
+    } as any;
   }, [routeGeometry, allRouteNodes]);
 
   if (!mapboxAccessToken) return (

@@ -15,6 +15,7 @@ import AuthorSection from "../ingredients/authorSection";
 import CategoryTags from "../ingredients/categoryTags";
 import LikeButton from "../ingredients/likeButton";
 import ShareButton from "../ingredients/shareButton";
+import ImportButton from "../ingredients/importButton";
 import CommentSection from "./commentSection";
 import { getTransitIcon } from "../ingredients/transitIcon";
 
@@ -106,6 +107,7 @@ export default function DetailsViewer({
             variant="large" 
           />
           <ShareButton variant="large" />
+          <ImportButton route={route} variant="large" />
         </div>
       </div>
 

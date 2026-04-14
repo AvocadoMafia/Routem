@@ -9,6 +9,7 @@ import CommentItemSkeleton from "../ingredients/commentItemSkeleton";
 import { getDataFromServerWithJson, postDataToServerWithJson } from "@/lib/client/helpers";
 import { Comment } from "@/lib/client/types";
 import { useTranslations } from "next-intl";
+import { userStore } from "@/lib/client/stores/userStore";
 
 type CommentSectionProps = {
   isMobile: boolean;
@@ -18,10 +19,12 @@ type CommentSectionProps = {
 export default function CommentSection({ isMobile, routeId }: CommentSectionProps) {
   const t = useTranslations('comments');
   const tRoutes = useTranslations('routes');
+  const user = userStore((state) => state.user);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -30,10 +33,13 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
     try {
       setLoading(true);
       setError(null);
-      const data = await getDataFromServerWithJson<Comment[]>(`/api/v1/comments?routeId=${routeId}&limit=15&offset=0`);
+      const data = await getDataFromServerWithJson<{ items: Comment[]; nextCursor: string | null }>(
+        `/api/v1/comments?routeId=${routeId}&take=15`
+      );
       if (data) {
-        setComments(data);
-        setHasMore(data.length === 15);
+        setComments(data.items);
+        setCursor(data.nextCursor);
+        setHasMore(!!data.nextCursor);
       }
     } catch (err: any) {
       setError(err.message || "Failed to load comments");
@@ -47,18 +53,20 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
   }, [routeId]);
 
   const fetchMore = async () => {
-    if (isFetching || !hasMore || comments.length === 0) return;
+    if (isFetching || !hasMore || !cursor) return;
     setIsFetching(true);
     try {
-      const offset = comments.length;
-      const data = await getDataFromServerWithJson<Comment[]>(`/api/v1/comments?routeId=${routeId}&limit=15&offset=${offset}`);
-      if (data && data.length > 0) {
-        setComments(prev => {
-          const existingIds = new Set(prev.map(c => c.id));
-          const filtered = data.filter(c => !existingIds.has(c.id));
+      const data = await getDataFromServerWithJson<{ items: Comment[]; nextCursor: string | null }>(
+        `/api/v1/comments?routeId=${routeId}&take=15&cursor=${cursor}`
+      );
+      if (data && data.items.length > 0) {
+        setComments((prev) => {
+          const existingIds = new Set(prev.map((c) => c.id));
+          const filtered = data.items.filter((c) => !existingIds.has(c.id));
           return [...prev, ...filtered];
         });
-        setHasMore(data.length === 15);
+        setCursor(data.nextCursor);
+        setHasMore(!!data.nextCursor);
       } else {
         setHasMore(false);
       }
@@ -70,10 +78,10 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
   };
 
   useEffect(() => {
-    if (!hasMore) return;
+    if (!hasMore || isFetching || loading) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetching && !loading) {
+        if (entries[0].isIntersecting && hasMore && !isFetching) {
           fetchMore();
         }
       },
@@ -81,17 +89,42 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
     );
     if (observerTarget.current) observer.observe(observerTarget.current);
     return () => observer.disconnect();
-  }, [hasMore, comments.length, isFetching, loading]);
+  }, [hasMore, cursor, isFetching, loading]);
 
   const handlePostComment = async (text: string) => {
+    // 楽観的更新のためのダミーデータ作成
+    const dummyComment: Comment = {
+      id: "optimistic-" + Math.random().toString(36).substring(2, 11),
+      text,
+      userId: user.id || "optimistic",
+      routeId,
+      createdAt: new Date(),
+      user: {
+        id: user.id || "optimistic",
+        name: user.name || "Anonymous",
+        icon: user.icon || null,
+      } as any,
+      likes: [],
+    };
+
+    // 楽観的に追加
+    setComments((prev) => [dummyComment, ...prev]);
+
     try {
-      await postDataToServerWithJson("/api/v1/comments", {
+      const actualComment = await postDataToServerWithJson<Comment>("/api/v1/comments", {
         routeId,
         text,
       });
-      // 再取得して一覧を更新
-      await fetchComments();
+
+      if (actualComment) {
+        // ダミーを実際のものに置き換える
+        setComments((prev) =>
+          prev.map((c) => (c.id === dummyComment.id ? { ...actualComment, user: dummyComment.user, likes: [] } : c))
+        );
+      }
     } catch (err: any) {
+      // 失敗した場合はダミーを削除
+      setComments((prev) => prev.filter((c) => c.id !== dummyComment.id));
       alert(err.message || "Failed to post comment");
     }
   };
@@ -126,15 +159,14 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
         ) : comments.length > 0 ? (
           <>
             {comments.map((comment, idx) => (
-              <CommentItem key={idx} comment={comment} />
+              <CommentItem key={comment.id} comment={comment} />
             ))}
-            {hasMore && Array.from({ length: 15 }).map((_, i) => (
+            {hasMore && (
               <CommentItemSkeleton 
-                key={`dummy-${i}`} 
-                isFirst={i === 0}
+                isFirst={true}
                 observerTarget={observerTarget}
               />
-            ))}
+            )}
           </>
         ) : (
           <div className="text-foreground-1 text-sm text-center py-10 italic">{t('noComments')}</div>

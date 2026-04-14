@@ -74,7 +74,7 @@ export default function NavigatorList({ onSearchClick }: Props) {
                                             onClick={() => router.push(subItem.path)}
                                             className={'w-full text-left px-4 py-2 hover:bg-background-0 transition-colors text-foreground-0 whitespace-nowrap cursor-pointer'}
                                         >
-                                            {t(subItem.nameKey as keyof IntlMessages['navigation'] as string)}
+                                            {t(subItem.nameKey as any)}
                                         </button>
                                     ))}
                                 </motion.div>
@@ -88,7 +88,7 @@ export default function NavigatorList({ onSearchClick }: Props) {
                 {isLoggedIn ? (
                     <>
                         <motion.button
-                            onClick={() => router.push('/articles/new')}
+                            onClick={() => router.push('/routes/new')}
                             className={'bg-accent-0 md:bg-accent-0 text-white md:py-1.5 md:px-4 p-2 rounded-full md:rounded-lg font-medium hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2 md:text-white max-md:bg-transparent max-md:text-foreground-0 max-md:hover:bg-grass'}
                             whileHover={{scale:1.02}}
                             whileTap={{scale:0.98}}

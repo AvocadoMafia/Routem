@@ -126,6 +126,8 @@
     "roleOwner": "オーナー",
     "roleCollaborator": "コラボレーター",
     "roleViewer": "閲覧者",
+    "roleMessageOwner": "あなたはこのルートの執筆者です。",
+    "roleMessageCollaborator": "あなたはこのルートの編集権限を持っています。",
     "inviteLink": "招待リンク",
     "deleteConfirm": "このルートを削除しますか？",
     "noDescription": "説明がありません。",
@@ -134,7 +136,8 @@
     "noRelatedArticles": "関連記事がありません。",
     "viewDetailedRoute": "詳細を見る",
     "copyLink": "リンクをコピー",
-    "failedToLike": "いいねに失敗しました"
+    "failedToLike": "いいねに失敗しました",
+    "importRoute": "このルートを取り込む"
   },
   "routeEditor": {
     "editRoute": "ルートを編集",
@@ -302,7 +305,9 @@
     "deleteComment": "コメントを削除",
     "deleteConfirm": "このコメントを削除しますか？",
     "postComment": "コメントを投稿",
-    "posting": "投稿中..."
+    "posting": "投稿中...",
+    "likeComment": "いいね",
+    "likedComment": "いいね済み"
   },
   "upload": {
     "selectImage": "画像を選択",

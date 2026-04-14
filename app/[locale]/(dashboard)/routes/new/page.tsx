@@ -1,4 +1,4 @@
-import ClientRoot from "@/app/[locale]/(dashboard)/articles/new/clientRoot";
+import ClientRoot from "./clientRoot";
 
 export default function Page(){
     return (

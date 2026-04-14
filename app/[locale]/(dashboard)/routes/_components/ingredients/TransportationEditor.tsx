@@ -13,11 +13,11 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
     const t = useTranslations('transport');
 
     const transportModes = [
-        { id: 'WALK', labelKey: 'walk', icon: <Footprints size={20} /> },
-        { id: 'TRAIN', labelKey: 'train', icon: <TrainFront size={20} /> },
-        { id: 'BUS', labelKey: 'bus', icon: <Bus size={20} /> },
-        { id: 'CAR', labelKey: 'car', icon: <Car size={20} /> },
-        { id: 'OTHER', labelKey: 'other', icon: <Sparkles size={20} /> },
+        { id: 'WALK', labelKey: 'walk' as const, icon: <Footprints size={20} /> },
+        { id: 'TRAIN', labelKey: 'train' as const, icon: <TrainFront size={20} /> },
+        { id: 'BUS', labelKey: 'bus' as const, icon: <Bus size={20} /> },
+        { id: 'CAR', labelKey: 'car' as const, icon: <Car size={20} /> },
+        { id: 'OTHER', labelKey: 'other' as const, icon: <Sparkles size={20} /> },
     ];
 
     return (
@@ -42,7 +42,7 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
                         <div className={`${item.method === m.id ? 'scale-110' : ''} transition-transform`}>
                             {m.icon}
                         </div>
-                        <span className="text-xs font-bold">{t(m.labelKey as keyof IntlMessages['transport'])}</span>
+                        <span className="text-xs font-bold">{t(m.labelKey as any)}</span>
                     </button>
                 ))}
             </div>

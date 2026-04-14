@@ -40,7 +40,7 @@ export default function MapViewerOnLaptop(props: Props) {
     }, [mapboxAccessToken]);
 
     useEffect(() => {
-        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || focusedRoute?.routeNodes || [];
+        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
         if (!focusedRoute || routeNodes.length === 0 || !mapRef.current) return;
 
         const coords = (routeNodes as RouteNodeWithSpot[])
@@ -71,7 +71,7 @@ export default function MapViewerOnLaptop(props: Props) {
     }, [focusedRoute?.id]);
 
     const lineData = useMemo(() => {
-        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || focusedRoute?.routeNodes || [];
+        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
         if (!focusedRoute || routeNodes.length < 2) return null;
 
         if (routeGeometry) {
@@ -120,15 +120,15 @@ export default function MapViewerOnLaptop(props: Props) {
                             <Map
                                 ref={mapRef}
                                 initialViewState={{
-                                    latitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || focusedRoute?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
-                                    longitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || focusedRoute?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
+                                    latitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
+                                    longitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
                                     zoom: 12,
                                 }}
                                 mapStyle="mapbox://styles/mapbox/streets-v12"
                                 mapboxAccessToken={mapboxAccessToken}
                                 style={{ width: "100%", height: "100%" }}
                             >
-                                {(focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || focusedRoute?.routeNodes || [] as any[])?.filter((node: any) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node: any, idx: number) => (
+                                {(focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.filter((node: any) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node: any, idx: number) => (
                                     <Marker
                                         key={node.id}
                                         longitude={node.spot.longitude as number}

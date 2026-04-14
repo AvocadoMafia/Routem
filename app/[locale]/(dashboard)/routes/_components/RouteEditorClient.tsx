@@ -63,6 +63,79 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         removeDay
     } = useRouteEditor();
 
+    // -------------------------------------------------------------------------
+    // 取り込み機能 (localStorage)
+    // -------------------------------------------------------------------------
+    useEffect(() => {
+        const importedData = localStorage.getItem("imported_route_data");
+        if (importedData) {
+            try {
+                const route = JSON.parse(importedData) as Route;
+                setTitle(route.title || "");
+                setDescription(route.description || "");
+                setVisibility(route.visibility || 'PUBLIC');
+                setCollaboratorPolicy(route.collaboratorPolicy || 'DISABLED');
+                setRouteFor(route.routeFor || 'EVERYONE');
+                setTags(route.tags?.map((t: { name: string }) => t.name) || []);
+                if (route.thumbnail?.url) {
+                    setThumbnailImageSrc(route.thumbnail.url);
+                }
+
+                if (route.budget) {
+                    setBudget({
+                        currencyCode: route.budget.localCurrencyCode || 'JPY',
+                        amount: Number(route.budget.amount) || 0,
+                    });
+                }
+
+                if (route.routeDates && Array.isArray(route.routeDates) && route.routeDates.length > 0) {
+                    const sortedRouteDates = [...route.routeDates].sort((a, b) => (a.day || 0) - (b.day || 0));
+                    const newItems: RouteItem[][] = sortedRouteDates.map((date) => {
+                        const dayItems: RouteItem[] = [];
+                        if (date.routeNodes) {
+                            const sortedNodes = [...(date.routeNodes as RouteNodeData[])].sort((a, b) => a.order - b.order);
+                            sortedNodes.forEach((node) => {
+                                dayItems.push({
+                                    type: 'waypoint',
+                                    id: Math.random().toString(36).substr(2, 9), // 新規作成として扱うためIDを振り直す
+                                    name: node.spot.name,
+                                    lat: node.spot.latitude || 0,
+                                    lng: node.spot.longitude || 0,
+                                    memo: node.details || '',
+                                    images: node.images?.map((img) => img.url) || [],
+                                    source: (node.spot.source as 'MAPBOX' | 'USER') || 'USER',
+                                    sourceId: node.spot.sourceId || undefined,
+                                    order: node.order
+                                });
+
+                                if (node.transitSteps) {
+                                    const sortedSteps = [...node.transitSteps].sort((a, b) => a.order - b.order);
+                                    sortedSteps.forEach((step) => {
+                                        dayItems.push({
+                                            type: 'transportation',
+                                            id: Math.random().toString(36).substr(2, 9),
+                                            method: step.mode as any,
+                                            memo: step.memo || '',
+                                            distance: step.distance || undefined,
+                                            duration: step.duration || undefined,
+                                            order: step.order
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                        return dayItems;
+                    });
+                    setItems(newItems);
+                }
+            } catch (error) {
+                console.error("Failed to parse imported route data:", error);
+            } finally {
+                localStorage.removeItem("imported_route_data");
+            }
+        }
+    }, [setItems]);
+
     // RouteNode型定義（Prismaベース）
     type RouteNodeData = {
         id: string;

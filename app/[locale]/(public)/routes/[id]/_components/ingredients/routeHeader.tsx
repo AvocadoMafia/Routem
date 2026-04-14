@@ -20,10 +20,12 @@ import {
 import { motion } from "framer-motion";
 import LikeButton from "./likeButton";
 import ShareButton from "./shareButton";
+import ImportButton from "./importButton";
 import { Link } from "@/i18n/navigation";
 import { User } from "@supabase/supabase-js";
 import { useTranslations } from "next-intl";
 import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import {MdInfo} from "react-icons/md";
 
 type RouteHeaderProps = {
   route: Route;
@@ -180,83 +182,74 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       </div>
 
       {(isAuthor || isCollaborator) && (
-        <div className="mt-8 pt-6 border-t border-foreground-0/10 flex flex-wrap items-center justify-between gap-4 w-full">
-          <div className="flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
-              {route.visibility === "PUBLIC" ? (
-                <>
-                  <HiGlobeAlt className="w-3.5 h-3.5 text-accent-0" /> {t("visibility")}: {tCommon("public")}
-                </>
-              ) : (
-                <>
-                  <HiLockClosed className="w-3.5 h-3.5 text-accent-0" /> {t("visibility")}: {tCommon("private")}
-                </>
-              )}
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
-              {isAuthor ? (
-                <>
-                  <HiUser className="w-3.5 h-3.5 text-accent-0" /> {t("roleOwner")}
-                </>
-              ) : isCollaborator ? (
-                <>
-                  <HiUsers className="w-3.5 h-3.5 text-accent-0" /> {t("roleCollaborator")}
-                </>
-              ) : (
-                <>
-                  <HiEye className="w-3.5 h-3.5 text-accent-0" /> {t("roleViewer")}
-                </>
-              )}
-            </div>
+        <div className="mt-8 flex flex-col gap-6 w-full">
+          <div className="text-xl font-bold text-foreground-1 flex items-center gap-2">
+            <MdInfo className={'w-6 h-6'}/>
+            {isAuthor ? t("roleMessageOwner") : t("roleMessageCollaborator")}
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {canEdit && (
-              <Link
-                href={`/articles/${route.id}/edit`}
-                className="flex items-center gap-2 px-4 py-2 bg-accent-0 text-white rounded-xl shadow-md hover:bg-accent-0/90 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
-              >
-                <HiPencilSquare className="w-4 h-4" />
-                {tCommon("edit")}
-              </Link>
-            )}
-
-            {isAuthor && (
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-2 px-4 py-2 bg-accent-0/10 text-accent-0 rounded-xl hover:bg-accent-0/20 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
-              >
-                <HiTrash className="w-4 h-4" />
-                {tCommon("delete")}
-              </button>
-            )}
-
-            {route.collaboratorPolicy !== "DISABLED" && (isAuthor || isCollaborator) && (
-              <div className="flex items-center gap-2">
-                {!inviteUrl ? (
-                  <button
-                    onClick={handleGenerateInvite}
-                    className="flex items-center gap-2 px-4 py-2 bg-foreground-0 text-white rounded-xl shadow-md hover:bg-foreground-0/90 transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
-                  >
-                    <HiShare className="w-4 h-4" />
-                    {t("inviteLink")}
-                  </button>
+          <div className="flex flex-wrap items-center justify-between gap-4 w-full">
+            <div className="flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-foreground-0/5 rounded-full text-[10px] md:text-xs font-medium text-foreground-1 border border-foreground-0/5">
+                {route.visibility === "PUBLIC" ? (
+                  <>
+                    <HiGlobeAlt className="w-3.5 h-3.5 text-accent-0" /> {t("visibility")}: {tCommon("public")}
+                  </>
                 ) : (
-                  <div className="flex items-center gap-2 pl-4 pr-1 py-1 bg-foreground-0/5 rounded-xl border border-foreground-0/10">
-                    <span className="text-[10px] text-foreground-1 font-mono truncate max-w-[120px] md:max-w-[200px]">
-                      {inviteUrl}
-                    </span>
-                    <button
-                      onClick={handleCopy}
-                      className="p-2 hover:bg-foreground-0/10 rounded-lg transition-colors text-accent-0"
-                      title="Copy link"
-                    >
-                      {isCopying ? <HiCheck className="w-4 h-4" /> : <HiClipboard className="w-4 h-4" />}
-                    </button>
-                  </div>
+                  <>
+                    <HiLockClosed className="w-3.5 h-3.5 text-accent-0" /> {t("visibility")}: {tCommon("private")}
+                  </>
                 )}
               </div>
-            )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {route.collaboratorPolicy !== "DISABLED" && (isAuthor || isCollaborator) && (
+                <div className="flex items-center gap-2 h-9">
+                  {!inviteUrl ? (
+                    <button
+                      onClick={handleGenerateInvite}
+                      className="flex items-center gap-2 px-4 h-full bg-background-1 text-foreground-0 border border-accent-0 rounded-full transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+                    >
+                      <HiShare className="w-4 h-4 text-accent-0" />
+                      {t("inviteLink")}
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 pl-4 pr-1 h-full bg-background-1 rounded-full border border-accent-0">
+                      <span className="text-[10px] text-foreground-0 font-mono truncate max-w-[120px] md:max-w-[200px]">
+                        {inviteUrl}
+                      </span>
+                      <button
+                        onClick={handleCopy}
+                        className="p-1.5 hover:bg-foreground-0/10 rounded-full transition-colors text-accent-0"
+                        title="Copy link"
+                      >
+                        {isCopying ? <HiCheck className="w-4 h-4" /> : <HiClipboard className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {canEdit && (
+                <Link
+                  href={`/routes/${route.id}/edit`}
+                  className="flex items-center gap-2 px-4 h-9 bg-background-1 text-foreground-0 border border-accent-0 rounded-full transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+                >
+                  <HiPencilSquare className="w-4 h-4 text-accent-0" />
+                  {tCommon("edit")}
+                </Link>
+              )}
+
+              {isAuthor && (
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-2 px-4 h-9 bg-background-1 text-foreground-0 border border-accent-0 rounded-full transition-all active:scale-95 text-xs font-bold uppercase tracking-wider"
+                >
+                  <HiTrash className="w-4 h-4 text-accent-0" />
+                  {tCommon("delete")}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
