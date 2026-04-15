@@ -43,7 +43,7 @@ export const routesExploreService = {
       }
 
       if (query.days) {
-        filterConditions.push(`duration = ${query.days}`);
+        filterConditions.push(`days = ${query.days}`);
       }
       const filter = filterConditions.length > 0 ? filterConditions.join(" AND ") : undefined;
       const sort =
