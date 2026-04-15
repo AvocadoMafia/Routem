@@ -1,9 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
+// The client you created from the Server-Side Auth instructions
 import { createClient } from '@/lib/auth/supabase/server'
-import { getPrisma } from '@/lib/config/server'
-import { Locale as DbLocale, Language as DbLanguage } from '@prisma/client'
-import { isValidLocale, type Locale as AppLocale } from '@/i18n/config'
+import {getPrisma} from "@/lib/config/server";
 
+/**
+ * OAuth認証コールバックエンドポイント
+ * 
+ * Supabaseからリダイレクトされ、認証コードをセッションに交換するエンドポイント
+ * 
+ * このエンドポイントへのアクセスソースについて：
+ * - ブラウザ（Web）: http://localhost:3000/auth/callback
+ * - iPhone実機: http://192.168.x.x:3000/auth/callback (またはNGROK URL)
+ * - いずれの場合でも、Supabaseの「Redirect URLs」設定に追加する必要があります
+ * 
+ * リダイレクト後の挙動：
+ * - 開発環境: request.origin を使用（自動的にクライアントの origin が使われる）
+ * - 本番環境: X-Forwarded-Host ヘッダーを確認（ロードバランサー等を想定）
+ */
+
+/**
+ * Open Redirect防止: 安全な相対パスのみ許可
+ * - `/`で始まる必要がある
+ * - `//`で始まるURL（プロトコル相対URL）を拒否
+ * - `:`を含むURL（プロトコル指定）を拒否
+ * - `\`を含むURL（パストラバーサル）を拒否
+ */
 function isValidRedirectPath(path: string): boolean {
   if (!path.startsWith('/')) return false
   if (path.startsWith('//')) return false
@@ -12,24 +33,10 @@ function isValidRedirectPath(path: string): boolean {
   return true
 }
 
-function normalizeAppLocale(input?: string | null): AppLocale | null {
-  if (!input) return null
-  const normalized = input.trim().toLowerCase()
-  const head = normalized.split('-')[0]
-  return isValidLocale(head) ? head : null
-}
-
-function appLocaleToDbLocale(value: AppLocale): DbLocale {
-  return value.toUpperCase() as DbLocale
-}
-
-function appLocaleToDbLanguage(value: AppLocale): DbLanguage {
-  return value.toUpperCase() as DbLanguage
-}
-
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  // if "next" is in param, use it as the redirect URL
   const nextParam = searchParams.get('next') ?? '/'
   const next = isValidRedirectPath(nextParam) ? nextParam : '/'
 
@@ -43,35 +50,28 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${origin}/auth/auth-code-error`)
       }
 
-      const supabaseUser = userData.user
-      const localeFromCookie = normalizeAppLocale(request.cookies.get('NEXT_LOCALE')?.value)
-      const languageFromMetadata = normalizeAppLocale(
-        (supabaseUser.user_metadata?.locale as string | undefined) ??
-          (supabaseUser.user_metadata?.language as string | undefined) ??
-          (supabaseUser.user_metadata?.preferred_language as string | undefined),
-      )
-      const initialAppLocale = localeFromCookie ?? languageFromMetadata ?? 'ja'
-      const userLocale = appLocaleToDbLocale(initialAppLocale)
-      const userLanguage = appLocaleToDbLanguage(initialAppLocale)
+      console.log(userData)
 
+      const supabaseUser = userData.user
+
+      // 初回ログイン時のみ作成（ただし upsert なので冪等）
       const displayName =
         (supabaseUser.user_metadata?.name as string | undefined) ??
         (supabaseUser.user_metadata?.full_name as string | undefined) ??
         (supabaseUser.email ? supabaseUser.email.split('@')[0] : 'user')
 
       const iconUrl =
-        userData.user.user_metadata.avatar_url ||
-        userData.user.user_metadata.picture ||
-        `https://api.dicebear.com/7.x/avataaars/svg?seed=${supabaseUser.id}`
+          userData.user.user_metadata.avatar_url ||
+          userData.user.user_metadata.picture
 
-      await getPrisma().user.upsert({
+      console.log(iconUrl)
+
+      const user = await getPrisma().user.upsert({
         where: { id: supabaseUser.id },
         create: {
           id: supabaseUser.id,
           name: displayName,
           bio: undefined,
-          locale: userLocale,
-          language: userLanguage,
           icon: {
             create: {
               url: iconUrl,
@@ -81,19 +81,25 @@ export async function GET(request: NextRequest) {
               createdAt: new Date(),
               updatedAt: new Date(),
               uploaderId: supabaseUser.id,
-            },
+            }
           },
+          // location/profileImage 等も必要ならここで user_metadata から埋める
         },
-        // locale/language are intentionally managed independently after initialization.
-        update: {},
+        update: {
+          // 初回以降に同期したい項目だけ更新する（例：nameを毎回上書きしたくないなら空でOK）
+          //すでにユーザーを登録済みの場合は、アイコンがアップデートされないので注意
+        },
         include: {
-          icon: true,
-        },
+          icon: true
+        }
       })
 
-      const forwardedHost = request.headers.get('x-forwarded-host')
+      console.log(user)
+
+      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development'
       if (isLocalEnv) {
+        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
         return NextResponse.redirect(`${origin}${next}`)
       } else if (forwardedHost) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
@@ -103,5 +109,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // return the user to an error page with instructions
   return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }

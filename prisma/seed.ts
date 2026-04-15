@@ -184,9 +184,9 @@ async function main() {
 
 // Sync route to Meilisearch index (same as in routesService.ts)
 async function syncToMeilisearch(route: RouteWithRelations) {
-    const allNodes = route.routeDates.flatMap(rd => rd.routeNodes);
+    const allNodes = route.routeDates.flatMap((rd) => rd.routeNodes);
 
-    const en_texts = (
+    const enTexts = (
         await translateJa2En([
             route.title,
             route.description,
@@ -195,12 +195,12 @@ async function syncToMeilisearch(route: RouteWithRelations) {
         ])
     ).filter(Boolean);
 
-    const exchange_rates = await exchangeRatesRepository.findMany();
-    const rate_to_usd = exchange_rates.find(
+    const exchangeRates = await exchangeRatesRepository.findMany();
+    const rateToUsd = exchangeRates.find(
         (r) => r.currencyCode === route.budget?.localCurrencyCode,
     )?.rateToUsd;
-    const budget_in_usd =
-        route.budget?.amount && rate_to_usd ? route.budget.amount * rate_to_usd : undefined;
+    const budgetInUsd =
+        route.budget?.amount && rateToUsd ? route.budget.amount * rateToUsd : undefined;
 
     const meilisearch = getMeilisearch();
     const routesIndex = meilisearch.index("routes");
@@ -214,16 +214,15 @@ async function syncToMeilisearch(route: RouteWithRelations) {
             visibility: route.visibility,
             createdAt: route.createdAt?.getTime(),
             updatedAt: route.updatedAt?.getTime(),
-            language: route.language,
             spotNames: allNodes.map((n) => n.spot.name).filter(Boolean),
             tags: route.tags.map((t) => t.name),
             month: route.date ? [route.date.getMonth() + 1] : undefined,
+            days: route.routeDates.length > 0 ? route.routeDates.length : undefined,
             routeFor: route.routeFor,
-
+            language: route.language,
             budgetInLocalCurrency: route.budget?.amount,
             localCurrencyCode: route.budget?.localCurrencyCode,
-            budgetInUsd: budget_in_usd,
-
+            budgetInUsd,
             _geo: {
                 lat: allNodes[0]?.spot.latitude ?? undefined,
                 lng: allNodes[0]?.spot.longitude ?? undefined,
@@ -233,7 +232,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
                 route.description,
                 ...allNodes.map((n) => n.spot?.name).filter(Boolean),
                 ...route.tags.map((t) => t.name),
-                ...en_texts,
+                ...enTexts,
             ].join(" "),
         },
     ];

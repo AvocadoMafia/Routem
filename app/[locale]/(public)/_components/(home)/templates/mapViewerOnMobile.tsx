@@ -6,6 +6,7 @@ import Image from "next/image";
 import 'swiper/css';
 import { HiHeart } from "react-icons/hi2";
 import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useTranslations } from "next-intl";
 
 type Props = {
     routes?: Route[];
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export default function MapViewerOnMobile(props: Props) {
+    const t = useTranslations('routes');
     if (!props.routes) {
         return (
             <div className="w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg overflow-hidden">
@@ -95,7 +97,7 @@ export default function MapViewerOnMobile(props: Props) {
 
                                 <div className="mt-4 flex flex-col gap-3">
                                     <h3 className="text-lg font-semibold text-foreground-1">
-                                        Description
+                                        {t('description')}
                                     </h3>
                                     <p className="text-foreground-1/80 leading-relaxed line-clamp-3">
                                         {route.description}
@@ -104,12 +106,12 @@ export default function MapViewerOnMobile(props: Props) {
 
                                 <div className="mt-4 flex flex-col gap-3">
                                     <h3 className="text-lg font-semibold text-foreground-1">
-                                        Route Info
+                                        {t('routeInfo')}
                                     </h3>
                                     <div className="grid grid-cols-2 gap-3 text-sm">
                                         <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
                                             <span className="block text-foreground-1/40 text-xs">
-                                                Budget
+                                                {t('budget')}
                                             </span>
                                             <span className="font-medium text-foreground-1">
                                                 <RouteBudgetText route={route} />
@@ -117,10 +119,10 @@ export default function MapViewerOnMobile(props: Props) {
                                         </div>
                                         <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
                                             <span className="block text-foreground-1/40 text-xs">
-                                                Period
+                                                {t('days')}
                                             </span>
                                             <span className="font-medium text-foreground-1">
-                                                {route.routeDates.length} days
+                                                {route.routeDates.length} {t('daysUnit')}
                                             </span>
                                         </div>
                                     </div>

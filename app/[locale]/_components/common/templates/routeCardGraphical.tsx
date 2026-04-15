@@ -81,7 +81,7 @@ export default function RouteCardGraphical({route, isLinkCard = true, isFocused 
             <div className="flex gap-2">
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiClock className="w-4 h-4 text-foreground-0" />
-                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">{daysCount} {t('days')}</span>
+                <span className="text-[10px] font-bold tracking-[0.3em] uppercase">{daysCount} {t('daysUnit')}</span>
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />

@@ -61,8 +61,8 @@ export default function RouteCardBasic({ route, isLinkCard = true, isFocused = f
                 <div className="w-full flex items-center gap-2 flex-wrap">
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background-0/80">
                         <HiClock className="w-3 h-3 text-foreground-1" />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{t('period')}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{daysCount} {t('days')}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1">{t('days')}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground-0 truncate">{daysCount} {t('daysUnit')}</span>
                     </div>
                     <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background-0/80">
                         <HiCurrencyDollar className="w-3 h-3 text-foreground-1" />

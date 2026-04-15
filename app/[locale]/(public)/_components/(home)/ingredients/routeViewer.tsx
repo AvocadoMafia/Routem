@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from 'next-intl';
 import {Route} from "@/lib/client/types";
 import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
 
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function RouteViewer(props: Props) {
+  const t = useTranslations('routes');
   const route = (props.routes && props.focusedIndex !== null) ? props.routes[props.focusedIndex] : null;
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode);
 
@@ -77,15 +79,15 @@ export default function RouteViewer(props: Props) {
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
-              <h3 className="text-lg font-semibold text-foreground-1">Route Info</h3>
+              <h3 className="text-lg font-semibold text-foreground-1">{t('routeInfo')}</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">Budget</span>
+                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">{t('budget')}</span>
                   <span className="font-medium text-foreground-1">{localizedBudget}</span>
                 </div>
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">Period</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">{route.routeDates.length} days</span>
+                  <span className="block text-foreground-0 text-[10px] font-bold uppercase tracking-[0.3em]">{t('days')}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">{route.routeDates.length} {t('daysUnit')}</span>
                 </div>
               </div>
             </div>

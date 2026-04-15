@@ -42,7 +42,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
 
   const routeDate = route.date ? new Date(route.date) : null;
   const daysCount = route.routeDates.length;
-  const formattedDuration = `${daysCount} ${t("days")}`;
+  const formattedDuration = `${daysCount} ${t("daysUnit")}`;
 
   const author = route.author;
   const isAuthor = currentUser?.id === route.authorId;

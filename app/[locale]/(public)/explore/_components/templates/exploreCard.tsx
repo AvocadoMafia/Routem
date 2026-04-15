@@ -63,6 +63,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   const [what, setWhat] = useState("");
   const [where, setWhere] = useState("");
   const [whenMonth, setWhenMonth] = useState("");
+  const [days, setDays] = useState("");
   const [who, setWho] = useState("EVERYONE");
   const [budgetAmount, setBudgetAmount] = useState("");
   const [currencyCode, setCurrencyCode] = useState("");
@@ -115,6 +116,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     setWhere(searchParams.get("where") ?? "");
     setWho(searchParams.get("who") ?? "EVERYONE");
     setWhenMonth(searchParams.get("when") ?? "");
+    setDays(searchParams.get("days") ?? "");
     setBudgetAmount(searchParams.get("maxAmount") ?? "");
     setCurrencyCode(searchParams.get("currencyCode") ?? "");
     setLat(searchParams.get("lat"));
@@ -232,6 +234,11 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     const monthNumber = Number(whenMonth);
     if (Number.isInteger(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
       params.set("when", String(monthNumber));
+    }
+
+    const daysNumber = Number(days);
+    if (Number.isInteger(daysNumber) && daysNumber > 0) {
+      params.set("days", String(daysNumber));
     }
 
     if (who && who !== "EVERYONE") {
@@ -409,6 +416,19 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
             ))}
           </TextField>
 
+          <TextField
+            label={t("days")}
+            placeholder={t("daysPlaceholder")}
+            type="number"
+            fullWidth
+            value={days}
+            onChange={(e) => setDays(e.target.value)}
+            sx={textFieldSx}
+            InputLabelProps={{ shrink: true }}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-8">
           <TextField
             select
             label={t("who")}

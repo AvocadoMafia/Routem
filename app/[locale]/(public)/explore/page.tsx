@@ -40,6 +40,7 @@ function ExploreContent() {
       const lat = currentParams.get("lat");
       const lng = currentParams.get("lng");
       const when = currentParams.get("when");
+      const days = currentParams.get("days");
       const who = currentParams.get("who");
       const currencyCode = currentParams.get("currencyCode");
       const minAmount = currentParams.get("minAmount");
@@ -51,6 +52,7 @@ function ExploreContent() {
         params.set("lng", lng);
       }
       if (when) params.set("when", when);
+      if (days) params.set("days", days);
       if (who) params.set("who", who);
       if (currencyCode) params.set("currencyCode", currencyCode);
       if (minAmount) params.set("minAmount", minAmount);
