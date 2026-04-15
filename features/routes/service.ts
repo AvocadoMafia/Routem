@@ -265,7 +265,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
       spotNames: allNodes.map((n) => n.spot.name).filter(Boolean),
       tags: route.tags.map((t) => t.name),
       month: route.date ? [route.date.getMonth() + 1] : undefined,
-      duration: route.routeDates.length,
+      duration: route.routeDates.length > 0 ? route.routeDates.length : undefined,
       routeFor: route.routeFor,
       language: route.language,
       budgetInLocalCurrency: route.budget?.amount,
