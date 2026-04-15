@@ -17,7 +17,9 @@ export const routesExploreService = {
 
       if (query.currencyCode) {
         const exchangeRates = await exchangeRatesRepository.findMany();
-        const rateToUsd = exchangeRates.find((r) => r.currencyCode === query.currencyCode)?.rateToUsd;
+        const rateToUsd = exchangeRates.find(
+          (r) => r.currencyCode === query.currencyCode,
+        )?.rateToUsd;
 
         const minBudgetInUsd =
           query.minAmount && rateToUsd ? query.minAmount * rateToUsd : undefined;
@@ -40,6 +42,9 @@ export const routesExploreService = {
         filterConditions.push(`month IN [${query.when.join(",")}]`);
       }
 
+      if (query.days) {
+        filterConditions.push(`days = ${query.days}`);
+      }
       const filter = filterConditions.length > 0 ? filterConditions.join(" AND ") : undefined;
       const sort =
         query.lat !== undefined && query.lng !== undefined
