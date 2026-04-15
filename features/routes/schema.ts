@@ -112,7 +112,7 @@ const RoutesDocumentsSchema = z.array(
     spotNames: z.array(z.string()).optional(),
     tags: PatchRouteSchema.shape.tags,
     month: z.array(z.number().int().min(1).max(12)).optional(),
-    duration: z.number().int().min(0).optional(),
+    days: z.number().int().min(0).optional(),
     routeFor: PatchRouteSchema.shape.who,
     language: z.enum(["JA", "EN", "KO", "ZH"]).optional(),
 
