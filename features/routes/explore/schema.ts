@@ -7,7 +7,7 @@ export const GetRoutesExploreSchema = z
     lat: z.coerce.number().optional(),
     lng: z.coerce.number().optional(),
     who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
-    duration: z.coerce.number().int().min(1).max(365).optional(),
+    days: z.coerce.number().int().min(1).max(365).optional(),
     when: z
       .preprocess(
         (value) => {
