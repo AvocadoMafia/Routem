@@ -42,7 +42,7 @@ export const routesExploreService = {
         filterConditions.push(`month IN [${query.when.join(",")}]`);
       }
 
-      if (query.duration) {
+      if (query.days) {
         filterConditions.push(`duration = ${query.days}`);
       }
       const filter = filterConditions.length > 0 ? filterConditions.join(" AND ") : undefined;
