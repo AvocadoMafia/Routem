@@ -1,4 +1,15 @@
 services:
+  # proxy
+  enginx:
+    image: nginx:latest
+    container_name: enginx
+    ports: -80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d:ro
+    # depends_on:
+    #   - app
+    restart: always
+
   # データベース(postgres)
   postgres:
     image: postgres:15
