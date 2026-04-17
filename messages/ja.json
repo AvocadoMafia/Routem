@@ -322,6 +322,8 @@
   "explore": {
     "explore": "探索",
     "findYourNextStory": "あなたの次の物語を見つけよう",
+    "yourVacantJourney": "空っぽの旅を、あなたに",
+    "incompleteBookmarkCopy": "書きかけのしおりを、あなたの言葉で...",
     "what": "何を",
     "whatPlaceholder": "自然、温泉、ドライブ...",
     "where": "どこで",
@@ -331,8 +333,13 @@
     "daysPlaceholder": "2泊3日、日帰り...",
     "who": "誰と",
     "budget": "予算",
-    "searchRoutes": "ルートを検索",
+    "searchRoutes": "この条件で検索",
     "discovery": "発見",
+    "stepWhat": "1. 何をしたい？",
+    "stepWhere": "2. どこに行きたい？",
+    "stepWhen": "3. いつ・どのくらい？",
+    "stepWho": "4. 誰と？",
+    "stepBudget": "5. 予算は？",
     "showingResultsFor": "検索結果:",
     "routesFound": "{count}件のルートが見つかりました"
   },
