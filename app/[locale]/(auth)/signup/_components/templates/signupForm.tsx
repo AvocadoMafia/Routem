@@ -86,8 +86,8 @@ export default function SignupForm() {
                 transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
                 className="text-center flex flex-col gap-3"
               >
-                <h2 className="text-5xl font-syne font-bold text-foreground-0">Sign Up</h2>
-                <p className="text-md font-semibold opacity-90">start your journey today.</p>
+                <h2 className="text-5xl font-syne font-bold text-white">Sign Up</h2>
+                <p className="text-md font-semibold opacity-90 text-white/75">start your journey today.</p>
               </motion.div>
 
               <motion.form
@@ -103,7 +103,7 @@ export default function SignupForm() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
                   >
-                    <label htmlFor="username" className="block text-sm font-bold text-foreground-0">
+                    <label htmlFor="username" className="block text-sm font-bold text-white">
                       {t('username')}
                     </label>
                     <input
@@ -123,7 +123,7 @@ export default function SignupForm() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.8, ease: "easeOut" }}
                   >
-                    <label htmlFor="email-address" className="block text-sm font-bold text-foreground-0">
+                    <label htmlFor="email-address" className="block text-sm font-bold text-white">
                       {t('email')}
                     </label>
                     <input
@@ -143,7 +143,7 @@ export default function SignupForm() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
                   >
-                    <label htmlFor="password" id="password-label" className="block text-sm font-bold text-foreground-0">
+                    <label htmlFor="password" id="password-label" className="block text-sm font-bold text-white">
                       {t('password')}
                     </label>
                     <input
@@ -207,8 +207,8 @@ export default function SignupForm() {
                     transition={{ duration: 0.5, delay: 1.2, ease: "easeOut" }}
                     className="text-center"
                   >
-                    <span className="text-sm text-foreground-0/90">{t('hasAccount')} </span>
-                    <Link href="/login" className="text-sm font-medium text-foreground-0 hover:underline hover:text-accent-0">
+                    <span className="text-sm text-white/75">{t('hasAccount')} </span>
+                    <Link href="/login" className="text-sm font-medium text-white hover:underline hover:text-accent-0">
                       {t('signIn')}
                     </Link>
                   </motion.div>
@@ -223,7 +223,7 @@ export default function SignupForm() {
                       <div className="w-full border-t border-foreground-1/30"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 text-foreground-0/90 font-bold">{t('continueWith')}</span>
+                      <span className="px-2 text-white/90 font-bold">{t('continueWith')}</span>
                     </div>
                   </motion.div>
 
@@ -238,7 +238,7 @@ export default function SignupForm() {
                     onClick={handleGoogleLogin}
                   >
                     <FaGoogle className="w-5 h-5 text-accent-0" />
-                    <span>{t('google')}</span>
+                    <span className={'text-white'}>{t('google')}</span>
                   </motion.button>
                 </div>
               </motion.form>
@@ -251,7 +251,7 @@ export default function SignupForm() {
               className="text-center space-y-6"
             >
               <div className="space-y-3">
-                <h2 className="text-4xl font-syne font-bold text-foreground-0">{t('checkEmail')}</h2>
+                <h2 className="text-4xl font-syne font-bold text-white">{t('checkEmail')}</h2>
                 <p className="text-md font-medium opacity-90 leading-relaxed">
                   {t('checkEmailDescription')}
                 </p>

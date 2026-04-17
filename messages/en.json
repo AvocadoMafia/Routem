@@ -317,6 +317,8 @@
   "explore": {
     "explore": "Explore",
     "findYourNextStory": "Find your next story",
+    "yourVacantJourney": "Your Vacant Journey",
+    "incompleteBookmarkCopy": "Fill in the blanks to start your journey...",
     "what": "What",
     "whatPlaceholder": "Nature, Onsen, Driving...",
     "where": "Where",
@@ -326,8 +328,13 @@
     "daysPlaceholder": "3 days, Day trip...",
     "who": "Who",
     "budget": "Budget",
-    "searchRoutes": "Search Routes",
+    "searchRoutes": "Search with these conditions",
     "discovery": "Discovery",
+    "stepWhat": "1. What to do?",
+    "stepWhere": "2. Where to go?",
+    "stepWhen": "3. When & How long?",
+    "stepWho": "4. Who with?",
+    "stepBudget": "5. Budget?",
     "showingResultsFor": "Showing results for",
     "routesFound": "{count} routes found"
   },

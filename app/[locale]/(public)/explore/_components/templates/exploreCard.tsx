@@ -1,6 +1,6 @@
 "use client";
 
-import { MdClose, MdExplore } from "react-icons/md";
+import { MdClose, MdExplore, MdLocationOn, MdCalendarMonth, MdAccessTime, MdPeople, MdPayments, MdLocalOffer } from "react-icons/md";
 import { InputAdornment, MenuItem, TextField } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -259,12 +259,11 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   const textFieldSx = {
     "& .MuiInputLabel-root": {
       color: "var(--foreground-1)",
-      fontSize: "0.75rem",
-      fontWeight: 700,
-      letterSpacing: "0.1em",
-      textTransform: "uppercase",
-      transform: "translate(14px, -9px) scale(1)",
-      backgroundColor: "var(--background-1)",
+      fontSize: "0.8rem",
+      fontWeight: 800,
+      letterSpacing: "0.05em",
+      transform: "translate(14px, -10px) scale(1)",
+      backgroundColor: "#fcfaf2", // しおりの背景色に合わせる
       padding: "0 8px",
       borderRadius: "4px",
       zIndex: 1,
@@ -273,16 +272,16 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       },
     },
     "& .MuiOutlinedInput-root": {
-      borderRadius: "16px",
+      borderRadius: "12px",
       color: "var(--foreground-0)",
-      backgroundColor: "var(--background-1)",
-      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      backgroundColor: "transparent",
+      transition: "all 0.2s ease-in-out",
       "& fieldset": {
-        borderColor: "rgba(var(--foreground-0-rgb), 0.08)",
-        borderWidth: "1px",
+        borderColor: "rgba(var(--foreground-0-rgb), 0.12)",
+        borderWidth: "1.5px",
       },
       "&:hover fieldset": {
-        borderColor: "rgba(var(--foreground-0-rgb), 0.2)",
+        borderColor: "rgba(var(--foreground-0-rgb), 0.25)",
       },
       "&.Mui-focused fieldset": {
         borderColor: "var(--accent-0)",
@@ -292,32 +291,51 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     "& input": {
       color: "var(--foreground-0)",
       fontSize: "0.95rem",
-      padding: "16px",
-      fontWeight: 500,
+      padding: "14px 16px",
+      fontWeight: 600,
     },
     "& .MuiSelect-select": {
-      padding: "16px",
+      padding: "14px 16px",
+      fontWeight: 600,
     },
-    "& .MuiSelect-icon": {
-      color: "var(--foreground-1) !important",
-      right: "12px",
-      transition: "all 0.3s ease",
+    "& .MuiInputAdornment-root": {
+      color: "var(--foreground-1)",
     },
   };
 
+  const StepLabel = ({ icon: Icon, text }: { icon: any; text: string }) => (
+    <div className="flex items-center gap-2 mb-2 ml-1">
+      <Icon className="text-accent-0 text-lg" />
+      <span className="text-xs font-bold text-foreground-1 uppercase tracking-wider">{text}</span>
+    </div>
+  );
+
+  const HandwrittenArrow = () => (
+    <span className="font-caveat text-2xl text-accent-0/40 mr-2 -translate-y-1 inline-block select-none">
+      →
+    </span>
+  );
+
   const cardContent = (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8 relative">
+      {/* Bookmark Ribbon Decor */}
+      <div className="absolute -top-12 right-8 w-8 h-16 bg-accent-0 rounded-b-sm shadow-md flex items-end justify-center pb-2 z-10">
+        <div className="w-1 h-8 bg-white/20 rounded-full mb-1" />
+      </div>
+
       <div className="flex flex-row items-start justify-between text-left gap-3">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-2xl bg-accent-0 flex items-center justify-center shadow-lg shadow-accent-0/20">
-            <MdExplore className="text-white text-2xl" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground-0">{t("explore")}</h1>
-            <p className="text-[10px] font-bold text-accent-0 tracking-[0.2em] uppercase">
-              {t("findYourNextStory")}
-            </p>
-          </div>
+        <div className="relative pt-2">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex flex-col"
+          >
+            <h1 className="text-5xl font-caveat text-foreground-0 leading-tight -rotate-2 origin-left">
+              Your Vacant Plan
+            </h1>
+            <div className="w-full h-0.5 bg-accent-0/30 -rotate-1 -mt-1 rounded-full self-start" />
+          </motion.div>
         </div>
         {isMobile && isSidebar && (
           <button
@@ -329,163 +347,213 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-8">
+      <div className="space-y-6">
+        {/* Step 1: What */}
         <div className="relative" ref={tagBoxRef}>
-          <TextField
-            label={t("what")}
-            placeholder={t("whatPlaceholder")}
-            fullWidth
-            variant="outlined"
-            value={what}
-            onChange={(e) => {
-              setWhat(e.target.value);
-              setShowTagSuggestions(true);
-            }}
-            onFocus={() => setShowTagSuggestions(true)}
-            InputLabelProps={{ shrink: true }}
-            sx={textFieldSx}
-          />
+          <StepLabel icon={MdLocalOffer} text={t("stepWhat")} />
+          <div className="flex items-center">
+            <HandwrittenArrow />
+            <TextField
+              placeholder={t("whatPlaceholder")}
+              fullWidth
+              variant="outlined"
+              value={what}
+              onChange={(e) => {
+                setWhat(e.target.value);
+                setShowTagSuggestions(true);
+              }}
+              onFocus={() => setShowTagSuggestions(true)}
+              sx={textFieldSx}
+            />
+          </div>
           {showTagSuggestions && tagSuggestions.length > 0 && (
-            <div className="absolute z-30 mt-2 w-full rounded-xl border border-grass bg-background-1 shadow-xl overflow-hidden">
+            <div className="absolute z-30 mt-1 w-full rounded-xl border border-grass bg-white shadow-xl overflow-hidden">
               {tagSuggestions.map((tag) => (
                 <button
                   key={tag}
                   type="button"
-                  className="block w-full text-left px-4 py-2 text-sm hover:bg-background-0"
+                  className="block w-full text-left px-4 py-3 text-sm hover:bg-background-0 transition-colors font-medium"
                   onClick={() => {
                     setWhat(tag);
                     setShowTagSuggestions(false);
                   }}
                 >
-                  {tag}
+                  # {tag}
                 </button>
               ))}
             </div>
           )}
         </div>
 
+        {/* Step 2: Where */}
         <div className="relative" ref={placeBoxRef}>
-          <TextField
-            label={t("where")}
-            placeholder={t("wherePlaceholder")}
-            fullWidth
-            variant="outlined"
-            value={where}
-            onChange={(e) => {
-              setWhere(e.target.value);
-              setLat(null);
-              setLng(null);
-              setShowPlaceSuggestions(true);
-            }}
-            onFocus={() => setShowPlaceSuggestions(true)}
-            InputLabelProps={{ shrink: true }}
-            sx={textFieldSx}
-          />
+          <StepLabel icon={MdLocationOn} text={t("stepWhere")} />
+          <div className="flex items-center">
+            <HandwrittenArrow />
+            <TextField
+              placeholder={t("wherePlaceholder")}
+              fullWidth
+              variant="outlined"
+              value={where}
+              onChange={(e) => {
+                setWhere(e.target.value);
+                setLat(null);
+                setLng(null);
+                setShowPlaceSuggestions(true);
+              }}
+              onFocus={() => setShowPlaceSuggestions(true)}
+              sx={textFieldSx}
+            />
+          </div>
           {showPlaceSuggestions && placeSuggestions.length > 0 && (
-            <div className="absolute z-30 mt-2 w-full rounded-xl border border-grass bg-background-1 shadow-xl overflow-hidden max-h-64 overflow-y-auto">
+            <div className="absolute z-30 mt-1 w-full rounded-xl border border-grass bg-white shadow-xl overflow-hidden max-h-64 overflow-y-auto">
               {placeSuggestions.map((s) => (
                 <button
                   key={s.mapbox_id}
                   type="button"
-                  className="block w-full text-left px-4 py-2 hover:bg-background-0"
+                  className="block w-full text-left px-4 py-3 hover:bg-background-0 transition-colors"
                   onClick={() => handleSelectPlace(s)}
                 >
-                  <div className="text-sm font-semibold text-foreground-0 truncate">{s.name}</div>
-                  <div className="text-xs text-foreground-1 truncate">{s.full_address}</div>
+                  <div className="text-sm font-bold text-foreground-0 truncate">{s.name}</div>
+                  <div className="text-[10px] text-foreground-1 truncate uppercase tracking-tight">
+                    {s.full_address}
+                  </div>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <TextField
-            select
-            label={t("when")}
-            fullWidth
-            value={whenMonth}
-            onChange={(e) => setWhenMonth(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={textFieldSx}
-          >
-            <MenuItem value="">-</MenuItem>
-            {MONTHS.map((m) => (
-              <MenuItem key={m} value={String(m)}>
-                {m}
-              </MenuItem>
-            ))}
-          </TextField>
+        {/* Step 3: When & Days */}
+        <div>
+          <StepLabel icon={MdCalendarMonth} text={t("stepWhen")} />
+          <div className="flex items-center">
+            <HandwrittenArrow />
+            <div className="grid grid-cols-2 gap-4 flex-1">
+              <TextField
+                select
+                fullWidth
+                value={whenMonth}
+                onChange={(e) => setWhenMonth(e.target.value)}
+                sx={textFieldSx}
+                SelectProps={{ displayEmpty: true }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MdCalendarMonth className="text-accent-0" />
+                    </InputAdornment>
+                  ),
+                }}
+              >
+                <MenuItem value="">{tFilter("allSeasons")}</MenuItem>
+                {MONTHS.map((m) => (
+                  <MenuItem key={m} value={String(m)}>
+                    {m}月
+                  </MenuItem>
+                ))}
+              </TextField>
 
-          <TextField
-            label={t("days")}
-            placeholder={t("daysPlaceholder")}
-            type="number"
-            fullWidth
-            value={days}
-            onChange={(e) => setDays(e.target.value)}
-            sx={textFieldSx}
-            InputLabelProps={{ shrink: true }}
-          />
+              <TextField
+                placeholder={t("daysPlaceholder")}
+                type="number"
+                fullWidth
+                value={days}
+                onChange={(e) => setDays(e.target.value)}
+                sx={textFieldSx}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <MdAccessTime className="text-accent-0" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <TextField
-            select
-            label={t("who")}
-            fullWidth
-            value={who}
-            onChange={(e) => setWho(e.target.value)}
-            sx={textFieldSx}
-            InputLabelProps={{ shrink: true }}
-          >
-            {(routeForOptions.length ? routeForOptions : ["EVERYONE", "SOLO", "FRIENDS", "FAMILY", "COUPLE"]).map((opt) => (
-              <MenuItem key={opt} value={opt}>
-                {whoLabel(opt)}
-              </MenuItem>
-            ))}
-          </TextField>
+        {/* Step 4: Who */}
+        <div>
+          <StepLabel icon={MdPeople} text={t("stepWho")} />
+          <div className="flex items-center">
+            <HandwrittenArrow />
+            <TextField
+              select
+              fullWidth
+              value={who}
+              onChange={(e) => setWho(e.target.value)}
+              sx={textFieldSx}
+              SelectProps={{ displayEmpty: true }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MdPeople className="text-accent-0" />
+                  </InputAdornment>
+                ),
+              }}
+            >
+              {(routeForOptions.length
+                ? routeForOptions
+                : ["EVERYONE", "SOLO", "FRIENDS", "FAMILY", "COUPLE"]
+              ).map((opt) => (
+                <MenuItem key={opt} value={opt}>
+                  {whoLabel(opt)}
+                </MenuItem>
+              ))}
+            </TextField>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <TextField
-            select
-            label="Currency"
-            fullWidth
-            value={currencyCode}
-            onChange={(e) => setCurrencyCode(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={textFieldSx}
-          >
-            {(currencyOptions.length ? currencyOptions : ["JPY", "USD", "EUR", "KRW", "CNY"]).map((code) => (
-              <MenuItem key={code} value={code}>
-                {code}
-              </MenuItem>
-            ))}
-          </TextField>
+        {/* Step 5: Budget */}
+        <div>
+          <StepLabel icon={MdPayments} text={t("stepBudget")} />
+          <div className="flex items-center">
+            <HandwrittenArrow />
+            <div className="grid grid-cols-[100px_1fr] gap-4 flex-1">
+              <TextField
+                select
+                fullWidth
+                value={currencyCode}
+                onChange={(e) => setCurrencyCode(e.target.value)}
+                sx={textFieldSx}
+                SelectProps={{ displayEmpty: true }}
+              >
+                {(currencyOptions.length
+                  ? currencyOptions
+                  : ["JPY", "USD", "EUR", "KRW", "CNY"]
+                ).map((code) => (
+                  <MenuItem key={code} value={code}>
+                    {code}
+                  </MenuItem>
+                ))}
+              </TextField>
 
-          <TextField
-            label={t("budget")}
-            type="number"
-            fullWidth
-            value={budgetAmount}
-            onChange={(e) => setBudgetAmount(e.target.value)}
-            sx={textFieldSx}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <span className="text-foreground-0 font-light mr-1">{currencyCode || "-"}</span>
-                </InputAdornment>
-              ),
-            }}
-          />
+              <TextField
+                type="number"
+                fullWidth
+                value={budgetAmount}
+                onChange={(e) => setBudgetAmount(e.target.value)}
+                sx={textFieldSx}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <span className="text-foreground-0 font-bold text-xs">MAX</span>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       <button
         onClick={handleSearch}
-        className="group relative w-full py-5 mt-2 bg-foreground-0 text-background-0 rounded-2xl font-bold overflow-hidden transition-all duration-300 hover:bg-accent-0 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/10"
+        className="group relative w-full py-5 mt-4 bg-foreground-0 text-white rounded-2xl font-black overflow-hidden transition-all duration-300 hover:bg-accent-0 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/20"
       >
-        <span className="relative z-10 tracking-widest uppercase text-sm">{t("searchRoutes")}</span>
+        <span className="relative z-10 tracking-[0.2em] uppercase text-sm">
+          {t("searchRoutes")}
+        </span>
         <div className="absolute right-6 top-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
           <motion.span
             animate={{ x: [0, 4, 0] }}
@@ -523,7 +591,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed bottom-0 left-0 right-0 z-[120] bg-background-1 rounded-t-[24px] px-6 pt-8 pb-12 max-h-[90vh] overflow-y-auto"
+                className="fixed bottom-0 left-0 right-0 z-[120] bg-[#fcfaf2] rounded-t-[24px] px-6 pt-8 pb-12 max-h-[90vh] overflow-y-auto"
               >
                 <div className="w-12 h-1 bg-grass rounded-full mx-auto mb-8 opacity-50" />
                 {cardContent}
@@ -542,7 +610,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       animate={{ opacity: 1, x: 0 }}
       className={`
         w-full max-w-[480px] h-auto
-        px-10 py-12 flex flex-col gap-10 backdrop-blur-xl bg-background-1
+        px-10 py-12 flex flex-col gap-10 backdrop-blur-xl bg-background-0 relative overflow-hidden
         ${isSidebar ? "hidden md:flex h-full border-r-1 border-grass shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] mx-4"}
       `}
       transition={{

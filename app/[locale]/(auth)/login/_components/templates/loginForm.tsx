@@ -78,8 +78,8 @@ export default function LoginForm() {
             transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
             className="text-center flex flex-col gap-2"
           >
-            <h2 className="text-5xl font-syne font-bold text-foreground-0">Sign In</h2>
-            <p className={'text-md font-semibold'}>welcome back, traveler.</p>
+            <h2 className="text-5xl font-syne font-bold text-white">Sign In</h2>
+            <p className={'text-md font-semibold text-white/75'}>welcome back, traveler.</p>
           </motion.div>
 
           <motion.form
@@ -95,7 +95,7 @@ export default function LoginForm() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
               >
-                <label htmlFor="email-address" className="block text-sm font-bold text-foreground-0">
+                <label htmlFor="email-address" className="block text-sm font-bold text-white/75">
                   {t('email')}
                 </label>
                 <input
@@ -115,7 +115,7 @@ export default function LoginForm() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.8, ease: "easeOut" }}
               >
-                <label htmlFor="password" id="password-label" className="block text-sm font-bold text-foreground-0">
+                <label htmlFor="password" id="password-label" className="block text-sm font-bold text-white/75">
                   {t('password')}
                 </label>
                 <input
@@ -176,8 +176,8 @@ export default function LoginForm() {
                 transition={{ duration: 0.5, delay: 1.0, ease: "easeOut" }}
                 className="text-center"
               >
-                <span className="text-sm text-foreground-0/90">{t('noAccount')} </span>
-                <Link href="/signup" className="text-sm font-medium text-foreground-0 hover:underline hover:text-accent-0">
+                <span className="text-sm text-white/75">{t('noAccount')} </span>
+                <Link href="/signup" className="text-sm font-medium text-white hover:underline hover:text-accent-0">
                   {t('signUp')}
                 </Link>
               </motion.div>
@@ -192,7 +192,7 @@ export default function LoginForm() {
                   <div className="w-full border-t border-foreground-1/30"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 text-foreground-0/90 font-bold">{t('continueWith')}</span>
+                  <span className="px-2 text-white/90 font-bold">{t('continueWith')}</span>
                 </div>
               </motion.div>
 
@@ -207,7 +207,7 @@ export default function LoginForm() {
                 className="w-full flex justify-center gap-3 py-3 px-6 border-1 border-white/20 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
               >
                 <FaGoogle className="w-5 h-5 text-accent-0" />
-                <span>{t('google')}</span>
+                <span className={'text-white'}>{t('google')}</span>
               </motion.button>
             </div>
           </motion.form>

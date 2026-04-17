@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto, Syne, Outfit, Josefin_Sans } from "next/font/google";
+import { Roboto, Syne, Outfit, Josefin_Sans, Caveat } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -36,6 +36,12 @@ const josefinSans = Josefin_Sans({
   display: "swap",
 });
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Routem",
   description: "Share your travel routes with the world",
@@ -63,7 +69,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${roboto.variable} ${syne.variable} ${outfit.variable} ${josefinSans.variable} font-sans`}>
+      <body className={`${roboto.variable} ${syne.variable} ${outfit.variable} ${josefinSans.variable} ${caveat.variable} font-sans`}>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
