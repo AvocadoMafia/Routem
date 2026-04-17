@@ -32,6 +32,17 @@ export type UseInfiniteScrollOptions<TRaw, TItem = TRaw> = {
      */
     threshold?: number
     /**
+     * IntersectionObserverのrootMargin。
+     * 例: "0px 0px 200px 0px" で下方向200px手前で発火。
+     */
+    rootMargin?: string
+    /**
+     * IntersectionObserverの root に使うスクロールコンテナのref。
+     * `overflow-y-scroll` な固定高コンテナ内でセンチネルを監視したい時に必須。
+     * 指定なしの場合はviewport基準で監視する。
+     */
+    root?: RefObject<Element | null>
+    /**
      * エラーをerrorStoreに流すか。デフォルトtrue。
      */
     reportErrors?: boolean
@@ -78,6 +89,8 @@ export function useInfiniteScroll<TRaw, TItem = TRaw>(
         deps = [],
         enabled = true,
         threshold = 0.1,
+        rootMargin,
+        root,
         reportErrors = true,
     } = options
 
@@ -191,17 +204,18 @@ export function useInfiniteScroll<TRaw, TItem = TRaw>(
         if (!enabled || !hasMore) return
         const el = observerTarget.current
         if (!el) return
+        const rootEl = root?.current ?? null
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && hasMore && !isFetching) {
                     fetchMore()
                 }
             },
-            { threshold }
+            { threshold, root: rootEl, rootMargin }
         )
         observer.observe(el)
         return () => observer.unobserve(el)
-    }, [enabled, hasMore, isFetching, fetchMore, threshold, items])
+    }, [enabled, hasMore, isFetching, fetchMore, threshold, rootMargin, root, items])
 
     return {items, isFetching, hasMore, fetchMore, reload, observerTarget}
 }

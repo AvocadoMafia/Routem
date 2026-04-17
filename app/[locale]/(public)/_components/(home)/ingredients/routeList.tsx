@@ -14,29 +14,33 @@ type Props = {
 };
 
 export default function RouteList(props: Props) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
+  // このコンポーネントは固定高のoverflow-y-scrollコンテナ内にセンチネルを持つため、
+  // デフォルトのviewport基準ではリスト内スクロールで交差を正しく検知できない。
+  // rootをスクロールコンテナ自身に指定することで、コンテナ内スクロール時に発火させる。
   useEffect(() => {
     if (!props.fetchMore || !props.hasMore) return;
+    const rootEl = scrollContainerRef.current;
+    const target = observerTarget.current;
+    if (!rootEl || !target) return;
+
     const observer = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && props.hasMore && !props.isFetching) {
             props.fetchMore?.();
           }
         },
-        { threshold: 0.1 }
+        { root: rootEl, threshold: 0.1, rootMargin: "0px 0px 200px 0px" }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
+    observer.observe(target);
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
+      observer.unobserve(target);
     };
-  }, [props.hasMore, props.fetchMore, props.isFetching]);
+  }, [props.hasMore, props.fetchMore, props.isFetching, props.routes?.length]);
 
   // ダミーカードの生成（15個）
   const dummyCards = Array.from({ length: 15 }).map((_, i) => (
@@ -50,6 +54,7 @@ export default function RouteList(props: Props) {
   if (!props.routes) {
     return (
         <div
+            ref={scrollContainerRef}
             className="flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
         >
             {Array.from({ length: 6 }).map((_, i) => (
@@ -61,6 +66,7 @@ export default function RouteList(props: Props) {
 
   return (
     <div
+      ref={scrollContainerRef}
       className="flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
       tabIndex={0}
       role="region"
