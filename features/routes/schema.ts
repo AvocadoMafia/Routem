@@ -10,6 +10,7 @@ export const GetRoutesSchema = z.object({
     .enum(["recommend", "user_recommend", "related", "trending", "user_posts", "followings"])
     .optional(),
   targetId: z.string().uuid().optional(),
+  tag: z.string().min(1).optional(),
 });
 export type GetRoutesType = z.infer<typeof GetRoutesSchema>;
 

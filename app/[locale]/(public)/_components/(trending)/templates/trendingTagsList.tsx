@@ -1,8 +1,8 @@
-import { Link } from "@/i18n/navigation";
 import TrendingTagCard from "@/app/[locale]/(public)/_components/(trending)/ingredients/trendingTagCard";
+import { TrendingTag } from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
 
 type Props = {
-    tags?: string[];
+    tags?: TrendingTag[];
 };
 
 export default function TrendingTagsList({tags}: Props) {
@@ -28,7 +28,7 @@ export default function TrendingTagsList({tags}: Props) {
                 <h2 className="md:block hidden text-sm font-bold uppercase tracking-[0.2em] text-foreground-1">Trending Tags</h2>
                 <div className="flex flex-col gap-3">
                     {tags.map((tag, idx) => (
-                        <TrendingTagCard key={tag} tag={tag} rank={idx + 1} />
+                        <TrendingTagCard key={tag.name} tag={tag.name} postCount={tag.postCount} rank={idx + 1} />
                     ))}
                     {tags.length === 0 && (
                         <div className="w-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-grass/5 rounded-3xl">

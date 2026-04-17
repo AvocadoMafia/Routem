@@ -283,7 +283,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                 type: 'route-thumbnails'
             });
 
-            const data = await getDataFromServerWithJson<{ uploadUrl: string, publicUrl: string }>(`/api/v1/uploads?${params.toString()}`);
+            const data = await getDataFromServerWithJson<{ uploadUrl: string, publicUrl: string }>(`/api/v1/images/uploads?${params.toString()}`);
             if (!data) throw new Error('Failed to get upload URL');
             const { uploadUrl, publicUrl } = data;
 

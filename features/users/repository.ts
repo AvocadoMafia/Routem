@@ -11,6 +11,20 @@ export const USER_SELECT = {
     icon: true,
 } as const;
 
+export const USER_WITH_COUNT_SELECT = {
+    id: true,
+    name: true,
+    bio: true,
+    icon: true,
+    _count: {
+        select: {
+            routes: true,
+            followers: true,
+            followings: true,
+        },
+    },
+} as const;
+
 
 export const usersRepository = {
   findMany: async (params: GetUsersType) => {
@@ -18,6 +32,25 @@ export const usersRepository = {
       return await getPrisma().user.findMany({
         take: params.limit,
         select: USER_SELECT,
+      });
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  /**
+   * フォロワー数 desc でランキング。同数の場合は投稿数(routes) desc → id でタイブレーク。
+   */
+  findTrending: async (limit: number) => {
+    try {
+      return await getPrisma().user.findMany({
+        take: limit,
+        orderBy: [
+          { followers: { _count: "desc" } },
+          { routes: { _count: "desc" } },
+          { id: "asc" },
+        ],
+        select: USER_WITH_COUNT_SELECT,
       });
     } catch (e) {
       throw e;

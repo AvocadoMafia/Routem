@@ -9,6 +9,10 @@ import { encodeCursor } from "@/lib/server/cursor";
 export const usersService = {
   getUsers: async (params: GetUsersType) => {
     try {
+      const limit = params.limit ?? 15;
+      if (params.type === "trending") {
+        return await usersRepository.findTrending(limit);
+      }
       return await usersRepository.findMany(params);
     } catch (e) {
       throw e;

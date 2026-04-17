@@ -1,15 +1,20 @@
-import {User} from "@/lib/client/types";
-import {IoPersonAdd} from "react-icons/io5";
-import {HiBookOpen} from "react-icons/hi2";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { TrendingUser } from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
 
 type Props = {
-    user: User;
+    user: TrendingUser;
     rank?: number;
 }
 
+function formatCount(n: number): string {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}k`;
+    return `${n}`;
+}
+
 export default function TrendingUserCard({user, rank}: Props) {
+    const followerCount = user._count?.followers ?? 0;
     return (
         <Link
             href={`/users/${user.id}`}
@@ -44,7 +49,7 @@ export default function TrendingUserCard({user, rank}: Props) {
                 </h3>
                 <div className="flex items-center gap-3">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-1/40">
-                        {user.likes?.length ? `${user.likes.length}k` : '1.2k'} followers
+                        {formatCount(followerCount)} {followerCount === 1 ? 'follower' : 'followers'}
                     </span>
                 </div>
             </div>

@@ -12,7 +12,7 @@ import {
 } from "@/lib/server/uploadValidation";
 
 /**
- * GET /api/v1/uploads?fileName=...&contentType=...&type=route-thumbnails
+ * GET /api/v1/images/uploads?fileName=...&contentType=...&type=route-thumbnails
  * 署名付きURL（PUT）を発行して返す。
  */
 export async function GET(req: NextRequest) {

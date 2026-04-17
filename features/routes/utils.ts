@@ -27,6 +27,11 @@ export function buildRoutesWhere(query: GetRoutesType): Prisma.RouteWhereInput {
     where.authorId = query.authorId;
   }
 
+  // tag (by name)
+  if (query.tag) {
+    where.tags = { some: { name: query.tag } };
+  }
+
   // cursor
   const cursorWhere = buildCursorWhere(query.cursor);
   if (cursorWhere) {

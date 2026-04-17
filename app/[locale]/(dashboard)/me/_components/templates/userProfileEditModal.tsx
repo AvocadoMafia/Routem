@@ -43,7 +43,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
 
   const handleImageUpload = async (file: File, type: 'user-profiles', context?: 'icon' | 'background') => {
     try {
-      let url = `/api/v1/uploads?fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&type=${type}`
+      let url = `/api/v1/images/uploads?fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&type=${type}`
       if (context) url += `&context=${context}`
       
       const res = await fetch(url)

@@ -19,10 +19,16 @@ type TrendingTab = 'routes' | 'users' | 'tags';
 // カーソルベースのレスポンス型
 type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
+export type TrendingUser = Pick<User, 'id' | 'name' | 'bio' | 'icon'> & {
+    _count?: { followers: number; followings: number; routes: number };
+};
+
+export type TrendingTag = { name: string; postCount: number };
+
 export default function TrendingSection() {
     const [routes, setRoutes] = useState<Route[]>([]);
-    const [users, setUsers] = useState<User[] | null>(null);
-    const [tags, setTags] = useState<string[] | null>(null);
+    const [users, setUsers] = useState<TrendingUser[] | null>(null);
+    const [tags, setTags] = useState<TrendingTag[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -39,8 +45,8 @@ export default function TrendingSection() {
             try {
                 const [routesRes, usersData, tagsData] = await Promise.all([
                     getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?type=trending&limit=15'),
-                    getDataFromServerWithJson<User[]>('/api/v1/users?limit=6'),
-                    getDataFromServerWithJson<string[]>('/api/v1/tags?limit=10')
+                    getDataFromServerWithJson<TrendingUser[]>('/api/v1/users?limit=10&type=trending'),
+                    getDataFromServerWithJson<TrendingTag[]>('/api/v1/tags?limit=10&type=trending')
                 ]);
 
                 if (!cancelled) {

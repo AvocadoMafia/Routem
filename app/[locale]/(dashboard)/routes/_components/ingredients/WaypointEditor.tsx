@@ -206,7 +206,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                 type: "node-images",
             }).toString();
 
-            const presignRes = await fetch(`/api/v1/uploads?${qs}`, { method: "GET" });
+            const presignRes = await fetch(`/api/v1/images/uploads?${qs}`, { method: "GET" });
             const presignData = await presignRes.json();
             if (!presignRes.ok) throw new Error(presignData?.error || tUpload('uploadUrlFailed'));
 

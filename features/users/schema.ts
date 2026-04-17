@@ -14,6 +14,7 @@ export const GetUsersSchema = z.object({
     .transform((n) => Math.max(1, Math.min(MAX_LIMIT, n)))
     .default(DEFAULT_LIMIT)
     .optional(),
+  type: z.enum(["trending"]).optional(),
 });
 export type GetUsersType = z.infer<typeof GetUsersSchema>;
 

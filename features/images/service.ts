@@ -2,7 +2,9 @@ import { getS3Client } from "@/lib/config/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ImageType } from "@prisma/client";
-import { imagesRepository } from "./repository";
+import { imagesRepository, PhotoImageWithRelations } from "./repository";
+import { GetImagesType } from "./schema";
+import { encodeCursor } from "@/lib/server/cursor";
 
 function buildPublicUrl(bucket: string, key: string) {
   const rawPublic = process.env.MINIO_PUBLIC_ENDPOINT || process.env.MINIO_ENDPOINT || 'localhost';
@@ -65,6 +67,27 @@ export const imagesService = {
         publicUrl,
         imageId: image.id,
       };
+    } catch (e) {
+      throw e;
+    }
+  },
+
+  getPhotos: async (
+    query: GetImagesType,
+  ): Promise<{ items: PhotoImageWithRelations[]; nextCursor: string | null }> => {
+    try {
+      const items = await imagesRepository.findManyAdoptedNodeImages({
+        limit: query.limit,
+        cursor: query.cursor,
+      });
+
+      let nextCursor: string | null = null;
+      if (items.length === query.limit && items.length > 0) {
+        const last = items[items.length - 1];
+        nextCursor = encodeCursor({ createdAt: last.createdAt, id: last.id });
+      }
+
+      return { items, nextCursor };
     } catch (e) {
       throw e;
     }

@@ -4,16 +4,19 @@ import { HiHashtag } from "react-icons/hi2";
 type Props = {
     tag: string;
     rank?: number;
-    postCount?: number;
+    postCount: number;
+}
+
+function formatCount(n: number): string {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}k`;
+    return `${n}`;
 }
 
 export default function TrendingTagCard({tag, rank, postCount}: Props) {
-    // 投稿数が渡されていない場合はモックデータ（1.2k等）を使用
-    const displayCount = postCount !== undefined ? `${postCount}` : `${(Math.random() * 2 + 0.5).toFixed(1)}k`;
-
     return (
         <Link
-            href={`/explore?q=${encodeURIComponent(tag)}`}
+            href={`/tags/${encodeURIComponent(tag)}`}
             className={'group relative w-full h-16 flex flex-row items-center gap-4 px-4 hover:bg-background-1/50 rounded-xl transition-all duration-200'}
         >
             {/* Rank Indicator */}
@@ -41,7 +44,7 @@ export default function TrendingTagCard({tag, rank, postCount}: Props) {
                 </h3>
                 <div className="flex items-center gap-3">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-1/40">
-                        {displayCount} posts
+                        {formatCount(postCount)} {postCount === 1 ? 'post' : 'posts'}
                     </span>
                 </div>
             </div>

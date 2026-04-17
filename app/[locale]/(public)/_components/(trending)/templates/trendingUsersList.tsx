@@ -1,9 +1,9 @@
-import { User } from "@/lib/client/types";
 import TrendingUserCard from "@/app/[locale]/(public)/_components/(trending)/ingredients/trendingUserCard";
 import TrendingUserCardSkeleton from "@/app/[locale]/(public)/_components/(trending)/ingredients/trendingUserCardSkeleton";
+import { TrendingUser } from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
 
 type Props = {
-    users?: User[];
+    users?: TrendingUser[];
 };
 
 export default function TrendingUsersList({ users }: Props) {

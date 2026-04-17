@@ -1,37 +1,18 @@
 import {LuMapPin} from "react-icons/lu";
 import Image from "next/image";
+import {Photo} from "@/app/[locale]/(public)/_components/(photos)/photosSection";
+import {Link} from "@/i18n/navigation";
 
-export default function PhotoContainer(props: { test: number }) {
-    const images = [
-        "/mockImages/Tokyo.jpg",
-        "/mockImages/Fuji.jpg",
-        "/mockImages/Kyoto.jpg"
-    ];
-
-    const locations = [
-        "Tokyo, Japan",
-        "Mt. Fuji, Japan",
-        "Kyoto, Japan"
-    ];
-
-    const routeTitles = [
-        "Shibuya Night Walk",
-        "Five Lakes Trail",
-        "Kyoto Old Town Walk"
-    ];
-
-    const imgSrc = images[props.test % images.length];
-    const location = locations[props.test % locations.length];
-    const routeTitle = routeTitles[props.test % routeTitles.length];
-
+export default function PhotoContainer({photo}: { photo: Photo }) {
     return (
-        <div
-            className="group relative w-full overflow-hidden rounded-2xl transition-shadow duration-700 hover:shadow-2xl bg-background-1 border border-foreground-0/5 cursor-pointer">
+        <Link
+            href={`/routes/${photo.articleId}`}
+            className="group relative w-full overflow-hidden rounded-2xl transition-shadow duration-700 hover:shadow-2xl bg-background-1 border border-foreground-0/5 cursor-pointer block">
             {/* 画像 */}
             <div className="relative w-full overflow-hidden">
                 <Image
-                    src={imgSrc}
-                    alt={location}
+                    src={photo.url}
+                    alt={photo.spotName || photo.articleTitle}
                     width={800}
                     height={1000}
                     className="
@@ -82,15 +63,17 @@ export default function PhotoContainer(props: { test: number }) {
                 "
             >
                 <div className="flex flex-col gap-2 md:gap-3 items-start">
-                    <div className={'flex items-center gap-1.5 md:gap-2'}>
-                        <LuMapPin className={'text-accent-0 w-3 h-3 md:w-3.5 md:h-3.5'}/>
-                        <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
-                            {location}
-                        </span>
-                    </div>
+                    {photo.spotName && (
+                        <div className={'flex items-center gap-1.5 md:gap-2'}>
+                            <LuMapPin className={'text-accent-0 w-3 h-3 md:w-3.5 md:h-3.5'}/>
+                            <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
+                                {photo.spotName}
+                            </span>
+                        </div>
+                    )}
 
                     <h3 className={'text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight'}>
-                        {routeTitle}
+                        {photo.articleTitle}
                     </h3>
 
                     <div className="w-full h-px bg-white/10 my-0.5 md:my-1" />
@@ -99,14 +82,14 @@ export default function PhotoContainer(props: { test: number }) {
                         <div className="flex items-center gap-1.5 md:gap-2">
                             <div className="relative w-5 h-5 md:w-6 md:h-6 rounded-full overflow-hidden border border-white/20">
                                 <Image
-                                    src="/mockImages/userIcon_1.jpg"
-                                    alt="user"
+                                    src={photo.userIcon || "/mockImages/userIcon_1.jpg"}
+                                    alt={photo.username}
                                     fill
                                     className="object-cover"
                                     unoptimized
                                 />
                             </div>
-                            <span className="text-[10px] md:text-xs font-bold text-white/80">@mock_user</span>
+                            <span className="text-[10px] md:text-xs font-bold text-white/80">@{photo.username}</span>
                         </div>
                         <div className="flex flex-col items-end">
                             <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-[0.3em] text-white/40 mb-0.5">Explore</span>
@@ -115,6 +98,6 @@ export default function PhotoContainer(props: { test: number }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }

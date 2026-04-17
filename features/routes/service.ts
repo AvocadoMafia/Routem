@@ -21,10 +21,24 @@ import { exchangeRatesRepository } from "../exchangeRates/repository";
 export const routesService = {
   getRoutes: async (
     query: GetRoutesType,
-  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null }> => {
+  ): Promise<{ items: RouteWithRelations[]; nextCursor: string | null; totalCount?: number }> => {
     try {
       let routeIds: string[] = [];
       let nextCursor: string | null = null;
+
+      // tagクエリの場合は専用処理（総数も返す）
+      if (query.tag) {
+        const where = buildRoutesWhere(query);
+        const [result, totalCount] = await Promise.all([
+          routesRepository.findMany({ where, limit: query.limit }),
+          routesRepository.count({
+            visibility: RouteVisibility.PUBLIC,
+            tags: { some: { name: query.tag } },
+          }),
+        ]);
+        nextCursor = getNextCursor(result, query.limit);
+        return { items: result, nextCursor, totalCount };
+      }
 
       if (query.type) {
         const redis = getRedisClient();
