@@ -35,6 +35,8 @@ export type User = Prisma.UserGetPayload<{
     _count: {
       select: {
         routes: true
+        followings: true
+        followers: true
       }
     }
   }

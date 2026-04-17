@@ -42,7 +42,9 @@ const initialUser: User = {
     uploadedImages: [],
     likes: [],
     _count: {
-        routes: 0
+        routes: 0,
+        followings: 0,
+        followers: 0
     }
 }
 

@@ -331,8 +331,8 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col"
           >
-            <h1 className="text-5xl font-caveat text-foreground-0 leading-tight -rotate-2 origin-left">
-              Your Tentative Plan
+            <h1 className="text-3xl font-bold text-foreground-0 leading-tight -rotate-2 origin-left">
+                {t("findYourRoute")}
             </h1>
             <div className="w-full h-0.5 bg-accent-0/30 -rotate-1 -mt-0.5 rounded-full self-start" />
           </motion.div>

@@ -18,7 +18,7 @@ export default function TrendingUserCard({user, rank}: Props) {
             {/* Rank Indicator */}
             {rank && (
                 <div className="w-4 flex-shrink-0 flex items-center justify-center">
-                    <span className="text-xs font-black text-foreground-1/30 group-hover:text-grass/70 transition-colors">
+                    <span className="text-xs font-black text-foreground-0/80 group-hover:text-foreground-0 transition-colors">
                         {rank}
                     </span>
                 </div>
@@ -39,7 +39,7 @@ export default function TrendingUserCard({user, rank}: Props) {
 
             {/* User Info */}
             <div className={'flex-1 min-w-0 flex flex-col z-10'}>
-                <h3 className={'text-sm font-bold text-foreground-0 truncate group-hover:text-grass transition-colors'}>
+                <h3 className={'text-sm font-bold text-foreground-0/80 truncate group-hover:text-foreground-0 transition-colors'}>
                     {user.name}
                 </h3>
                 <div className="flex items-center gap-3">
