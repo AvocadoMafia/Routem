@@ -11,12 +11,32 @@ export async function GET(req: NextRequest) {
         const supabase = await createClient(req);
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error || !user) {
-
+            console.error("[users/me GET] auth error:", error?.message, "user:", !!user);
             throw new Error("Unauthorized");
         }
-        //bodyを含ませる予定はないためとりあえずvalidateなし。いいねしたルートや作成したルート等は別APIからとってくるよてい
-        //prismaからユーザー問い合わせ
-        const prismaUser = await usersService.getUserById(user.id);
+
+        //prismaからユーザー問い合わせ、いなければ自動作成
+        let prismaUser;
+        try {
+            prismaUser = await usersService.getUserById(user.id);
+        } catch {
+            // 初回ログイン時: Supabaseの情報からPrismaにユーザーを作成
+            const { getPrisma } = await import("@/lib/config/server");
+            try {
+                prismaUser = await getPrisma().user.create({
+                    data: {
+                        id: user.id,
+                        name: user.user_metadata?.name ?? "",
+                        bio: "",
+                    },
+                });
+            } catch {
+                // 競合で create が失敗した場合は既存ユーザーを取得
+                prismaUser = await getPrisma().user.findUniqueOrThrow({
+                    where: { id: user.id },
+                });
+            }
+        }
 
         return NextResponse.json({...prismaUser}, {status: 200})
     })

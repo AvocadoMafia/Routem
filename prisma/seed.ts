@@ -5,50 +5,70 @@ import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
 import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
 import { RoutesDocumentsType } from "@/features/routes/schema";
+import { supabaseAdmin } from "@/lib/auth/supabase/admin";
 
 const prisma = getPrisma();
 
-async function main() {
-    // Seed users
-    const users =  [
-        {
-            id: '00000000-0000-0000-0000-000000000001',
-            name: 'lychee',
-            bio: 'Travel enthusiast from Kyoto.',
-            locale: Locale.JA,
-            language: Language.JA,
-        },
-        {
-            id: '00000000-0000-0000-0000-000000000002',
-            name: 'avocado',
-            bio: 'Nature lover and hiker.',
-            locale: Locale.EN,
-            language: Language.EN,
-        },
-        {
-            id: '00000000-0000-0000-0000-000000000003',
-            name: 'mango',
-            bio: 'Foodie exploring the world.',
-            locale: Locale.KO,
-            language: Language.KO,
-        },
-        {
-            id: '00000000-0000-0000-0000-000000000004',
-            name: 'papaya',
-            bio: 'Culture seeker.',
-            locale: Locale.ZH,
-            language: Language.ZH,
-        },
-        {
-            id: '00000000-0000-0000-0000-000000000005',
-            name: 'plum',
-            bio: 'Adventure awaits!',
-            locale: Locale.JA,
-            language: Language.EN,
-        },
-    ]
+// Supabase auth.users にユーザーを作成し、そのIDを返す
+// 既に同じメールのユーザーが存在する場合は既存のIDを返す
+async function ensureAuthUser(email: string, password: string, name: string): Promise<string> {
+    // まず既存ユーザーを検索
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const existing = existingUsers?.users.find((u) => u.email === email);
+    if (existing) {
+        console.log(`  Auth user already exists: ${email} (${existing.id})`);
+        return existing.id;
+    }
 
-    for(const user of users) {
+    // 新規作成
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true, // メール確認済みにする
+        user_metadata: { name },
+    });
+
+    if (error) throw new Error(`Failed to create auth user ${email}: ${error.message}`);
+    console.log(`  Created auth user: ${email} (${data.user.id})`);
+    return data.user.id;
+}
+
+async function main() {
+    // 古いシードデータを削除（外部キー制約の順序に注意）
+    console.log('Cleaning up old seed data...');
+    const OLD_USER_IDS = [
+        '00000000-0000-0000-0000-000000000001',
+        '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000003',
+        '00000000-0000-0000-0000-000000000004',
+        '00000000-0000-0000-0000-000000000005',
+    ];
+    // 古いユーザーが作成したルートを削除（Cascade で関連データも消える）
+    await prisma.route.deleteMany({ where: { authorId: { in: OLD_USER_IDS } } });
+    // 古いユーザーを削除
+    await prisma.user.deleteMany({ where: { id: { in: OLD_USER_IDS } } });
+    console.log('Old seed data cleaned up.');
+
+    // Seed users
+    // Supabase auth.users → Prisma public.users の順に作成
+    // auth側で発行されたUUIDをそのまま使うことで整合性を保つ
+    const seedUsers = [
+        { name: 'lychee',  email: 'lychee@example.com',  password: 'password123', bio: 'Travel enthusiast from Kyoto.', locale: Locale.JA, language: Language.JA },
+        { name: 'avocado', email: 'avocado@example.com', password: 'password123', bio: 'Nature lover and hiker.',       locale: Locale.EN, language: Language.EN },
+        { name: 'mango',   email: 'mango@example.com',   password: 'password123', bio: 'Foodie exploring the world.',   locale: Locale.KO, language: Language.KO },
+        { name: 'papaya',  email: 'papaya@example.com',  password: 'password123', bio: 'Culture seeker.',               locale: Locale.ZH, language: Language.ZH },
+        { name: 'plum',    email: 'plum@example.com',    password: 'password123', bio: 'Adventure awaits!',             locale: Locale.JA, language: Language.EN },
+    ];
+
+    console.log('Creating auth users in Supabase...');
+    const users: { id: string; name: string; bio: string; locale: Locale; language: Language }[] = [];
+    for (const seed of seedUsers) {
+        const authId = await ensureAuthUser(seed.email, seed.password, seed.name);
+        users.push({ id: authId, name: seed.name, bio: seed.bio, locale: seed.locale, language: seed.language });
+    }
+
+    console.log('Syncing users to Prisma...');
+    for (const user of users) {
         await prisma.user.upsert({
             where: { id: user.id },
             update: { name: user.name, bio: user.bio, locale: user.locale, language: user.language },
@@ -252,9 +272,16 @@ async function syncToMeilisearch(route: RouteWithRelations) {
 main()
   .then(async () => {
     await prisma.$disconnect();
+    // Redis接続が残っているとプロセスが終了しないため明示的に切断する
+    if (globalThis.redisClient) {
+      await globalThis.redisClient.disconnect();
+    }
   })
   .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();
+    if (globalThis.redisClient) {
+      await globalThis.redisClient.disconnect();
+    }
     process.exit(1);
   });

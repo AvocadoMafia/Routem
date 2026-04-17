@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       data: { user },
       error,
     } = await supabase.auth.getUser();
-    if (error) throw new Error("auth error");
+    // 未ログインでも公開ルートは取得可能にする（userはnullになる）
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(GetRoutesSchema, search_params);
 
