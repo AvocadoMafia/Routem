@@ -1,93 +1,33 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Route } from "@/lib/client/types";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
-import { errorStore } from "@/lib/client/stores/errorStore";
 import { HiHashtag } from "react-icons/hi2";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
+import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
 
-type CursorResponse<T> = { items: T[]; nextCursor: string | null; totalCount?: number };
+type TagRoutesResponse = CursorResponse<Route> & { totalCount?: number };
 
 export default function RootClient({ name }: { name: string }) {
-    const [routes, setRoutes] = useState<Route[] | null>(null);
     const [totalCount, setTotalCount] = useState<number | null>(null);
-    const [hasMore, setHasMore] = useState(true);
-    const [isFetching, setIsFetching] = useState(false);
-    const nextCursorRef = useRef<string | null>(null);
-    const observerTarget = useRef<HTMLDivElement>(null);
-    const appendError = errorStore(state => state.appendError);
 
-    useEffect(() => {
-        let cancelled = false;
-        async function load() {
-            setRoutes(null);
-            setTotalCount(null);
-            setHasMore(true);
-            nextCursorRef.current = null;
-            try {
-                const url = `/api/v1/routes?tag=${encodeURIComponent(name)}&limit=15`;
-                const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
-                if (!cancelled && res) {
-                    setRoutes(res.items);
-                    setTotalCount(res.totalCount ?? res.items.length);
-                    nextCursorRef.current = res.nextCursor;
-                    if (!res.nextCursor) setHasMore(false);
-                }
-            } catch (e: any) {
-                if (!cancelled) {
-                    setRoutes([]);
-                    setTotalCount(0);
-                    appendError(e);
-                }
+    const { items: routes, hasMore, observerTarget } = useInfiniteScroll<Route>({
+        fetcher: async (cursor) => {
+            const url = `/api/v1/routes?tag=${encodeURIComponent(name)}&limit=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
+            const res = await getDataFromServerWithJson<TagRoutesResponse>(url);
+            // 初回のみtotalCountを取り込み
+            if (!cursor && res && typeof res.totalCount === 'number') {
+                setTotalCount(res.totalCount);
             }
-        }
-        load();
-        return () => { cancelled = true };
-    }, [name]);
+            return res;
+        },
+        deps: [name],
+    });
 
-    const fetchMore = async () => {
-        if (isFetching || !hasMore || !nextCursorRef.current) return;
-        setIsFetching(true);
-        try {
-            const cursor = encodeURIComponent(nextCursorRef.current);
-            const url = `/api/v1/routes?tag=${encodeURIComponent(name)}&limit=15&cursor=${cursor}`;
-            const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
-            if (res && res.items.length > 0) {
-                setRoutes(prev => {
-                    const existing = new Set((prev ?? []).map(r => r.id));
-                    const filtered = res.items.filter(r => !existing.has(r.id));
-                    return [...(prev ?? []), ...filtered];
-                });
-                nextCursorRef.current = res.nextCursor;
-                if (!res.nextCursor) setHasMore(false);
-            } else {
-                setHasMore(false);
-            }
-        } catch (e: any) {
-            appendError(e);
-        } finally {
-            setIsFetching(false);
-        }
-    };
-
-    useEffect(() => {
-        if (!hasMore) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !isFetching) {
-                    fetchMore();
-                }
-            },
-            { threshold: 0.1 }
-        );
-        const el = observerTarget.current;
-        if (el) observer.observe(el);
-        return () => {
-            if (el) observer.unobserve(el);
-        };
-    }, [hasMore, isFetching]);
+    // タグが変わった時はtotalCountをリセット
+    useEffect(() => { setTotalCount(null) }, [name]);
 
     return (
         <div className={'w-full max-w-[1600px] h-full flex flex-col items-center md:px-8 px-4 py-8 gap-8'}>

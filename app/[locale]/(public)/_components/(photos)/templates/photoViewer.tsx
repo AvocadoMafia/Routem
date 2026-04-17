@@ -2,38 +2,16 @@ import PhotoContainer from "@/app/[locale]/(public)/_components/(photos)/ingredi
 import PhotoContainerSkeleton from "@/app/[locale]/(public)/_components/(photos)/ingredients/photoContainerSkeleton";
 import Masonry from "react-masonry-css";
 import {Photo} from "@/app/[locale]/(public)/_components/(photos)/photosSection";
-import {useEffect, useRef} from "react";
+import {RefObject} from "react";
 
 
 type Props = {
     photos: Photo[] | null,
-    fetchMore?: () => Promise<void>,
     hasMore?: boolean,
-    isFetching?: boolean,
+    observerTarget?: RefObject<HTMLDivElement | null>,
 }
 
-export default function PhotoViewer({photos, fetchMore, hasMore, isFetching}: Props) {
-    const observerTarget = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!fetchMore || !hasMore) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !isFetching) {
-                    fetchMore();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        const el = observerTarget.current;
-        if (el) observer.observe(el);
-
-        return () => {
-            if (el) observer.unobserve(el);
-        };
-    }, [hasMore, fetchMore, isFetching]);
-
+export default function PhotoViewer({photos, hasMore, observerTarget}: Props) {
     const breakpoints = {
         default: 3,
         1280: 2,

@@ -6,8 +6,8 @@ import RouteCardGraphical from '@/app/[locale]/_components/common/templates/rout
 import RouteCardGraphicalSkeleton from '@/app/[locale]/_components/common/ingredients/routeCardGraphicalSkeleton'
 import RouteCardWidely from '@/app/[locale]/_components/common/templates/routeCardWidely'
 import RouteCardWidelySkeleton from '@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton'
-import { MdFavoriteBorder, MdHistory, MdGridOn } from 'react-icons/md'
-import React, { useEffect, useRef } from 'react'
+import { MdHistory } from 'react-icons/md'
+import { RefObject } from 'react'
 import FuckingOctopus from '@/app/[locale]/_components/common/ingredients/fuckingOctopus'
 import FuckingSquid from '@/app/[locale]/_components/common/ingredients/fuckingSquid'
 import { useTranslations } from 'next-intl'
@@ -20,9 +20,8 @@ export default function UserProfileContent({
   likedRoutes,
   historyRoutes,
   mode = 'public',
-  fetchMore,
   hasMore,
-  isFetching,
+  observerTarget,
 }: {
   activeTab: Tab
   onChangeTab: (t: Tab) => void
@@ -34,32 +33,9 @@ export default function UserProfileContent({
   fetchMore?: () => Promise<void>
   hasMore?: boolean
   isFetching?: boolean
+  observerTarget?: RefObject<HTMLDivElement | null>
 }) {
   const t = useTranslations('profile')
-  const observerTarget = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!fetchMore || !hasMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetching) {
-          fetchMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
-    };
-  }, [hasMore, fetchMore, isFetching, routes?.length, likedRoutes?.length, historyRoutes?.length, activeTab]);
 
   // ダミーカードの生成（15個）
   const dummyCards = Array.from({ length: 15 }).map((_, i) => (

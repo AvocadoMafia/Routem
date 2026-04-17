@@ -1,38 +1,29 @@
 import FocusingRouteViewer from "@/app/[locale]/(public)/_components/(likes)/templates/focusingRouteViewer";
 import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templates/likedRoutesList";
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getDataFromServerWithJson} from "@/lib/client/helpers";
-import { errorStore } from "@/lib/client/stores/errorStore";
 import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
 import FuckingSquid from "@/app/[locale]/_components/common/ingredients/fuckingSquid";
 import {HiHeart} from "react-icons/hi2";
-import RouteCardWidelySkeleton from "@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton";
+import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteScroll";
 
-// カーソルベースのレスポンス型
-type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+type LikeRecord = { id: string; createdAt: string; route: Route }
 
 export default function LikesSection() {
 
-    type LikeRecord = { id: string; createdAt: string; route: Route }
+    const { items: likes } = useInfiniteScroll<LikeRecord>({
+        fetcher: (cursor) => {
+            const url = `/api/v1/likes?route=true&take=30${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
+            return getDataFromServerWithJson<CursorResponse<LikeRecord>>(url);
+        },
+    });
 
-    const [likes, setLikes] = useState<LikeRecord[] | null>(null);
-    const routes: Route[] = likes ? likes.map(l => l.route) : [];
-    const appendError = errorStore(state => state.appendError);
+    const routes: Route[] = (likes ?? []).map(l => l.route).filter(Boolean);
 
     const [focusedRouteIdx, setFocusedRouteIdx] = useState<number>(0);
     const prevIndexRef = useRef<number>(0);
-
-
-    useEffect(() => {
-        getDataFromServerWithJson<CursorResponse<LikeRecord>>('/api/v1/likes?route=true&take=30').then(
-            (res) => setLikes((res?.items || []).filter((it: any) => it.route))
-        ).catch((err) => {
-            setLikes([]);
-            appendError(err);
-        })
-    }, [])
 
     useEffect(() => {
         prevIndexRef.current = focusedRouteIdx;
@@ -76,7 +67,7 @@ export default function LikesSection() {
                     )}
                 </motion.div>
             </AnimatePresence>
-            
+
             <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
 
             <div className="relative z-10 w-full md:h-full h-fit flex flex-row">

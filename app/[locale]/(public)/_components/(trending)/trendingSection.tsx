@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import TrendingRoutesList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingRoutesList";
 import TrendingUsersList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingUsersList";
 import TrendingTagsList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingTagsList";
@@ -9,15 +9,10 @@ import { getDataFromServerWithJson } from "@/lib/client/helpers";
 import { errorStore } from "@/lib/client/stores/errorStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiFire, HiUsers, HiHashtag } from "react-icons/hi2";
-import {CiRoute} from "react-icons/ci";
-import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
-import TrendingUserCardSkeleton from "@/app/[locale]/(public)/_components/(trending)/ingredients/trendingUserCardSkeleton";
 import {MdRoute} from "react-icons/md";
+import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
 
 type TrendingTab = 'routes' | 'users' | 'tags';
-
-// カーソルベースのレスポンス型
-type CursorResponse<T> = { items: T[]; nextCursor: string | null };
 
 export type TrendingUser = Pick<User, 'id' | 'name' | 'bio' | 'icon'> & {
     _count?: { followers: number; followings: number; routes: number };
@@ -26,72 +21,44 @@ export type TrendingUser = Pick<User, 'id' | 'name' | 'bio' | 'icon'> & {
 export type TrendingTag = { name: string; postCount: number };
 
 export default function TrendingSection() {
-    const [routes, setRoutes] = useState<Route[]>([]);
     const [users, setUsers] = useState<TrendingUser[] | null>(null);
     const [tags, setTags] = useState<TrendingTag[] | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isFetching, setIsFetching] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
     const appendError = errorStore(state => state.appendError);
     const [activeTab, setActiveTab] = useState<TrendingTab>('routes');
-    const nextCursorRef = useRef<string | null>(null);
 
+    // トレンドのユーザー・タグ（10件制限、ページネーション不要）
     useEffect(() => {
         let cancelled = false;
-        async function load() {
-            setLoading(true);
-            setHasMore(true);
-            nextCursorRef.current = null;
+        (async () => {
             try {
-                const [routesRes, usersData, tagsData] = await Promise.all([
-                    getDataFromServerWithJson<CursorResponse<Route>>('/api/v1/routes?type=trending&limit=15'),
+                const [usersData, tagsData] = await Promise.all([
                     getDataFromServerWithJson<TrendingUser[]>('/api/v1/users?limit=10&type=trending'),
-                    getDataFromServerWithJson<TrendingTag[]>('/api/v1/tags?limit=10&type=trending')
+                    getDataFromServerWithJson<TrendingTag[]>('/api/v1/tags?limit=10&type=trending'),
                 ]);
-
                 if (!cancelled) {
-                    if (routesRes) {
-                        setRoutes(routesRes.items);
-                        nextCursorRef.current = routesRes.nextCursor;
-                        if (!routesRes.nextCursor) setHasMore(false);
-                    }
                     setUsers(usersData);
                     setTags(tagsData);
                 }
             } catch (e: any) {
                 if (!cancelled) appendError(e);
-            } finally {
-                if (!cancelled) setLoading(false);
             }
-        }
-        load();
+        })();
         return () => { cancelled = true };
-    }, []);
+    }, [appendError]);
 
-    const fetchMoreRoutes = async () => {
-        if (isFetching || !hasMore || routes.length === 0 || !nextCursorRef.current) return;
-        setIsFetching(true);
-        try {
-            const cursor = encodeURIComponent(nextCursorRef.current);
-            const res = await getDataFromServerWithJson<CursorResponse<Route>>(`/api/v1/routes?type=trending&limit=15&cursor=${cursor}`);
-
-            if (res && res.items.length > 0) {
-                setRoutes(prev => {
-                    const existingIds = new Set(prev.map(r => r.id));
-                    const filtered = res.items.filter(r => !existingIds.has(r.id));
-                    return [...prev, ...filtered];
-                });
-                nextCursorRef.current = res.nextCursor;
-                if (!res.nextCursor) setHasMore(false);
-            } else {
-                setHasMore(false);
-            }
-        } catch (e: any) {
-            appendError(e);
-        } finally {
-            setIsFetching(false);
-        }
-    };
+    // トレンドのルート（カーソル無限スクロール）
+    const {
+        items: routes,
+        hasMore,
+        isFetching,
+        fetchMore,
+        observerTarget,
+    } = useInfiniteScroll<Route>({
+        fetcher: (cursor) => {
+            const url = `/api/v1/routes?type=trending&limit=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
+            return getDataFromServerWithJson<CursorResponse<Route>>(url);
+        },
+    });
 
     return (
         <div className={'w-full md:h-full h-fit'}>
@@ -140,30 +107,32 @@ export default function TrendingSection() {
                         transition={{ duration: 0.2 }}
                     >
                         {activeTab === 'routes' && (
-                            <TrendingRoutesList 
-                                routes={loading ? undefined : routes} 
-                                fetchMore={fetchMoreRoutes} 
-                                hasMore={hasMore} 
-                                isFetching={isFetching} 
+                            <TrendingRoutesList
+                                routes={routes ?? undefined}
+                                fetchMore={fetchMore}
+                                hasMore={hasMore}
+                                isFetching={isFetching}
+                                observerTarget={observerTarget}
                             />
                         )}
-                        {activeTab === 'users' && <TrendingUsersList users={loading ? undefined : users || []}  />}
-                        {activeTab === 'tags' && <TrendingTagsList tags={loading ? undefined : tags || []} />}
+                        {activeTab === 'users' && <TrendingUsersList users={users ?? undefined}  />}
+                        {activeTab === 'tags' && <TrendingTagsList tags={tags ?? undefined} />}
                     </motion.div>
                 </AnimatePresence>
             </div>
 
             {/* デスクトップ表示: 既存のレイアウト */}
             <div className="hidden md:flex w-full h-full overflow-hidden flex-row gap-8 lg:gap-12">
-                <TrendingRoutesList 
-                    routes={loading ? undefined : routes} 
-                    fetchMore={fetchMoreRoutes} 
-                    hasMore={hasMore} 
-                    isFetching={isFetching} 
+                <TrendingRoutesList
+                    routes={routes ?? undefined}
+                    fetchMore={fetchMore}
+                    hasMore={hasMore}
+                    isFetching={isFetching}
+                    observerTarget={observerTarget}
                 />
                 <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
-                    <TrendingUsersList users={loading ? undefined : users || []} />
-                    <TrendingTagsList tags={loading ? undefined : tags || []} />
+                    <TrendingUsersList users={users ?? undefined} />
+                    <TrendingTagsList tags={tags ?? undefined} />
                 </div>
             </div>
         </div>

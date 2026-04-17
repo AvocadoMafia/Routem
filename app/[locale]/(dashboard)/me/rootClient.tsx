@@ -1,164 +1,86 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
-import { errorStore } from '@/lib/client/stores/errorStore'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
+import { Route } from '@/lib/client/types'
+import { CursorResponse, useInfiniteScroll } from '@/lib/client/hooks/useInfiniteScroll'
 
-// カーソルベースのレスポンス型
-type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+type LikeRecord = { id: string; createdAt: string; route: Route }
+type ViewRecord = { id: string; updatedAt: string; route: Route }
 
 export default function RootClient() {
   const currentUser = userStore(state => state.user)
-  const [userRoutes, setUserRoutes] = useState<any[]>([])
-  const [likes, setLikes] = useState<any[]>([])
-  const [history, setHistory] = useState<any[]>([])
-  const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
-  const [isFetching, setIsFetching] = useState(false)
-  const [hasMoreRoutes, setHasMoreRoutes] = useState(true)
-  const [hasMoreLikes, setHasMoreLikes] = useState(true)
-  const [hasMoreHistory, setHasMoreHistory] = useState(true)
+  const userId = currentUser?.id
+  const enabled = !!userId
   const [activeTab, setActiveTab] = useState<Tab>('routes')
-  const appendError = errorStore(state => state.appendError)
 
-  // カーソル管理
-  const routesCursorRef = useRef<string | null>(null)
-  const likesCursorRef = useRef<string | null>(null)
-  const historyCursorRef = useRef<string | null>(null)
+  const {
+    items: userRoutes,
+    hasMore: hasMoreRoutes,
+    isFetching: isFetchingRoutes,
+    fetchMore: fetchMoreRoutes,
+    observerTarget: observerTargetRoutes,
+  } = useInfiniteScroll<Route>({
+    fetcher: (cursor) => {
+      const url = `/api/v1/routes?authorId=${userId}&limit=15&type=user_posts${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
+      return getDataFromServerWithJson<CursorResponse<Route>>(url)
+    },
+    deps: [userId],
+    enabled,
+  })
 
-  const likedRoutes = likes.map(l => l.route).filter(Boolean)
-  const historyRoutes = history.map(v => v.route).filter(Boolean)
+  const {
+    items: likedRoutes,
+    hasMore: hasMoreLikes,
+    isFetching: isFetchingLikes,
+    fetchMore: fetchMoreLikes,
+    observerTarget: observerTargetLikes,
+  } = useInfiniteScroll<LikeRecord, Route>({
+    fetcher: (cursor) => {
+      const url = `/api/v1/likes?route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
+      return getDataFromServerWithJson<CursorResponse<LikeRecord>>(url)
+    },
+    mapItem: (l) => l.route ?? null,
+    deps: [userId],
+    enabled,
+  })
 
+  const {
+    items: historyRoutes,
+    hasMore: hasMoreHistory,
+    isFetching: isFetchingHistory,
+    fetchMore: fetchMoreHistory,
+    observerTarget: observerTargetHistory,
+  } = useInfiniteScroll<ViewRecord, Route>({
+    fetcher: (cursor) => {
+      const url = `/api/v1/views?route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
+      return getDataFromServerWithJson<CursorResponse<ViewRecord>>(url)
+    },
+    mapItem: (v) => v.route ?? null,
+    deps: [userId],
+    enabled,
+  })
 
-  useEffect(() => {
-
-    const fetchInitialData = async () => {
-      // 既にデータがある場合は、タブ切り替え時に再取得しない（無限スクロールで追加分がある場合を考慮）
-      // ただし、初回は必ず取得する
-      if (activeTab === 'routes' && userRoutes.length > 0) return
-      if (activeTab === 'likes' && likes.length > 0) return
-      if (activeTab === 'history' && history.length > 0) return
-
-      setIsLoadingRoutes(true)
-      setIsFetching(true)
-      try {
-        if (activeTab === 'routes') {
-          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&type=user_posts`)
-          if (res) {
-            setUserRoutes(res.items)
-            routesCursorRef.current = res.nextCursor
-            setHasMoreRoutes(!!res.nextCursor)
-          }
-        } else if (activeTab === 'likes') {
-          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/likes?route=true&take=15`)
-          if (res) {
-            setLikes(res.items)
-            likesCursorRef.current = res.nextCursor
-            setHasMoreLikes(!!res.nextCursor)
-          }
-        } else if (activeTab === 'history') {
-          const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/views?route=true&take=15`)
-          if (res) {
-            setHistory(res.items)
-            historyCursorRef.current = res.nextCursor
-            setHasMoreHistory(!!res.nextCursor)
-          }
-        }
-      } catch (error: any) {
-        console.error(`Failed to fetch ${activeTab}:`, error)
-        appendError(error)
-      } finally {
-        setIsLoadingRoutes(false)
-        setIsFetching(false)
-      }
-    }
-
-    fetchInitialData()
-  }, [currentUser?.id, activeTab, userRoutes.length, likes.length, history.length])
-
-  const fetchMore = useCallback(async () => {
-    if (isFetching || !currentUser?.id) return
-
-    if (activeTab === 'routes' && hasMoreRoutes && routesCursorRef.current) {
-      setIsFetching(true)
-      try {
-        const cursor = encodeURIComponent(routesCursorRef.current)
-        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/routes?authorId=${currentUser.id}&limit=15&cursor=${cursor}&type=user_posts`)
-        if (res && res.items.length > 0) {
-          setUserRoutes(prev => {
-            const existingIds = new Set(prev.map(r => r.id));
-            const filtered = res.items.filter(r => !existingIds.has(r.id));
-            return [...prev, ...filtered];
-          })
-          routesCursorRef.current = res.nextCursor
-          setHasMoreRoutes(!!res.nextCursor)
-        } else {
-          setHasMoreRoutes(false)
-        }
-      } catch (error: any) {
-        console.error('Failed to fetch more routes:', error)
-        appendError(error)
-      } finally {
-        setIsFetching(false)
-      }
-    } else if (activeTab === 'likes' && hasMoreLikes && likesCursorRef.current) {
-      setIsFetching(true)
-      try {
-        const cursor = encodeURIComponent(likesCursorRef.current)
-        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/likes?route=true&take=15&cursor=${cursor}`)
-        if (res && res.items.length > 0) {
-          setLikes(prev => {
-            const existingIds = new Set(prev.map(l => l.id));
-            const filtered = res.items.filter(l => !existingIds.has(l.id));
-            return [...prev, ...filtered];
-          })
-          likesCursorRef.current = res.nextCursor
-          setHasMoreLikes(!!res.nextCursor)
-        } else {
-          setHasMoreLikes(false)
-        }
-      } catch (error: any) {
-        console.error('Failed to fetch more likes:', error)
-        appendError(error)
-      } finally {
-        setIsFetching(false)
-      }
-    } else if (activeTab === 'history' && hasMoreHistory && historyCursorRef.current) {
-      setIsFetching(true)
-      try {
-        const cursor = encodeURIComponent(historyCursorRef.current)
-        const res = await getDataFromServerWithJson<CursorResponse<any>>(`/api/v1/views?route=true&take=15&cursor=${cursor}`)
-        if (res && res.items.length > 0) {
-          setHistory(prev => {
-            const existingIds = new Set(prev.map(v => v.id));
-            const filtered = res.items.filter(v => !existingIds.has(v.id));
-            return [...prev, ...filtered];
-          })
-          historyCursorRef.current = res.nextCursor
-          setHasMoreHistory(!!res.nextCursor)
-        } else {
-          setHasMoreHistory(false)
-        }
-      } catch (error: any) {
-        console.error('Failed to fetch more history:', error)
-        appendError(error)
-      } finally {
-        setIsFetching(false)
-      }
-    }
-  }, [isFetching, currentUser?.id, activeTab, hasMoreRoutes, hasMoreLikes, hasMoreHistory])
-
-
-  const getHasMore = () => {
-    if (activeTab === 'routes') return hasMoreRoutes
-    if (activeTab === 'likes') return hasMoreLikes
-    if (activeTab === 'history') return hasMoreHistory
-    return false
-  }
+  const fetchMore =
+    activeTab === 'routes' ? fetchMoreRoutes :
+    activeTab === 'likes' ? fetchMoreLikes :
+    fetchMoreHistory
+  const hasMore =
+    activeTab === 'routes' ? hasMoreRoutes :
+    activeTab === 'likes' ? hasMoreLikes :
+    hasMoreHistory
+  const isFetching =
+    activeTab === 'routes' ? isFetchingRoutes :
+    activeTab === 'likes' ? isFetchingLikes :
+    isFetchingHistory
+  const observerTarget =
+    activeTab === 'routes' ? observerTargetRoutes :
+    activeTab === 'likes' ? observerTargetLikes :
+    observerTargetHistory
 
   return (
     <div className="w-full h-fit flex flex-col">
@@ -172,18 +94,19 @@ export default function RootClient() {
       <UserProfileContent
         activeTab={activeTab}
         onChangeTab={setActiveTab}
-        stats={{ 
-          routes: currentUser._count?.routes ?? 0, 
-          followers: '0', 
-          following: '0' 
+        stats={{
+          routes: currentUser._count?.routes ?? 0,
+          followers: '0',
+          following: '0'
         }}
-        routes={userRoutes}
-        likedRoutes={likedRoutes}
-        historyRoutes={historyRoutes}
+        routes={userRoutes ?? null}
+        likedRoutes={likedRoutes ?? null}
+        historyRoutes={historyRoutes ?? null}
         mode="self"
         fetchMore={fetchMore}
-        hasMore={getHasMore()}
+        hasMore={hasMore}
         isFetching={isFetching}
+        observerTarget={observerTarget}
       />
     </div>
   )

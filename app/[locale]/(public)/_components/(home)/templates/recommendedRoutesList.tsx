@@ -1,46 +1,23 @@
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
 import {Route} from "@/lib/client/types";
-import {useEffect, useRef} from "react";
+import {RefObject} from "react";
 
 type Props = {
     routes?: Route[]
     fetchMore?: () => Promise<void>
     hasMore?: boolean
     isFetching?: boolean
+    observerTarget?: RefObject<HTMLDivElement | null>
 }
 
 export default function RecommendedRoutesList(props: Props) {
-    const observerTarget = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!props.fetchMore || !props.hasMore) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && props.hasMore && !props.isFetching) {
-                    props.fetchMore?.();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        if (observerTarget.current) {
-            observer.observe(observerTarget.current);
-        }
-
-        return () => {
-            if (observerTarget.current) {
-                observer.unobserve(observerTarget.current);
-            }
-        };
-    }, [props.hasMore, props.fetchMore, props.isFetching]);
-
     // ダミーカードの生成（15個）
     const dummyCards = Array.from({ length: 15 }).map((_, i) => (
-        <RouteCardBasicSkeleton 
-            key={`dummy-${i}`} 
+        <RouteCardBasicSkeleton
+            key={`dummy-${i}`}
             isFirst={i === 0}
-            observerTarget={observerTarget}
+            observerTarget={props.observerTarget}
         />
     ));
 

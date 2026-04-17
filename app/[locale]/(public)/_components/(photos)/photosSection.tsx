@@ -1,9 +1,8 @@
 'use client'
 
 import PhotoViewer from "@/app/[locale]/(public)/_components/(photos)/templates/photoViewer";
-import {useEffect, useRef, useState} from "react";
 import {getDataFromServerWithJson} from "@/lib/client/helpers";
-import {errorStore} from "@/lib/client/stores/errorStore";
+import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteScroll";
 
 export type Photo = {
     id: string,
@@ -37,8 +36,6 @@ type ImageItem = {
     } | null,
 }
 
-type CursorResponse<T> = { items: T[]; nextCursor: string | null };
-
 function mapImageToPhoto(img: ImageItem): Photo | null {
     const route = img.routeNode?.routeDate.route;
     if (!route) return null;
@@ -56,68 +53,19 @@ function mapImageToPhoto(img: ImageItem): Photo | null {
 
 export default function PhotosSection() {
 
-    const [photos, setPhotos] = useState<Photo[] | null>(null)
-    const [isFetching, setIsFetching] = useState(false)
-    const [hasMore, setHasMore] = useState(true);
-    const nextCursorRef = useRef<string | null>(null);
-    const appendError = errorStore(state => state.appendError);
-
-    useEffect(() => {
-        let cancelled = false;
-        async function load() {
-            setHasMore(true);
-            nextCursorRef.current = null;
-            try {
-                const res = await getDataFromServerWithJson<CursorResponse<ImageItem>>('/api/v1/images?limit=15');
-                if (!cancelled && res) {
-                    const mapped = res.items.map(mapImageToPhoto).filter((p): p is Photo => p !== null);
-                    setPhotos(mapped);
-                    nextCursorRef.current = res.nextCursor;
-                    if (!res.nextCursor) setHasMore(false);
-                }
-            } catch (e: any) {
-                if (!cancelled) {
-                    setPhotos([]);
-                    appendError(e);
-                }
-            }
-        }
-        load();
-        return () => { cancelled = true };
-    }, []);
-
-    const fetchMore = async () => {
-        if (isFetching || !hasMore || !nextCursorRef.current) return;
-        setIsFetching(true);
-        try {
-            const cursor = encodeURIComponent(nextCursorRef.current);
-            const res = await getDataFromServerWithJson<CursorResponse<ImageItem>>(`/api/v1/images?limit=15&cursor=${cursor}`);
-            if (res && res.items.length > 0) {
-                const mapped = res.items.map(mapImageToPhoto).filter((p): p is Photo => p !== null);
-                setPhotos(prev => {
-                    const existing = new Set((prev ?? []).map(p => p.id));
-                    const filtered = mapped.filter(p => !existing.has(p.id));
-                    return [...(prev ?? []), ...filtered];
-                });
-                nextCursorRef.current = res.nextCursor;
-                if (!res.nextCursor) setHasMore(false);
-            } else {
-                setHasMore(false);
-            }
-        } catch (e: any) {
-            appendError(e);
-        } finally {
-            setIsFetching(false);
-        }
-    };
+    const {items: photos, hasMore, observerTarget} = useInfiniteScroll<ImageItem, Photo>({
+        fetcher: (cursor) => getDataFromServerWithJson<CursorResponse<ImageItem>>(
+            `/api/v1/images?limit=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
+        ),
+        mapItem: mapImageToPhoto,
+    })
 
     return (
         <div className={'w-full h-fit py-12'}>
             <PhotoViewer
                 photos={photos}
-                fetchMore={fetchMore}
                 hasMore={hasMore}
-                isFetching={isFetching}
+                observerTarget={observerTarget}
             />
         </div>
     );
