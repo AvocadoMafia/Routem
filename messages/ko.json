@@ -125,6 +125,8 @@
     "roleOwner": "소유자",
     "roleCollaborator": "협력자",
     "roleViewer": "뷰어",
+    "roleMessageOwner": "당신은 이 루트의 작성자입니다.",
+    "roleMessageCollaborator": "당신은 이 루트에 대한 편집 권한을 가지고 있습니다.",
     "inviteLink": "초대 링크",
     "deleteConfirm": "이 루트를 삭제하시겠습니까?",
     "noDescription": "설명이 없습니다.",
@@ -133,7 +135,8 @@
     "noRelatedArticles": "관련 기사가 없습니다.",
     "viewDetailedRoute": "상세 보기",
     "copyLink": "링크 복사",
-    "failedToLike": "좋아요 실패"
+    "failedToLike": "좋아요 실패",
+    "importRoute": "이 루트 가져오기"
   },
   "routeEditor": {
     "editRoute": "루트 편집",
@@ -301,7 +304,9 @@
     "deleteComment": "댓글 삭제",
     "deleteConfirm": "이 댓글을 삭제하시겠습니까?",
     "postComment": "댓글 게시",
-    "posting": "게시 중..."
+    "posting": "게시 중...",
+    "likeComment": "좋아요",
+    "likedComment": "좋아요 완료"
   },
   "upload": {
     "selectImage": "이미지 선택",
@@ -318,6 +323,7 @@
     "explore": "탐색",
     "findYourNextStory": "다음 여행을 찾아보세요",
     "findYourRoute": "루트를 찾아보세요",
+    "incompleteBookmarkCopy": "미완성의 책갈피를, 당신의 언어로...",
     "what": "무엇을",
     "whatPlaceholder": "자연, 온천, 드라이브...",
     "where": "어디서",
@@ -329,6 +335,11 @@
     "budget": "예산",
     "searchRoutes": "루트 검색",
     "discovery": "발견",
+    "stepWhat": "1. 무엇을 하고 싶어?",
+    "stepWhere": "2. 어디로 가고 싶어?",
+    "stepWhen": "3. 언제 & 얼마나?",
+    "stepWho": "4. 누구와?",
+    "stepBudget": "5. 예산은?",
     "showingResultsFor": "검색 결과:",
     "routesFound": "{count}개의 루트를 찾았습니다"
   },

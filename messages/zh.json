@@ -125,6 +125,8 @@
     "roleOwner": "所有者",
     "roleCollaborator": "协作者",
     "roleViewer": "查看者",
+    "roleMessageOwner": "您是这条路线的作者。",
+    "roleMessageCollaborator": "您对此路线拥有编辑权限。",
     "inviteLink": "邀请链接",
     "deleteConfirm": "删除这条路线？",
     "noDescription": "暂无描述。",
@@ -133,7 +135,8 @@
     "noRelatedArticles": "没有相关文章。",
     "viewDetailedRoute": "查看详情",
     "copyLink": "复制链接",
-    "failedToLike": "点赞失败"
+    "failedToLike": "点赞失败",
+    "importRoute": "导入此路线"
   },
   "routeEditor": {
     "editRoute": "编辑路线",
@@ -301,7 +304,9 @@
     "deleteComment": "删除评论",
     "deleteConfirm": "删除此评论？",
     "postComment": "发表评论",
-    "posting": "发布中..."
+    "posting": "发布中...",
+    "likeComment": "喜欢",
+    "likedComment": "已喜欢"
   },
   "upload": {
     "selectImage": "选择图片",
@@ -318,6 +323,7 @@
     "explore": "探索",
     "findYourNextStory": "发现你的下一个故事",
     "findYourRoute": "找到你的路线",
+    "incompleteBookmarkCopy": "未完成的书签，用你的话语填满...",
     "what": "什么",
     "whatPlaceholder": "自然、温泉、自驾...",
     "where": "哪里",
@@ -329,6 +335,11 @@
     "budget": "预算",
     "searchRoutes": "搜索路线",
     "discovery": "发现",
+    "stepWhat": "1. 想做什么？",
+    "stepWhere": "2. 想去哪里？",
+    "stepWhen": "3. 何时 & 多久？",
+    "stepWho": "4. 和谁一起？",
+    "stepBudget": "5. 预算是？",
     "showingResultsFor": "搜索结果:",
     "routesFound": "找到{count}条路线"
   },

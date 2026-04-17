@@ -125,6 +125,8 @@
     "roleOwner": "Owner",
     "roleCollaborator": "Collaborator",
     "roleViewer": "Viewer",
+    "roleMessageOwner": "You are the author of this route.",
+    "roleMessageCollaborator": "You have editing permissions for this route.",
     "inviteLink": "Invite Link",
     "deleteConfirm": "Delete this route?",
     "noDescription": "No description provided.",
@@ -133,7 +135,8 @@
     "noRelatedArticles": "No related articles found.",
     "viewDetailedRoute": "View Detailed Route",
     "copyLink": "Copy link",
-    "failedToLike": "Failed to like"
+    "failedToLike": "Failed to like",
+    "importRoute": "Import this route"
   },
   "routeEditor": {
     "editRoute": "Edit Route",
@@ -301,7 +304,9 @@
     "deleteComment": "Delete comment",
     "deleteConfirm": "Delete this comment?",
     "postComment": "Post Comment",
-    "posting": "Posting..."
+    "posting": "Posting...",
+    "likeComment": "Like",
+    "likedComment": "Liked"
   },
   "upload": {
     "selectImage": "Select image",
