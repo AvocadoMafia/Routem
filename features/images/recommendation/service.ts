@@ -1,20 +1,29 @@
+import { sliceByScoreCursor } from "@/lib/server/cursor";
 import { RecommendGlobalType } from "@/scripts/generatingRecommendations/schema";
 import { createClient } from "redis";
 import { iMagesRecommendationRepository } from "./repository";
-import { ImageRecommendationResponseType } from "./schema";
+import { ImageRecommendationRequestType, ImageRecommendationResponseType } from "./schema";
 
 export const imagesRecommendationService = {
-  get: async (): Promise<ImageRecommendationResponseType[]> => {
+  get: async (query: ImageRecommendationRequestType): Promise<ImageRecommendationResponseType> => {
     const redis = await createClient();
     const recommendGlobal = await redis.get("recommend:global");
 
-    if (!recommendGlobal) return [];
+    if (!recommendGlobal) throw "リコメンデーションのデータがありません。";
     const recommendGlobalParsed: RecommendGlobalType = JSON.parse(recommendGlobal);
-    const recommendedIds = recommendGlobalParsed.map((i) => i.id);
+
+    const sliced = sliceByScoreCursor(recommendGlobalParsed, query.nextCursor, query.limit);
+    const recommendedIds = sliced.items.map((item) => item.id);
+    const nextCursor = sliced.nextCursor;
 
     const data = await iMagesRecommendationRepository.findMany(recommendedIds);
 
-    const resData: ImageRecommendationResponseType[] = data.map((item) => ({
+    const routeMap = new Map(data.map((route) => [route.id, route]));
+    const sortedData = recommendedIds
+      .map((id) => routeMap.get(id))
+      .filter((item) => item !== undefined);
+
+    const resData = sortedData.map((item) => ({
       id: item.id,
       title: item.title,
       author: {
@@ -27,6 +36,6 @@ export const imagesRecommendationService = {
       ),
     }));
 
-    return resData;
+    return { data: resData, nextCursor };
   },
 };
