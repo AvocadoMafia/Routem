@@ -9,6 +9,7 @@ import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredient
 import { Route } from "@/lib/client/types";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
 import { useTranslations } from "next-intl";
+import { errorStore } from "@/lib/client/stores/errorStore";
 
 type ExploreResponse = {
   items: Route[];
@@ -26,7 +27,7 @@ function ExploreContent() {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const appendError = errorStore(state => state.appendError);
   const observerTarget = useRef<HTMLDivElement>(null);
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(true);
@@ -89,7 +90,7 @@ function ExploreContent() {
       }
       setHasMore(res.nextOffset !== null);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to fetch explore routes");
+      appendError(e);
     } finally {
       setIsFetching(false);
     }
@@ -100,14 +101,12 @@ function ExploreContent() {
       setRoutes([]);
       setHasMore(true);
       hasMoreRef.current = true;
-      setError(null);
       return;
     }
 
     setRoutes([]);
     setHasMore(true);
     hasMoreRef.current = true;
-    setError(null);
     fetchExploreResults(0);
   }, [hasParams, queryString, fetchExploreResults]);
 
@@ -193,8 +192,7 @@ function ExploreContent() {
                 </div>
 
                 {isFetching && routes.length === 0 && <p className="text-foreground-1">{tCommon("loading")}</p>}
-                {error && <p className="text-accent-0">{error}</p>}
-                {!isFetching && !error && routes.length === 0 && (
+                {!isFetching && routes.length === 0 && (
                   <p className="text-foreground-1">{t("routesFound", { count: 0 })}</p>
                 )}
 

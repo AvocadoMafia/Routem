@@ -26,6 +26,7 @@ import { User } from "@supabase/supabase-js";
 import { useTranslations } from "next-intl";
 import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
 import {MdInfo} from "react-icons/md";
+import { errorStore } from "@/lib/client/stores/errorStore";
 
 type RouteHeaderProps = {
   route: Route;
@@ -38,6 +39,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const tEditor = useTranslations("routeEditor");
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [isCopying, setIsCopying] = useState(false);
+  const appendError = errorStore(state => state.appendError);
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode, "3,500");
 
   const routeDate = route.date ? new Date(route.date) : null;
@@ -56,9 +58,9 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       const data = await res.json();
       const url = `${window.location.origin}/invites/${data.token}`;
       setInviteUrl(url);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert(t("failedToInvite"));
+      appendError(error);
     }
   };
 
@@ -75,9 +77,9 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       const res = await fetch(`/api/v1/routes?id=${route.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete route");
       window.location.href = "/";
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert(t("failedToDelete"));
+      appendError(error);
     }
   };
 

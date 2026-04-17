@@ -259,12 +259,12 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   const textFieldSx = {
     "& .MuiInputLabel-root": {
       color: "var(--foreground-1)",
-      fontSize: "0.8rem",
+      fontSize: "0.75rem",
       fontWeight: 800,
       letterSpacing: "0.05em",
       transform: "translate(14px, -10px) scale(1)",
       backgroundColor: "#fcfaf2", // しおりの背景色に合わせる
-      padding: "0 8px",
+      padding: "0 6px",
       borderRadius: "4px",
       zIndex: 1,
       "&.Mui-focused": {
@@ -272,13 +272,13 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       },
     },
     "& .MuiOutlinedInput-root": {
-      borderRadius: "12px",
+      borderRadius: "10px",
       color: "var(--foreground-0)",
       backgroundColor: "transparent",
       transition: "all 0.2s ease-in-out",
       "& fieldset": {
         borderColor: "rgba(var(--foreground-0-rgb), 0.12)",
-        borderWidth: "1.5px",
+        borderWidth: "1.2px",
       },
       "&:hover fieldset": {
         borderColor: "rgba(var(--foreground-0-rgb), 0.25)",
@@ -290,12 +290,12 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     },
     "& input": {
       color: "var(--foreground-0)",
-      fontSize: "0.95rem",
-      padding: "14px 16px",
+      fontSize: "0.9rem",
+      padding: "10px 14px",
       fontWeight: 600,
     },
     "& .MuiSelect-select": {
-      padding: "14px 16px",
+      padding: "10px 14px",
       fontWeight: 600,
     },
     "& .MuiInputAdornment-root": {
@@ -304,9 +304,9 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   };
 
   const StepLabel = ({ icon: Icon, text }: { icon: any; text: string }) => (
-    <div className="flex items-center gap-2 mb-2 ml-1">
-      <Icon className="text-accent-0 text-lg" />
-      <span className="text-xs font-bold text-foreground-1 uppercase tracking-wider">{text}</span>
+    <div className="flex items-center gap-2 mb-1 ml-1">
+      <Icon className="text-accent-0 text-base" />
+      <span className="text-[10px] font-bold text-foreground-1 uppercase tracking-wider">{text}</span>
     </div>
   );
 
@@ -317,14 +317,14 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   );
 
   const cardContent = (
-    <div className="flex flex-col gap-8 relative">
+    <div className="flex flex-col gap-5 relative">
       {/* Bookmark Ribbon Decor */}
-      <div className="absolute -top-12 right-8 w-8 h-16 bg-accent-0 rounded-b-sm shadow-md flex items-end justify-center pb-2 z-10">
-        <div className="w-1 h-8 bg-white/20 rounded-full mb-1" />
+      <div className="absolute -top-12 right-8 w-6 h-12 bg-accent-0 rounded-b-sm shadow-md flex items-end justify-center pb-1.5 z-10">
+        <div className="w-0.5 h-6 bg-white/20 rounded-full mb-1" />
       </div>
 
-      <div className="flex flex-row items-start justify-between text-left gap-3">
-        <div className="relative pt-2">
+      <div className="flex flex-row items-start justify-between text-left gap-2">
+        <div className="relative pt-1">
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -332,9 +332,9 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
             className="flex flex-col"
           >
             <h1 className="text-5xl font-caveat text-foreground-0 leading-tight -rotate-2 origin-left">
-              Your Vacant Plan
+              Your Tentative Plan
             </h1>
-            <div className="w-full h-0.5 bg-accent-0/30 -rotate-1 -mt-1 rounded-full self-start" />
+            <div className="w-full h-0.5 bg-accent-0/30 -rotate-1 -mt-0.5 rounded-full self-start" />
           </motion.div>
         </div>
         {isMobile && isSidebar && (
@@ -347,7 +347,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Step 1: What */}
         <div className="relative" ref={tagBoxRef}>
           <StepLabel icon={MdLocalOffer} text={t("stepWhat")} />
@@ -372,7 +372,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                 <button
                   key={tag}
                   type="button"
-                  className="block w-full text-left px-4 py-3 text-sm hover:bg-background-0 transition-colors font-medium"
+                  className="block w-full text-left px-4 py-2 text-sm hover:bg-background-0 transition-colors font-medium"
                   onClick={() => {
                     setWhat(tag);
                     setShowTagSuggestions(false);
@@ -549,9 +549,9 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
 
       <button
         onClick={handleSearch}
-        className="group relative w-full py-5 mt-4 bg-foreground-0 text-white rounded-2xl font-black overflow-hidden transition-all duration-300 hover:bg-accent-0 hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-foreground-0/20"
+        className="group relative w-full py-4 mt-1 bg-grass text-white rounded-2xl font-black overflow-hidden transition-all duration-300 hover:bg-accent-0 hover:scale-[1.02] active:scale-[0.98]"
       >
-        <span className="relative z-10 tracking-[0.2em] uppercase text-sm">
+        <span className="relative z-10 tracking-[0.2em] uppercase text-xs">
           {t("searchRoutes")}
         </span>
         <div className="absolute right-6 top-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:translate-x-1">
@@ -591,9 +591,9 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed bottom-0 left-0 right-0 z-[120] bg-[#fcfaf2] rounded-t-[24px] px-6 pt-8 pb-12 max-h-[90vh] overflow-y-auto"
+                className="fixed bottom-0 left-0 right-0 z-[120] bg-[#fcfaf2] rounded-t-[24px] px-6 pt-6 pb-10 max-h-[90vh] overflow-y-auto"
               >
-                <div className="w-12 h-1 bg-grass rounded-full mx-auto mb-8 opacity-50" />
+                <div className="w-12 h-1 bg-grass rounded-full mx-auto mb-6 opacity-50" />
                 {cardContent}
               </motion.div>
             </>
@@ -610,7 +610,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       animate={{ opacity: 1, x: 0 }}
       className={`
         w-full max-w-[480px] h-auto
-        px-10 py-12 flex flex-col gap-10 backdrop-blur-xl bg-background-0 relative overflow-hidden
+        px-8 py-10 flex flex-col gap-8 backdrop-blur-xl bg-background-0 relative overflow-hidden
         ${isSidebar ? "hidden md:flex h-full border-r-1 border-grass shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] mx-4"}
       `}
       transition={{

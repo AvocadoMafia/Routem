@@ -2,6 +2,7 @@ import FocusingRouteViewer from "@/app/[locale]/(public)/_components/(likes)/tem
 import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templates/likedRoutesList";
 import {useEffect, useState, useRef} from "react";
 import {getDataFromServerWithJson} from "@/lib/client/helpers";
+import { errorStore } from "@/lib/client/stores/errorStore";
 import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
@@ -18,6 +19,7 @@ export default function LikesSection() {
 
     const [likes, setLikes] = useState<LikeRecord[] | null>(null);
     const routes: Route[] = likes ? likes.map(l => l.route) : [];
+    const appendError = errorStore(state => state.appendError);
 
     const [focusedRouteIdx, setFocusedRouteIdx] = useState<number>(0);
     const prevIndexRef = useRef<number>(0);
@@ -26,7 +28,10 @@ export default function LikesSection() {
     useEffect(() => {
         getDataFromServerWithJson<CursorResponse<LikeRecord>>('/api/v1/likes?route=true&take=30').then(
             (res) => setLikes((res?.items || []).filter((it: any) => it.route))
-        ).catch(() => setLikes([]))
+        ).catch((err) => {
+            setLikes([]);
+            appendError(err);
+        })
     }, [])
 
     useEffect(() => {

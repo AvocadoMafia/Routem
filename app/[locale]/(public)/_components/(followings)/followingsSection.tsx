@@ -3,6 +3,7 @@
 import {useEffect, useState, useRef} from 'react'
 import {Route} from '@/lib/client/types'
 import {getDataFromServerWithJson} from '@/lib/client/helpers'
+import { errorStore } from '@/lib/client/stores/errorStore'
 import RouteCardBasic from '@/app/[locale]/_components/common/templates/routeCardBasic'
 import FollowingUserCard from '@/app/[locale]/(public)/_components/(followings)/ingredients/followingUserCard'
 import FollowingUserCardSkeleton from '@/app/[locale]/(public)/_components/(followings)/ingredients/followingUserCardSkeleton'
@@ -31,7 +32,7 @@ export default function FollowingsSection() {
     const [isFetching, setIsFetching] = useState(false)
     const [hasMoreRoutes, setHasMoreRoutes] = useState(true)
     const [hasMoreFollowings, setHasMoreFollowings] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const appendError = errorStore(state => state.appendError)
 
     const routesCursorRef = useRef<string | null>(null);
     const followingsCursorRef = useRef<string | null>(null);
@@ -43,7 +44,6 @@ export default function FollowingsSection() {
 
         async function load() {
             setLoading(true)
-            setError(null)
             setHasMoreRoutes(true)
             setHasMoreFollowings(true)
             routesCursorRef.current = null;
@@ -66,7 +66,7 @@ export default function FollowingsSection() {
                     }
                 }
             } catch (e: any) {
-                if (!cancelled) setError(e?.message ?? 'Failed to load followings feed')
+                if (!cancelled) appendError(e)
             } finally {
                 if (!cancelled) setLoading(false)
             }
@@ -170,8 +170,6 @@ export default function FollowingsSection() {
             observerTarget={observerTargetFollowings}
         />
     ));
-
-    if (error) return <div className="w-full h-full flex items-center justify-center text-accent-0">{error}</div>
 
     if (loading) return (
         <div className="w-full md:h-full h-fit md:overflow-hidden flex md:flex-row flex-col">

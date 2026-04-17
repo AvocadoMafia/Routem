@@ -6,6 +6,7 @@ import TrendingUsersList from "@/app/[locale]/(public)/_components/(trending)/te
 import TrendingTagsList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingTagsList";
 import { Route, User } from "@/lib/client/types";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { errorStore } from "@/lib/client/stores/errorStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiFire, HiUsers, HiHashtag } from "react-icons/hi2";
 import {CiRoute} from "react-icons/ci";
@@ -25,7 +26,7 @@ export default function TrendingSection() {
     const [loading, setLoading] = useState(true);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const appendError = errorStore(state => state.appendError);
     const [activeTab, setActiveTab] = useState<TrendingTab>('routes');
     const nextCursorRef = useRef<string | null>(null);
 
@@ -33,7 +34,6 @@ export default function TrendingSection() {
         let cancelled = false;
         async function load() {
             setLoading(true);
-            setError(null);
             setHasMore(true);
             nextCursorRef.current = null;
             try {
@@ -53,7 +53,7 @@ export default function TrendingSection() {
                     setTags(tagsData);
                 }
             } catch (e: any) {
-                if (!cancelled) setError(e?.message ?? 'Failed to load trending data');
+                if (!cancelled) appendError(e);
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -80,14 +80,12 @@ export default function TrendingSection() {
             } else {
                 setHasMore(false);
             }
-        } catch (e) {
-            console.error("Failed to fetch more trending routes:", e);
+        } catch (e: any) {
+            appendError(e);
         } finally {
             setIsFetching(false);
         }
     };
-
-    if (error) return <div className="w-full h-full flex items-center justify-center text-accent-0">{error}</div>;
 
     return (
         <div className={'w-full md:h-full h-fit'}>

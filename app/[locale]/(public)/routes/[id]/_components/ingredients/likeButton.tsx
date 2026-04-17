@@ -5,6 +5,7 @@ import { HiHeart } from "react-icons/hi2";
 import { postDataToServerWithJson } from "@/lib/client/helpers";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { errorStore } from "@/lib/client/stores/errorStore";
 
 type LikeButtonProps = {
   routeId: string;
@@ -17,6 +18,7 @@ export default function LikeButton({ routeId, initialLikesCount, initialIsLiked 
   const [likesCount, setLikesCount] = useState(initialLikesCount);
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [loading, setLoading] = useState(false);
+  const appendError = errorStore(state => state.appendError);
   const t = useTranslations('routes');
 
   const handleLike = async () => {
@@ -36,7 +38,7 @@ export default function LikeButton({ routeId, initialLikesCount, initialIsLiked 
         setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
       }
     } catch (err: any) {
-      alert(err.message || t('failedToLike'));
+      appendError(err);
     } finally {
       setLoading(false);
     }

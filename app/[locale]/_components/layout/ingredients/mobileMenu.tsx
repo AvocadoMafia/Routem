@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
-import { MdClose, MdPersonAdd, MdKeyboardArrowDown } from 'react-icons/md'
+import { MdClose, MdPersonAdd, MdExplore, MdInfo } from 'react-icons/md'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { userStore } from '@/lib/client/stores/userStore'
@@ -20,24 +20,10 @@ const MOCK_FOLLOWING = [
     { id: '5', name: 'Chris Evans', handle: '@chrise', icon: 'https://i.pravatar.cc/150?u=5' },
 ]
 
-const MENU_ITEMS = {
-    Explore: [
-        { nameKey: 'popular', path: '/explore/popular' },
-        { nameKey: 'recent', path: '/explore/recent' },
-        { nameKey: 'trending', path: '/explore/trending' },
-    ],
-    About: [
-        { nameKey: 'ourStory', path: '/about/story' },
-        { nameKey: 'team', path: '/about/team' },
-        { nameKey: 'contact', path: '/about/contact' },
-    ]
-};
-
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const user = userStore(store => store.user)
     const isLoggedIn = user && user.id !== ''
     const router = useRouter()
-    const [openAccordion, setOpenAccordion] = useState<string | null>(null)
 
     const t = useTranslations('navigation')
     const tAuth = useTranslations('auth')
@@ -47,10 +33,6 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const handleNavigate = (path: string) => {
         router.push(path)
         onClose()
-    }
-
-    const toggleAccordion = (item: string) => {
-        setOpenAccordion(openAccordion === item ? null : item)
     }
 
     return (
@@ -127,40 +109,17 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                                 )}
                             </div>
 
-                            {/* Navigation Links (Accordion) */}
+                            {/* Navigation Links */}
                             <div className={'space-y-2'}>
                                 {(['Explore', 'About'] as const).map((item, idx) => (
                                     <div key={idx} className={'space-y-1'}>
                                         <button
-                                            onClick={() => toggleAccordion(item)}
-                                            className={'w-full flex items-center justify-between p-3 hover:bg-background-0 rounded-xl transition-colors font-bold text-foreground-0 cursor-pointer'}
+                                            onClick={() => handleNavigate(`/${item.toLowerCase()}`)}
+                                            className={'w-full flex items-center gap-3 p-3 hover:bg-background-0 rounded-xl transition-colors font-bold text-foreground-0 cursor-pointer'}
                                         >
+                                            {item === 'Explore' ? <MdExplore size={24} className={'text-foreground-1'} /> : <MdInfo size={24} className={'text-foreground-1'} />}
                                             <span>{item === 'Explore' ? t('explore') : t('about')}</span>
-                                            <MdKeyboardArrowDown
-                                                size={24}
-                                                className={`text-foreground-1 transition-transform duration-200 ${openAccordion === item ? 'rotate-180' : ''}`}
-                                            />
                                         </button>
-                                        <AnimatePresence>
-                                            {openAccordion === item && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: 'auto', opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    className={'overflow-hidden pl-4 space-y-1'}
-                                                >
-                                                    {MENU_ITEMS[item].map((subItem, sIdx) => (
-                                                        <button
-                                                            key={sIdx}
-                                                            onClick={() => handleNavigate(subItem.path)}
-                                                            className={'w-full text-left p-3 text-foreground-1 hover:text-accent-0 transition-colors cursor-pointer'}
-                                                        >
-                                                            {t(subItem.nameKey as any)}
-                                                        </button>
-                                                    ))}
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
                                     </div>
                                 ))}
                             </div>

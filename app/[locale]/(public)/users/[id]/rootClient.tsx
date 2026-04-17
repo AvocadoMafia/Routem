@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { User } from '@/lib/client/types'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
+import { errorStore } from '@/lib/client/stores/errorStore'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
@@ -23,6 +24,7 @@ export default function RootClient({ id }: { id: string }) {
   const [hasMoreRoutes, setHasMoreRoutes] = useState(true)
   const [hasMoreLikes, setHasMoreLikes] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
+  const appendError = errorStore(state => state.appendError)
   const routesCursorRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -38,8 +40,9 @@ export default function RootClient({ id }: { id: string }) {
         if (res && res.user) {
           setTargetUser(res.user)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch user:', error)
+        appendError(error)
       } finally {
         setIsLoading(false)
       }
@@ -62,8 +65,9 @@ export default function RootClient({ id }: { id: string }) {
           setUserRoutes(res?.items || [])
           routesCursorRef.current = res?.nextCursor || null
           setHasMoreRoutes(!!res?.nextCursor)
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to fetch user routes:', error)
+          appendError(error)
         }
       } else if (activeTab === 'likes') {
         try {
@@ -72,8 +76,9 @@ export default function RootClient({ id }: { id: string }) {
           const routes = (res || []).map((l: any) => l.route).filter(Boolean)
           setLikedRoutes(routes)
           setHasMoreLikes((res || []).length === 15)
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to fetch user likes:', error)
+          appendError(error)
         }
       }
       setIsLoadingRoutes(false)
@@ -101,8 +106,9 @@ export default function RootClient({ id }: { id: string }) {
         } else {
           setHasMoreRoutes(false)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch more user routes:', error)
+        appendError(error)
       } finally {
         setIsFetching(false)
       }
@@ -122,8 +128,9 @@ export default function RootClient({ id }: { id: string }) {
         } else {
           setHasMoreLikes(false)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch more user likes:', error)
+        appendError(error)
       } finally {
         setIsFetching(false)
       }

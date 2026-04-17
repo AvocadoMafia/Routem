@@ -5,6 +5,7 @@ import { HiSparkles, HiFire, HiHeart, HiUsers } from "react-icons/hi2";
 import { selectedType } from "@/app/[locale]/(public)/rootClient";
 import { HiHome } from "react-icons/hi";
 import { useTranslations } from "next-intl";
+import { userStore } from "@/lib/client/stores/userStore";
 
 const SELECTOR_KEYS = [
     { key: 'home', icon: HiHome, selected: 'home'},
@@ -22,6 +23,8 @@ type Props = {
 export default function ContentsSelector(props: Props) {
     const t = useTranslations('tabs');
     const tNav = useTranslations('navigation');
+    const user = userStore((state) => state.user);
+    const isLoggedIn = !!user.id;
 
     const getLabel = (key: string) => {
         if (key === 'home') return tNav('home');
@@ -30,9 +33,16 @@ export default function ContentsSelector(props: Props) {
         return t(key as 'photos' | 'likes');
     };
 
+    const visibleKeys = SELECTOR_KEYS.filter(item => {
+        if (!isLoggedIn && (item.key === 'likes' || item.key === 'followings')) {
+            return false;
+        }
+        return true;
+    });
+
     return (
         <div className={'shrink-0 w-fit h-fit bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
-            {SELECTOR_KEYS.map((item, idx) => {
+            {visibleKeys.map((item, idx) => {
                 const isSelected = props.selected === item.selected;
                 return (
                     <button

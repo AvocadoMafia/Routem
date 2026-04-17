@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import UserProfileEditModal from '../templates/userProfileEditModal'
 import { postDataToServerWithJson } from '@/lib/client/helpers'
 import { useTranslations } from 'next-intl'
+import { errorStore } from '@/lib/client/stores/errorStore'
 
 export type ProfileMode = 'self' | 'public'
 
@@ -14,6 +15,7 @@ export default function ActionButtons({ mode, followingId }: { mode: ProfileMode
   const tErrors = useTranslations('errors')
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const appendError = errorStore(state => state.appendError)
   const isOwnPage = mode === 'self'
 
   // Avoid hydration mismatch
@@ -28,9 +30,9 @@ export default function ActionButtons({ mode, followingId }: { mode: ProfileMode
         '/api/v1/follows',
         { followingId }
       )
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to toggle follow', e)
-      alert(tErrors('tryAgain'))
+      appendError(e)
     }
   }
 

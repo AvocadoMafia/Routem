@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { userStore } from '@/lib/client/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
+import { errorStore } from '@/lib/client/stores/errorStore'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
@@ -22,6 +23,7 @@ export default function RootClient() {
   const [hasMoreLikes, setHasMoreLikes] = useState(true)
   const [hasMoreHistory, setHasMoreHistory] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
+  const appendError = errorStore(state => state.appendError)
 
   // カーソル管理
   const routesCursorRef = useRef<string | null>(null)
@@ -66,8 +68,9 @@ export default function RootClient() {
             setHasMoreHistory(!!res.nextCursor)
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Failed to fetch ${activeTab}:`, error)
+        appendError(error)
       } finally {
         setIsLoadingRoutes(false)
         setIsFetching(false)
@@ -96,8 +99,9 @@ export default function RootClient() {
         } else {
           setHasMoreRoutes(false)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch more routes:', error)
+        appendError(error)
       } finally {
         setIsFetching(false)
       }
@@ -117,8 +121,9 @@ export default function RootClient() {
         } else {
           setHasMoreLikes(false)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch more likes:', error)
+        appendError(error)
       } finally {
         setIsFetching(false)
       }
@@ -138,8 +143,9 @@ export default function RootClient() {
         } else {
           setHasMoreHistory(false)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch more history:', error)
+        appendError(error)
       } finally {
         setIsFetching(false)
       }

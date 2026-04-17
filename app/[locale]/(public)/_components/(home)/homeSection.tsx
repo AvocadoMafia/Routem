@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from "react";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { userStore } from "@/lib/client/stores/userStore";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { errorStore } from "@/lib/client/stores/errorStore";
 import RouteCardHorizontalSkeleton from "@/app/[locale]/(public)/_components/(home)/ingredients/routeCardHorizontalSkeleton";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
 import { HiFire } from "react-icons/hi2";
@@ -22,7 +23,7 @@ export default function HomeSection() {
     const [loading, setLoading] = useState(true);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const appendError = errorStore(state => state.appendError);
     const nextCursorRef = useRef<string | null>(null);
 
     const [isClient, setIsClient] = useState(false);
@@ -38,7 +39,6 @@ export default function HomeSection() {
         let cancelled = false;
         async function load() {
             setLoading(true);
-            setError(null);
             setHasMore(true);
             nextCursorRef.current = null;
             try {
@@ -57,7 +57,7 @@ export default function HomeSection() {
                     }
                 }
             } catch (e: any) {
-                if (!cancelled) setError(e?.message ?? 'Failed to load routes');
+                if (!cancelled) appendError(e);
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -89,18 +89,12 @@ export default function HomeSection() {
             } else {
                 setHasMore(false);
             }
-        } catch (e) {
-            console.error("Failed to fetch more routes:", e);
+        } catch (e: any) {
+            appendError(e);
         } finally {
             setIsFetching(false);
         }
     };
-
-    if (error) return (
-        <div className="w-full h-full flex flex-col items-center gap-20 py-12">
-            <div className={'w-full text-accent-0 text-sm'}>{error}</div>
-        </div>
-    )
 
     return (
         <div className="w-full h-full flex flex-col items-center gap-20 py-12">

@@ -14,12 +14,12 @@ export default function CTASection() {
 
     return (
         <div className={'w-full bg-background-0 flex justify-center'}>
-            <div className={'w-full max-w-[1000px] py-16 flex flex-col items-center gap-6'}>
+            <div className={'w-full max-w-[1000px] py-16 px-6 flex flex-col items-center gap-6 text-center'}>
                 <p className={'text-foreground-1 text-sm'}>― {t('endMatter')} ―</p>
-                <h2 className={'text-6xl font-syne font-extrabold text-foreground-0 pl-6'}>{t('startNow')}</h2>
+                <h2 className={'text-4xl md:text-6xl font-syne font-extrabold text-foreground-0'}>{t('startNow')}</h2>
                 <div className={'w-20 h-1 bg-accent-0 rounded-full'} />
                 <p className={'text-foreground-1 italic'}>{tFooter('tagline')}</p>
-                <div className={'flex gap-4 mt-6'}>
+                <div className={'flex flex-col md:flex-row gap-4 mt-6 w-full md:w-auto'}>
                     {isLoggedIn ? (
                         <>
                             <motion.button

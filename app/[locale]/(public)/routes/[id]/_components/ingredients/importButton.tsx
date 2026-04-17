@@ -3,6 +3,7 @@
 import { HiArrowDownOnSquare } from "react-icons/hi2";
 import { Route } from "@/lib/client/types";
 import { useTranslations } from "next-intl";
+import { errorStore } from "@/lib/client/stores/errorStore";
 
 type ImportButtonProps = {
   route: Route;
@@ -11,14 +12,18 @@ type ImportButtonProps = {
 
 export default function ImportButton({ route, variant = "compact" }: ImportButtonProps) {
   const t = useTranslations("routes");
+  const appendError = errorStore(state => state.appendError);
 
   const handleImport = () => {
     try {
       localStorage.setItem("imported_route_data", JSON.stringify(route));
       window.location.href = "/routes/new";
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to import route:", error);
-      alert("ルートの取り込みに失敗しました。");
+      appendError({
+        code: "IMPORT_ERROR",
+        message: "ルートの取り込みに失敗しました。"
+      });
     }
   };
 

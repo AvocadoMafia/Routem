@@ -6,6 +6,7 @@ import { useUiStore } from "@/lib/client/stores/uiStore";
 import { motion } from "framer-motion";
 import Header from "@/app/[locale]/_components/layout/templates/header";
 import Main from "@/app/[locale]/_components/layout/templates/main";
+import ErrorViewer from "@/app/[locale]/_components/layout/templates/errorViewer";
 
 export default function RootClient({ children }: { children: React.ReactNode }) {
 
@@ -28,7 +29,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
 
     return (
         <main className="w-full h-full overflow-hidden bg-background-1">
-
+            <ErrorViewer />
             <ScrollDetector />
 
             {/* Header */}

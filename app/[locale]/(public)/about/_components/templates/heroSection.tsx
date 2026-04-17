@@ -39,13 +39,13 @@ export default function HeroSection() {
             </div>
 
             <div className={'relative z-10 w-full h-full grid grid-rows-2 grid-cols-1'}>
-                <div className={'flex justify-start items-start p-16'}>
-                    <h1 className={'w-fit lg:text-8xl md:text-6xl text-5xl font-bold tracking-wide font-syne text-white'}>
+                <div className={'flex justify-start items-start p-8 md:p-16'}>
+                    <h1 className={'w-fit lg:text-8xl md:text-6xl text-4xl font-bold tracking-wide font-syne text-white'}>
                         <span className={'text-accent-0'}>誰か</span>の旅を、<br/>あなたの旅に。
                     </h1>
                 </div>
-                <div className={'flex justify-end items-end p-16'}>
-                    <h1 className={'w-fit lg:text-8xl md:text-6xl text-5xl font-bold tracking-wide font-syne text-white'}>
+                <div className={'flex justify-end items-end p-8 md:p-16'}>
+                    <h1 className={'w-fit lg:text-8xl md:text-6xl text-4xl font-bold tracking-wide font-syne text-white'}>
                         <span className={'text-accent-1'}>あなた</span>の旅を、<br/>誰かの旅に。
                     </h1>
                 </div>

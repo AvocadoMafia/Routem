@@ -20,6 +20,7 @@ import {
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { errorStore } from "@/lib/client/stores/errorStore";
 
 interface RouteSettingsSectionProps {
     title: string;
@@ -73,6 +74,7 @@ export default function RouteSettingsSection({
     const [inviteUrl, setInviteUrl] = useState<string | null>(null);
     const [generating, setGenerating] = useState(false);
     const [copied, setCopied] = useState(false);
+    const appendError = errorStore(state => state.appendError);
 
     // タグのサジェスト用
     const [tagInput, setTagInput] = useState("");
@@ -120,10 +122,11 @@ export default function RouteSettingsSection({
                 const url = `${window.location.origin}/invites/${data.token}`;
                 setInviteUrl(url);
             } else {
-                alert(data.message || 'Failed to generate invite URL');
+                appendError(data);
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            appendError(e);
         } finally {
             setGenerating(false);
         }

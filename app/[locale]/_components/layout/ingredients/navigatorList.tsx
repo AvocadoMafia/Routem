@@ -1,9 +1,8 @@
 'use client'
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { MdEdit, MdExplore, MdInfo, MdLogin, MdKeyboardArrowDown, MdSearch } from "react-icons/md";
+import { MdEdit, MdExplore, MdInfo, MdLogin, MdSearch } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 import { userStore } from "@/lib/client/stores/userStore";
 import { useTranslations } from "next-intl";
@@ -21,25 +20,10 @@ export default function NavigatorList({ onSearchClick }: Props) {
     const isLoggedIn = user && user.id !== '';
     const router = useRouter();
 
-    const [openMenu, setOpenMenu] = useState<string | null>(null);
-
     const getMenuLabel = (key: string) => {
         if (key === 'Explore') return t('explore');
         if (key === 'About') return t('about');
         return key;
-    };
-
-    const menuItems = {
-        Explore: [
-            { nameKey: 'popular', path: '/explore/popular' },
-            { nameKey: 'recent', path: '/explore/recent' },
-            { nameKey: 'trending', path: '/explore/trending' },
-        ],
-        About: [
-            { nameKey: 'ourStory', path: '/about/story' },
-            { nameKey: 'team', path: '/about/team' },
-            { nameKey: 'contact', path: '/about/contact' },
-        ]
     };
 
     return (
@@ -49,37 +33,14 @@ export default function NavigatorList({ onSearchClick }: Props) {
                     <div 
                         key={idx} 
                         className={'relative'}
-                        onMouseEnter={() => setOpenMenu(item)}
-                        onMouseLeave={() => setOpenMenu(null)}
                     >
                         <button
                             onClick={() => router.push(`/${item.toLowerCase()}`)}
-                            className={'flex items-center gap-1 text-foreground-1 hover:text-foreground-0 transition-colors cursor-pointer whitespace-nowrap py-2'}
+                            className={'flex items-center gap-1.5 text-foreground-1 hover:text-foreground-0 transition-colors cursor-pointer whitespace-nowrap py-2'}
                         >
+                            {item === 'Explore' ? <MdExplore size={20} /> : <MdInfo size={20} />}
                             {getMenuLabel(item)}
-                            <MdKeyboardArrowDown className={`transition-transform duration-200 ${openMenu === item ? 'rotate-180' : ''}`} />
                         </button>
-
-                        <AnimatePresence>
-                            {openMenu === item && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className={'absolute top-full left-0 min-w-[160px] bg-background-1 border border-grass rounded-xl shadow-lg py-2 z-50'}
-                                >
-                                    {menuItems[item].map((subItem, sIdx) => (
-                                        <button
-                                            key={sIdx}
-                                            onClick={() => router.push(subItem.path)}
-                                            className={'w-full text-left px-4 py-2 hover:bg-background-0 transition-colors text-foreground-0 whitespace-nowrap cursor-pointer'}
-                                        >
-                                            {t(subItem.nameKey as any)}
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                     </div>
                 ))}
             </div>

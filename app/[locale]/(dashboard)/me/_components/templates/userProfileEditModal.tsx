@@ -6,6 +6,7 @@ import { MdClose, MdPhotoCamera } from 'react-icons/md'
 import Image from 'next/image'
 import { userStore } from '@/lib/client/stores/userStore'
 import { useTranslations } from 'next-intl'
+import { errorStore } from '@/lib/client/stores/errorStore'
 
 interface UserProfileEditModalProps {
   isOpen: boolean
@@ -24,7 +25,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
   const [iconId, setIconId] = useState<string | null>(null)
   const [bgId, setBgId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const appendError = errorStore(state => state.appendError)
 
   const iconInputRef = useRef<HTMLInputElement>(null)
   const bgInputRef = useRef<HTMLInputElement>(null)
@@ -66,7 +67,6 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setError(null)
 
     const profile: any = { name, bio }
     if (iconId) profile.icon = iconId
@@ -82,7 +82,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
       },
       (err) => {
         setIsSubmitting(false)
-        setError(err?.message || 'Failed to update profile')
+        if (err) appendError(err)
       }
     )
   }
@@ -215,8 +215,6 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                     placeholder={t('bioPlaceholder')}
                   />
                 </div>
-
-                {error && <p className="text-accent-0 text-sm font-bold">{error}</p>}
 
                 <div className="flex justify-end gap-3 pt-4">
                   <button

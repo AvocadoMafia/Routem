@@ -10,6 +10,7 @@ import { getDataFromServerWithJson, postDataToServerWithJson } from "@/lib/clien
 import { Comment } from "@/lib/client/types";
 import { useTranslations } from "next-intl";
 import { userStore } from "@/lib/client/stores/userStore";
+import { errorStore } from "@/lib/client/stores/errorStore";
 
 type CommentSectionProps = {
   isMobile: boolean;
@@ -25,14 +26,13 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
   const [isFetching, setIsFetching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [cursor, setCursor] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const appendError = errorStore(state => state.appendError);
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
   const fetchComments = async () => {
     try {
       setLoading(true);
-      setError(null);
       const data = await getDataFromServerWithJson<{ items: Comment[]; nextCursor: string | null }>(
         `/api/v1/comments?routeId=${routeId}&take=15`
       );
@@ -42,7 +42,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
         setHasMore(!!data.nextCursor);
       }
     } catch (err: any) {
-      setError(err.message || "Failed to load comments");
+      appendError(err);
     } finally {
       setLoading(false);
     }
@@ -72,6 +72,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
       }
     } catch (err: any) {
       console.error("Failed to fetch more comments:", err);
+      appendError(err);
     } finally {
       setIsFetching(false);
     }
@@ -125,7 +126,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
     } catch (err: any) {
       // 失敗した場合はダミーを削除
       setComments((prev) => prev.filter((c) => c.id !== dummyComment.id));
-      alert(err.message || "Failed to post comment");
+      appendError(err);
     }
   };
 
@@ -154,9 +155,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
       <CommentInput onPost={handlePostComment} />
 
       <div className="flex flex-col gap-6">
-        {error ? (
-          <div className="text-accent-0 text-sm text-center py-10">{error}</div>
-        ) : comments.length > 0 ? (
+        {comments.length > 0 ? (
           <>
             {comments.map((comment, idx) => (
               <CommentItem key={comment.id} comment={comment} />
