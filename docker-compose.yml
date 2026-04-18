@@ -1,7 +1,7 @@
 services:
   # proxy
   enginx:
-    image: nginx:latest
+    image: nginx:1.27-alpine
     container_name: enginx
     ports: -80:80
     volumes:
