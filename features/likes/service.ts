@@ -5,6 +5,7 @@ import { getPrisma } from "@/lib/config/server";
 import { USER_SELECT } from "@/features/users/repository";
 import { DEFAULT_LIMIT } from "@/lib/server/constants";
 import { buildCursorWhere, encodeCursor } from "@/lib/server/cursor";
+import { ValidationError } from "@/lib/server/validateParams";
 
 export const likesService = {
     /**
@@ -18,7 +19,8 @@ export const likesService = {
             } else if (target === LikeViewTarget.COMMENT && commentId) {
                 return await likesRepository.toggleCommentLike(tx, userId, commentId);
             }
-            throw new Error("Invalid target or missing ID");
+            // route handler 側で zod refine を通り抜けた異常系。400 VALIDATION_ERROR で返す
+            throw new ValidationError("Invalid target or missing ID");
         });
     },
 

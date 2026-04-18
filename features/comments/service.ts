@@ -52,7 +52,8 @@ export const commentsService = {
             });
 
             if (!comment) {
-                throw new Error("Comment not found");
+                // handleError.ts の matchAuthError が "Not Found" を 404 NOT_FOUND にマップする
+                throw new Error("Not Found");
             }
 
             if (comment.userId !== userId) {

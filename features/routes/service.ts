@@ -13,6 +13,7 @@ import {
 } from "@/features/routes/utils";
 import { getMeilisearch, getPrisma, getRedisClientOrNull } from "@/lib/config/server";
 import { getNextCursor, sliceByScoreCursor } from "@/lib/server/cursor";
+import { ValidationError } from "@/lib/server/validateParams";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { Prisma, RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
 import crypto from "crypto";
@@ -120,7 +121,7 @@ export const routesService = {
         select: { language: true },
       });
       if (!author) {
-        throw new Error("User not found");
+        throw new Error("Not Found");
       }
       const data = buildCreateRouteData(parsedBody, userId, author.language);
       const result = await routesRepository.create(data);
@@ -150,7 +151,9 @@ export const routesService = {
       });
 
       if (deleted.count === 0) {
-        throw new Error("Notfound or Unauthorized");
+        // route が見つからない or 認証されていない両方のケース。route handler 側で
+        // 認証は先に検証されるので、ここに到達したら実質「存在しない」扱いで 404 を返す。
+        throw new Error("Not Found");
       }
 
       const meilisearch = getMeilisearch();
@@ -187,10 +190,11 @@ export const routesService = {
     try {
       const route = await routesRepository.findUnique(routeId);
 
-      if (!route) throw new Error("Route not found");
+      if (!route) throw new Error("Not Found");
       if (route.authorId !== userId) throw new Error("Unauthorized");
       if (route.collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
-        throw new Error("Collaboration is disabled for this route");
+        // コラボ機能が ON/OFF の policy に弾かれた → 403 FORBIDDEN
+        throw new Error("Forbidden");
       }
 
       const token = crypto.randomBytes(32).toString("hex");
@@ -213,11 +217,13 @@ export const routesService = {
       const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
       const invite = await routesRepository.findInviteByTokenHash(tokenHash);
 
-      if (!invite) throw new Error("Invalid token");
-      if (invite.revokedAt) throw new Error("Token revoked");
-      if (invite.expiresAt && invite.expiresAt < new Date()) throw new Error("Token expired");
+      // 招待トークン関連はクライアント入力由来の不正なので 400 VALIDATION_ERROR で返す
+      if (!invite) throw new ValidationError("Invalid token");
+      if (invite.revokedAt) throw new ValidationError("Token revoked");
+      if (invite.expiresAt && invite.expiresAt < new Date()) throw new ValidationError("Token expired");
       if (invite.route.collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
-        throw new Error("Collaboration is disabled for this route");
+        // policy 側で弾くケース → 403 FORBIDDEN
+        throw new Error("Forbidden");
       }
 
       if (invite.route.authorId === userId) {
