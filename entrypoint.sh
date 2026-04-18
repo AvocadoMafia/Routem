@@ -17,7 +17,7 @@ echo "Meilisearch is up!"
 
 # Run DB push to ensure schema is sync
 echo "Running Prisma migrations..."
-npx prisma db push --skip-generate
+npx prisma db push --accept-data-loss
 
 # Initialize Meilisearch (npm run initialize)
 echo "Initializing Meilisearch..."
