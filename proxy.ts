@@ -59,7 +59,10 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/api")) {
     const origin = request.headers.get("origin");
     const isDev = process.env.NODE_ENV === "development";
-    const allowedOrigin = process.env.PRODUCTION_URL || (isDev ? "localhost:3000" : null);
+    // CORS 判定用の自サイトオリジン。NEXT_PUBLIC_SITE_URL は "https://routem.net" 形式の完全URLで、
+    // dev では http://localhost:3000 が入る想定。未設定時の dev フォールバックのみ残す。
+    const allowedOrigin =
+      process.env.NEXT_PUBLIC_SITE_URL || (isDev ? "http://localhost:3000" : null);
 
     if (origin && allowedOrigin && !origin.includes(allowedOrigin)) {
       console.warn(`[Blocked] Unauthorized origin:${origin}`);
