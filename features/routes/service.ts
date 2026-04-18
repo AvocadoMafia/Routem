@@ -11,7 +11,7 @@ import {
   buildRoutesWhere,
   buildUpdateRouteData,
 } from "@/features/routes/utils";
-import { getMeilisearch, getPrisma, getRedisClient } from "@/lib/config/server";
+import { getMeilisearch, getPrisma, getRedisClientOrNull } from "@/lib/config/server";
 import { getNextCursor, sliceByScoreCursor } from "@/lib/server/cursor";
 import { translateJa2En } from "@/lib/translation/translateJa2En";
 import { Prisma, RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
@@ -41,7 +41,6 @@ export const routesService = {
       }
 
       if (query.type) {
-        const redis = getRedisClient();
         let redisKey = "";
         switch (query.type) {
           case "recommend":
@@ -68,12 +67,23 @@ export const routesService = {
         }
 
         if (redisKey) {
-          const cachedData = await redis.get(redisKey);
-          if (cachedData) {
-            const items = JSON.parse(cachedData) as { id: string; score: number }[];
-            const sliced = sliceByScoreCursor(items, query.cursor, query.limit);
-            routeIds = sliced.items.map((item) => item.id);
-            nextCursor = sliced.nextCursor;
+          // Redis が不達 / 未接続でもページ全体を壊さず、キャッシュ無し扱いで
+          // DB 直クエリに graceful fallback する。これが本番で「trending 等の
+          // コンポーネントだけ 500 で空になる」問題への耐性になる。
+          const redis = await getRedisClientOrNull();
+          if (redis) {
+            try {
+              const cachedData = await redis.get(redisKey);
+              if (cachedData) {
+                const items = JSON.parse(cachedData) as { id: string; score: number }[];
+                const sliced = sliceByScoreCursor(items, query.cursor, query.limit);
+                routeIds = sliced.items.map((item) => item.id);
+                nextCursor = sliced.nextCursor;
+              }
+            } catch (redisErr) {
+              // 取得失敗はエラーにせずキャッシュ無しパスへフォールバック
+              console.error(`[routes.getRoutes] redis.get(${redisKey}) failed:`, redisErr);
+            }
           }
         }
       }

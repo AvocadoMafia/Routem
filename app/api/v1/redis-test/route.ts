@@ -1,12 +1,10 @@
-
 import { NextResponse } from "next/server";
-import {getRedisClient} from "@/lib/config/server";
+import { getRedisClient } from "@/lib/config/server";
 
 export async function GET() {
-
-    const redis = getRedisClient()
-
     try {
+        const redis = await getRedisClient();
+
         // 書き込み
         await redis.set("test:key", "hello redis");
 
