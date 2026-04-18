@@ -9,7 +9,13 @@ export default function getClientMapboxAccessToken() {
  *
  * NEXT_PUBLIC_SITE_URL はビルド時にクライアントバンドルにインライン化されるため、
  * Docker ビルドの build-arg から必ず渡すこと。
- * 未定義時は **明示的に throw** し、localhost へのフォールバックで本番を汚染しないようにする。
+ *
+ * 検証項目:
+ *  - 未定義 → 明示的に throw（localhost フォールバックで本番を汚染しない）
+ *  - スキーム抜け（例: "routem.net"） → throw
+ *  - http / https 以外（例: "ftp://"） → throw
+ *  - URL としてパース不能 → throw
+ *  - 末尾スラッシュは正規化して除去
  */
 export function getClientSiteUrl(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL;
@@ -20,6 +26,23 @@ export function getClientSiteUrl(): string {
         "and pass it as a Docker build-arg so it is inlined at build time.",
     );
   }
+
+  // URL としてパース可能か & スキームが http/https であることを検証
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    throw new Error(
+      `Invalid NEXT_PUBLIC_SITE_URL: "${raw}" is not a valid absolute URL. ` +
+        "Include the scheme, e.g. https://routem.net",
+    );
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(
+      `Invalid NEXT_PUBLIC_SITE_URL: "${raw}" must start with http:// or https://`,
+    );
+  }
+
   // 末尾スラッシュを除去して正規化
   return raw.replace(/\/+$/, "");
 }

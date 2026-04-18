@@ -52,6 +52,25 @@ function applyApiSecurityHeaders(res: NextResponse) {
   return res;
 }
 
+/**
+ * 2つのオリジン文字列が `scheme://host[:port]` レベルで完全一致するか判定する。
+ *
+ * `a.includes(b)` での部分一致判定は
+ *   allowed = "https://routem.net"
+ *   origin  = "https://routem.net.evil.com"
+ * のようなオリジンを通してしまうため絶対に使わない。
+ *
+ * どちらか一方でも URL としてパースできない場合は false（= 拒否）を返し、
+ * 未知の形式をうっかり許可しないフェイルセーフにする。
+ */
+export function isSameOrigin(a: string, b: string): boolean {
+  try {
+    return new URL(a).origin === new URL(b).origin;
+  } catch {
+    return false;
+  }
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -59,12 +78,15 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/api")) {
     const origin = request.headers.get("origin");
     const isDev = process.env.NODE_ENV === "development";
-    // CORS 判定用の自サイトオリジン。NEXT_PUBLIC_SITE_URL は "https://routem.net" 形式の完全URLで、
-    // dev では http://localhost:3000 が入る想定。未設定時の dev フォールバックのみ残す。
+    // CORS 判定用の自サイトオリジン。
+    //  - 本番: NEXT_PUBLIC_SITE_URL (例: "https://routem.net") を使用
+    //  - dev:  未設定時のみ "http://localhost:3000" にフォールバック
+    // いずれも URL.origin でパースできる完全URL形式であること。
     const allowedOrigin =
       process.env.NEXT_PUBLIC_SITE_URL || (isDev ? "http://localhost:3000" : null);
 
-    if (origin && allowedOrigin && !origin.includes(allowedOrigin)) {
+    // 完全一致で判定（`origin.includes(allowedOrigin)` は `routem.net.evil.com` 等を通す脆弱性あり）
+    if (origin && allowedOrigin && !isSameOrigin(origin, allowedOrigin)) {
       console.warn(`[Blocked] Unauthorized origin:${origin}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Invalid Origin" }), {
         status: 403,
