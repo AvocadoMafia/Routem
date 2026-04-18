@@ -39,6 +39,10 @@ echo "Seeding database..."
 npm run seed:exchange-rates
 npx prisma db seed
 
+# Generate recommendations
+echo "Generating recommendations..."
+npm run recommend
+
 # Start App
 echo "Starting application..."
 npm start
