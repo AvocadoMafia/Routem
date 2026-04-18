@@ -86,7 +86,7 @@ export default function SignupForm() {
                 transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
                 className="text-center flex flex-col gap-3"
               >
-                <h2 className="text-5xl font-syne font-bold text-white">Sign Up</h2>
+                <h2 className="text-5xl font-syne font-bold text-white">{t('signUp')}</h2>
                 <p className="text-md font-semibold opacity-90 text-white/75">start your journey today.</p>
               </motion.div>
 
