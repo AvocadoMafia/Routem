@@ -316,15 +316,26 @@ window.prompt = () => { throw new Error('blocked'); };
 - ✅ 削除成功後はトーストを出さず、要素が AnimatePresence で淡く消える
 - ✅ Network で DELETE リクエストのペイロードが `{ "id": "<comment-id>" }`
 
-### 3-8. 他人のコメント削除試行 (UI 非表示 + サーバー側でも403)
+### 3-8. 他人のコメント削除試行 (UI 非表示 + サーバー側でも拒否)
 
 **手順**:
 1. user-A でログイン、 user-B のコメントにマウスホバー
 
 **期待**:
 - ✅ 削除ボタンが UI 上に表示されない (canDelete が false)
-- ✅ DevTools から DELETE を直接叩いた場合でも commentsService.deleteComment が "Forbidden" or "Unauthorized" を投げ、 handleError.ts で 403 → warning 扱い
-- ✅ UI では通常エラー表示
+- ✅ DevTools から DELETE /api/v1/comments を `{id: "<user-Bのcommentid>"}` で直接叩いた場合:
+  - 現行: `commentsService.deleteComment` が `throw new Error("Unauthorized")` → **401 UNAUTHORIZED** (ログインはしているが所有者でないため 403 の方が semantic 的に正しいが、既存仕様維持)
+  - backlog H-7 として 401→403 化を別途検討予定
+- ✅ クライアントは `isAuthError` で 401 検知 → ログイン誘導 warning トースト
+- ✅ UI 側コメント一覧は無変化 (楽観削除しない)
+
+### 3-8b. 非存在コメントの削除試行
+
+**手順**: DevTools から DELETE /api/v1/comments を `{id: "<存在しないUUID>"}` で叩く
+
+**期待**:
+- ✅ **404 NOT_FOUND** (commit 69fa73e: "Comment not found" → "Not Found" 正規化)
+- ✅ body: `{ code: "NOT_FOUND", message: "Not Found" }`
 
 ### 3-9. 楽観挿入中のコメントは操作不可
 
@@ -381,6 +392,52 @@ window.prompt = () => { throw new Error('blocked'); };
 | W3: header の compact LikeButton に initialIsLiked が渡らない | 2-6 |
 | 旧 share の無反応 | 1-3 / 1-5 で必ず可視フィードバックが出る |
 | comment 投稿失敗が黙って ErrorStore に流れるだけ | 3-5 で warning トーストも併せて出る |
+| Prisma エラーが本番 body に漏洩 (C1) | 下記 5b |
+| features/ throw が全て 500 扱い (C-CLEANUP2 / commit 69fa73e) | 下記 5c |
+| Zod issues が本番 body に漏洩 (validation fix) | 下記 5d |
+
+### 5b. Prisma エラー漏洩 regression
+
+**再現**: `prisma.$disconnect()` 相当か DB 認証失敗を演出 (dev で DB を落とす等)
+
+**期待**:
+- ✅ body: `{ code: "INTERNAL_SERVER_ERROR", message: "Internal Server Error" }` のみ
+- ✅ body に `P2002` / `prisma` / `password` / `clientVersion` / `hostname` が**含まれない**
+- ✅ サーバーログ (console.error) には元 Error オブジェクトが残る
+
+### 5c. features/ throw 正規化 (commit 69fa73e)
+
+以下の API 呼び出しに対する status コード回帰を検証:
+
+| API 呼び出し | 期待 status | 期待 code |
+|---|---|---|
+| GET /api/v1/comments?routeId=`<存在しない UUID>` | 404 | NOT_FOUND |
+| GET /api/v1/users/`<存在しないUUID>` | 404 | NOT_FOUND |
+| DELETE /api/v1/comments `{id:<他人のcomment>}` | 401 | UNAUTHORIZED (※ backlog H-7) |
+| DELETE /api/v1/comments `{id:<存在しないUUID>}` | 404 | NOT_FOUND |
+| POST /api/v1/follows (self-follow) | 400 | VALIDATION_ERROR |
+| POST /api/v1/routes/`<policy=DISABLED の route>`/invite | 403 | FORBIDDEN |
+| POST /api/v1/invites/`<revoked-token>`/accept | 400 | VALIDATION_ERROR |
+| POST /api/v1/invites/`<expired-token>`/accept | 400 | VALIDATION_ERROR |
+| POST /api/v1/invites/`<non-existent-token>`/accept | 400 | VALIDATION_ERROR |
+| PATCH /api/v1/users/me with `{icon: "<存在しないimageId>"}` | 400 | VALIDATION_ERROR |
+| POST /api/v1/likes (target/id 未指定) | 400 | VALIDATION_ERROR |
+| DELETE /api/v1/routes `<他人のroute>` | 404 | NOT_FOUND (情報露出防止のため "Forbidden" ではなく "Not Found") |
+
+**重要**: いずれも旧実装では **500 INTERNAL_SERVER_ERROR + 生 message** が返っていた。正規化後はサーバーログに stack は残るが、クライアントの body には固定 code のみ (本番) / 元 message (dev) が出る。
+
+### 5d. Zod issues 本番漏洩 regression
+
+**再現**: `curl http://localhost:3001/api/v1/comments?routeId=not-a-uuid` を **本番ビルド** (`NODE_ENV=production`) で実行
+
+**期待 (本番)**:
+- ✅ status 400
+- ✅ body: `{ code: "VALIDATION_ERROR", message: "Validation failed" }`
+- ✅ body に `uuid` / `regex` / `format` / `not-a-uuid` / `issues` が**含まれない**
+
+**期待 (開発)**:
+- ✅ status 400
+- ✅ body: `{ code: "VALIDATION_ERROR", message: "Validation error: Invalid UUID", details: { issues: [...] } }`
 
 ---
 
