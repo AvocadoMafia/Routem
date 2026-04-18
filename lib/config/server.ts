@@ -39,6 +39,10 @@ export function getServerSupabasePublishableKey(): string {
     );
 }
 
+export function getServerAuthRedirectUrl(): string {
+    return process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL ?? "http://localhost:3000/auth/callback";
+}
+
 export function getMeilisearch(){ 
     // global変数として存在した場合のガード節
     if(globalThis.meilisearch) return globalThis.meilisearch;

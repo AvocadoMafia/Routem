@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
 import {createClient} from "@/lib/auth/supabase/client";
-import {getClientAuthRedirectUrl} from "@/lib/auth/redirectUrl";
+import {getClientAuthRedirectUrl} from "@/lib/config/client";
 import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function SignupForm() {

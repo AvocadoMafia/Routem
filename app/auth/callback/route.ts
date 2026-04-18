@@ -34,10 +34,9 @@ function isValidRedirectPath(path: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  // if "next" is in param, use it as the redirect URL
-  const nextParam = searchParams.get('next') ?? '/'
+  const code = request.nextUrl.searchParams.get('code')
+  const origin = request.nextUrl.origin
+  const nextParam = request.nextUrl.searchParams.get('next') ?? '/'
   const next = isValidRedirectPath(nextParam) ? nextParam : '/'
 
   if (code) {
