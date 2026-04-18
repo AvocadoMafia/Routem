@@ -66,7 +66,7 @@ export async function PATCH(req: NextRequest) {
       error,
     } = await supabase.auth.getUser();
     if (!user || error) {
-      throw new Error("unauthorized");
+      throw new Error("Unauthorized");
     }
     const body = await req.json();
     const parsed_body = await validateParams(PatchRouteSchema, body);
@@ -89,7 +89,7 @@ export async function DELETE(req: NextRequest) {
     const supabase = await createClient(req);
     const { data: { user }, error } = await supabase.auth.getUser();
     if (!user || error) {
-      throw new Error("unauthorized")
+      throw new Error("Unauthorized")
     }
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(DeleteRouteSchema, search_params);
