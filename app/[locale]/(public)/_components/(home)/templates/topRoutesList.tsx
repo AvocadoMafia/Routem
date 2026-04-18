@@ -5,12 +5,14 @@ import { Route } from "@/lib/client/types";
 import FeaturedRouteCard from '@/app/[locale]/(public)/_components/(home)/ingredients/featuredRouteCard'
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
 import { ErrorScheme } from "@/lib/client/types";
 import { toErrorScheme } from "@/lib/client/helpers";
 
 
 export default function TopRoutesList() {
+  const tHome = useTranslations('home');
   const [routes, setRoutes] = useState<Route[] | null>(null);
   const [error, setError] = useState<ErrorScheme | null>(null);
 
@@ -34,7 +36,7 @@ export default function TopRoutesList() {
     return (
       <div className="w-full h-fit">
         <div className="w-full mb-3 flex items-center gap-2">
-          <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Routes — This week</h2>
+          <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topRoutes')}</h2>
         </div>
         <SectionErrorState error={error} onRetry={fetchRoutes} />
       </div>
@@ -45,7 +47,7 @@ export default function TopRoutesList() {
   if (!routes) return (
     <div className="w-full h-fit">
       <div className="w-full mb-3 flex items-center gap-2">
-        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Routes — This week</h2>
+        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topRoutes')}</h2>
       </div>
       <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">
         {Array.from({ length: 5 }).map((_, i) => (
@@ -61,7 +63,7 @@ export default function TopRoutesList() {
   return (
     <div className="w-full h-fit">
       <div className="w-full mb-3 flex items-center gap-2">
-        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Routes — This week</h2>
+        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topRoutes')}</h2>
       </div>
 
       <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">

@@ -5,11 +5,13 @@ import { User } from "@/lib/client/types"
 import {UserCardGraphical} from "@/app/[locale]/_components/common/templates/userCardGraphical";
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
 import { ErrorScheme } from "@/lib/client/types";
 
 
 export default function TopUsersList() {
+  const tHome = useTranslations('home');
   const [users, setUsers] = useState<User[] | null>(null);
   const [error, setError] = useState<ErrorScheme | null>(null);
 
@@ -33,7 +35,7 @@ export default function TopUsersList() {
     return (
       <div className="w-full h-fit">
         <div className="w-full mb-3 flex items-center md:justify-end justify-start gap-2">
-          <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Users — This week</h2>
+          <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topUsers')}</h2>
         </div>
         <SectionErrorState error={error} onRetry={fetchUsers} />
       </div>
@@ -44,7 +46,7 @@ export default function TopUsersList() {
   if (!users) return (
     <div className="w-full h-fit">
       <div className="w-full mb-3 flex items-center md:justify-end justify-start gap-2">
-        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Users — This week</h2>
+        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topUsers')}</h2>
       </div>
       <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1 [direction:rtl]">
         {Array.from({ length: 5 }).map((_, i) => (
@@ -59,7 +61,7 @@ export default function TopUsersList() {
   return (
     <div className="w-full h-fit">
       <div className="w-full mb-3 flex items-center md:justify-end justify-start gap-2">
-        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Users — This week</h2>
+        <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topUsers')}</h2>
       </div>
         <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1 [direction:rtl]">
             <div className="sm:col-span-2 col-span-1 [direction:ltr]">

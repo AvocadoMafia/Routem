@@ -2,6 +2,7 @@ import RouteCardWidely from "@/app/[locale]/_components/common/templates/routeCa
 import RouteCardWidelySkeleton from "@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton";
 import {Route} from "@/lib/types/domain";
 import {useEffect, useMemo, useRef} from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatDateToYmdInTz } from "@/lib/datetime/format";
 import { HiHeart } from "react-icons/hi2";
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocusedRouteIdx}: Props) {
+    const tHome = useTranslations('home');
     const containerRef = useRef<HTMLDivElement | null>(null);
     const itemRefs = useRef<Map<number, HTMLElement>>(new Map());
 
@@ -56,7 +58,7 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
                 {/* モバイル用 Sticky Header */}
                 <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
                     <HiHeart className="text-accent-0 w-5 h-5" />
-                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
                 </div>
 
                 <div className={'flex flex-col gap-4 h-full md:p-3'}>
@@ -73,7 +75,7 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
             {/* モバイル用 Sticky Header */}
             <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
                 <HiHeart className="text-accent-0 w-5 h-5" />
-                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
             </div>
 
             {/* デスクトップ: フォーカス可能な縦スクロールリスト */}

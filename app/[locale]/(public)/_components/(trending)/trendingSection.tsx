@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import TrendingRoutesList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingRoutesList";
 import TrendingUsersList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingUsersList";
 import TrendingTagsList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingTagsList";
@@ -23,6 +24,7 @@ export type TrendingUser = Pick<User, 'id' | 'name' | 'bio' | 'icon'> & {
 export type TrendingTag = { name: string; postCount: number };
 
 export default function TrendingSection() {
+    const t = useTranslations('home');
     const [users, setUsers] = useState<TrendingUser[] | null>(null);
     const [tags, setTags] = useState<TrendingTag[] | null>(null);
     const [usersTagsError, setUsersTagsError] = useState<ErrorScheme | null>(null);
@@ -76,7 +78,7 @@ export default function TrendingSection() {
             <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 flex flex-col gap-2">
                 <div className="px-2 py-3 flex items-center gap-2">
                     <HiFire className="text-accent-0 w-5 h-5" />
-                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Trending</h1>
+                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{t('trending')}</h1>
                 </div>
                 <div className="flex items-center px-2 overflow-x-auto no-scrollbar">
                     <button
@@ -84,7 +86,7 @@ export default function TrendingSection() {
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1'}`}
                     >
                         <MdRoute size={16} />
-                        <span>ROUTES</span>
+                        <span className="uppercase">{t('routes')}</span>
                         {activeTab === 'routes' && <motion.div layoutId="trendingTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />}
                     </button>
                     <button
@@ -92,7 +94,7 @@ export default function TrendingSection() {
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'users' ? 'text-accent-0' : 'text-foreground-1'}`}
                     >
                         <HiUsers size={16} />
-                        <span>TRAVELERS</span>
+                        <span className="uppercase">{t('travelers')}</span>
                         {activeTab === 'users' && <motion.div layoutId="trendingTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />}
                     </button>
                     <button
@@ -100,7 +102,7 @@ export default function TrendingSection() {
                         className={`flex items-center gap-2 px-4 pb-3 text-xs font-bold transition-all relative whitespace-nowrap ${activeTab === 'tags' ? 'text-accent-0' : 'text-foreground-1'}`}
                     >
                         <HiHashtag size={16} />
-                        <span>TAGS</span>
+                        <span className="uppercase">{t('tags')}</span>
                         {activeTab === 'tags' && <motion.div layoutId="trendingTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />}
                     </button>
                 </div>

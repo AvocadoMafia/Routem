@@ -13,6 +13,7 @@ interface RouteEditingSectionProps {
 
 export default function RouteEditingSection({ selectedItem, onUpdateItem }: RouteEditingSectionProps) {
     const t = useTranslations('routeEditor');
+    const tRoutes = useTranslations('routes');
 
     // アイテムが選択されていない場合の空状態表示
     if (!selectedItem) {
@@ -37,7 +38,7 @@ export default function RouteEditingSection({ selectedItem, onUpdateItem }: Rout
                         <div className="flex items-center gap-2 mb-2">
                             {isWaypoint ? <MapPin size={18} className="text-accent-0" /> : <Navigation size={18} className="text-accent-0" />}
                             <span className="text-xs font-bold uppercase tracking-widest text-accent-0">
-                                {isWaypoint ? t('editWaypoint').split(' ')[1] || 'Waypoint' : t('editTransportation').split(' ')[1] || 'Transportation'}
+                                {isWaypoint ? tRoutes('waypoint') : tRoutes('transportation')}
                             </span>
                         </div>
                         <h2 className="text-3xl font-black text-foreground-0 tracking-tight">

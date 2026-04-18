@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Route } from "@/lib/client/types";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
 import { HiHashtag } from "react-icons/hi2";
@@ -12,6 +13,7 @@ import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfinit
 type TagRoutesResponse = CursorResponse<Route> & { totalCount?: number };
 
 export default function RootClient({ name }: { name: string }) {
+    const tEmpty = useTranslations('empty');
     const [totalCount, setTotalCount] = useState<number | null>(null);
 
     const { items: routes, hasMore, observerTarget, error, retry } = useInfiniteScroll<Route>({
@@ -62,7 +64,7 @@ export default function RootClient({ name }: { name: string }) {
                 ) : routes.length === 0 ? (
                     // empty
                     <div className="w-full py-16 flex flex-col items-center justify-center border-2 border-dashed border-grass/10 rounded-3xl">
-                        <p className="text-foreground-1/60 text-sm font-bold uppercase tracking-widest">No routes found for this tag.</p>
+                        <p className="text-foreground-1/60 text-sm font-bold uppercase tracking-widest">{tEmpty('noRoutesForTag')}</p>
                     </div>
                 ) : (
                     // data

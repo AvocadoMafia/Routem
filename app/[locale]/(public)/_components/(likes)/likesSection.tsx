@@ -2,6 +2,7 @@ import FocusingRouteViewer from "@/app/[locale]/(public)/_components/(likes)/tem
 import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templates/likedRoutesList";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {useEffect, useRef, useState} from "react";
+import {useTranslations} from "next-intl";
 import {getDataFromServerWithJson} from "@/lib/client/helpers";
 import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
@@ -13,6 +14,8 @@ import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteS
 type LikeRecord = { id: string; createdAt: string; route: Route }
 
 export default function LikesSection() {
+    const tHome = useTranslations('home');
+    const tProfile = useTranslations('profile');
 
     const { items: likes, error, retry } = useInfiniteScroll<LikeRecord>({
         fetcher: (cursor) => {
@@ -39,7 +42,7 @@ export default function LikesSection() {
             <div className="w-full h-full flex flex-col items-center justify-center gap-6 px-4">
                 <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
                     <HiHeart className="text-accent-0 w-5 h-5" />
-                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
                 </div>
                 <div className="w-full max-w-md">
                     <SectionErrorState error={error} onRetry={retry}/>
@@ -52,11 +55,11 @@ export default function LikesSection() {
         <div className="w-full h-full flex flex-col items-center justify-center gap-2 relative">
             <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
                 <HiHeart className="text-accent-0 w-5 h-5" />
-                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
             </div>
             <FuckingSquid className={'w-[300px] h-[300px] text-foreground-1'}/>
-            <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>NO LIKED ROUTES FOUND.</h2>
-            <p className={'text-foreground-1'}>You haven't liked any routes yet, right?</p>
+            <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>{tProfile('noLikedRoutesTitle')}</h2>
+            <p className={'text-foreground-1'}>{tProfile('noLikedRoutesDesc')}</p>
         </div>
     )
 

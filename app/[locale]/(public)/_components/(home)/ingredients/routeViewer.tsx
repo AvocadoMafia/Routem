@@ -72,7 +72,7 @@ export default function RouteViewer(props: Props) {
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
-              <h3 className="text-lg font-semibold text-foreground-1">Description</h3>
+              <h3 className="text-lg font-semibold text-foreground-1">{t('description')}</h3>
               <p className="text-foreground-1/80 leading-relaxed line-clamp-4">
                 {route.description}
               </p>

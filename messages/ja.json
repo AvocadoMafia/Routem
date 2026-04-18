@@ -44,7 +44,11 @@
     "version": "ver. 1.0β",
     "min": "分",
     "everyone": "誰でも",
-    "flexible": "フレキシブル"
+    "flexible": "フレキシブル",
+    "clearMessage": "メッセージをクリア",
+    "coverAlt": "カバー画像",
+    "mapPreviewAlt": "マップのプレビュー",
+    "routeListAria": "ルート一覧"
   },
   "auth": {
     "signIn": "ログイン",
@@ -194,7 +198,11 @@
     "invitationUrl": "招待URL",
     "generateInviteUrl": "招待URLを生成",
     "inviteUrlAfterSave": "ルートを保存後、招待URLを生成できます",
-    "untitled": "無題"
+    "untitled": "無題",
+    "removeDay": "日程を削除",
+    "addDay": "日程を追加",
+    "removeImage": "画像を削除",
+    "thumbnailPreviewAlt": "サムネイルのプレビュー"
   },
   "transport": {
     "walk": "徒歩",
@@ -267,6 +275,8 @@
     "follow": "フォロー",
     "unfollow": "フォロー解除",
     "noFollowings": "フォロー中のユーザーはいません",
+    "noFollowingsTitle": "フォロー中のユーザーがいません",
+    "noFollowingsDesc": "まだ誰もフォローしていませんね？",
     "noLikedRoutes": "いいねしたルートはありません",
     "noRoutes": "まだルートがありません",
     "noRoutesCreated": "まだルートを作成していません",
@@ -372,6 +382,7 @@
   },
   "home": {
     "trending": "トレンド",
+    "trendingRoutes": "トレンドルート",
     "trendingTags": "人気のタグ",
     "topTravelers": "人気の旅行者",
     "topRoutes": "トップルート — 今週",

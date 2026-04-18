@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
@@ -16,6 +17,8 @@ type Props = {
 }
 
 export default function RecommendedRoutesList(props: Props) {
+    const tHome = useTranslations('home');
+
     // ダミーカードの生成（15個）
     const dummyCards = Array.from({ length: 15 }).map((_, i) => (
         <RouteCardBasicSkeleton
@@ -29,7 +32,7 @@ export default function RecommendedRoutesList(props: Props) {
     if (!props.routes && !props.error) {
         return (
             <div className={'w-full h-fit flex flex-col gap-3'}>
-                <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Recommended For You</h2>
+                <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('recommendedForYou')}</h2>
                 <div className={'w-full grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3'}>
                     {Array.from({ length: 3 }).map((_, i) => (
                         <RouteCardBasicSkeleton key={i} />
@@ -43,7 +46,7 @@ export default function RecommendedRoutesList(props: Props) {
     if (props.error && (!props.routes || props.routes.length === 0)) {
         return (
             <div className={'w-full h-fit flex flex-col gap-3'}>
-                <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Recommended For You</h2>
+                <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('recommendedForYou')}</h2>
                 <SectionErrorState error={props.error} onRetry={props.onRetry} />
             </div>
         )
@@ -51,7 +54,7 @@ export default function RecommendedRoutesList(props: Props) {
 
     return (
         <div className={'w-full h-fit flex flex-col gap-3'}>
-            <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Recommended For You</h2>
+            <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('recommendedForYou')}</h2>
             <div className={'w-full grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3'}>
                 {props.routes?.map((r, idx) => (
                     <RouteCardBasic route={r} key={r.id ?? idx} />

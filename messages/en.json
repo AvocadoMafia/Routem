@@ -44,7 +44,11 @@
     "version": "ver. 1.0β",
     "min": "min",
     "everyone": "Everyone",
-    "flexible": "Flexible"
+    "flexible": "Flexible",
+    "clearMessage": "Clear message",
+    "coverAlt": "Cover image",
+    "mapPreviewAlt": "Map preview",
+    "routeListAria": "Route list"
   },
   "auth": {
     "signIn": "Sign In",
@@ -194,7 +198,11 @@
     "invitationUrl": "Invitation URL",
     "generateInviteUrl": "Generate Invitation URL",
     "inviteUrlAfterSave": "Invitation URLs can be generated after saving the route",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "removeDay": "Remove day",
+    "addDay": "Add day",
+    "removeImage": "Remove image",
+    "thumbnailPreviewAlt": "Thumbnail preview"
   },
   "transport": {
     "walk": "Walk",
@@ -267,6 +275,8 @@
     "follow": "Follow",
     "unfollow": "Unfollow",
     "noFollowings": "Not following anyone",
+    "noFollowingsTitle": "No followings found.",
+    "noFollowingsDesc": "You're not following anyone yet, right?",
     "noLikedRoutes": "No liked routes yet",
     "noRoutes": "No routes yet",
     "noRoutesCreated": "No routes created",
@@ -372,6 +382,7 @@
   },
   "home": {
     "trending": "Trending",
+    "trendingRoutes": "Trending Routes",
     "trendingTags": "Trending Tags",
     "topTravelers": "Top Travelers",
     "topRoutes": "Top Routes — This week",
