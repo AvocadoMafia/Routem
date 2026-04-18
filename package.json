@@ -7,11 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "recommend": "tsx --env-file=.env scripts/generateRecommendations.ts",
-    "seed:exchange-rates": "tsx --env-file=.env scripts/seedExchangeRates.ts",
+    "recommend": "tsx scripts/generateRecommendations.ts",
+    "seed:exchange-rates": "tsx scripts/seedExchangeRates.ts",
     "lint": "eslint",
     "test": "vitest",
-    "initialize": "tsx --env-file=.env scripts/setupMeilisearch.ts"
+    "initialize": "tsx scripts/setupMeilisearch.ts"
   },
   "prisma": {
     "seed": "tsx ./prisma/seed.ts"
