@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
 
     const url = new URL(req.url);
     const rawFileName = url.searchParams.get('fileName') || `upload-${Date.now()}`;
-    const contentType = url.searchParams.get('contentType') || 'image/webp';
+    // WebPへの変換を強制するため、contentTypeは強制的にimage/webpとする
+    const contentType = 'image/webp';
     const type = url.searchParams.get('type') || 'others';
     const context = url.searchParams.get('context');
 

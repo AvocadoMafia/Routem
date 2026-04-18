@@ -11,39 +11,19 @@ import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
 import { CursorResponse, useInfiniteScroll } from '@/lib/client/hooks/useInfiniteScroll'
 
+import { User as SupabaseUser } from '@supabase/supabase-js'
+
 type LikeRecord = { id: string; createdAt: string; route: Route }
 
-export default function RootClient({ id }: { id: string }) {
+type Props = {
+  targetUser: User
+  currentUser: SupabaseUser | null
+}
+
+export default function RootClient({ targetUser, currentUser }: Props) {
+  const id = targetUser.id
   const router = useRouter()
-  const currentUser = userStore(state => state.user)
-  const [targetUser, setTargetUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>('routes')
-  const appendError = errorStore(state => state.appendError)
-
-  useEffect(() => {
-    if (currentUser?.id === id) {
-      router.replace('/me')
-      return
-    }
-
-    const fetchUser = async () => {
-      setIsLoading(true)
-      try {
-        const res = await getDataFromServerWithJson<{ user: User }>(`/api/v1/users/${id}`)
-        if (res && res.user) {
-          setTargetUser(res.user)
-        }
-      } catch (error: any) {
-        console.error('Failed to fetch user:', error)
-        appendError(error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchUser()
-  }, [id, currentUser, router, appendError])
 
   // ユーザー投稿ルート（カーソル）
   const {
@@ -81,22 +61,11 @@ export default function RootClient({ id }: { id: string }) {
   const isFetching = activeTab === 'routes' ? isFetchingRoutes : isFetchingLikes
   const observerTarget = activeTab === 'routes' ? observerTargetRoutes : observerTargetLikes
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-grass"></div>
-        <p className="text-foreground-1 font-bold uppercase tracking-[0.2em] animate-pulse">LOADING...</p>
-      </div>
-    )
-  }
-
-  if (!targetUser) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <p className="text-xl font-bold">User not found</p>
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (currentUser?.id === id) {
+      router.replace('/me')
+    }
+  }, [id, currentUser?.id, router])
 
   return (
     <div className="w-full h-fit">

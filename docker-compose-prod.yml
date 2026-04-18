@@ -1,0 +1,90 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      # - "443:443" # Uncomment after setting up SSL
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # - ./nginx/ssl:/etc/nginx/ssl:ro # Uncomment after setting up SSL
+    depends_on:
+      - app
+    networks:
+      - routem-network
+    restart: always
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    expose:
+      - "3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379
+      - MEILISEARCH_URL=http://meilisearch:7700
+      - LIBRETRANSLATE_URL=http://libretranslate:5000
+    depends_on:
+      - postgres
+      - redis
+      - meilisearch
+      - libretranslate
+    networks:
+      - routem-network
+    restart: always
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - routem-network
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_prod_data:/data
+    networks:
+      - routem-network
+    restart: always
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    environment:
+      - MEILI_MASTER_KEY=${MEILISEARCH_APIKEY}
+      - MEILI_NO_ANALYTICS=true
+    volumes:
+      - meili_prod_data:/meili_data
+    networks:
+      - routem-network
+    restart: always
+
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    command: ["--load-only", "en,ja"]
+    networks:
+      - routem-network
+    restart: always
+
+networks:
+  routem-network:
+    driver: bridge
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+  meili_prod_data:

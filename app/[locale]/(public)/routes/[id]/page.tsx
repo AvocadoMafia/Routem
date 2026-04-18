@@ -1,40 +1,52 @@
 import { notFound } from "next/navigation";
-import { Route } from "@/lib/client/types";
 import RootClient from "./rootClient";
-
 import { createClient } from "@/lib/auth/supabase/server";
 import { headers } from "next/headers";
+import { routesService } from "@/features/routes/service";
+import { Metadata } from "next";
 
-export default async function RoutePage({ params }: { params: { id: string } }) {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
+  const route = await routesService.getRouteDetail(id, null);
 
-  const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
-  const apiUrl = `${protocol}://${host}/api/v1/routes/${id}`;
-
-  const res = await fetch(apiUrl, {
-    headers: {
-      cookie: headersList.get("cookie") || "",
-    },
-    next: { revalidate: 0 },
-  });
-
-  if (!res.ok) {
-    if (res.status === 404 || res.status === 401) {
-      notFound();
-    }
-    throw new Error(`Failed to fetch route: ${res.status}`);
+  if (!route) {
+    return {
+      title: "Route Not Found",
+    };
   }
 
-  const route = (await res.json()) as Route;
+  return {
+    title: `${route.title} | Rootem`,
+    description: route.description || "Check out this route on Rootem",
+    openGraph: {
+      title: route.title,
+      description: route.description || "Check out this route on Rootem",
+      type: "website",
+    },
+  };
+}
+
+export default async function RoutePage({ params }: Props) {
+  const { id } = await params;
+  const headersList = await headers();
 
   const supabase = await createClient({
     headers: headersList,
   } as any);
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return <RootClient route={route} currentUser={user} />;
+  const route = await routesService.getRouteDetail(id, user?.id ?? null);
+
+  if (!route) {
+    notFound();
+  }
+
+  return <RootClient route={route as any} currentUser={user} />;
 }

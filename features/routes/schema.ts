@@ -21,7 +21,7 @@ export const PostRouteSchema = z.object({
     .min(1, "At least one day is required"),
   thumbnailImageSrc: z
     .string()
-    .startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL"),
+    .url("Thumbnail image must be a valid URL"),
   title: z.string().min(1, "Title is required").max(100, "Title must be at most 100 characters"),
   visibility: z.enum(["PUBLIC", "PRIVATE"]),
   collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
@@ -57,7 +57,7 @@ export const PatchRouteSchema = z.object({
   items: z.array(z.array(z.union([WaypointSchema, TransportationSchema]))).optional(),
   thumbnailImageSrc: z
     .string()
-    .startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL")
+    .url("Thumbnail image must be a valid URL")
     .optional(),
   title: z
     .string()

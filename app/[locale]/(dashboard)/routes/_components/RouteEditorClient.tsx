@@ -9,7 +9,7 @@ import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
-import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson } from "@/lib/client/helpers";
+import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson, convertToWebP } from "@/lib/client/helpers";
 import { Route, RouteItem } from "@/lib/client/types";
 
 interface RouteEditorClientProps {
@@ -277,9 +277,12 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         setUploading(true);
         setMessage(null);
         try {
+            // WebPに変換
+            const webpBlob = await convertToWebP(file, { quality: 0.85, maxSide: 2560 });
+
             const params = new URLSearchParams({
                 fileName: file.name,
-                contentType: file.type,
+                contentType: 'image/webp',
                 type: 'route-thumbnails'
             });
 
@@ -289,8 +292,8 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
 
             const uploadRes = await fetch(uploadUrl, {
                 method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type }
+                body: webpBlob,
+                headers: { 'Content-Type': 'image/webp' }
             });
 
             if (!uploadRes.ok) throw new Error('Failed to upload image');

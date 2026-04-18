@@ -47,41 +47,44 @@ export function getPrisma() {
     return globalThis.prisma;
 }
 
-// MinIO を使った S3クライアントのゲッター
-// 必要な環境変数:
-// - MINIO_ENDPOINT (例: "localhost")
-// - MINIO_PORT (例: "9000")
-// - MINIO_ACCESS_KEY
-// - MINIO_SECRET_KEY
-// - MINIO_USE_SSL ("true" or "false")
+// S3互換ストレージ（MinIO / OCI Object Storage等）クライアントのゲッター
+// NODE_ENV が 'production' の場合は OCI Object Storage を、それ以外は MinIO を使用します。
 export function getS3Client() {
     if (globalThis.s3Client) return globalThis.s3Client;
 
-    const rawEndpoint = process.env.MINIO_ENDPOINT || "localhost";
-    const endpointPort = process.env.MINIO_PORT || "9000";
-    const accessKeyId = process.env.MINIO_ACCESS_KEY;
-    const secretAccessKey = process.env.MINIO_SECRET_KEY;
-    const useSSL = (process.env.MINIO_USE_SSL || "false").toLowerCase() === "true";
+    const isProd = process.env.NODE_ENV === 'production';
+    
+    let endpoint: string | undefined;
+    let accessKeyId: string | undefined;
+    let secretAccessKey: string | undefined;
+    let region: string;
 
-    if (!rawEndpoint || !accessKeyId || !secretAccessKey) {
-        throw new Error("Missing MinIO env: MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY are required");
-    }
-
-    const protocol = useSSL ? "https" : "http";
-
-    // Normalize endpoint: allow MINIO_ENDPOINT to be either host[:port] or full URL
-    let endpoint: string;
-    if (/^https?:\/\//i.test(rawEndpoint)) {
-        // Use as-is, just trim trailing slashes
-        endpoint = rawEndpoint.replace(/\/+$/g, "");
+    if (isProd) {
+        // OCI Object Storage 用の設定
+        // エンドポイント形式: https://{namespace}.compat.objectstorage.{region}.oraclecloud.com
+        const namespace = process.env.OCI_STORAGE_NAMESPACE;
+        region = process.env.OCI_REGION || "ap-tokyo-1";
+        endpoint = `https://${namespace}.compat.objectstorage.${region}.oraclecloud.com`;
+        accessKeyId = process.env.OCI_ACCESS_KEY;
+        secretAccessKey = process.env.OCI_SECRET_KEY;
+        
+        if (!namespace || !accessKeyId || !secretAccessKey) {
+            throw new Error("Missing OCI env: OCI_STORAGE_NAMESPACE, OCI_ACCESS_KEY, OCI_SECRET_KEY are required in production");
+        }
     } else {
-        const hostNoPort = rawEndpoint.replace(/:\d+$/, "");
-        const port = endpointPort;
-        endpoint = `${protocol}://${hostNoPort}:${port}`;
+        // MinIO 用の設定
+        endpoint = process.env.MINIO_ENDPOINT;
+        accessKeyId = process.env.MINIO_ACCESS_KEY;
+        secretAccessKey = process.env.MINIO_SECRET_KEY;
+        region = process.env.MINIO_REGION || "us-east-1";
+
+        if (!endpoint || !accessKeyId || !secretAccessKey) {
+            throw new Error("Missing MinIO env: MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY are required");
+        }
     }
 
     globalThis.s3Client = new S3Client({
-        region: "us-east-1", // MinIOは任意、S3互換のため固定でOK
+        region,
         endpoint,
         forcePathStyle: true,
         credentials: { accessKeyId, secretAccessKey },

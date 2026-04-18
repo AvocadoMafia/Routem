@@ -6,7 +6,7 @@ export const WaypointSchema = z
     type: z.literal("waypoint"),
     name: z.string(),
     images: z
-      .array(z.string().startsWith(process.env.MINIO_ENDPOINT || "", "Image must be a valid URL"))
+      .array(z.string().url("Image must be a valid URL"))
       .max(3)
       .optional(),
     memo: z.string(),

@@ -7,6 +7,17 @@ import { GetImagesType } from "./schema";
 import { encodeCursor } from "@/lib/server/cursor";
 
 function buildPublicUrl(bucket: string, key: string) {
+  const isProd = process.env.NODE_ENV === 'production';
+
+  if (isProd) {
+    // OCI Object Storage の公開URL形式
+    // https://objectstorage.{region}.oraclecloud.com/n/{namespace}/b/{bucket}/o/{key}
+    const namespace = process.env.OCI_STORAGE_NAMESPACE;
+    const region = process.env.OCI_REGION || 'ap-tokyo-1';
+    return `https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/${key}`;
+  }
+
+  // MinIO 用の公開URL構築（既存ロジック）
   const rawPublic = process.env.MINIO_PUBLIC_ENDPOINT || process.env.MINIO_ENDPOINT || 'localhost';
   const useSSL = (process.env.MINIO_USE_SSL || 'false').toLowerCase() === 'true';
   const protocol = useSSL ? 'https' : 'http';
@@ -20,8 +31,13 @@ function buildPublicUrl(bucket: string, key: string) {
 function ensureExtension(name: string, defaultExt: string = '.webp') {
   const trimmed = (name || '').trim();
   if (!trimmed) return `upload-${Date.now()}${defaultExt}`;
-  if (trimmed.includes('.')) return trimmed;
-  return `${trimmed}${defaultExt}`;
+  
+  // 拡張子を除去して指定の拡張子を強制的に付与する
+  const baseName = trimmed.includes('.') 
+    ? trimmed.slice(0, trimmed.lastIndexOf('.')) 
+    : trimmed;
+  
+  return `${baseName}${defaultExt}`;
 }
 
 export const imagesService = {
@@ -33,6 +49,7 @@ export const imagesService = {
     context?: string | null
   ) => {
     try {
+      const isProd = process.env.NODE_ENV === 'production';
       // ディレクトリの決定
       let directory = 'others';
       let imageType: ImageType = ImageType.OTHER;
@@ -49,7 +66,9 @@ export const imagesService = {
         imageType = ImageType.NODE_IMAGE;
       }
 
-      const Bucket = process.env.MINIO_BUCKET || 'rtmimages';
+      const Bucket = isProd 
+        ? (process.env.OCI_BUCKET_NAME || 'rtmimages') 
+        : (process.env.MINIO_BUCKET || 'rtmimages');
       const Key = `${directory}/${Date.now()}-${ensureExtension(fileName)}`;
 
       const s3 = getS3Client();

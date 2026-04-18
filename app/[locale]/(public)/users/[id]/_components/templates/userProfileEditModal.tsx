@@ -6,6 +6,7 @@ import { MdClose, MdPhotoCamera } from 'react-icons/md'
 import Image from 'next/image'
 import { userStore } from '@/lib/client/stores/userStore'
 import { errorStore } from '@/lib/client/stores/errorStore'
+import { convertToWebP } from '@/lib/client/helpers'
 
 interface UserProfileEditModalProps {
   isOpen: boolean
@@ -40,7 +41,10 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
 
   const handleImageUpload = async (file: File, type: 'user-profiles', context?: 'icon' | 'background') => {
     try {
-      let url = `/api/v1/images/uploads?fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&type=${type}`
+      // WebPに変換
+      const webpBlob = await convertToWebP(file, { quality: 0.85, maxSide: 2560 });
+
+      let url = `/api/v1/images/uploads?fileName=${encodeURIComponent(file.name)}&contentType=image/webp&type=${type}`
       if (context) url += `&context=${context}`
       
       const res = await fetch(url)
@@ -48,9 +52,9 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
 
       await fetch(uploadUrl, {
         method: 'PUT',
-        body: file,
+        body: webpBlob,
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': 'image/webp',
         },
       })
 

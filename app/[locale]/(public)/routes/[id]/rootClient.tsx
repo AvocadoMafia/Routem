@@ -11,6 +11,7 @@ import ViewModeSelector from "./_components/ingredients/viewModeSelector";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
+import { userStore } from "@/lib/client/stores/userStore";
 import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
 
 // カーソルベースのレスポンス型
