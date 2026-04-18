@@ -26,12 +26,13 @@ describe("buildOptimisticComment", () => {
     const c = buildOptimisticComment({
       text: "hi",
       routeId: "route-x",
-      user: { id: "u42", name: "Bob", icon: { url: "u.png" } },
+      user: { id: "u42", name: "Bob", icon: null },
     });
     expect(c.text).toBe("hi");
     expect(c.routeId).toBe("route-x");
     expect(c.userId).toBe("u42");
     expect(c.user.name).toBe("Bob");
+    expect(c.user.icon).toBeNull();
     expect(c.likes).toEqual([]);
   });
 

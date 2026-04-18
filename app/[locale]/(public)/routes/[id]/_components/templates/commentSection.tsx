@@ -8,7 +8,7 @@ import CommentItem from "../ingredients/commentItem";
 import CommentItemSkeleton from "../ingredients/commentItemSkeleton";
 import LoginPromptCard from "@/app/[locale]/_components/common/ingredients/loginPromptCard";
 import { useTranslations } from "next-intl";
-import { useComments } from "@/lib/client/hooks/useComments";
+import { DEFAULT_TAKE as COMMENTS_PAGE_SIZE, useComments } from "@/lib/client/hooks/useComments";
 
 type CommentSectionProps = {
   isMobile: boolean;
@@ -37,7 +37,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
     isLoggedIn,
   } = useComments({
     routeId,
-    take: 15,
+    take: COMMENTS_PAGE_SIZE,
     loginRequiredMessage: t("loginToComment"),
     loginButtonLabel: tCommon("goToLogin"),
     postFailureMessage: t("postFailed"),
@@ -122,7 +122,7 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
         )}
       </div>
 
-      {!loading && !hasMore && comments.length > 15 && (
+      {!loading && !hasMore && comments.length > COMMENTS_PAGE_SIZE && (
         <div className="w-full text-center py-4">
           <span className="text-[10px] font-bold text-foreground-1/40 uppercase tracking-[0.3em]">
             End of discussion

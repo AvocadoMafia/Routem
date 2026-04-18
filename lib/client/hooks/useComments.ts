@@ -9,6 +9,10 @@ import {
   toErrorScheme,
 } from "@/lib/client/helpers";
 import type { Comment } from "@/lib/client/types";
+import type {
+  CommentUserPayload,
+  PostCommentResponse,
+} from "@/features/comments/schema";
 import { userStore } from "@/lib/client/stores/userStore";
 import { errorStore } from "@/lib/client/stores/errorStore";
 import { showWarningToast } from "@/lib/client/stores/toastStore";
@@ -63,27 +67,35 @@ export type UseCommentsResult = {
   isLoggedIn: boolean;
 };
 
-const DEFAULT_TAKE = 15;
+/**
+ * コメントの 1 ページあたり取得件数。
+ * CommentSection のスケルトン表示数や End-of-discussion 表示判定でも参照するので export する。
+ */
+export const DEFAULT_TAKE = 15;
 const OPTIMISTIC_PREFIX = "optimistic-";
 
 /** 楽観的ダミーコメントを作る pure function (テスト可能)。 */
 export function buildOptimisticComment(params: {
   text: string;
   routeId: string;
-  user: { id?: string; name?: string; icon?: { url: string } | null };
+  /** userStore から受け取る「コメントに埋め込めるユーザー情報」。 id/name/icon のみ使う */
+  user: Partial<Pick<CommentUserPayload, "id" | "name" | "icon">>;
 }): Comment {
   const rand = Math.random().toString(36).substring(2, 11);
+  // 必須フィールドが欠けている場合は optimistic プレースホルダで埋める。
+  // サーバーレスポンス到着時に実データで置換されるので短命で問題ない。
+  const user: CommentUserPayload = {
+    id: params.user.id || "optimistic",
+    name: params.user.name || "Anonymous",
+    icon: params.user.icon ?? null,
+  };
   return {
     id: `${OPTIMISTIC_PREFIX}${rand}`,
     text: params.text,
-    userId: params.user.id || "optimistic",
+    userId: user.id,
     routeId: params.routeId,
     createdAt: new Date(),
-    user: {
-      id: params.user.id || "optimistic",
-      name: params.user.name || "Anonymous",
-      icon: params.user.icon ?? null,
-    } as any,
+    user,
     likes: [],
   };
 }
@@ -206,10 +218,10 @@ export function useComments(opts: UseCommentsOptions): UseCommentsResult {
       setComments((prev) => [dummy, ...prev]);
 
       try {
-        const actual = await postDataToServerWithJson<Comment>("/api/v1/comments", {
-          routeId,
-          text: trimmed,
-        });
+        const actual = await postDataToServerWithJson<PostCommentResponse>(
+          "/api/v1/comments",
+          { routeId, text: trimmed },
+        );
 
         if (actual) {
           setComments((prev) =>
@@ -217,9 +229,10 @@ export function useComments(opts: UseCommentsOptions): UseCommentsResult {
               c.id === dummy.id
                 ? {
                     ...actual,
-                    // サーバーは user を返さない場合があるので dummy の user を尊重
-                    user: (actual as any).user ?? dummy.user,
-                    likes: (actual as any).likes ?? [],
+                    // サーバーが user/likes を返さない場合 (現行 createComment は bare を返す) は
+                    // dummy の値で埋める。 Partial 型で optional にしているので安全に参照できる。
+                    user: actual.user ?? dummy.user,
+                    likes: actual.likes ?? [],
                   }
                 : c,
             ),
