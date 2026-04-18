@@ -6,10 +6,11 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { motion, AnimatePresence } from "framer-motion";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
-import { Route } from "@/lib/client/types";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { Route, ErrorScheme } from "@/lib/client/types";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
 import { useTranslations } from "next-intl";
 import { errorStore } from "@/lib/client/stores/errorStore";
+import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 
 type ExploreResponse = {
   items: Route[];
@@ -27,10 +28,13 @@ function ExploreContent() {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<ErrorScheme | null>(null);
   const appendError = errorStore(state => state.appendError);
   const observerTarget = useRef<HTMLDivElement>(null);
   const isFetchingRef = useRef(false);
   const hasMoreRef = useRef(true);
+  // retry 用: 直近どの offset で失敗したか
+  const lastOffsetRef = useRef<number>(0);
 
   const queryString = useMemo(() => searchParams.toString(), [searchParams]);
 
@@ -74,7 +78,9 @@ function ExploreContent() {
 
   const fetchExploreResults = useCallback(async (offset: number) => {
     if (isFetchingRef.current || !hasMoreRef.current) return;
+    lastOffsetRef.current = offset;
     setIsFetching(true);
+    setError(null);
     try {
       const res = await getDataFromServerWithJson<ExploreResponse>(buildApiUrl(offset));
       if (!res) return;
@@ -89,31 +95,42 @@ function ExploreContent() {
         });
       }
       setHasMore(res.nextOffset !== null);
-    } catch (e: any) {
-      appendError(e);
+    } catch (e: unknown) {
+      const scheme = toErrorScheme(e);
+      setError(scheme);
+      appendError(scheme);
     } finally {
       setIsFetching(false);
     }
-  }, [queryString]);
+  }, [queryString, appendError]);
+
+  const retry = useCallback(async () => {
+    // 直近失敗した offset からやり直し
+    await fetchExploreResults(lastOffsetRef.current);
+  }, [fetchExploreResults]);
 
   useEffect(() => {
     if (!hasParams) {
       setRoutes([]);
       setHasMore(true);
       hasMoreRef.current = true;
+      setError(null);
       return;
     }
 
     setRoutes([]);
     setHasMore(true);
     hasMoreRef.current = true;
+    setError(null);
     fetchExploreResults(0);
   }, [hasParams, queryString, fetchExploreResults]);
 
+  // error 状態の時は自動 fetchMore を止める (無限再試行ループ防止)
   useEffect(() => {
+    if (error) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMoreRef.current && !isFetchingRef.current) {
+        if (entries[0].isIntersecting && hasMoreRef.current && !isFetchingRef.current && !error) {
           fetchExploreResults(routes.length);
         }
       },
@@ -122,7 +139,7 @@ function ExploreContent() {
 
     if (observerTarget.current) observer.observe(observerTarget.current);
     return () => observer.disconnect();
-  }, [routes.length, fetchExploreResults]);
+  }, [routes.length, fetchExploreResults, error]);
 
   return (
     <div className="w-full h-full relative overflow-hidden flex flex-row">
@@ -191,8 +208,13 @@ function ExploreContent() {
                   </p>
                 </div>
 
-                {isFetching && routes.length === 0 && <p className="text-foreground-1">{tCommon("loading")}</p>}
-                {!isFetching && routes.length === 0 && (
+                {/* 初回取得失敗: セクション全体を error UI に差し替え */}
+                {error && routes.length === 0 && (
+                  <SectionErrorState onRetry={retry} />
+                )}
+
+                {!error && isFetching && routes.length === 0 && <p className="text-foreground-1">{tCommon("loading")}</p>}
+                {!error && !isFetching && routes.length === 0 && (
                   <p className="text-foreground-1">{t("routesFound", { count: 0 })}</p>
                 )}
 
@@ -209,7 +231,7 @@ function ExploreContent() {
                       </motion.div>
                     ))}
 
-                    {hasMore && (
+                    {hasMore && !error && (
                       <>
                         {Array.from({ length: 30 }).map((_, idx) => (
                           <RouteCardBasicSkeleton
@@ -219,6 +241,11 @@ function ExploreContent() {
                           />
                         ))}
                       </>
+                    )}
+
+                    {/* 追加ロード失敗: リスト末尾に inline retry */}
+                    {error && (
+                      <SectionErrorState variant="inline" onRetry={retry} />
                     )}
                   </div>
                 )}
