@@ -1,4 +1,16 @@
 services:
+  # proxy
+  enginx:
+    image: nginx:1.27-alpine
+    container_name: enginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    # depends_on:
+    #   - app
+    restart: always
+
   # データベース(postgres)
   postgres:
     image: postgres:15
