@@ -24,6 +24,8 @@ export default function RootClient() {
     isFetching: isFetchingRoutes,
     fetchMore: fetchMoreRoutes,
     observerTarget: observerTargetRoutes,
+    error: errorRoutes,
+    retry: retryRoutes,
   } = useInfiniteScroll<Route>({
     fetcher: (cursor) => {
       const url = `/api/v1/routes?authorId=${userId}&limit=15&type=user_posts${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
@@ -39,6 +41,8 @@ export default function RootClient() {
     isFetching: isFetchingLikes,
     fetchMore: fetchMoreLikes,
     observerTarget: observerTargetLikes,
+    error: errorLikes,
+    retry: retryLikes,
   } = useInfiniteScroll<LikeRecord, Route>({
     fetcher: (cursor) => {
       const url = `/api/v1/likes?route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
@@ -55,6 +59,8 @@ export default function RootClient() {
     isFetching: isFetchingHistory,
     fetchMore: fetchMoreHistory,
     observerTarget: observerTargetHistory,
+    error: errorHistory,
+    retry: retryHistory,
   } = useInfiniteScroll<ViewRecord, Route>({
     fetcher: (cursor) => {
       const url = `/api/v1/views?route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
@@ -65,6 +71,9 @@ export default function RootClient() {
     enabled,
   })
 
+  // activeTab に応じて UserProfileContent に渡す派生値を一元化。
+  // error / retry も tab ごとに切り替えることで、UserProfileContent 側は
+  // 「アクティブな tab で起きたエラー」だけを描画すればよくなる。
   const fetchMore =
     activeTab === 'routes' ? fetchMoreRoutes :
     activeTab === 'likes' ? fetchMoreLikes :
@@ -81,6 +90,14 @@ export default function RootClient() {
     activeTab === 'routes' ? observerTargetRoutes :
     activeTab === 'likes' ? observerTargetLikes :
     observerTargetHistory
+  const error =
+    activeTab === 'routes' ? errorRoutes :
+    activeTab === 'likes' ? errorLikes :
+    errorHistory
+  const onRetry =
+    activeTab === 'routes' ? retryRoutes :
+    activeTab === 'likes' ? retryLikes :
+    retryHistory
 
   return (
     <div className="w-full h-fit flex flex-col">
@@ -107,6 +124,8 @@ export default function RootClient() {
         hasMore={hasMore}
         isFetching={isFetching}
         observerTarget={observerTarget}
+        error={error}
+        onRetry={onRetry}
       />
     </div>
   )
