@@ -1,6 +1,7 @@
 import "dotenv/config";
-import { CurrencyCode } from "@prisma/client";
-import { getPrisma } from "@/lib/config/server";
+import { PrismaClient, CurrencyCode } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 const seedRates = {
   JPY: 0.0067,
@@ -21,28 +22,47 @@ const seedRates = {
 } satisfies Record<CurrencyCode, number>;
 
 async function main() {
+  const dbType = process.env.DB_TYPE || "local";
+  const connectionString =
+    dbType === "vercel"
+      ? process.env.VERCEL_DATABASE_URL
+      : process.env.LOCAL_DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error(
+      `Database connection string for type '${dbType}' is not defined.`
+    );
+  }
+
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
+  const prisma = new PrismaClient({ adapter });
+
   const now = new Date();
 
-  await prisma.$transaction(
-    Object.entries(seedRates).map(([currencyCode, rateToUsd]) =>
-      prisma.exchangeRates.upsert({
-        where: { currencyCode: currencyCode as CurrencyCode },
-        create: { currencyCode: currencyCode as CurrencyCode, rateToUsd, updatedAt: now },
-        update: { rateToUsd, updatedAt: now },
-      }),
-    ),
-  );
+  try {
+    await prisma.$transaction(
+      Object.entries(seedRates).map(([currencyCode, rateToUsd]) =>
+        prisma.exchangeRates.upsert({
+          where: { currencyCode: currencyCode as CurrencyCode },
+          create: {
+            currencyCode: currencyCode as CurrencyCode,
+            rateToUsd,
+            updatedAt: now,
+          },
+          update: { rateToUsd, updatedAt: now },
+        })
+      )
+    );
 
-  console.info(`Seeded ${Object.keys(seedRates).length} exchange rates.`);
+    console.info(`Seeded ${Object.keys(seedRates).length} exchange rates.`);
+  } finally {
+    await prisma.$disconnect();
+    await pool.end();
+  }
 }
 
-const prisma = getPrisma();
-
-main()
-  .catch((error) => {
-    console.error("Failed to seed exchange rates:", error);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch((error) => {
+  console.error("Failed to seed exchange rates:", error);
+  process.exitCode = 1;
+});
