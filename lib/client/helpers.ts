@@ -153,12 +153,23 @@ export async function fetchWithRetry<T>(
         } catch {
             // non-JSON body はスキップ
         }
+        // Retry-After を err に乗せて UI 側で cooldown 表示に使えるようにする
+        // (内部 retry で使い切らなかった / 上限到達時に意味を持つ)
+        const retryAfterHeader = res.headers.get("Retry-After")
+        let retryAfterMs: number | undefined
+        if (retryAfterHeader) {
+            const secs = Number(retryAfterHeader)
+            if (Number.isFinite(secs) && secs >= 0) {
+                retryAfterMs = secs * 1000
+            }
+        }
         throw {
             message: errJson?.message || `HTTP ${res.status}`,
             code: errJson?.code || (res.status === 429 ? "RATE_LIMITED" : "HTTP_ERROR"),
             status: res.status,
             details: errJson?.details,
-        } as ErrorScheme & { status: number }
+            retryAfterMs,
+        } as ErrorScheme & { status: number; retryAfterMs?: number }
     }
 }
 
