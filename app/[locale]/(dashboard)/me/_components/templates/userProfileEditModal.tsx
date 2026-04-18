@@ -124,7 +124,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                 {bgUrl && (
                   <Image
                     src={bgUrl}
-                    alt="Background"
+                    alt={t('backgroundAlt')}
                     fill
                     className="object-cover"
                     unoptimized
@@ -163,7 +163,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                   {iconUrl && (
                     <Image
                       src={iconUrl}
-                      alt="Icon"
+                      alt={t('iconAlt')}
                       fill
                       className="object-cover"
                       unoptimized
