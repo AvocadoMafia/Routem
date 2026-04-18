@@ -31,7 +31,19 @@ COPY package*.json ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
-RUN npm install && npm cache clean --force
+# package-lock.json はホスト (macOS darwin-arm64) 側で生成されるため、Linux container
+# の install ターゲットに対して optional/peer deps の解決差分が出る (実際に container
+# 内 `npm ci` が `Missing: @swc/helpers@0.5.21 from lock file` で失敗する)。
+# そのため `npm install` で lockfile を part-of-truth として使いつつ、不足分は
+# platform に応じて自動解決させる方針を採る (reproducible build は若干弱まるが、
+# ホスト/Linux 間の platform 差分に強い)。
+# 前段の `npm cache clean` は `node:22-slim` ベースイメージに同梱されている
+# 古い tarball cache（esbuild 0.27.3 等）を追い出すためにも必要。これを入れないと
+# lockfile が 0.27.7 を指していても runtime で 0.27.3 が読まれ、binary との
+# version mismatch で tsx が起動しない現象に刺さる。
+RUN npm cache clean --force && \
+    npm install --no-audit --no-fund && \
+    npm cache clean --force
 RUN npx prisma generate
 
 COPY . .
