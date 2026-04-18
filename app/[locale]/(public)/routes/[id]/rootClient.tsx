@@ -2,7 +2,7 @@
 
 import { Route } from "@/lib/client/types";
 import { User } from "@supabase/supabase-js";
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import MapViewer from "./_components/templates/mapViewer";
 import DiagramViewer from "./_components/templates/diagramViewer";
 import DetailsViewer from "./_components/templates/detailsViewer";
@@ -11,11 +11,8 @@ import ViewModeSelector from "./_components/ingredients/viewModeSelector";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
-import { userStore } from "@/lib/client/stores/userStore";
 import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
-
-// カーソルベースのレスポンス型
-type CursorResponse<T> = { items: T[]; nextCursor: string | null };
+import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
 
 type Props = {
   route: Route;
@@ -25,7 +22,7 @@ type Props = {
 // RouteItemのフラット化された配列を作成するヘルパー
 function getFlattenedItems(route: Route) {
   const items: any[] = [];
-  
+
   if (route.routeDates && route.routeDates.length > 0) {
     route.routeDates.forEach((date) => {
       // 日付セパレーター
@@ -88,12 +85,25 @@ export default function RootClient({ route, currentUser }: Props) {
   const [infoTab, setInfoTab] = useState<"comments" | "related">("comments");
   const [isMobile, setIsMobile] = useState(false);
 
-  // 関連記事 (Related Routes) の状態管理
-  const [relatedRoutes, setRelatedRoutes] = useState<Route[]>([]);
-  const [relatedLoading, setRelatedLoading] = useState<boolean>(true);
-  const [isFetchingRelated, setIsFetchingRelated] = useState<boolean>(false);
-  const [relatedHasMore, setRelatedHasMore] = useState<boolean>(true);
-  const relatedCursorRef = useRef<string | null>(null);
+  // 関連記事 (Related Routes) — 共通フック経由で error/retry 込みの無限スクロール
+  const {
+    items: relatedRoutes,
+    isFetching: isFetchingRelated,
+    hasMore: relatedHasMore,
+    error: relatedError,
+    fetchMore: fetchMoreRelated,
+    retry: retryRelated,
+  } = useInfiniteScroll<Route>({
+    fetcher: (cursor) => {
+      if (!route.id) return Promise.resolve(null);
+      const url = cursor
+        ? `/api/v1/routes?type=related&targetId=${route.id}&limit=15&cursor=${encodeURIComponent(cursor)}`
+        : `/api/v1/routes?type=related&targetId=${route.id}&limit=15`;
+      return getDataFromServerWithJson<CursorResponse<Route>>(url);
+    },
+    deps: [route.id],
+  });
+  const relatedLoading = relatedRoutes === null && !relatedError;
 
   const scrollDirection = useUiStore((state) => state.scrollDirection);
   const [yOffset, setYOffset] = useState(0);
@@ -117,58 +127,6 @@ export default function RootClient({ route, currentUser }: Props) {
       setYOffset(50);
     }
   }, []);
-
-  // 関連記事の初期フェッチ
-  useEffect(() => {
-    let cancelled = false;
-    async function loadRelated() {
-      if (!route.id) return;
-      setRelatedLoading(true);
-      setRelatedHasMore(true);
-      relatedCursorRef.current = null;
-      try {
-        const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15`;
-        const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
-        if (!cancelled && res) {
-          setRelatedRoutes(res.items);
-          relatedCursorRef.current = res.nextCursor;
-          if (!res.nextCursor) setRelatedHasMore(false);
-        }
-      } catch (e) {
-        console.error("Failed to load related routes:", e);
-      } finally {
-        if (!cancelled) setRelatedLoading(false);
-      }
-    }
-    loadRelated();
-    return () => { cancelled = true };
-  }, [route.id]);
-
-  const fetchMoreRelatedRoutes = async () => {
-    if (isFetchingRelated || !relatedHasMore || !route.id || !relatedCursorRef.current) return;
-    setIsFetchingRelated(true);
-    try {
-      const cursor = encodeURIComponent(relatedCursorRef.current);
-      const url = `/api/v1/routes?type=related&targetId=${route.id}&limit=15&cursor=${cursor}`;
-      const res = await getDataFromServerWithJson<CursorResponse<Route>>(url);
-
-      if (res && res.items.length > 0) {
-        setRelatedRoutes(prev => {
-          const existingIds = new Set(prev.map(r => r.id));
-          const filtered = res.items.filter(r => !existingIds.has(r.id));
-          return [...prev, ...filtered];
-        });
-        relatedCursorRef.current = res.nextCursor;
-        if (!res.nextCursor) setRelatedHasMore(false);
-      } else {
-        setRelatedHasMore(false);
-      }
-    } catch (e) {
-      console.error("Failed to fetch more related routes:", e);
-    } finally {
-      setIsFetchingRelated(false);
-    }
-  };
 
   useEffect(() => {
     updateOffset();
@@ -200,7 +158,7 @@ export default function RootClient({ route, currentUser }: Props) {
   return (
     <div className="w-full h-full relative overflow-hidden">
       <InitialModal route={route} />
-      
+
       <div className={`flex h-full w-full overflow-hidden relative flex-col md:flex-row`}>
         <ViewModeSelector
           viewMode={viewMode}
@@ -216,28 +174,30 @@ export default function RootClient({ route, currentUser }: Props) {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className={`w-full md:w-1/4 md:min-w-[320px] h-full ${viewMode === 'map' ? 'md:order-2' : 'md:order-1'}`}
         >
-          <DiagramViewer 
+          <DiagramViewer
             items={items}
             focusIndex={focusIndex}
             viewMode={viewMode}
             isMobile={isMobile}
             onItemClick={handleDiagramClick}
-            relatedRoutes={relatedRoutes}
+            relatedRoutes={relatedRoutes ?? []}
             relatedLoading={relatedLoading}
             isFetchingRelated={isFetchingRelated}
-            fetchMoreRelated={fetchMoreRelatedRoutes}
+            fetchMoreRelated={fetchMoreRelated}
             relatedHasMore={relatedHasMore}
+            relatedError={relatedError}
+            retryRelated={retryRelated}
           />
         </motion.div>
 
         {/* 詳細コンテンツ または マップ */}
-        <motion.div 
+        <motion.div
           layout
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className={`flex-1 relative md:overflow-hidden min-h-screen ${viewMode === "diagram" ? "max-md:hidden" : ""} ${viewMode === 'map' ? 'md:order-1' : 'md:order-2'}`}
         >
           {/* DETAILS VIEW */}
-          <DetailsViewer 
+          <DetailsViewer
             route={route}
             currentUser={currentUser}
             items={items}
@@ -248,15 +208,17 @@ export default function RootClient({ route, currentUser }: Props) {
             isMobile={isMobile}
             scrollContainerRef={scrollContainerRef}
             itemRefs={itemRefs}
-            relatedRoutes={relatedRoutes}
+            relatedRoutes={relatedRoutes ?? []}
             relatedLoading={relatedLoading}
             isFetchingRelated={isFetchingRelated}
-            fetchMoreRelated={fetchMoreRelatedRoutes}
+            fetchMoreRelated={fetchMoreRelated}
             relatedHasMore={relatedHasMore}
+            relatedError={relatedError}
+            retryRelated={retryRelated}
           />
 
           {/* MAP VIEW */}
-          <div 
+          <div
             className={`md:absolute md:inset-0 max-md:fixed max-md:inset-0 h-screen transition-all duration-500 ease-[0.22, 1, 0.36, 1] ${
               viewMode === "map" ? "opacity-100 scale-100" : "opacity-0 scale-105 pointer-events-none invisible"
             }`}

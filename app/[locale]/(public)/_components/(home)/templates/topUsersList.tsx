@@ -3,21 +3,44 @@
 import FeaturedUserCard from '@/app/[locale]/(public)/_components/(home)/ingredients/featuredUserCard'
 import { User } from "@/lib/client/types"
 import {UserCardGraphical} from "@/app/[locale]/_components/common/templates/userCardGraphical";
-import { useEffect, useState } from "react";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
+import { useCallback, useEffect, useState } from "react";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
+import { ErrorScheme } from "@/lib/client/types";
 
 
 export default function TopUsersList() {
   const [users, setUsers] = useState<User[] | null>(null);
+  const [error, setError] = useState<ErrorScheme | null>(null);
 
-  useEffect(() => {
-    getDataFromServerWithJson<User[]>('/api/v1/users?limit=5')
-      .then(res => {
-        if (res) setUsers(res);
-      })
-      .catch(err => console.error("Failed to fetch top users:", err));
+  const fetchUsers = useCallback(async () => {
+    setError(null);
+    try {
+      const res = await getDataFromServerWithJson<User[]>('/api/v1/users?limit=5');
+      if (res) setUsers(res);
+    } catch (err) {
+      console.error("Failed to fetch top users:", err);
+      setError(toErrorScheme(err));
+    }
   }, []);
 
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // --- error ---
+  if (error && !users) {
+    return (
+      <div className="w-full h-fit">
+        <div className="w-full mb-3 flex items-center md:justify-end justify-start gap-2">
+          <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Users — This week</h2>
+        </div>
+        <SectionErrorState onRetry={fetchUsers} />
+      </div>
+    );
+  }
+
+  // --- loading ---
   if (!users) return (
     <div className="w-full h-fit">
       <div className="w-full mb-3 flex items-center md:justify-end justify-start gap-2">

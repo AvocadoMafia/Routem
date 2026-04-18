@@ -22,7 +22,7 @@ export default function HomeSection() {
         setIsClient(true);
     }, []);
 
-    const { items: routes, hasMore, isFetching, fetchMore, observerTarget } = useInfiniteScroll<Route>({
+    const { items: routes, hasMore, isFetching, fetchMore, error, retry, observerTarget } = useInfiniteScroll<Route>({
         fetcher: (cursor) => {
             const base = isUserLoggedIn
                 ? '/api/v1/routes?limit=15&type=user_recommend'
@@ -52,6 +52,8 @@ export default function HomeSection() {
                 hasMore={hasMore}
                 isFetching={isFetching}
                 observerTarget={observerTarget}
+                error={error}
+                onRetry={retry}
             />
         </div>
     );

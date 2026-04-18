@@ -1,5 +1,6 @@
 import FocusingRouteViewer from "@/app/[locale]/(public)/_components/(likes)/templates/focusingRouteViewer";
 import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templates/likedRoutesList";
+import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {useEffect, useRef, useState} from "react";
 import {getDataFromServerWithJson} from "@/lib/client/helpers";
 import {Route} from "@/lib/types/domain";
@@ -13,7 +14,7 @@ type LikeRecord = { id: string; createdAt: string; route: Route }
 
 export default function LikesSection() {
 
-    const { items: likes } = useInfiniteScroll<LikeRecord>({
+    const { items: likes, error, retry } = useInfiniteScroll<LikeRecord>({
         fetcher: (cursor) => {
             const url = `/api/v1/likes?route=true&take=30${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
             return getDataFromServerWithJson<CursorResponse<LikeRecord>>(url);
@@ -31,6 +32,21 @@ export default function LikesSection() {
 
     const routeOnFocus = routes[focusedRouteIdx];
     const direction = focusedRouteIdx > prevIndexRef.current ? 'up' : 'down';
+
+    // --- error: いいね一覧が取れなかった ---
+    if (error && (!likes || likes.length === 0)) {
+        return (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-6 px-4">
+                <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
+                    <HiHeart className="text-accent-0 w-5 h-5" />
+                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                </div>
+                <div className="w-full max-w-md">
+                    <SectionErrorState onRetry={retry}/>
+                </div>
+            </div>
+        )
+    }
 
     if (likes !== null && likes.length === 0) return (
         <div className="w-full h-full flex flex-col items-center justify-center gap-2 relative">

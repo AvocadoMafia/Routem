@@ -359,7 +359,9 @@
     "serverError": "Server error occurred",
     "networkError": "Network error occurred",
     "tryAgain": "Please try again",
-    "mapboxRequired": "Mapbox Access Token Required"
+    "mapboxRequired": "Mapbox Access Token Required",
+    "loadFailed": "Couldn't load this section",
+    "rateLimited": "Too many requests. Please wait a moment."
   },
   "months": {
     "jan": "Jan",

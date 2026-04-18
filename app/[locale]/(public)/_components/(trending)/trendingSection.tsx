@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TrendingRoutesList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingRoutesList";
 import TrendingUsersList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingUsersList";
 import TrendingTagsList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingTagsList";
+import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import { Route, User } from "@/lib/client/types";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { ErrorScheme } from "@/lib/client/types";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
 import { errorStore } from "@/lib/client/stores/errorStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiFire, HiUsers, HiHashtag } from "react-icons/hi2";
@@ -23,28 +25,30 @@ export type TrendingTag = { name: string; postCount: number };
 export default function TrendingSection() {
     const [users, setUsers] = useState<TrendingUser[] | null>(null);
     const [tags, setTags] = useState<TrendingTag[] | null>(null);
+    const [usersTagsError, setUsersTagsError] = useState<ErrorScheme | null>(null);
     const appendError = errorStore(state => state.appendError);
     const [activeTab, setActiveTab] = useState<TrendingTab>('routes');
 
     // トレンドのユーザー・タグ（10件制限、ページネーション不要）
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            try {
-                const [usersData, tagsData] = await Promise.all([
-                    getDataFromServerWithJson<TrendingUser[]>('/api/v1/users?limit=10&type=trending'),
-                    getDataFromServerWithJson<TrendingTag[]>('/api/v1/tags?limit=10&type=trending'),
-                ]);
-                if (!cancelled) {
-                    setUsers(usersData);
-                    setTags(tagsData);
-                }
-            } catch (e: any) {
-                if (!cancelled) appendError(e);
-            }
-        })();
-        return () => { cancelled = true };
+    const fetchUsersAndTags = useCallback(async () => {
+        setUsersTagsError(null);
+        try {
+            const [usersData, tagsData] = await Promise.all([
+                getDataFromServerWithJson<TrendingUser[]>('/api/v1/users?limit=10&type=trending'),
+                getDataFromServerWithJson<TrendingTag[]>('/api/v1/tags?limit=10&type=trending'),
+            ]);
+            setUsers(usersData);
+            setTags(tagsData);
+        } catch (e: unknown) {
+            const scheme = toErrorScheme(e);
+            setUsersTagsError(scheme);
+            appendError(scheme);
+        }
     }, [appendError]);
+
+    useEffect(() => {
+        fetchUsersAndTags();
+    }, [fetchUsersAndTags]);
 
     // トレンドのルート（カーソル無限スクロール）
     const {
@@ -52,6 +56,8 @@ export default function TrendingSection() {
         hasMore,
         isFetching,
         fetchMore,
+        error: routesError,
+        retry: retryRoutes,
         observerTarget,
     } = useInfiniteScroll<Route>({
         fetcher: (cursor) => {
@@ -59,6 +65,10 @@ export default function TrendingSection() {
             return getDataFromServerWithJson<CursorResponse<Route>>(url);
         },
     });
+
+    // users/tags は UI 的に1つのエラー表示でまとめてよい (タブ切り替えで出る)
+    const usersError = usersTagsError && !users ? usersTagsError : null;
+    const tagsError = usersTagsError && !tags ? usersTagsError : null;
 
     return (
         <div className={'w-full md:h-full h-fit'}>
@@ -113,10 +123,20 @@ export default function TrendingSection() {
                                 hasMore={hasMore}
                                 isFetching={isFetching}
                                 observerTarget={observerTarget}
+                                error={routesError}
+                                onRetry={retryRoutes}
                             />
                         )}
-                        {activeTab === 'users' && <TrendingUsersList users={users ?? undefined}  />}
-                        {activeTab === 'tags' && <TrendingTagsList tags={tags ?? undefined} />}
+                        {activeTab === 'users' && (
+                            usersError
+                                ? <SectionErrorState onRetry={fetchUsersAndTags} />
+                                : <TrendingUsersList users={users ?? undefined}  />
+                        )}
+                        {activeTab === 'tags' && (
+                            tagsError
+                                ? <SectionErrorState onRetry={fetchUsersAndTags} />
+                                : <TrendingTagsList tags={tags ?? undefined} />
+                        )}
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -129,10 +149,16 @@ export default function TrendingSection() {
                     hasMore={hasMore}
                     isFetching={isFetching}
                     observerTarget={observerTarget}
+                    error={routesError}
+                    onRetry={retryRoutes}
                 />
                 <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
-                    <TrendingUsersList users={users ?? undefined} />
-                    <TrendingTagsList tags={tags ?? undefined} />
+                    {usersError
+                        ? <SectionErrorState onRetry={fetchUsersAndTags} />
+                        : <TrendingUsersList users={users ?? undefined} />}
+                    {tagsError
+                        ? null /* 同じエラーが2度出るのを防止: users 側で既に出している */
+                        : <TrendingTagsList tags={tags ?? undefined} />}
                 </div>
             </div>
         </div>
