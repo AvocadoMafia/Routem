@@ -63,8 +63,7 @@ async function translateJa2En(ja_texts: string[]): Promise<string[]> {
 
 // --- 初期化 ---
 
-const dbType = process.env.DB_TYPE || "local";
-const connectionString = dbType === "vercel" ? process.env.VERCEL_DATABASE_URL : process.env.LOCAL_DATABASE_URL;
+const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is not defined.");
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
