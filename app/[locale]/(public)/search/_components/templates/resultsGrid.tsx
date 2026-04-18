@@ -1,8 +1,9 @@
 'use client';
 
-import { Route } from '@/lib/client/types';
+import { Route, ErrorScheme } from '@/lib/client/types';
 import RouteCardBasic from '@/app/[locale]/_components/common/templates/routeCardBasic';
 import RouteCardBasicSkeleton from '@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton';
+import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState';
 import { useTranslations } from 'next-intl';
 
 type Props = {
@@ -11,12 +12,23 @@ type Props = {
     hasMore: boolean;
     total: number;
     observerTarget: React.RefObject<HTMLDivElement | null>;
+    error?: ErrorScheme | null;
+    onRetry?: () => Promise<void>;
 }
 
-export default function ResultsGrid({ routes, isFetching, hasMore, total, observerTarget }: Props) {
+export default function ResultsGrid({ routes, isFetching, hasMore, total, observerTarget, error, onRetry }: Props) {
     const t = useTranslations('routes');
-    const showDummy =  hasMore;
-    const isEmpty = routes.length === 0 && !isFetching;
+    const showDummy = hasMore && !error;
+    const isEmpty = routes.length === 0 && !isFetching && !error;
+
+    // 初回取得失敗: セクション全体を error UI にする
+    if (error && routes.length === 0) {
+        return (
+            <div className="w-full p-6">
+                <SectionErrorState onRetry={onRetry} />
+            </div>
+        );
+    }
 
     return (
         <div className={'w-full p-6'}>
@@ -36,7 +48,7 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
                                 <RouteCardBasic route={route} />
                             </div>
                         ))}
-                        
+
                         {showDummy && (
                             <>
                                 <div ref={observerTarget}>
@@ -48,6 +60,12 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
                             </>
                         )}
                     </div>
+                    {/* 追加ロード失敗時: リスト末尾に inline retry */}
+                    {error && routes.length > 0 && (
+                        <div className="mt-6">
+                            <SectionErrorState variant="inline" onRetry={onRetry} />
+                        </div>
+                    )}
                 </>
             )}
         </div>
