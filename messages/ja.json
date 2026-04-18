@@ -370,6 +370,26 @@
     "rateLimited": "リクエストが多すぎます。少し待ってからお試しください",
     "retryInSeconds": "{seconds}秒後に再試行"
   },
+  "home": {
+    "trending": "トレンド",
+    "trendingTags": "人気のタグ",
+    "topTravelers": "人気の旅行者",
+    "topRoutes": "トップルート — 今週",
+    "topUsers": "トップユーザー — 今週",
+    "likes": "いいね",
+    "followings": "フォロー中",
+    "newRoutesByFollowings": "フォロー中の新着ルート",
+    "recommendedForYou": "あなたへのおすすめ",
+    "routes": "ルート",
+    "travelers": "旅行者",
+    "tags": "タグ"
+  },
+  "empty": {
+    "noRoutes": "ルートが見つかりません。",
+    "noTravelers": "旅行者が見つかりません。",
+    "noTags": "タグが見つかりません。",
+    "noRoutesForTag": "このタグに該当するルートはありません。"
+  },
   "months": {
     "jan": "1月",
     "feb": "2月",

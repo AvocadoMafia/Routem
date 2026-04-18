@@ -370,6 +370,26 @@
     "rateLimited": "Too many requests. Please wait a moment.",
     "retryInSeconds": "Retry in {seconds}s"
   },
+  "home": {
+    "trending": "Trending",
+    "trendingTags": "Trending Tags",
+    "topTravelers": "Top Travelers",
+    "topRoutes": "Top Routes — This week",
+    "topUsers": "Top Users — This week",
+    "likes": "Likes",
+    "followings": "Followings",
+    "newRoutesByFollowings": "New Routes By Followings",
+    "recommendedForYou": "Recommended For You",
+    "routes": "Routes",
+    "travelers": "Travelers",
+    "tags": "Tags"
+  },
+  "empty": {
+    "noRoutes": "No routes found.",
+    "noTravelers": "No travelers found.",
+    "noTags": "No tags found.",
+    "noRoutesForTag": "No routes found for this tag."
+  },
   "months": {
     "jan": "Jan",
     "feb": "Feb",
