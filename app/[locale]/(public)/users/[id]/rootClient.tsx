@@ -2,10 +2,8 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { userStore } from '@/lib/client/stores/userStore'
 import { Route, User } from '@/lib/client/types'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
-import { errorStore } from '@/lib/client/stores/errorStore'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
@@ -32,6 +30,8 @@ export default function RootClient({ targetUser, currentUser }: Props) {
     isFetching: isFetchingRoutes,
     fetchMore: fetchMoreRoutes,
     observerTarget: observerTargetRoutes,
+    error: errorRoutes,
+    retry: retryRoutes,
   } = useInfiniteScroll<Route>({
     fetcher: (cursor) => {
       const url = `/api/v1/routes?authorId=${id}&limit=15&type=user_posts${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
@@ -47,6 +47,8 @@ export default function RootClient({ targetUser, currentUser }: Props) {
     isFetching: isFetchingLikes,
     fetchMore: fetchMoreLikes,
     observerTarget: observerTargetLikes,
+    error: errorLikes,
+    retry: retryLikes,
   } = useInfiniteScroll<LikeRecord, Route>({
     fetcher: (cursor) => {
       const url = `/api/v1/likes?userId=${id}&route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
@@ -56,10 +58,13 @@ export default function RootClient({ targetUser, currentUser }: Props) {
     deps: [id],
   })
 
+  // activeTab に応じて派生値を一元化
   const fetchMore = activeTab === 'routes' ? fetchMoreRoutes : fetchMoreLikes
   const hasMore = activeTab === 'routes' ? hasMoreRoutes : hasMoreLikes
   const isFetching = activeTab === 'routes' ? isFetchingRoutes : isFetchingLikes
   const observerTarget = activeTab === 'routes' ? observerTargetRoutes : observerTargetLikes
+  const error = activeTab === 'routes' ? errorRoutes : errorLikes
+  const onRetry = activeTab === 'routes' ? retryRoutes : retryLikes
 
   useEffect(() => {
     if (currentUser?.id === id) {
@@ -93,6 +98,8 @@ export default function RootClient({ targetUser, currentUser }: Props) {
         hasMore={hasMore}
         isFetching={isFetching}
         observerTarget={observerTarget}
+        error={error}
+        onRetry={onRetry}
       />
     </div>
   )
