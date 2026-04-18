@@ -39,6 +39,9 @@ yarn-error.log*
 # テンプレート / 値なしの example だけは共有する
 !.env.example
 
+# vercel（過去に vercel 運用していた際の残骸対策。ローカルに .vercel/ があっても誤コミットしない）
+.vercel
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

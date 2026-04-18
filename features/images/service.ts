@@ -29,6 +29,17 @@ export function buildPublicUrl(bucket: string, key: string) {
   return `${endpoint}/${bucket}/${key}`;
 }
 
+/** 使用するストレージバケット名を返す。
+ *  `OCI_BUCKET_NAME` が明示されていればそれを使い（本番で環境ごとに切り替え可能）、
+ *  未指定なら dev/prod ともに `rtmimages` に落ちる（docker-compose.yml の
+ *  `mc mb minio_dev/rtmimages` と一致）。
+ *
+ *  ユニットテスト用に export している。
+ */
+export function getStorageBucket(): string {
+  return process.env.OCI_BUCKET_NAME || 'rtmimages';
+}
+
 function ensureExtension(name: string, defaultExt: string = '.webp') {
   const trimmed = (name || '').trim();
   if (!trimmed) return `upload-${Date.now()}${defaultExt}`;
@@ -66,8 +77,9 @@ export const imagesService = {
         imageType = ImageType.NODE_IMAGE;
       }
 
-      // バケット名は dev/prod とも 'rtmimages' 固定（docker-compose.yml の mc createBucket と一致）
-      const Bucket = 'rtmimages';
+      // バケット名は OCI_BUCKET_NAME env があればそれを使用、未指定なら 'rtmimages' にフォールバック。
+      // .env.production で環境ごとに切り替え可能にしておく余地を残している。
+      const Bucket = getStorageBucket();
       const Key = `${directory}/${Date.now()}-${ensureExtension(fileName)}`;
 
       const s3 = getS3Client();

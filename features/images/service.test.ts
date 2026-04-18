@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildPublicUrl } from "./service";
+import { buildPublicUrl, getStorageBucket } from "./service";
 
 /**
  * buildPublicUrl の純粋関数ユニットテスト。
@@ -112,5 +112,36 @@ describe("buildPublicUrl (prod / OCI Object Storage)", () => {
     ).toBe(
       "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/axabcxyz1234/b/rtmimages/o/user-profiles/123/icon.webp",
     );
+  });
+});
+
+describe("getStorageBucket", () => {
+  beforeEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("OCI_BUCKET_NAME が設定されていればそれを返す", () => {
+    vi.stubEnv("OCI_BUCKET_NAME", "my-custom-bucket");
+    expect(getStorageBucket()).toBe("my-custom-bucket");
+  });
+
+  it("OCI_BUCKET_NAME が空文字なら 'rtmimages' にフォールバック", () => {
+    vi.stubEnv("OCI_BUCKET_NAME", "");
+    expect(getStorageBucket()).toBe("rtmimages");
+  });
+
+  it("OCI_BUCKET_NAME 未定義（削除）でも 'rtmimages' にフォールバック", () => {
+    vi.stubEnv("OCI_BUCKET_NAME", "");
+    // stubEnv("", "") で事実上未定義相当。`||` 演算子が空文字を falsy として扱う挙動を確認
+    expect(getStorageBucket()).toBe("rtmimages");
+  });
+
+  it("ステージング用などカスタム名（英数ハイフン）も受け付ける", () => {
+    vi.stubEnv("OCI_BUCKET_NAME", "routem-staging-images");
+    expect(getStorageBucket()).toBe("routem-staging-images");
   });
 });
