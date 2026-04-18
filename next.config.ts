@@ -15,23 +15,26 @@ const nextConfig: NextConfig = {
   /* config options here */
   images: {
     remotePatterns: [
+      // dev: MinIO (http://localhost:9000) の画像
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '9000',
         pathname: '/**',
       },
+      // prod: OCI Object Storage
       {
-        protocol: 'http',
-        hostname: '192.168.10.101',
-        port: '9000',
+        protocol: 'https',
+        hostname: '*.oraclecloud.com',
         pathname: '/**',
       },
+      // OAuth プロバイダのアバター
       {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
         pathname: '/**',
       },
+      // mock / プレースホルダ画像
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',

@@ -6,7 +6,14 @@ import { imagesRepository, PhotoImageWithRelations } from "./repository";
 import { GetImagesType } from "./schema";
 import { encodeCursor } from "@/lib/server/cursor";
 
-function buildPublicUrl(bucket: string, key: string) {
+/** 画像ストレージ上の公開URLを組み立てる。
+ *  - prod: OCI Object Storage の固定フォーマット
+ *  - dev : MINIO_ENDPOINT（完全URL、例 `http://localhost:9000`）1本で組み立てる
+ *
+ *  ユニットテスト用に export している（features/images/service.test.ts 参照）。
+ *  呼び出し側からは service の内部実装として閉じて扱うこと。
+ */
+export function buildPublicUrl(bucket: string, key: string) {
   const isProd = process.env.NODE_ENV === 'production';
 
   if (isProd) {
@@ -17,15 +24,9 @@ function buildPublicUrl(bucket: string, key: string) {
     return `https://objectstorage.${region}.oraclecloud.com/n/${namespace}/b/${bucket}/o/${key}`;
   }
 
-  // MinIO 用の公開URL構築（既存ロジック）
-  const rawPublic = process.env.MINIO_PUBLIC_ENDPOINT || process.env.MINIO_ENDPOINT || 'localhost';
-  const useSSL = (process.env.MINIO_USE_SSL || 'false').toLowerCase() === 'true';
-  const protocol = useSSL ? 'https' : 'http';
-  const defaultPort = useSSL ? '443' : '9000';
-  const port = process.env.MINIO_PUBLIC_PORT || process.env.MINIO_PORT || defaultPort;
-  const hostNoScheme = rawPublic.replace(/^https?:\/\//i, '').replace(/\/+$/g, '');
-  const host = hostNoScheme.replace(/:\d+$/, '');
-  return `${protocol}://${host}:${port}/${bucket}/${key}`;
+  // MinIO (dev): MINIO_ENDPOINT は scheme 込みの完全URL（末尾スラッシュは正規化）
+  const endpoint = (process.env.MINIO_ENDPOINT || 'http://localhost:9000').replace(/\/+$/, '');
+  return `${endpoint}/${bucket}/${key}`;
 }
 
 function ensureExtension(name: string, defaultExt: string = '.webp') {
@@ -49,7 +50,6 @@ export const imagesService = {
     context?: string | null
   ) => {
     try {
-      const isProd = process.env.NODE_ENV === 'production';
       // ディレクトリの決定
       let directory = 'others';
       let imageType: ImageType = ImageType.OTHER;
@@ -66,9 +66,8 @@ export const imagesService = {
         imageType = ImageType.NODE_IMAGE;
       }
 
-      const Bucket = isProd 
-        ? (process.env.OCI_BUCKET_NAME || 'rtmimages') 
-        : (process.env.MINIO_BUCKET || 'rtmimages');
+      // バケット名は dev/prod とも 'rtmimages' 固定（docker-compose.yml の mc createBucket と一致）
+      const Bucket = 'rtmimages';
       const Key = `${directory}/${Date.now()}-${ensureExtension(fileName)}`;
 
       const s3 = getS3Client();

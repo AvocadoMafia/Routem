@@ -12,7 +12,9 @@ declare global{
 var meilisearch:Meilisearch;
 var prisma: PrismaClient;
 var  s3Client: S3Client;
-var redisClient: RedisClientType;
+// Redis は「接続完了まで解決しない Promise」を global にキャッシュする。
+// getRedisClient() を await した時点で必ず ready なクライアントが得られる。
+var redisPromise: Promise<RedisClientType> | null;
 }
 
 function requireServerEnv(name: string, value: string | undefined): string {
@@ -22,28 +24,25 @@ function requireServerEnv(name: string, value: string | undefined): string {
     return value;
 }
 
+// Supabase プロジェクトの URL / Publishable key はクライアント側 SDK でも必須で
+// NEXT_PUBLIC_* としてビルド時にインライン化されるため、サーバ側でもそのまま流用する。
+// 旧実装の SUPABASE_URL / SUPABASE_ANON_KEY 等へのフォールバック多段チェーンは
+// vercel 運用時の名残で、現行の docker 運用では不要なため撤去。
 export function getServerSupabaseUrl(): string {
     return requireServerEnv(
-        "SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)",
-        process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL,
+        "NEXT_PUBLIC_SUPABASE_URL",
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
     );
 }
 
 export function getServerSupabasePublishableKey(): string {
     return requireServerEnv(
-        "SUPABASE_PUBLISHABLE_DEFAULT_KEY / SUPABASE_ANON_KEY (or NEXT_PUBLIC_* fallback)",
-        process.env.SUPABASE_PUBLISHABLE_DEFAULT_KEY ??
-            process.env.SUPABASE_ANON_KEY ??
-            process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ??
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY",
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
     );
 }
 
-export function getServerAuthRedirectUrl(): string {
-    return process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL ?? "http://localhost:3000/auth/callback";
-}
-
-export function getMeilisearch(){ 
+export function getMeilisearch(){
     // global変数として存在した場合のガード節
     if(globalThis.meilisearch) return globalThis.meilisearch;
 
@@ -122,32 +121,59 @@ export function getS3Client() {
 
 
 /**
- * Redisクライアントをシングルトンで取得する関数
- * 環境変数 REDIS_URL (例: redis://localhost:6379) を使用します
+ * Redis クライアントを「接続完了を保証したうえで」取得する。
+ *
+ * 旧実装は `createClient().connect()` の connect を fire-and-forget で呼び、
+ * 接続が完了する前にクライアントを返していたため、cold start 直後の並列
+ * リクエストで `ClientClosedError` や queue 上のまま宙吊りになる問題が
+ * あった (本番で一部のコンポーネントだけ fetch に失敗していた原因)。
+ *
+ * 本実装では `connect()` の Promise そのものを global に保持し、呼び出し側が
+ * await した時点で必ず ready なクライアントを受け取れるようにする。
+ * 接続に失敗した場合は Promise を reset して次回再接続を試みる。
+ *
+ * 呼び出し側で try/catch してフォールバックを書けるように、例外はそのまま
+ * 投げる (キャッシュ無しのパスに落とすのは上位層の責務)。
  */
-export function getRedisClient() {
-    if (globalThis.redisClient) return globalThis.redisClient;
+export function getRedisClient(): Promise<RedisClientType> {
+    if (globalThis.redisPromise) return globalThis.redisPromise;
 
     const redisUrl = process.env.REDIS_URL;
+    if (!redisUrl) {
+        // REDIS_URL が無い環境では接続しようがないので reject。
+        // 上位の getRedisClientOrNull で吸収される想定。
+        return Promise.reject(new Error("REDIS_URL is not set"));
+    }
 
-    console.log("REDIS_URL", redisUrl);
+    const client = createClient({ url: redisUrl }) as RedisClientType;
 
-    globalThis.redisClient = createClient({
-        url: redisUrl,
+    client.on("error", (err) => {
+        // error イベントは再接続中にも発火しうるので握り潰し (ログのみ)。
+        console.error("[redis] client error:", err);
     });
 
-    // 接続エラーのハンドリング
-    globalThis.redisClient.on("error", (err) => {
-        console.error("Redis Client Error", err);
-    });
+    globalThis.redisPromise = client
+        .connect()
+        .then(() => client)
+        .catch((err) => {
+            // 接続失敗時は promise をクリアして次回再接続できるようにする
+            console.error("[redis] connection failed:", err);
+            globalThis.redisPromise = null;
+            throw err;
+        });
 
-    // 非同期で接続を開始するが、クライアント自体は即座に返す
-    // 使用側で await client.connect() が必要になる場合もあるが、
-    // node-redis v4以降では最初に一度 connect() を呼ぶ必要がある。
-    // ここで直接 connect() を呼ぶ (非同期)
-    globalThis.redisClient.connect().catch((err) => {
-        console.error("Redis Connection Error", err);
-    });
+    return globalThis.redisPromise;
+}
 
-    return globalThis.redisClient;
+/**
+ * Redis が利用できない場合に `null` を返す安全版。
+ * trending / recommend 等のキャッシュ系 API で、Redis 不達時にエラーで
+ * ページ全体を壊すのではなく DB フォールバックに落とすために使う。
+ */
+export async function getRedisClientOrNull(): Promise<RedisClientType | null> {
+    try {
+        return await getRedisClient();
+    } catch {
+        return null;
+    }
 }

@@ -1,9 +1,14 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabasePublishableKey =
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ??
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// クライアント側 Supabase 設定。
+// NEXT_PUBLIC_* は Next.js がビルド時にインライン化するため、
+// Docker ビルドの build-arg で必ず渡すこと（docker-compose-prod.yml / Dockerfile 参照）。
+// 旧 NEXT_PUBLIC_SUPABASE_ANON_KEY 等への多段フォールバックは vercel 運用の名残なので撤去し、
+// Supabase が2025年以降推奨する新名称 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY` 1本に統一。
+//
+// NOTE: 値はモジュールトップで固定せず関数呼び出しのたびに参照する。
+//       テスト (vitest の `vi.stubEnv`) で値を差し替えた際にキャッシュが効いていると
+//       差し替えが効かなくなるため。本番での参照コストは無視できる。
 
 function requireEnv(name: string, value: string | undefined): string {
   if (!value) {
@@ -13,13 +18,16 @@ function requireEnv(name: string, value: string | undefined): string {
 }
 
 export function getSupabaseUrl(): string {
-  return requireEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl);
+  return requireEnv(
+    "NEXT_PUBLIC_SUPABASE_URL",
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+  );
 }
 
 export function getSupabasePublishableKey(): string {
   return requireEnv(
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)",
-    supabasePublishableKey,
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY",
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
   );
 }
 
