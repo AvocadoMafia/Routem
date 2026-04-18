@@ -22,6 +22,12 @@
     "share": "공유",
     "copy": "복사",
     "copied": "복사됨!",
+    "linkCopied": "링크를 클립보드에 복사했습니다",
+    "copyFailed": "링크를 복사할 수 없습니다",
+    "shareUrlFallback": "이 링크를 직접 복사해 주세요",
+    "loginRequired": "로그인이 필요합니다",
+    "loginToContinue": "계속하려면 로그인해 주세요",
+    "goToLogin": "로그인",
     "publish": "게시",
     "publishing": "게시 중...",
     "public": "공개",
@@ -136,6 +142,7 @@
     "viewDetailedRoute": "상세 보기",
     "copyLink": "링크 복사",
     "failedToLike": "좋아요 실패",
+    "loginToLike": "좋아요를 누르려면 로그인해 주세요",
     "importRoute": "이 루트 가져오기"
   },
   "routeEditor": {
@@ -306,7 +313,9 @@
     "postComment": "댓글 게시",
     "posting": "게시 중...",
     "likeComment": "좋아요",
-    "likedComment": "좋아요 완료"
+    "likedComment": "좋아요 완료",
+    "loginToComment": "댓글을 작성하려면 로그인해 주세요",
+    "postFailed": "댓글 작성에 실패했습니다"
   },
   "upload": {
     "selectImage": "이미지 선택",

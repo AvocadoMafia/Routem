@@ -22,6 +22,12 @@
     "share": "Share",
     "copy": "Copy",
     "copied": "Copied!",
+    "linkCopied": "Link copied to clipboard",
+    "copyFailed": "Couldn't copy the link",
+    "shareUrlFallback": "Copy this link manually",
+    "loginRequired": "Sign in required",
+    "loginToContinue": "Please sign in to continue",
+    "goToLogin": "Sign in",
     "publish": "Publish",
     "publishing": "Publishing...",
     "public": "Public",
@@ -136,6 +142,7 @@
     "viewDetailedRoute": "View Detailed Route",
     "copyLink": "Copy link",
     "failedToLike": "Failed to like",
+    "loginToLike": "Sign in to like this route",
     "importRoute": "Import this route"
   },
   "routeEditor": {
@@ -306,7 +313,9 @@
     "postComment": "Post Comment",
     "posting": "Posting...",
     "likeComment": "Like",
-    "likedComment": "Liked"
+    "likedComment": "Liked",
+    "loginToComment": "Sign in to post a comment",
+    "postFailed": "Failed to post comment"
   },
   "upload": {
     "selectImage": "Select image",

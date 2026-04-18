@@ -22,6 +22,12 @@
     "share": "共有",
     "copy": "コピー",
     "copied": "コピーしました！",
+    "linkCopied": "リンクをコピーしました",
+    "copyFailed": "リンクをコピーできませんでした",
+    "shareUrlFallback": "このリンクを手動でコピーしてください",
+    "loginRequired": "ログインが必要です",
+    "loginToContinue": "続けるにはログインしてください",
+    "goToLogin": "ログイン",
     "publish": "公開",
     "publishing": "公開中...",
     "public": "公開",
@@ -136,6 +142,7 @@
     "viewDetailedRoute": "詳細を見る",
     "copyLink": "リンクをコピー",
     "failedToLike": "いいねに失敗しました",
+    "loginToLike": "いいねするにはログインしてください",
     "importRoute": "このルートを取り込む"
   },
   "routeEditor": {
@@ -306,7 +313,9 @@
     "postComment": "コメントを投稿",
     "posting": "投稿中...",
     "likeComment": "いいね",
-    "likedComment": "いいね済み"
+    "likedComment": "いいね済み",
+    "loginToComment": "コメントするにはログインしてください",
+    "postFailed": "コメントの投稿に失敗しました"
   },
   "upload": {
     "selectImage": "画像を選択",
