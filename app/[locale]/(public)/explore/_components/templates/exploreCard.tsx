@@ -7,8 +7,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { userStore } from "@/lib/client/stores/userStore";
-import { searchEnumsStore } from "@/lib/client/stores/searchEnumsStore";
+import { enumsStore } from "@/lib/client/stores/enumsStore";
 import { dbLocaleToAppLocale } from "@/lib/client/helpers";
+import { CurrencyCode } from "@prisma/client";
 
 interface ExploreCardProps {
   isSidebar?: boolean;
@@ -38,12 +39,17 @@ type MapboxRetrieveResponse = {
   }>;
 };
 
-const DEFAULT_CURRENCY_BY_LANGUAGE: Record<string, string> = {
-  ja: "JPY",
-  en: "USD",
-  ko: "KRW",
-  zh: "CNY",
+const DEFAULT_CURRENCY_BY_LANGUAGE: Record<string, CurrencyCode> = {
+  ja: CurrencyCode.JPY,
+  en: CurrencyCode.USD,
+  ko: CurrencyCode.KRW,
+  zh: CurrencyCode.CNY,
 };
+
+// API未取得時のフォールバック。OTHERは表示しても意味がないので除外。
+const CURRENCY_FALLBACK: CurrencyCode[] = Object.values(CurrencyCode).filter(
+  (c) => c !== CurrencyCode.OTHER,
+);
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
@@ -54,8 +60,8 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   const searchParams = useSearchParams();
 
   const user = userStore((state) => state.user);
-  const routeForOptions = searchEnumsStore((state) => state.routeFor);
-  const currencyOptions = searchEnumsStore((state) => state.currencyCode);
+  const routeForOptions = enumsStore((state) => state.routeFor);
+  const currencyOptions = enumsStore((state) => state.currencyCode);
 
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
@@ -520,7 +526,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
               >
                 {(currencyOptions.length
                   ? currencyOptions
-                  : ["JPY", "USD", "EUR", "KRW", "CNY"]
+                  : CURRENCY_FALLBACK
                 ).map((code) => (
                   <MenuItem key={code} value={code}>
                     {code}

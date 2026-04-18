@@ -1,24 +1,36 @@
 "use client";
 
 import { Transportation } from "@/lib/client/types";
-import { Footprints, TrainFront, Bus, Car, Sparkles } from "lucide-react";
+import { Bike, Bus, Car, Footprints, Plane, Ship, Sparkles, TrainFront } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { TransitMode } from "@prisma/client";
 
 interface TransportationEditorProps {
     item: Transportation;
     onUpdate: (updates: Partial<Transportation>) => void;
 }
 
+// UIに出すモードの一覧。全TransitModeに対応するアイコン・翻訳キーを定義する。
+// Prisma enum側を正として、新しいmodeが追加された時にここが型エラーで検知される形にしている。
+type TransportModeOption = {
+    id: TransitMode;
+    labelKey: 'walk' | 'train' | 'bus' | 'car' | 'bike' | 'flight' | 'ship' | 'other';
+    icon: React.ReactNode;
+};
+
+const TRANSPORT_MODES: TransportModeOption[] = [
+    { id: TransitMode.WALK, labelKey: 'walk', icon: <Footprints size={20} /> },
+    { id: TransitMode.TRAIN, labelKey: 'train', icon: <TrainFront size={20} /> },
+    { id: TransitMode.BUS, labelKey: 'bus', icon: <Bus size={20} /> },
+    { id: TransitMode.CAR, labelKey: 'car', icon: <Car size={20} /> },
+    { id: TransitMode.BIKE, labelKey: 'bike', icon: <Bike size={20} /> },
+    { id: TransitMode.FLIGHT, labelKey: 'flight', icon: <Plane size={20} /> },
+    { id: TransitMode.SHIP, labelKey: 'ship', icon: <Ship size={20} /> },
+    { id: TransitMode.OTHER, labelKey: 'other', icon: <Sparkles size={20} /> },
+];
+
 export default function TransportationEditor({ item, onUpdate }: TransportationEditorProps) {
     const t = useTranslations('transport');
-
-    const transportModes = [
-        { id: 'WALK', labelKey: 'walk' as const, icon: <Footprints size={20} /> },
-        { id: 'TRAIN', labelKey: 'train' as const, icon: <TrainFront size={20} /> },
-        { id: 'BUS', labelKey: 'bus' as const, icon: <Bus size={20} /> },
-        { id: 'CAR', labelKey: 'car' as const, icon: <Car size={20} /> },
-        { id: 'OTHER', labelKey: 'other' as const, icon: <Sparkles size={20} /> },
-    ];
 
     return (
         <div className="space-y-4">
@@ -26,11 +38,11 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
                 {t('mode')}
             </label>
             {/* 交通手段を選択するボタングリッド */}
-            <div className="grid grid-cols-5 gap-3">
-                {transportModes.map((m) => (
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+                {TRANSPORT_MODES.map((m) => (
                     <button
                         key={m.id}
-                        onClick={() => onUpdate({ method: m.id as any })}
+                        onClick={() => onUpdate({ method: m.id })}
                         className={`
                             flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border-2 transition-all
                             ${item.method === m.id 
@@ -42,7 +54,7 @@ export default function TransportationEditor({ item, onUpdate }: TransportationE
                         <div className={`${item.method === m.id ? 'scale-110' : ''} transition-transform`}>
                             {m.icon}
                         </div>
-                        <span className="text-xs font-bold">{t(m.labelKey as any)}</span>
+                        <span className="text-xs font-bold">{t(m.labelKey)}</span>
                     </button>
                 ))}
             </div>

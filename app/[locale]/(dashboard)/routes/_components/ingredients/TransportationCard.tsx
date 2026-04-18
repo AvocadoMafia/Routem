@@ -3,6 +3,7 @@
 import { Transportation } from "@/lib/client/types";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { TransitMode } from "@prisma/client";
 
 interface TransportationCardProps {
     item: Transportation;
@@ -15,12 +16,16 @@ export default function TransportationCard({ item, isSelected, onSelect, onDelet
     const t = useTranslations('transport');
     const tCommon = useTranslations('common');
 
-    const methodLabels: Record<string, string> = {
-        'WALK': t('walk'),
-        'TRAIN': t('train'),
-        'BUS': t('bus'),
-        'CAR': t('car'),
-        'OTHER': t('other'),
+    // TransitMode を網羅した翻訳マップ。enum追加時に型エラーで抜けを検知する。
+    const methodLabels: Record<TransitMode, string> = {
+        [TransitMode.WALK]: t('walk'),
+        [TransitMode.TRAIN]: t('train'),
+        [TransitMode.BUS]: t('bus'),
+        [TransitMode.CAR]: t('car'),
+        [TransitMode.BIKE]: t('bike'),
+        [TransitMode.FLIGHT]: t('flight'),
+        [TransitMode.SHIP]: t('ship'),
+        [TransitMode.OTHER]: t('other'),
     };
 
     return (

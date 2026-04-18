@@ -1,11 +1,25 @@
 import { RouteItem } from "@/lib/client/types";
-import { Footprints, TrainFront, Bus, Car, Sparkles } from "lucide-react";
+import { Bike, Bus, Car, Footprints, Plane, Ship, Sparkles, TrainFront } from "lucide-react";
+import { TransitMode } from "@prisma/client";
 
 interface RouteNodeProps {
     item: RouteItem;
     isSelected: boolean;
     onSelect: () => void;
 }
+
+// TransitMode -> icon の対応表。Record<TransitMode, ...> にしておくことで
+// 将来 Prisma 側で値が追加された際に型エラーで検知できる。
+const TRANSIT_MODE_ICON: Record<TransitMode, React.ReactNode> = {
+    [TransitMode.WALK]: <Footprints size={16} />,
+    [TransitMode.TRAIN]: <TrainFront size={16} />,
+    [TransitMode.BUS]: <Bus size={16} />,
+    [TransitMode.CAR]: <Car size={16} />,
+    [TransitMode.BIKE]: <Bike size={16} />,
+    [TransitMode.FLIGHT]: <Plane size={16} />,
+    [TransitMode.SHIP]: <Ship size={16} />,
+    [TransitMode.OTHER]: <Sparkles size={16} />,
+};
 
 export default function RouteNode({ item, isSelected, onSelect }: RouteNodeProps) {
     const isWaypoint = item.type === 'waypoint';
@@ -21,8 +35,8 @@ export default function RouteNode({ item, isSelected, onSelect }: RouteNodeProps
                     }}
                     className={`
                         w-5 h-5 rounded-full shrink-0 cursor-pointer transition-all duration-300 flex items-center justify-center
-                        ${isSelected 
-                            ? 'bg-accent-0 ring-4 ring-accent-0/20 scale-110 shadow-[0_0_15px_rgba(45,31,246,0.4)]' 
+                        ${isSelected
+                            ? 'bg-accent-0 ring-4 ring-accent-0/20 scale-110 shadow-[0_0_15px_rgba(45,31,246,0.4)]'
                             : 'bg-background-1 border-2 border-accent-0 hover:scale-110 hover:border-accent-warning'}
                     `}
                 >
@@ -37,17 +51,13 @@ export default function RouteNode({ item, isSelected, onSelect }: RouteNodeProps
                 <div
                     className={`
                         w-8 h-8 rounded-xl shrink-0 cursor-pointer transition-all duration-300 flex items-center justify-center border-2
-                        ${isSelected 
-                            ? 'bg-accent-0 border-accent-0 text-white shadow-lg scale-110' 
+                        ${isSelected
+                            ? 'bg-accent-0 border-accent-0 text-white shadow-lg scale-110'
                             : 'bg-background-1 border-grass text-foreground-1 hover:border-accent-0 hover:text-accent-0'}
                     `}
                     onClick={onSelect}
                 >
-                    {item.method === 'WALK' && <Footprints size={16} />}
-                    {item.method === 'TRAIN' && <TrainFront size={16} />}
-                    {item.method === 'BUS' && <Bus size={16} />}
-                    {item.method === 'CAR' && <Car size={16} />}
-                    {item.method === 'OTHER' && <Sparkles size={16} />}
+                    {TRANSIT_MODE_ICON[item.method]}
                 </div>
             )}
         </div>

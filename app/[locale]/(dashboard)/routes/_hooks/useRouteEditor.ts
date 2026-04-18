@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { SpotSource, TransitMode } from "@prisma/client";
 import { RouteItem, Waypoint, Transportation } from "@/lib/client/types";
 
 export function useRouteEditor() {
@@ -11,7 +12,7 @@ export function useRouteEditor() {
     useEffect(() => {
         if (items.length === 0) {
             setItems([
-                [{ type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: 'USER' }],
+                [{ type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: SpotSource.USER }],
             ]);
             setCurrentDayIndex(0);
             setSelectedIndex(0);
@@ -76,12 +77,12 @@ export function useRouteEditor() {
                 name: 'New Waypoint',
                 memo: '',
                 order: 0,
-                source: 'USER'
+                source: SpotSource.USER
             };
         } else {
             newItem = {
                 type: 'transportation',
-                method: 'WALK',
+                method: TransitMode.WALK,
                 memo: '',
                 order: 0
             };
@@ -105,7 +106,7 @@ export function useRouteEditor() {
             name: `New Waypoint`,
             memo: "",
             order: dayItems.length + 1,
-            source: 'MAPBOX'
+            source: SpotSource.MAPBOX
         };
 
         setItems((prev) => {
@@ -114,7 +115,7 @@ export function useRouteEditor() {
             if (currentDayItems.length > 0) {
                 const newTransport: Transportation = {
                     type: 'transportation',
-                    method: 'WALK',
+                    method: TransitMode.WALK,
                     memo: "",
                     order: 0,
                 };
@@ -129,7 +130,7 @@ export function useRouteEditor() {
 
     const addDay = useCallback(() => {
         if (items.length >= 10) return;
-        setItems(prev => [...prev, [{ type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: 'USER' }]]);
+        setItems(prev => [...prev, [{ type: 'waypoint', name: "Waypoint 1", memo: "", order: 1, source: SpotSource.USER }]]);
         setCurrentDayIndex(items.length);
         setSelectedIndex(0);
     }, [items.length]);
