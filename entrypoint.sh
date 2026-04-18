@@ -3,26 +3,35 @@ set -e
 
 # ---------------------------------------------------------------------------
 # Wait for dependencies
+#
+# `nc -z` で依存サービスの起動を待つ。ハマると永久にループしてしまうため、
+# MAX_WAIT (既定 60 秒、`SERVICE_WAIT_TIMEOUT` env で上書き可) で強制終了させて
+# restart ポリシーに任せる。restart: always なら docker 側が再起動を試みる。
 # ---------------------------------------------------------------------------
-echo "[entrypoint] Waiting for database..."
-while ! nc -z postgres 5432; do
-  sleep 1
-done
-echo "[entrypoint] Database is up."
+MAX_WAIT="${SERVICE_WAIT_TIMEOUT:-60}"
 
-echo "[entrypoint] Waiting for meilisearch..."
-while ! nc -z meilisearch 7700; do
-  sleep 1
-done
-echo "[entrypoint] Meilisearch is up."
+wait_for_service() {
+  host=$1
+  port=$2
+  name=$3
+  elapsed=0
+  echo "[entrypoint] Waiting for ${name} (${host}:${port})..."
+  while ! nc -z "$host" "$port"; do
+    if [ "$elapsed" -ge "$MAX_WAIT" ]; then
+      echo "[entrypoint] ERROR: ${name} did not start within ${MAX_WAIT}s" >&2
+      exit 1
+    fi
+    sleep 1
+    elapsed=$((elapsed + 1))
+  done
+  echo "[entrypoint] ${name} is up."
+}
 
+wait_for_service postgres     5432 postgres
+wait_for_service meilisearch  7700 meilisearch
 # Redis: cold start race（最初のリクエストが Redis 未起動に当たって失敗する現象）を避けるため
 # prisma 実行の前に疎通確認しておく。
-echo "[entrypoint] Waiting for redis..."
-while ! nc -z redis 6379; do
-  sleep 1
-done
-echo "[entrypoint] Redis is up."
+wait_for_service redis        6379 redis
 
 # ---------------------------------------------------------------------------
 # Env validation
