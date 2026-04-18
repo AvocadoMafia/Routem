@@ -8,7 +8,7 @@ import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, 
 import { createClient } from '@/lib/auth/supabase/client'
 import { userStore } from '@/lib/client/stores/userStore'
 import { localeNames } from '@/i18n/config'
-import { searchEnumsStore } from '@/lib/client/stores/searchEnumsStore'
+import { userEnumsStore } from '@/lib/client/stores/userEnumsStore'
 import { dbLocaleToAppLocale, deleteDataToServerWithJson } from "@/lib/client/helpers";
 import type { User } from '@/lib/client/types'
 
@@ -22,8 +22,8 @@ export default function RootClient() {
   const user = userStore(state => state.user)
   const [locale, setLocale] = useState<string>(user.locale || '')
   const [language, setLanguage] = useState<string>(user.language || '')
-  const localeOptions = searchEnumsStore(state => state.locale)
-  const languageOptions = searchEnumsStore(state => state.language)
+  const localeOptions = userEnumsStore(state => state.locale)
+  const languageOptions = userEnumsStore(state => state.language)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   const currentLocale = useLocale()

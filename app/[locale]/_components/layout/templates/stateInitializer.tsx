@@ -7,17 +7,20 @@ import {createClient} from "@/lib/auth/supabase/client";
 import {useShallow} from "zustand/react/shallow";
 import { searchEnumsStore } from "@/lib/client/stores/searchEnumsStore";
 import { exchangeRatesStore } from "@/lib/client/stores/exchangeRatesStore";
+import { userEnumsStore } from "@/lib/client/stores/userEnumsStore";
 
 export default function StateInitializer() {
 
     const { userId, login, logout } = userStore(useShallow(state => ({ userId: state.user.id, login: state.login, logout: state.logout })))
     const fetchEnums = searchEnumsStore(state => state.fetchEnums)
+    const fetchUserEnums = userEnumsStore(state => state.fetchUserEnums)
     const fetchExchangeRates = exchangeRatesStore(state => state.fetchExchangeRates)
 
     useEffect(() => {
         fetchEnums()
+        fetchUserEnums()
         fetchExchangeRates()
-    }, [fetchEnums, fetchExchangeRates])
+    }, [fetchEnums, fetchUserEnums, fetchExchangeRates])
 
     useEffect(() => {
         const supabase = createClient()

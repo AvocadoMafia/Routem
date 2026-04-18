@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { handleRequest } from "@/lib/server/handleRequest";
-import { CURRENCY_CODE_VALUES, ROUTE_FOR_VALUES } from "@/lib/constants/enums";
+import { LANGUAGE_VALUES, LOCALE_VALUES } from "@/lib/constants/enums";
 
 export async function GET() {
   return handleRequest(async () => {
     return NextResponse.json(
       {
-        routeFor: ROUTE_FOR_VALUES,
-        currencyCode: CURRENCY_CODE_VALUES,
+        locale: LOCALE_VALUES,
+        language: LANGUAGE_VALUES,
       },
       { status: 200 },
     );
