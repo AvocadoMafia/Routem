@@ -85,7 +85,7 @@ export default function CommentItem({ comment, canDelete = false, onDelete }: Co
           <div className="relative w-8 h-8 rounded-full overflow-hidden border border-accent-0/20">
             <Image
               src={comment.user?.icon?.url || "/default-avatar.png"}
-              alt={comment.user?.name || "User"}
+              alt={comment.user?.name || tCommon("user")}
               fill
               className="object-cover"
               unoptimized
@@ -93,7 +93,7 @@ export default function CommentItem({ comment, canDelete = false, onDelete }: Co
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-bold text-foreground-0">
-              @{comment.user?.name || "Anonymous"}
+              @{comment.user?.name || tCommon("anonymous")}
             </span>
             <span className="text-[10px] text-foreground-1/40 font-medium" title={new Date(comment.createdAt).toISOString()}>
               {relativeTime}

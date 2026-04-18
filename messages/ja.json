@@ -29,6 +29,8 @@
     "loginToContinue": "続けるにはログインしてください",
     "goToLogin": "ログイン",
     "dismissNotification": "通知を閉じる",
+    "user": "ユーザー",
+    "anonymous": "匿名",
     "publish": "公開",
     "publishing": "公開中...",
     "public": "公開",
@@ -278,6 +280,8 @@
     "name": "名前",
     "namePlaceholder": "あなたの名前",
     "bioPlaceholder": "自己紹介を書いてください",
+    "backgroundAlt": "背景画像",
+    "iconAlt": "アイコン",
     "saving": "保存中...",
     "saveChanges": "変更を保存",
     "settings": "設定"
@@ -363,7 +367,8 @@
     "tryAgain": "もう一度お試しください",
     "mapboxRequired": "Mapboxアクセストークンが必要です",
     "loadFailed": "読み込みに失敗しました",
-    "rateLimited": "リクエストが多すぎます。少し待ってからお試しください"
+    "rateLimited": "リクエストが多すぎます。少し待ってからお試しください",
+    "retryInSeconds": "{seconds}秒後に再試行"
   },
   "months": {
     "jan": "1月",

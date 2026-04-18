@@ -29,6 +29,8 @@
     "loginToContinue": "请登录以继续",
     "goToLogin": "登录",
     "dismissNotification": "关闭通知",
+    "user": "用户",
+    "anonymous": "匿名",
     "publish": "发布",
     "publishing": "发布中...",
     "public": "公开",
@@ -278,6 +280,8 @@
     "name": "姓名",
     "namePlaceholder": "您的姓名",
     "bioPlaceholder": "介绍一下自己",
+    "backgroundAlt": "背景图片",
+    "iconAlt": "头像",
     "saving": "保存中...",
     "saveChanges": "保存更改",
     "settings": "设置"
@@ -363,7 +367,8 @@
     "tryAgain": "请重试",
     "mapboxRequired": "需要Mapbox访问令牌",
     "loadFailed": "无法加载此部分",
-    "rateLimited": "请求过多，请稍后再试"
+    "rateLimited": "请求过多，请稍后再试",
+    "retryInSeconds": "{seconds}秒后重试"
   },
   "months": {
     "jan": "1月",
