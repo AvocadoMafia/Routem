@@ -17,6 +17,7 @@ type Props = {
 
 export default function MapViewerOnMobile(props: Props) {
     const t = useTranslations('routes');
+    const tCommon = useTranslations('common');
     if (!props.routes) {
         return (
             <div className="w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg overflow-hidden">
@@ -65,7 +66,7 @@ export default function MapViewerOnMobile(props: Props) {
                                 <Image
                                     className="absolute w-full h-full object-cover rounded-xl"
                                     src="/map.jpg"
-                                    alt="Map preview"
+                                    alt={tCommon('mapPreviewAlt')}
                                     fill
                                 />
                             </div>

@@ -190,7 +190,7 @@ export default function RouteSettingsSection({
                                     <div className="absolute inset-0">
                                         <Image
                                             src={thumbnailImageSrc}
-                                            alt="Thumbnail preview"
+                                            alt={t('thumbnailPreviewAlt')}
                                             fill
                                             className="object-cover"
                                             unoptimized
@@ -306,7 +306,7 @@ export default function RouteSettingsSection({
                                     value={budget.amount === 0 ? "" : budget.amount}
                                     onChange={(e) => setBudget({ ...budget, amount: Number(e.target.value) })}
                                     className="flex-1 px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium"
-                                    placeholder="Amount"
+                                    placeholder={t('budgetPlaceholder')}
                                 />
                             </div>
                         </div>

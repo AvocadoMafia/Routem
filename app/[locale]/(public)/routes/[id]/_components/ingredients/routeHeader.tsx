@@ -228,7 +228,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
                       <button
                         onClick={handleCopy}
                         className="p-1.5 hover:bg-foreground-0/10 rounded-full transition-colors text-accent-0"
-                        title="Copy link"
+                        title={t('copyLink')}
                       >
                         {isCopying ? <HiCheck className="w-4 h-4" /> : <HiClipboard className="w-4 h-4" />}
                       </button>

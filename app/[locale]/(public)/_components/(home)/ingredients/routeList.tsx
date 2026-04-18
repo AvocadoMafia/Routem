@@ -2,6 +2,7 @@ import RouteCardHorizontal from '@/app/[locale]/(public)/_components/(home)/ingr
 import RouteCardHorizontalSkeleton from '@/app/[locale]/(public)/_components/(home)/ingredients/routeCardHorizontalSkeleton';
 import {Route} from "@/lib/client/types";
 import {useEffect, useRef} from "react";
+import {useTranslations} from "next-intl";
 
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export default function RouteList(props: Props) {
+  const tCommon = useTranslations('common');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -70,7 +72,7 @@ export default function RouteList(props: Props) {
       className="flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-3 backdrop-blur-xs overflow-y-scroll p-3 no-scrollbar"
       tabIndex={0}
       role="region"
-      aria-label="Route list"
+      aria-label={tCommon('routeListAria')}
       onWheel={(e) => {
         // Keep scrolling within the list and prevent wheel from bubbling to underlying map
         e.stopPropagation();

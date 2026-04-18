@@ -58,6 +58,7 @@ export default function NodeLinkDiagram({
     const menuRef = useRef<HTMLDivElement>(null);
     const t = useTranslations('common');
     const tRoutes = useTranslations('routes');
+    const tRouteEditor = useTranslations('routeEditor');
 
     const scrollDirection = useUiStore((state) => state.scrollDirection);
     const [yOffset, setYOffset] = useState(0);
@@ -99,7 +100,7 @@ export default function NodeLinkDiagram({
                     <button
                         onClick={onOpenEdit}
                         className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all active:scale-90 bg-background-0 text-foreground-1 border-grass"
-                        aria-label="Edit Route"
+                        aria-label={tRouteEditor('editRoute')}
                     >
                         <Edit3 size={18} />
                     </button>
@@ -112,7 +113,7 @@ export default function NodeLinkDiagram({
                     <button
                         onClick={onOpenSettings}
                         className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all active:scale-90 bg-background-0 text-foreground-1 border-grass"
-                        aria-label="Route Settings"
+                        aria-label={tRouteEditor('routeSettings')}
                     >
                         <SettingsIcon size={18} />
                     </button>
@@ -126,7 +127,7 @@ export default function NodeLinkDiagram({
                         onClick={onPublish}
                         disabled={publishing}
                         className={`shrink-0 px-4 h-10 rounded-xl font-bold text-sm text-white flex items-center gap-2 active:scale-90 shadow-md transition-all ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale' : 'bg-accent-0 hover:bg-accent-0/90'}`}
-                        aria-label="Publish"
+                        aria-label={t('publish')}
                     >
                         {publishing ? (
                             <Loader2 className="animate-spin" size={16} />
@@ -172,7 +173,7 @@ export default function NodeLinkDiagram({
                                         ? "opacity-100 text-accent-0/40 hover:bg-accent-0/10 hover:text-accent-0"
                                         : "opacity-0 group-hover:opacity-100 text-foreground-1/20 hover:bg-foreground-1/10 hover:text-foreground-1"
                                 }`}
-                                aria-label="Remove Day"
+                                aria-label={tRouteEditor('removeDay')}
                             >
                                 <X size={14} />
                             </button>
@@ -183,7 +184,7 @@ export default function NodeLinkDiagram({
                     <button
                         onClick={onAddDay}
                         className="ml-4 p-1.5 h-7 w-7 flex items-center justify-center rounded-lg bg-background-0/50 text-foreground-1/40 hover:text-accent-0 hover:bg-background-0 border border-dashed border-grass transition-all"
-                        aria-label="Add Day"
+                        aria-label={tRouteEditor('addDay')}
                     >
                         <Plus size={16} />
                     </button>

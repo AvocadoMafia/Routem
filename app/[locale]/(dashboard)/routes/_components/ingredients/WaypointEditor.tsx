@@ -268,7 +268,7 @@ export default function WaypointEditor({ item, onUpdate }: WaypointEditorProps) 
                                                 e.stopPropagation();
                                                 handleRemoveImage(url);
                                             }}
-                                            aria-label="Remove image"
+                                            aria-label={t('removeImage')}
                                         >
                                             <X size={14} />
                                         </button>
