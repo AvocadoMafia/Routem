@@ -13,7 +13,9 @@ export async function GET(req: NextRequest) {
       data: { user },
       error,
     } = await supabase.auth.getUser();
-    if (error) throw new Error("auth error");
+    // supabase.auth.getUser() のエラー → セッション検証失敗として Unauthorized (401) 扱い。
+    // handleError.ts の matchAuthError が message="Unauthorized" を 401 にマップする。
+    if (error) throw new Error("Unauthorized");
     const url = new URL(req.url);
     const searchParams = url.searchParams;
     const rawParams = Object.fromEntries(searchParams);
