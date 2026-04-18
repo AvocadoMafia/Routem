@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
 import { ErrorScheme } from "@/lib/types/error";
+import { ValidationError } from "@/lib/server/validateParams";
 
 /**
  * 認証/認可/リソースエラーを HTTP ステータスにマップするためのテーブル。
@@ -133,8 +134,45 @@ export async function handleError(error: unknown): Promise<NextResponse<ErrorSch
     );
   }
 
-  // 3) すでに ErrorScheme の形をしている場合、またはカスタムエラーオブジェクトの場合
+  // 3) 手動バリデーションエラー (ValidationError クラス) → 400 VALIDATION_ERROR
+  //    route handler が `throw new ValidationError("xxx is required")` を投げた場合に
+  //    ここで捕まえ、本番では内部メッセージをマスクした固定文言に倒す。
+  //    これを ErrorScheme 分岐より前に置くことで、 dev/prod の切替も一元管理できる。
+  if (error instanceof ValidationError) {
+    const isDev = process.env.NODE_ENV === "development";
+    return NextResponse.json(
+      {
+        code: "VALIDATION_ERROR",
+        message: isDev ? error.message : "Validation failed",
+      },
+      { status: 400 },
+    );
+  }
+
+  // 4) Zodバリデーションエラー → 400 VALIDATION_ERROR
+  //    本番は details (Zod issues) と生 message を晒さない:
+  //    - `details.issues` は regex pattern / format / origin 等の制約情報を含み、攻撃者に
+  //      スキーマ構造を提示する形になるため dev 限定で返す。
+  //    - message も同様に dev では最初の issue の message を使い、本番は固定文言。
+  if (error instanceof ZodError) {
+    const isDev = process.env.NODE_ENV === "development";
+    const firstIssueMessage = error.issues[0]?.message;
+    return NextResponse.json(
+      {
+        code: "VALIDATION_ERROR",
+        message:
+          isDev && firstIssueMessage
+            ? `Validation error: ${firstIssueMessage}`
+            : "Validation failed",
+        ...(isDev ? { details: { issues: error.issues } } : {}),
+      },
+      { status: 400 },
+    );
+  }
+
+  // 5) すでに ErrorScheme の形をしている場合、またはカスタムエラーオブジェクトの場合
   //    ※ Prisma エラーは code/message を持つため、ここに来る前に (2) で落とす必要がある
+  //    ※ VALIDATION_ERROR code も (3) で先に処理しているため、ここでは他の domain 定義済みエラーだけ残る
   if (error && typeof error === "object" && "code" in error && "message" in error) {
     const errorScheme = error as ErrorScheme;
     const status =
@@ -144,19 +182,7 @@ export async function handleError(error: unknown): Promise<NextResponse<ErrorSch
     return NextResponse.json(errorScheme, { status });
   }
 
-  // 4) Zodバリデーションエラーの場合
-  if (error instanceof ZodError) {
-    return NextResponse.json(
-      {
-        code: "VALIDATION_ERROR",
-        message: "Validation error: " + error.issues.map((e: any) => e.message).join(", "),
-        details: { issues: error.issues },
-      },
-      { status: 400 },
-    );
-  }
-
-  // 5) 一般的なErrorの場合（開発環境ではメッセージを含める）
+  // 6) 一般的なErrorの場合（開発環境ではメッセージを含める）
   if (error instanceof Error) {
     const isDev = process.env.NODE_ENV === "development";
     return NextResponse.json(
@@ -168,7 +194,7 @@ export async function handleError(error: unknown): Promise<NextResponse<ErrorSch
     );
   }
 
-  // 6) 未知のエラー
+  // 7) 未知のエラー
   return NextResponse.json(
     {
       code: "INTERNAL_SERVER_ERROR",

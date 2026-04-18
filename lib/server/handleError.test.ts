@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import { ZodError, z } from "zod";
 import { Prisma } from "@prisma/client";
 import { handleError, matchAuthError, isPrismaError } from "./handleError";
+import { ValidationError } from "./validateParams";
 
 /**
  * handleError / matchAuthError のユニットテスト。
@@ -87,7 +88,8 @@ describe("handleError", () => {
     expect(body.code).toBe("NOT_FOUND");
   });
 
-  it("Zod バリデーションエラー → 400 VALIDATION_ERROR", async () => {
+  it("Zod バリデーションエラー (dev) → 400 VALIDATION_ERROR + issue メッセージ + details", async () => {
+    vi.stubEnv("NODE_ENV", "development");
     const schema = z.object({ id: z.string().uuid() });
     let zodErr: ZodError | null = null;
     try {
@@ -102,6 +104,7 @@ describe("handleError", () => {
     const body = await res.json();
     expect(body.code).toBe("VALIDATION_ERROR");
     expect(body.message).toMatch(/Validation error/);
+    expect(body.details?.issues).toBeDefined();
   });
 
   it("ErrorScheme 風オブジェクト (code/message 持ち) は status 未指定で 400", async () => {
@@ -324,5 +327,129 @@ describe("isPrismaError / handleError Prisma leak guard (SECURITY)", () => {
     expect(json).not.toContain("internal-db.example.com");
     expect(json).not.toContain("prisma");
     expect(json).not.toContain("hostname");
+  });
+});
+
+describe("handleError validation (ValidationError / Zod masking)", () => {
+  // Tester_2 発見: 手動 validation error (`throw new Error("routeId is required")`) が
+  // 500 INTERNAL_SERVER_ERROR + 生メッセージで返る、及び Zod issues が本番 body に漏洩する。
+  //
+  // 修正後の仕様:
+  //  - ValidationError クラスは常に 400 VALIDATION_ERROR を返す
+  //  - dev 環境ではユーザー向けに message と (Zod の場合) details.issues を表示
+  //  - 本番 (NODE_ENV !== "development") では message = "Validation failed" に固定、details は返さない
+
+  beforeEach(() => {
+    vi.unstubAllEnvs();
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("ValidationError (dev) → 400 VALIDATION_ERROR + 元 message が見える", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const res = await handleError(new ValidationError("routeId is required"));
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(body.message).toBe("routeId is required");
+  });
+
+  it("ValidationError (prod) → 400 VALIDATION_ERROR + message はマスクされる", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    const res = await handleError(new ValidationError("routeId is required"));
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(body.message).toBe("Validation failed");
+    // 内部文言が漏れていないこと
+    expect(body.message).not.toContain("routeId");
+    expect(body.message).not.toContain("is required");
+  });
+
+  it("Zod error (prod) → 400 VALIDATION_ERROR + details は返らない + message は固定", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    const schema = z.object({ id: z.string().uuid() });
+    let zodErr: ZodError | null = null;
+    try {
+      schema.parse({ id: "not-a-uuid" });
+    } catch (e) {
+      zodErr = e as ZodError;
+    }
+    if (!zodErr) throw new Error("expected ZodError");
+
+    const res = await handleError(zodErr);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(body.message).toBe("Validation failed");
+    expect(body.details).toBeUndefined();
+    // issues に含まれる制約情報 (uuid / regex) が body に一切出ないこと
+    const json = JSON.stringify(body);
+    expect(json).not.toContain("uuid");
+    expect(json).not.toContain("regex");
+    expect(json).not.toContain("not-a-uuid");
+    expect(json).not.toContain("issues");
+  });
+
+  it("Zod error (dev) → details.issues を含む", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const schema = z.object({ routeId: z.string().uuid() });
+    let zodErr: ZodError | null = null;
+    try {
+      schema.parse({ routeId: "bad" });
+    } catch (e) {
+      zodErr = e as ZodError;
+    }
+    if (!zodErr) throw new Error("expected ZodError");
+
+    const res = await handleError(zodErr);
+    const body = await res.json();
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(body.details?.issues).toBeDefined();
+    expect(Array.isArray(body.details.issues)).toBe(true);
+    expect(body.details.issues.length).toBeGreaterThan(0);
+  });
+
+  it("Test (NODE_ENV=test/未設定) でも details を返さない (dev-only ルール)", async () => {
+    // test 実行時の NODE_ENV は "test" なので dev ではない。
+    // この状況でも details が意図せず返らないことを担保。
+    vi.stubEnv("NODE_ENV", "test");
+    const schema = z.object({ id: z.string().uuid() });
+    let zodErr: ZodError | null = null;
+    try {
+      schema.parse({ id: "x" });
+    } catch (e) {
+      zodErr = e as ZodError;
+    }
+    if (!zodErr) throw new Error("expected ZodError");
+
+    const res = await handleError(zodErr);
+    const body = await res.json();
+    expect(body.details).toBeUndefined();
+    expect(body.message).toBe("Validation failed");
+  });
+
+  it("ValidationError は分岐順で Error instance より先に捕捉される (生 message が 500 で漏洩しない regression)", async () => {
+    // もし ValidationError 捕捉を Error 分岐より後に置くと、dev 環境で 500 扱いになって
+    // 'routeId is required' などの内部 message が漏洩する。順序の regression 担保。
+    vi.stubEnv("NODE_ENV", "development");
+    const res = await handleError(new ValidationError("someField is required"));
+    expect(res.status).toBe(400);
+    expect(res.status).not.toBe(500);
+    const body = await res.json();
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect(body.code).not.toBe("INTERNAL_SERVER_ERROR");
+  });
+
+  it("ValidationError は `throw new Error('routeId is required')` の後方互換 regression に含まれない (別クラス)", async () => {
+    // 意図的に generic Error を投げるケースでは 500 のままになる (code-path を分けているため)
+    vi.stubEnv("NODE_ENV", "production");
+    const res = await handleError(new Error("some internal msg"));
+    expect(res.status).toBe(500);
+    const body = await res.json();
+    // 本番では internal msg は漏れない
+    expect(body.message).toBe("Internal Server Error");
+    expect(body.message).not.toContain("some internal msg");
   });
 });
