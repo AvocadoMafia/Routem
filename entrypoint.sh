@@ -15,6 +15,17 @@ while ! nc -z meilisearch 7700; do
 done
 echo "Meilisearch is up!"
 
+# .envファイルから環境変数を読み込む（Prisma用に念のため）
+if [ -f .env ]; then
+  export $(cat .env | grep -v '^#' | xargs)
+fi
+
+# DATABASE_URLが設定されているか確認
+if [ -z "$DATABASE_URL" ]; then
+  echo "Error: DATABASE_URL is not set."
+  exit 1
+fi
+
 # Run DB push to ensure schema is sync
 echo "Running Prisma migrations..."
 npx prisma db push --accept-data-loss

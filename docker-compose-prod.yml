@@ -28,6 +28,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - MEILISEARCH_URL=http://meilisearch:7700
       - LIBRETRANSLATE_URL=http://libretranslate:5000
+      - MEILISEARCH_APIKEY=${MEILISEARCH_APIKEY}
     depends_on:
       - postgres
       - redis
