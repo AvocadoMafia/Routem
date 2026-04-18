@@ -359,7 +359,9 @@
     "serverError": "서버 오류가 발생했습니다",
     "networkError": "네트워크 오류가 발생했습니다",
     "tryAgain": "다시 시도해 주세요",
-    "mapboxRequired": "Mapbox 액세스 토큰이 필요합니다"
+    "mapboxRequired": "Mapbox 액세스 토큰이 필요합니다",
+    "loadFailed": "섹션을 불러올 수 없습니다",
+    "rateLimited": "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요"
   },
   "months": {
     "jan": "1월",

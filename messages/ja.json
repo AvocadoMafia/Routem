@@ -359,7 +359,9 @@
     "serverError": "サーバーエラーが発生しました",
     "networkError": "ネットワークエラーが発生しました",
     "tryAgain": "もう一度お試しください",
-    "mapboxRequired": "Mapboxアクセストークンが必要です"
+    "mapboxRequired": "Mapboxアクセストークンが必要です",
+    "loadFailed": "読み込みに失敗しました",
+    "rateLimited": "リクエストが多すぎます。少し待ってからお試しください"
   },
   "months": {
     "jan": "1月",
