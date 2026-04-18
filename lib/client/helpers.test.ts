@@ -285,14 +285,14 @@ describe("toSpotSource", () => {
     expect(toSpotSource(v)).toBe(v);
   });
 
-  it.each([
+  it.each<[string | null | undefined, string]>([
     ["INVALID", "存在しないenum値"],
     ["user", "小文字は不正扱い (enum値は常に大文字)"],
     ["", "空文字"],
     [null, "null"],
     [undefined, "undefined"],
   ])("不正値 %s (%s) は SpotSource.USER にフォールバック", (v) => {
-    expect(toSpotSource(v as string | null | undefined)).toBe(SpotSource.USER);
+    expect(toSpotSource(v)).toBe(SpotSource.USER);
   });
 });
 
@@ -309,13 +309,13 @@ describe("toTransitMode", () => {
     expect(toTransitMode(v)).toBe(v);
   });
 
-  it.each([
+  it.each<[string | null | undefined, string]>([
     ["INVALID", "存在しないenum値"],
     ["walk", "小文字は不正扱い (enum値は常に大文字)"],
     ["", "空文字"],
     [null, "null"],
     [undefined, "undefined"],
   ])("不正値 %s (%s) は TransitMode.OTHER にフォールバック", (v) => {
-    expect(toTransitMode(v as string | null | undefined)).toBe(TransitMode.OTHER);
+    expect(toTransitMode(v)).toBe(TransitMode.OTHER);
   });
 });
