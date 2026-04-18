@@ -11,8 +11,21 @@ RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 ARG NEXT_PUBLIC_SUPABASE_URL="https://dummy.supabase.co"
 ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY="dummy"
+# NEXT_PUBLIC_SITE_URL はビルド時にクライアントバンドルへインライン化される必要があるため、
+# 実行時 env ではなくビルド引数として渡す (例: https://routem.net)。
+# デフォルト値は**敢えて設定しない**: build-arg 未指定ならビルド後の runtime で
+# getClientSiteUrl() が throw し、localhost フォールバックでの本番汚染を防ぐ。
+ARG NEXT_PUBLIC_SITE_URL
+# Mapbox アクセストークン（クライアント側 Mapbox GL / Search で必須）と Turnstile サイトキー
+# （クライアント側 login/signup フォームの Bot 対策）も NEXT_PUBLIC_* のためビルド時必須。
+# こちらは未設定時は空バンドルになるが throw はしない（dev で Turnstile / Mapbox をオフにできる）。
+ARG NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=""
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY=""
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=$NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 COPY package*.json ./
 COPY prisma ./prisma/
