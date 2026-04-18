@@ -1,6 +1,5 @@
 services:
-  # 開発用: 外部依存サービス群のみ起動（Next.js は `npm run dev` でホスト側で走らせる前提）
-  # 本番系は docker-compose-prod.yml + nginx で構成する。
+  # Production uses nginx via docker-compose-prod.yml
 
   # データベース(postgres)
   postgres:

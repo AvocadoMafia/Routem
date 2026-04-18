@@ -99,6 +99,96 @@ docker compose -f docker-compose-prod.yml --env-file .env.production up -d --bui
 | それ以外（`DATABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` / `OCI_*` 等） | **起動時**（container runtime env） | `docker-compose-prod.yml` `app.env_file` / `app.environment` |
 | `RUN_SEED` / `RUN_RECOMMEND` | 起動時（entrypoint.sh が条件分岐に使用） | `.env.production` |
 
+## 本番固有のセットアップ詳細
+
+### SSL / HTTPS の有効化（Let's Encrypt）
+
+初期状態では nginx は 80 番のみで待ち受ける。HTTPS を有効化するには:
+
+1. ホスト側に `certbot` を導入し、証明書を取得:
+
+   ```sh
+   sudo apt install certbot
+   sudo certbot certonly --standalone -d routem.net
+   ```
+   取得成功すると `/etc/letsencrypt/live/routem.net/` 配下に `fullchain.pem` / `privkey.pem` が配置される。
+
+2. `docker-compose-prod.yml` の nginx サービスでコメントアウトされている SSL mount を有効化:
+
+   ```yaml
+   ports:
+     - "80:80"
+     - "443:443"         # ← コメント解除
+   volumes:
+     - ./nginx/conf.d:/etc/nginx/conf.d:ro
+     - /etc/letsencrypt:/etc/nginx/ssl:ro   # ← certbot のディレクトリを mount
+   ```
+
+3. `nginx/conf.d/default.conf` の SSL ブロックをコメント解除し、`ssl_certificate` / `ssl_certificate_key` を mount 先のパスに合わせる（`/etc/nginx/ssl/live/routem.net/fullchain.pem`）。
+
+4. 80 番からのリクエストを 443 へリダイレクトするブロックを追加（`return 301 https://$host$request_uri;`）。
+
+5. 更新コマンド:
+
+   ```sh
+   docker compose -f docker-compose-prod.yml restart nginx
+   ```
+
+   証明書の自動更新は cron で `certbot renew && docker compose -f docker-compose-prod.yml restart nginx` を登録する。
+
+### OCI Object Storage のバケット事前作成
+
+1. OCI コンソール → Object Storage → Buckets → Create Bucket。
+   - **Namespace**: ウィンドウ右上の Tenancy 情報から取得（`.env.production` の `OCI_STORAGE_NAMESPACE` に入れる）
+   - **Region**: 例 `ap-tokyo-1`（`.env.production` の `OCI_REGION`）
+   - **Bucket Name**: `rtmimages`（`.env.production` の `OCI_BUCKET_NAME`）
+   - **Visibility**: **Public**（署名URLでのアップロード + 署名不要の GET のため）
+2. Customer Secret Key を発行（Identity → Users → Customer Secret Keys → Generate）。
+   - `AccessKey` が `OCI_ACCESS_KEY`、`SecretKey` が `OCI_SECRET_KEY`。
+3. IAM Policy に以下を追加して、この User に Object Storage への読み書き権限を与える:
+
+   ```text
+   Allow user <username> to manage objects in tenancy where target.bucket.name = 'rtmimages'
+   Allow user <username> to read buckets in tenancy where target.bucket.name = 'rtmimages'
+   ```
+4. 動作確認: アプリから画像アップロード → OCI コンソールの Bucket で object が見えるか。
+
+### Supabase Dashboard での OAuth 設定
+
+1. Supabase Dashboard → 対象プロジェクト → **Authentication** → **URL Configuration**。
+2. **Site URL** に `https://routem.net` を設定。
+3. **Redirect URLs** に `https://routem.net/auth/callback` を追加（dev 用の `http://localhost:3000/auth/callback` も並列で追加しておくとブランチ切替が楽）。
+4. Google OAuth 等の Provider を使う場合、各 Provider の Client ID / Secret は **Authentication → Providers** で個別設定。Provider 側（Google Cloud Console 等）にも `https://<project>.supabase.co/auth/v1/callback` を登録。
+5. これらを設定しないと `exchangeCodeForSession` が `redirect_to is not allowed` で失敗する（`app/auth/callback/route.ts` 経路）。
+
+### RUN_SEED / RUN_RECOMMEND の運用
+
+初期データ投入や推薦生成は entrypoint.sh 起動時のフラグで切り替える。
+
+**初回のみ seed を流す場合**（`.env.production` を書き換える方法）:
+
+```sh
+# 1. .env.production の RUN_SEED を true に変更
+sed -i 's/^RUN_SEED=.*/RUN_SEED=true/' .env.production
+
+# 2. app コンテナだけ再作成して初回 seed を走らせる
+docker compose -f docker-compose-prod.yml --env-file .env.production up -d --force-recreate app
+
+# 3. ログで seed 完了を確認したら RUN_SEED=false に戻す
+sed -i 's/^RUN_SEED=.*/RUN_SEED=false/' .env.production
+docker compose -f docker-compose-prod.yml --env-file .env.production up -d --force-recreate app
+```
+
+**一度きりで seed を実行したい場合**（`.env.production` を書き換えず環境変数だけ上書き）:
+
+```sh
+# 既に起動中のコンテナに対して、seed スクリプトだけ単発で叩く
+docker compose -f docker-compose-prod.yml exec app npm run seed:exchange-rates
+docker compose -f docker-compose-prod.yml exec app npx prisma db seed
+```
+
+`RUN_RECOMMEND` も同様の運用が可能。なお `recommend` は処理が重いため、cron に `docker compose exec app npm run recommend` を登録する方式を推奨（起動時実行は避ける）。
+
 ## トラブルシューティング
 
 ### docker build が失敗する
