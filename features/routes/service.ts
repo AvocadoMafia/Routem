@@ -177,7 +177,10 @@ export const routesService = {
       const isCollaborator = route.collaborators.some((c) => c.userId === userId);
 
       if (route.visibility === RouteVisibility.PRIVATE && !isAuthor && !isCollaborator) {
-        throw new Error("Unauthorized");
+        // PRIVATE route へのアクセスは「存在すら明かさない」ポリシー (CWE-209 情報露出防止)。
+        // authorId / collaborator でない他人に対しては 404 NOT_FOUND で均一にレスポンスする。
+        // これにより攻撃者は private route の uuid を brute-force で列挙できない。
+        throw new Error("Not Found");
       }
 
       return route;
@@ -191,7 +194,9 @@ export const routesService = {
       const route = await routesRepository.findUnique(routeId);
 
       if (!route) throw new Error("Not Found");
-      if (route.authorId !== userId) throw new Error("Unauthorized");
+      // generateInvite は owner のみ許可。非 owner には route の存在も明かさず 404 固定。
+      // (他人の private route に対する invite 試行で 401/403 を返すと uuid が列挙可能になるため)
+      if (route.authorId !== userId) throw new Error("Not Found");
       if (route.collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
         // コラボ機能が ON/OFF の policy に弾かれた → 403 FORBIDDEN
         throw new Error("Forbidden");

@@ -75,6 +75,17 @@ export const DeleteRouteSchema = z.object({
 
 export type DeleteRouteType = z.infer<typeof DeleteRouteSchema>;
 
+/**
+ * 動的 path param `/api/v1/routes/[id]` の id バリデーション用。
+ * UUID 以外の文字列 (例: "not-a-uuid") が来た場合は 400 VALIDATION_ERROR で拒否する
+ * (旧実装では Prisma の findUnique に渡って 500 を返していた)。
+ */
+export const RouteIdParamSchema = z.object({
+  id: z.string().uuid("Invalid route ID"),
+});
+
+export type RouteIdParamType = z.infer<typeof RouteIdParamSchema>;
+
 const RoutesDocumentsSchema = z.array(
   z.object({
     // id以外全部undefined許容してる。これはsyncToMeiliをPostとPatchで共用しているから
