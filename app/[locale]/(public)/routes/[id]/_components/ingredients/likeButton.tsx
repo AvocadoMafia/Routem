@@ -46,7 +46,7 @@ export default function LikeButton({
         onClick={toggle}
         disabled={pending}
         aria-pressed={isLiked}
-        className={`group flex items-center gap-4 px-8 py-4 bg-background-0 border rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer active:scale-[0.98] disabled:opacity-60 ${
+        className={`group flex items-center gap-4 px-8 py-4 bg-background-0 border rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer active:scale-[0.98] disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none ${
           isLiked ? "border-accent-0 ring-1 ring-accent-0/20" : "border-grass hover:border-accent-0"
         }`}
       >
@@ -59,7 +59,7 @@ export default function LikeButton({
             }`}
           />
         )}
-        <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-0">
+        <span className="text-sm font-bold uppercase text-foreground-0">
           {isLiked ? t("liked") : t("likeThis")}
         </span>
         <div className="w-px h-4 bg-grass" />
@@ -76,7 +76,7 @@ export default function LikeButton({
       onClick={toggle}
       disabled={pending}
       aria-pressed={isLiked}
-      className="flex items-center gap-1 text-foreground-1 hover:text-accent-0 transition-colors disabled:opacity-60 cursor-pointer"
+      className="flex items-center gap-1 text-foreground-1 hover:text-accent-0 active:scale-95 transition-all disabled:opacity-60 cursor-pointer rounded focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none"
       title={isLiked ? t("liked") : t("likeThis")}
     >
       <HiHeart

@@ -55,14 +55,14 @@ export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
         type="button"
         onClick={handleShare}
         disabled={isSharing}
-        className="group flex items-center gap-4 px-8 py-4 bg-background-0 border border-grass rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer hover:border-accent-0 active:scale-[0.98] disabled:opacity-60"
+        className="group flex items-center gap-4 px-8 py-4 bg-background-0 border border-grass rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer hover:border-accent-0 active:scale-[0.98] disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none"
       >
         {justCopied ? (
           <HiCheck className="w-6 h-6 text-accent-0" />
         ) : (
           <HiShare className="w-6 h-6 text-accent-0 group-hover:scale-125 transition-transform" />
         )}
-        <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-0">
+        <span className="text-sm font-bold uppercase text-foreground-0">
           {justCopied ? t("copied") : tRoutes("shareThis")}
         </span>
       </button>
@@ -74,7 +74,7 @@ export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
       type="button"
       onClick={handleShare}
       disabled={isSharing}
-      className="flex items-center gap-1.5 text-foreground-1 hover:text-accent-0 transition-colors disabled:opacity-60"
+      className="flex items-center gap-1.5 text-foreground-1 hover:text-accent-0 active:scale-95 transition-all disabled:opacity-60 rounded focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none"
       title={t("share")}
     >
       {justCopied ? (

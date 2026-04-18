@@ -28,6 +28,7 @@
     "loginRequired": "ログインが必要です",
     "loginToContinue": "続けるにはログインしてください",
     "goToLogin": "ログイン",
+    "dismissNotification": "通知を閉じる",
     "publish": "公開",
     "publishing": "公開中...",
     "public": "公開",
@@ -315,7 +316,8 @@
     "likeComment": "いいね",
     "likedComment": "いいね済み",
     "loginToComment": "コメントするにはログインしてください",
-    "postFailed": "コメントの投稿に失敗しました"
+    "postFailed": "コメントの投稿に失敗しました",
+    "endOfDiscussion": "ここまでです"
   },
   "upload": {
     "selectImage": "画像を選択",

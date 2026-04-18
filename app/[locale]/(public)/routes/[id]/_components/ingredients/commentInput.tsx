@@ -84,7 +84,7 @@ export default function CommentInput({ onPost }: CommentInputProps) {
             type="button"
             onClick={handlePost}
             disabled={!canSubmit}
-            className="px-6 py-2 bg-accent-0 text-white text-[10px] font-bold uppercase tracking-[0.2em] rounded-full hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-accent-0/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center gap-2"
+            className="px-6 py-2 bg-accent-0 text-white text-[10px] font-bold uppercase rounded-full hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-accent-0/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
             {submitting && <Loader2 className="w-3 h-3 animate-spin" />}
             {submitting ? t("posting") : t("postComment")}

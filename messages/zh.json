@@ -28,6 +28,7 @@
     "loginRequired": "需要登录",
     "loginToContinue": "请登录以继续",
     "goToLogin": "登录",
+    "dismissNotification": "关闭通知",
     "publish": "发布",
     "publishing": "发布中...",
     "public": "公开",
@@ -315,7 +316,8 @@
     "likeComment": "喜欢",
     "likedComment": "已喜欢",
     "loginToComment": "请登录后发表评论",
-    "postFailed": "评论发布失败"
+    "postFailed": "评论发布失败",
+    "endOfDiscussion": "讨论结束"
   },
   "upload": {
     "selectImage": "选择图片",

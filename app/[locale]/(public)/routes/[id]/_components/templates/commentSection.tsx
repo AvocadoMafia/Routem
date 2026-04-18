@@ -124,8 +124,8 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
 
       {!loading && !hasMore && comments.length > COMMENTS_PAGE_SIZE && (
         <div className="w-full text-center py-4">
-          <span className="text-[10px] font-bold text-foreground-1/40 uppercase tracking-[0.3em]">
-            End of discussion
+          <span className="text-[10px] font-bold text-foreground-1/40 uppercase">
+            {t("endOfDiscussion")}
           </span>
         </div>
       )}

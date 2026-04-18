@@ -28,6 +28,7 @@
     "loginRequired": "로그인이 필요합니다",
     "loginToContinue": "계속하려면 로그인해 주세요",
     "goToLogin": "로그인",
+    "dismissNotification": "알림 닫기",
     "publish": "게시",
     "publishing": "게시 중...",
     "public": "공개",
@@ -315,7 +316,8 @@
     "likeComment": "좋아요",
     "likedComment": "좋아요 완료",
     "loginToComment": "댓글을 작성하려면 로그인해 주세요",
-    "postFailed": "댓글 작성에 실패했습니다"
+    "postFailed": "댓글 작성에 실패했습니다",
+    "endOfDiscussion": "여기까지입니다"
   },
   "upload": {
     "selectImage": "이미지 선택",

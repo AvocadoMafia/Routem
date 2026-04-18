@@ -28,6 +28,7 @@
     "loginRequired": "Sign in required",
     "loginToContinue": "Please sign in to continue",
     "goToLogin": "Sign in",
+    "dismissNotification": "Dismiss notification",
     "publish": "Publish",
     "publishing": "Publishing...",
     "public": "Public",
@@ -44,8 +45,8 @@
     "flexible": "Flexible"
   },
   "auth": {
-    "signIn": "Sign in",
-    "signUp": "Sign up",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
     "signOut": "Sign out",
     "signInWithGoogle": "Sign in with Google",
     "name": "Name",
@@ -277,6 +278,8 @@
     "name": "Name",
     "namePlaceholder": "Your name",
     "bioPlaceholder": "Tell us about yourself",
+    "backgroundAlt": "Background",
+    "iconAlt": "Icon",
     "saving": "Saving...",
     "saveChanges": "Save Changes",
     "settings": "Settings"
@@ -315,7 +318,8 @@
     "likeComment": "Like",
     "likedComment": "Liked",
     "loginToComment": "Sign in to post a comment",
-    "postFailed": "Failed to post comment"
+    "postFailed": "Failed to post comment",
+    "endOfDiscussion": "End of discussion"
   },
   "upload": {
     "selectImage": "Select image",

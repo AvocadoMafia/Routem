@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { MdCheckCircle, MdClose, MdInfoOutline, MdWarningAmber } from "react-icons/md";
 import { toastStore, type Toast } from "@/lib/client/stores/toastStore";
 
@@ -56,6 +57,7 @@ const TONE_STYLES: Record<
  *  親の参照に依存しない形にした。
  */
 export default function ToastCard({ toast }: Props) {
+  const t = useTranslations("common");
   const tone = TONE_STYLES[toast.tone];
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function ToastCard({ toast }: Props) {
           <button
             type="button"
             onClick={handleAction}
-            className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-accent-0 uppercase tracking-[0.2em] hover:opacity-80 transition-opacity cursor-pointer"
+            className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-accent-0 uppercase hover:opacity-80 transition-opacity cursor-pointer focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:outline-none rounded"
           >
             {toast.action.label}
             <span aria-hidden>→</span>
@@ -117,8 +119,8 @@ export default function ToastCard({ toast }: Props) {
       <button
         type="button"
         onClick={handleDismiss}
-        className="p-1 hover:bg-grass rounded-full transition-colors cursor-pointer absolute top-2 right-2"
-        aria-label="Dismiss notification"
+        className="p-1 hover:bg-grass rounded-full transition-colors cursor-pointer absolute top-2 right-2 focus-visible:ring-2 focus-visible:ring-foreground-1/40 focus-visible:outline-none"
+        aria-label={t("dismissNotification")}
       >
         <MdClose size={18} className="text-foreground-1" />
       </button>
