@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CurrencyCode, RouteFor } from "@prisma/client";
 
 export const GetRoutesExploreSchema = z
   .object({
@@ -6,7 +7,7 @@ export const GetRoutesExploreSchema = z
     q: z.string().default(""),
     lat: z.coerce.number().optional(),
     lng: z.coerce.number().optional(),
-    who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
+    who: z.nativeEnum(RouteFor).optional(),
     days: z.coerce.number().int().min(1).max(365).optional(),
     when: z
       .preprocess(
@@ -24,25 +25,7 @@ export const GetRoutesExploreSchema = z
         z.array(z.coerce.number().int().min(1).max(12)).min(1).max(12),
       )
       .optional(),
-    currencyCode: z
-      .enum([
-        "JPY",
-        "USD",
-        "EUR",
-        "GBP",
-        "KRW",
-        "TWD",
-        "CNY",
-        "THB",
-        "VND",
-        "SGD",
-        "MYR",
-        "PHP",
-        "AUD",
-        "CAD",
-        "OTHER",
-      ])
-      .optional(),
+    currencyCode: z.nativeEnum(CurrencyCode).optional(),
     minAmount: z.coerce.number().min(0).optional(),
     maxAmount: z.coerce.number().min(0).optional(),
     offset: z.coerce.number().min(0).default(0),

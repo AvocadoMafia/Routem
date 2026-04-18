@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  CurrencyCode,
+  Language,
+  RouteCollaboratorPolicy,
+  RouteFor,
+  RouteVisibility,
+} from "@prisma/client";
 import { TransportationSchema, WaypointSchema } from "../database_schema";
 
 // TODO:型の重複部分をnon-optionalにして共通化するべき
@@ -23,28 +30,12 @@ export const PostRouteSchema = z.object({
     .string()
     .url("Thumbnail image must be a valid URL"),
   title: z.string().min(1, "Title is required").max(100, "Title must be at most 100 characters"),
-  visibility: z.enum(["PUBLIC", "PRIVATE"]),
-  collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-  who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
+  visibility: z.nativeEnum(RouteVisibility),
+  collaboratorPolicy: z.nativeEnum(RouteCollaboratorPolicy).optional(),
+  who: z.nativeEnum(RouteFor),
   date: z.string().datetime(),
   budget: z.object({
-    currencyCode: z.enum([
-      "JPY",
-      "USD",
-      "EUR",
-      "GBP",
-      "KRW",
-      "TWD",
-      "CNY",
-      "THB",
-      "VND",
-      "SGD",
-      "MYR",
-      "PHP",
-      "AUD",
-      "CAD",
-      "OTHER",
-    ]),
+    currencyCode: z.nativeEnum(CurrencyCode),
     amount: z.number().min(0),
   }),
   tags: z.array(z.string()).min(1, "At least one tag is required"),
@@ -64,29 +55,13 @@ export const PatchRouteSchema = z.object({
     .min(1, "Title is required")
     .max(100, "Title must be at most 100 characters")
     .optional(),
-  visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
-  collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-  who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
+  visibility: z.nativeEnum(RouteVisibility).optional(),
+  collaboratorPolicy: z.nativeEnum(RouteCollaboratorPolicy).optional(),
+  who: z.nativeEnum(RouteFor).optional(),
   date: z.string().datetime().optional(),
   budget: z
     .object({
-      currencyCode: z.enum([
-        "JPY",
-        "USD",
-        "EUR",
-        "GBP",
-        "KRW",
-        "TWD",
-        "CNY",
-        "THB",
-        "VND",
-        "SGD",
-        "MYR",
-        "PHP",
-        "AUD",
-        "CAD",
-        "OTHER",
-      ]),
+      currencyCode: z.nativeEnum(CurrencyCode),
       amount: z.number().min(0),
     })
     .optional(),
@@ -115,28 +90,10 @@ const RoutesDocumentsSchema = z.array(
     month: z.array(z.number().int().min(1).max(12)).optional(),
     days: z.number().int().min(0).optional(),
     routeFor: PatchRouteSchema.shape.who,
-    language: z.enum(["JA", "EN", "KO", "ZH"]).optional(),
+    language: z.nativeEnum(Language).optional(),
 
     budgetInLocalCurrency: z.number().min(0).optional(),
-    localCurrencyCode: z
-      .enum([
-        "JPY",
-        "USD",
-        "EUR",
-        "GBP",
-        "KRW",
-        "TWD",
-        "CNY",
-        "THB",
-        "VND",
-        "SGD",
-        "MYR",
-        "PHP",
-        "AUD",
-        "CAD",
-        "OTHER",
-      ])
-      .optional(),
+    localCurrencyCode: z.nativeEnum(CurrencyCode).optional(),
     budgetInUsd: z.number().min(0).optional(),
     _geo: z.object({
       lat: z.number().optional(),

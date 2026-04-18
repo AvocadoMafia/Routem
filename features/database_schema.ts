@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SpotSource, TransitMode } from "@prisma/client";
 
 export const WaypointSchema = z
   .object({
@@ -12,7 +13,7 @@ export const WaypointSchema = z
     memo: z.string(),
     lat: z.number().optional(),
     lng: z.number().optional(),
-    source: z.enum(["MAPBOX", "USER"]).optional(),
+    source: z.nativeEnum(SpotSource).optional(),
     sourceId: z.string().optional(),
   })
   .refine(
@@ -30,7 +31,7 @@ export const WaypointSchema = z
 
 export const TransportationSchema = z.object({
   type: z.literal("transportation"),
-  method: z.enum(["WALK", "TRAIN", "BUS", "CAR", "OTHER"]),
+  method: z.nativeEnum(TransitMode),
   memo: z.string().optional(),
   duration: z.number().min(0, "Duration must be non-negative").optional(),
   distance: z.number().min(0, "Distance must be non-negative").optional(),
