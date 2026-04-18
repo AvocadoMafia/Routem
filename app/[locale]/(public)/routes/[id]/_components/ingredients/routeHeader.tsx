@@ -27,6 +27,7 @@ import { useTranslations } from "next-intl";
 import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
 import {MdInfo} from "react-icons/md";
 import { errorStore } from "@/lib/client/stores/errorStore";
+import { getIsLikedByMe } from "@/lib/client/hooks/useLike";
 
 type RouteHeaderProps = {
   route: Route;
@@ -140,7 +141,11 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-4">
-              <LikeButton routeId={route.id} initialLikesCount={route.likes?.length ?? 0} />
+              <LikeButton
+                routeId={route.id}
+                initialLikesCount={route.likes?.length ?? 0}
+                initialIsLiked={getIsLikedByMe(route.likes, currentUser?.id)}
+              />
               <div className="flex items-center text-foreground-1">
                 <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
                   {route.views?.length ?? 0} {t("views")}

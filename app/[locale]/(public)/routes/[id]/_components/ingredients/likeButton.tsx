@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { HiHeart } from "react-icons/hi2";
-import { postDataToServerWithJson } from "@/lib/client/helpers";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { useLike } from "@/lib/client/hooks/useLike";
 
 type LikeButtonProps = {
   routeId: string;
@@ -14,60 +12,81 @@ type LikeButtonProps = {
   variant?: "compact" | "large";
 };
 
-export default function LikeButton({ routeId, initialLikesCount, initialIsLiked = false, variant = "compact" }: LikeButtonProps) {
-  const [likesCount, setLikesCount] = useState(initialLikesCount);
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
-  const [loading, setLoading] = useState(false);
-  const appendError = errorStore(state => state.appendError);
-  const t = useTranslations('routes');
+/**
+ * ルート向け Like ボタン。ロジックは useLike hook に委譲し、
+ * このコンポーネントは押し心地と見た目だけ担当する。
+ *
+ * - 押下で 即反転 (楽観 UI) → API レスポンスの { liked, like_count } で確定
+ * - 未認証クリックはログイン誘導トーストを出す (楽観更新はしない)
+ * - 失敗時はロールバックして errorStore にエラー表示
+ */
+export default function LikeButton({
+  routeId,
+  initialLikesCount,
+  initialIsLiked = false,
+  variant = "compact",
+}: LikeButtonProps) {
+  const t = useTranslations("routes");
+  const tCommon = useTranslations("common");
 
-  const handleLike = async () => {
-    setLoading(true);
-    try {
-      const result = await postDataToServerWithJson<any>("/api/v1/likes", {
-        target: "ROUTE",
-        routeId: routeId,
-      });
-      
-      if (result) {
-        // toggleLikeの結果、作成されたか削除されたかに基づいてステートを更新する
-        // APIの戻り値が { id: ... } なら作成、そうでなければ削除（あるいは count 等）
-        // repositoryの実装を確認すると toggleLike は upsert/delete 的な動き
-        // service.toggleLike の戻り値を確認したいが、一旦反転させる
-        setIsLiked(!isLiked);
-        setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
-      }
-    } catch (err: any) {
-      appendError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { isLiked, likeCount, pending, toggle } = useLike({
+    target: "ROUTE",
+    routeId,
+    initialIsLiked,
+    initialLikeCount: initialLikesCount,
+    loginRequiredMessage: t("loginToLike"),
+    loginButtonLabel: tCommon("goToLogin"),
+    failureMessage: t("failedToLike"),
+  });
 
   if (variant === "large") {
     return (
-      <button 
-        onClick={handleLike}
-        disabled={loading}
-        className={`group flex items-center gap-4 px-8 py-4 bg-background-0 border rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer disabled:opacity-50 ${
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={pending}
+        aria-pressed={isLiked}
+        className={`group flex items-center gap-4 px-8 py-4 bg-background-0 border rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer active:scale-[0.98] disabled:opacity-60 ${
           isLiked ? "border-accent-0 ring-1 ring-accent-0/20" : "border-grass hover:border-accent-0"
         }`}
       >
-        <HiHeart className={`w-6 h-6 group-hover:scale-125 transition-transform ${isLiked ? "text-accent-0 fill-accent-0" : "text-accent-0"}`} />
+        {pending ? (
+          <Loader2 className="w-6 h-6 text-accent-0 animate-spin" />
+        ) : (
+          <HiHeart
+            className={`w-6 h-6 group-hover:scale-125 transition-transform ${
+              isLiked ? "text-accent-0 fill-accent-0" : "text-accent-0"
+            }`}
+          />
+        )}
         <span className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-0">
-          {isLiked ? t('liked') : t('likeThis')}
+          {isLiked ? t("liked") : t("likeThis")}
         </span>
         <div className="w-px h-4 bg-grass" />
-        <span className="text-sm font-bold text-foreground-1 tabular-nums">{likesCount}</span>
+        <span className="text-sm font-bold text-foreground-1 tabular-nums">{likeCount}</span>
       </button>
     );
   }
 
+  // compact variant は「数だけ」の旧実装を温存 (header内で数字だけ表示するのが役割)。
+  // ただし将来クリッカブルにする余地を残すため button 要素にする。
   return (
-    <div className="flex items-center text-foreground-1">
-      <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
-        {likesCount} {t('likes')}
+    <button
+      type="button"
+      onClick={toggle}
+      disabled={pending}
+      aria-pressed={isLiked}
+      className="flex items-center gap-1 text-foreground-1 hover:text-accent-0 transition-colors disabled:opacity-60 cursor-pointer"
+      title={isLiked ? t("liked") : t("likeThis")}
+    >
+      <HiHeart
+        className={`w-3.5 h-3.5 transition-transform ${
+          isLiked ? "text-accent-0 fill-accent-0" : ""
+        }`}
+      />
+      <span className="text-[10px] font-bold uppercase tracking-[0.15em] tabular-nums">
+        {likeCount} {t("likes")}
       </span>
-    </div>
+    </button>
   );
 }

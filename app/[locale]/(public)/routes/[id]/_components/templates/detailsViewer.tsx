@@ -1,6 +1,6 @@
 "use client";
 
-import { Route } from "@/lib/client/types";
+import { Route, ErrorScheme } from "@/lib/client/types";
 import { MessageSquare, BookOpen } from "lucide-react";
 import { HiHeart } from "react-icons/hi2";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +14,7 @@ import RouteHeader from "../ingredients/routeHeader";
 import AuthorSection from "../ingredients/authorSection";
 import CategoryTags from "../ingredients/categoryTags";
 import LikeButton from "../ingredients/likeButton";
+import { getIsLikedByMe } from "@/lib/client/hooks/useLike";
 import ShareButton from "../ingredients/shareButton";
 import ImportButton from "../ingredients/importButton";
 import CommentSection from "./commentSection";
@@ -35,6 +36,8 @@ type Props = {
   isFetchingRelated: boolean;
   fetchMoreRelated: () => Promise<void>;
   relatedHasMore: boolean;
+  relatedError?: ErrorScheme | null;
+  retryRelated?: () => Promise<void>;
 };
 
 export default function DetailsViewer({
@@ -53,9 +56,11 @@ export default function DetailsViewer({
   isFetchingRelated,
   fetchMoreRelated,
   relatedHasMore,
+  relatedError,
+  retryRelated,
 }: Props) {
   const t = useTranslations('routes');
-  const isLikedByMe = !!(currentUser && route.likes?.some((like) => like.userId === currentUser.id));
+  const isLikedByMe = getIsLikedByMe(route.likes, currentUser?.id);
 
   return (
     <div
@@ -177,12 +182,14 @@ export default function DetailsViewer({
                     transition={{ duration: 0.3 }}
                     className="w-full"
                   >
-                    <RelatedArticles 
+                    <RelatedArticles
                       routes={relatedRoutes}
                       loading={relatedLoading}
                       fetchingMore={isFetchingRelated}
                       fetchMore={fetchMoreRelated}
                       hasMore={relatedHasMore}
+                      error={relatedError}
+                      onRetry={retryRelated}
                     />
                   </motion.div>
                 )}
