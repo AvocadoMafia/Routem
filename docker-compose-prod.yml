@@ -4,10 +4,12 @@ services:
     container_name: nginx
     ports:
       - "80:80"
-      # - "443:443" # Uncomment after setting up SSL
+      # HTTPS 化手順については nginx/conf.d/default.conf 上部のコメントを参照。
+      # 証明書配置後に下記 443 ポートと ssl ボリュームのコメントを同時に外す。
+      # - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      # - ./nginx/ssl:/etc/nginx/ssl:ro # Uncomment after setting up SSL
+      # - ./nginx/ssl:/etc/nginx/ssl:ro  # Uncomment after setting up SSL (see nginx/conf.d/default.conf)
     depends_on:
       - app
     networks:
