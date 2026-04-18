@@ -2,21 +2,25 @@ import {create} from 'zustand'
 import {ErrorScheme, User} from "@/lib/client/types"
 import {getDataFromServerWithJson, patchDataToServerWithJson, toErrorScheme} from "@/lib/client/helpers";
 import {createClient} from "@/lib/auth/supabase/client";
+import {ImageStatus, ImageType, Language, Locale} from "@prisma/client";
 
+// TODO: User.gender は schema.prisma 上 String? のまま未結線。
+// 本来は Gender enum に結線したいが、マイグレーションが必要なため一旦null固定にする。
+// 結線後は import { Gender } from "@prisma/client" して Gender.NON_BINARY などに差し替える。
 const initialUser: User = {
     id: '',
     name: '',
     bio: '',
-    locale: 'JA',
-    language: 'JA',
+    locale: Locale.JA,
+    language: Language.JA,
     age: 20,
-    gender: 'NON_BINARY' as any,
+    gender: null,
     icon: {
         id: 'initial_user',
         url: '/images/next.svg',
         key: null,
-        status: 'ADOPTED',
-        type: 'USER_ICON',
+        status: ImageStatus.ADOPTED,
+        type: ImageType.USER_ICON,
         createdAt: new Date(),
         updatedAt: new Date(),
         uploaderId: '',
@@ -29,8 +33,8 @@ const initialUser: User = {
         id: 'initial_user',
         url: '/images/next.svg',
         key: null,
-        status: 'ADOPTED',
-        type: 'USER_ICON',
+        status: ImageStatus.ADOPTED,
+        type: ImageType.USER_BG,
         createdAt: new Date(),
         updatedAt: new Date(),
         uploaderId: '',

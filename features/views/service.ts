@@ -1,6 +1,6 @@
 import { viewsRepository } from "./repository";
 import { routesRepository, ROUTE_INCLUDE } from "@/features/routes/repository";
-import { LikeViewTarget, Prisma } from "@prisma/client";
+import { LikeViewTarget, Prisma, RouteVisibility } from "@prisma/client";
 import { USER_SELECT } from "@/features/users/repository";
 import { DEFAULT_LIMIT } from "@/lib/server/constants";
 import { buildUpdatedAtCursorWhere, encodeUpdatedAtCursor } from "@/lib/server/cursor";
@@ -52,7 +52,7 @@ export const viewsService = {
           some: { userId }
         },
         OR: [
-          { visibility: 'PUBLIC' },
+          { visibility: RouteVisibility.PUBLIC },
           { authorId: userId },
         ],
       };

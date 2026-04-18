@@ -1,6 +1,6 @@
 import {getPrisma} from "@/lib/config/server";
 import {UpdateUserType, GetUsersType} from "@/features/users/schema";
-import { Prisma } from "@prisma/client";
+import { ImageStatus, Prisma } from "@prisma/client";
 import { buildCursorWhere } from "@/lib/server/cursor";
           
 
@@ -111,7 +111,7 @@ export const usersRepository = {
             await tx.image.update({
               where: { id: currentUser.icon.id },
               data: {
-                status: 'UNUSED',
+                status: ImageStatus.UNUSED,
                 userIconId: null
               }
             });
@@ -121,7 +121,7 @@ export const usersRepository = {
           await tx.image.update({
             where: { id: data.icon },
             data: {
-              status: 'ADOPTED',
+              status: ImageStatus.ADOPTED,
               userIconId: id
             }
           });
@@ -136,7 +136,7 @@ export const usersRepository = {
             await tx.image.update({
               where: { id: currentUser.background.id },
               data: {
-                status: 'UNUSED',
+                status: ImageStatus.UNUSED,
                 userBackgroundId: null
               }
             });
@@ -145,7 +145,7 @@ export const usersRepository = {
           await tx.image.update({
             where: { id: data.background },
             data: {
-              status: 'ADOPTED',
+              status: ImageStatus.ADOPTED,
               userBackgroundId: id
             }
           });

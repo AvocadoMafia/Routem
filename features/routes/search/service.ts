@@ -24,7 +24,7 @@ export const routesSearchService = {
 
                 // Filter by routeFor
                 const filter_conditions = [];
-                filter_conditions.push(`visibility = "PUBLIC"`);
+                filter_conditions.push(`visibility = "${RouteVisibility.PUBLIC}"`);
                 if (query.routeFor) {
                     filter_conditions.push(`routeFor = "${query.routeFor}"`);
                 }
@@ -68,7 +68,7 @@ export const routesSearchService = {
 
                 // Filter by routeFor
                 if (query.routeFor) {
-                    where.routeFor = query.routeFor as any;
+                    where.routeFor = query.routeFor;
                 }
 
                 // Fetch routes with limit and offset

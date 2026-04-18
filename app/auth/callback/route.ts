@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
 import { createClient } from '@/lib/auth/supabase/server'
 import {getPrisma} from "@/lib/config/server";
+import { ImageStatus, ImageType } from "@prisma/client";
 
 /**
  * OAuth認証コールバックエンドポイント
@@ -75,8 +76,8 @@ export async function GET(request: NextRequest) {
             create: {
               url: iconUrl,
               key: null,
-              status: 'EXTERNAL',
-              type: 'USER_ICON',
+              status: ImageStatus.EXTERNAL,
+              type: ImageType.USER_ICON,
               createdAt: new Date(),
               updatedAt: new Date(),
               uploaderId: supabaseUser.id,

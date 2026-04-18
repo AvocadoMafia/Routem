@@ -3,6 +3,7 @@ import { getPrisma } from "@/lib/config/server";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/auth/supabase/server";
 import { headers } from "next/headers";
+import { RouteCollaboratorPolicy } from "@prisma/client";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const resolvedParams = await params;
@@ -57,7 +58,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const isCollaborator = route.collaborators.some((c: { userId: string }) => c.userId === user.id);
   
   // Requirement: collaborators can edit if policy is CAN_EDIT
-  const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === 'CAN_EDIT');
+  const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === RouteCollaboratorPolicy.CAN_EDIT);
 
   if (!canEdit) {
     notFound(); // or redirect

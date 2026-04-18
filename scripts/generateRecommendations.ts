@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, RouteVisibility } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { createClient } from "redis";
@@ -26,7 +26,7 @@ async function main() {
     // データの取得
     const routes = await prisma.route.findMany({
         where: {
-            visibility: "PUBLIC",
+            visibility: RouteVisibility.PUBLIC,
         },
         include: {
             likes: true,
