@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { handleRequest } from "@/lib/server/handleRequest";
-import { CURRENCY_CODE_VALUES, ROUTE_FOR_VALUES } from "@/lib/constants/enums";
+import { CurrencyCode, RouteFor } from "@prisma/client";
 
 export async function GET() {
   return handleRequest(async () => {
     return NextResponse.json(
       {
-        routeFor: ROUTE_FOR_VALUES,
-        currencyCode: CURRENCY_CODE_VALUES,
+        routeFor: Object.values(RouteFor),
+        currencyCode: Object.values(CurrencyCode),
       },
       { status: 200 },
     );
