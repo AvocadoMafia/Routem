@@ -35,7 +35,7 @@ export default function TopUsersList() {
         <div className="w-full mb-3 flex items-center md:justify-end justify-start gap-2">
           <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Users — This week</h2>
         </div>
-        <SectionErrorState onRetry={fetchUsers} />
+        <SectionErrorState error={error} onRetry={fetchUsers} />
       </div>
     );
   }

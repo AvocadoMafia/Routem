@@ -36,7 +36,7 @@ export default function TopRoutesList() {
         <div className="w-full mb-3 flex items-center gap-2">
           <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Top Routes — This week</h2>
         </div>
-        <SectionErrorState onRetry={fetchRoutes} />
+        <SectionErrorState error={error} onRetry={fetchRoutes} />
       </div>
     );
   }

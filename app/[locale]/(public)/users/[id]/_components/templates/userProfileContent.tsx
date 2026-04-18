@@ -65,7 +65,7 @@ export default function UserProfileContent({
         {activeTab === 'routes' && (
           error && (!routes || routes.length === 0) ? (
             <div className="col-span-full">
-              <SectionErrorState onRetry={onRetry} />
+              <SectionErrorState error={error} onRetry={onRetry} />
             </div>
           ) : routes === null ? (
             dummyCards
@@ -84,7 +84,7 @@ export default function UserProfileContent({
               {hasMore && !error && dummyCards}
               {error && (
                 <div className="col-span-full">
-                  <SectionErrorState variant="inline" onRetry={onRetry} />
+                  <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
                 </div>
               )}
             </>
@@ -100,7 +100,7 @@ export default function UserProfileContent({
         {activeTab === 'likes' && (
           error && (!likedRoutes || likedRoutes.length === 0) ? (
             <div className="col-span-full">
-              <SectionErrorState onRetry={onRetry} />
+              <SectionErrorState error={error} onRetry={onRetry} />
             </div>
           ) : likedRoutes === null ? (
             dummyCards
@@ -119,7 +119,7 @@ export default function UserProfileContent({
               {hasMore && !error && dummyCards}
               {error && (
                 <div className="col-span-full">
-                  <SectionErrorState variant="inline" onRetry={onRetry} />
+                  <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
                 </div>
               )}
             </>
@@ -135,7 +135,7 @@ export default function UserProfileContent({
         {activeTab === 'history' && mode === 'self' && (
           error && (!historyRoutes || historyRoutes.length === 0) ? (
             <div className="col-span-full">
-              <SectionErrorState onRetry={onRetry} />
+              <SectionErrorState error={error} onRetry={onRetry} />
             </div>
           ) : historyRoutes === null ? (
             dummyCards
@@ -154,7 +154,7 @@ export default function UserProfileContent({
               {hasMore && !error && dummyCards}
               {error && (
                 <div className="col-span-full">
-                  <SectionErrorState variant="inline" onRetry={onRetry} />
+                  <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
                 </div>
               )}
             </>

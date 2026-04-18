@@ -34,7 +34,7 @@ export default function TrendingRoutesList({ routes, hasMore, observerTarget, er
                     <HiFire className="text-accent-0 w-5 h-5" />
                     Trending Routes
                 </h2>
-                <SectionErrorState onRetry={onRetry} />
+                <SectionErrorState error={error} onRetry={onRetry} />
             </div>
         );
     }
@@ -72,7 +72,7 @@ export default function TrendingRoutesList({ routes, hasMore, observerTarget, er
             {routes.length === 0 && !hasMore && <p className="text-foreground-1">No routes found.</p>}
             {/* 追加ロード失敗時はリスト末尾に再試行ボタンを */}
             {error && routes.length > 0 && (
-                <SectionErrorState variant="inline" onRetry={onRetry} />
+                <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
             )}
         </div>
     )

@@ -129,12 +129,12 @@ export default function TrendingSection() {
                         )}
                         {activeTab === 'users' && (
                             usersError
-                                ? <SectionErrorState onRetry={fetchUsersAndTags} />
+                                ? <SectionErrorState error={usersTagsError} onRetry={fetchUsersAndTags} />
                                 : <TrendingUsersList users={users ?? undefined}  />
                         )}
                         {activeTab === 'tags' && (
                             tagsError
-                                ? <SectionErrorState onRetry={fetchUsersAndTags} />
+                                ? <SectionErrorState error={usersTagsError} onRetry={fetchUsersAndTags} />
                                 : <TrendingTagsList tags={tags ?? undefined} />
                         )}
                     </motion.div>
@@ -154,7 +154,7 @@ export default function TrendingSection() {
                 />
                 <div className={'md:flex hidden flex-1 h-full flex-col gap-6 overflow-y-auto no-scrollbar py-6 lg:py-12'}>
                     {usersError
-                        ? <SectionErrorState onRetry={fetchUsersAndTags} />
+                        ? <SectionErrorState error={usersTagsError} onRetry={fetchUsersAndTags} />
                         : <TrendingUsersList users={users ?? undefined} />}
                     {tagsError
                         ? null /* 同じエラーが2度出るのを防止: users 側で既に出している */

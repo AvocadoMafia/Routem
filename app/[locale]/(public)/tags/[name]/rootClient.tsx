@@ -51,7 +51,7 @@ export default function RootClient({ name }: { name: string }) {
             <section className={'w-full h-fit flex flex-col gap-3'}>
                 {error && (!routes || routes.length === 0) ? (
                     // 初回取得失敗: セクション全体を error UI に差し替え
-                    <SectionErrorState onRetry={retry}/>
+                    <SectionErrorState error={error} onRetry={retry}/>
                 ) : routes === null ? (
                     // loading
                     <div className={'w-full grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3'}>
@@ -80,7 +80,7 @@ export default function RootClient({ name }: { name: string }) {
                         {error && (
                             // 追加ロード失敗: リスト末尾に inline retry
                             <div className="col-span-full">
-                                <SectionErrorState variant="inline" onRetry={retry}/>
+                                <SectionErrorState variant="inline" error={error} onRetry={retry}/>
                             </div>
                         )}
                     </div>

@@ -3,12 +3,19 @@
 import { HiExclamationTriangle, HiArrowPath } from "react-icons/hi2"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
+import { ErrorScheme } from "@/lib/client/types"
 
 type Variant = 'inline' | 'block'
 
 type Props = {
     /**
-     * 単一行の簡潔な説明文。未指定なら common.errors.loadFailed を使う。
+     * 直近の ErrorScheme。code="RATE_LIMITED" の場合はメッセージを
+     * errors.rateLimited に自動で切り替える。明示 message が優先される。
+     */
+    error?: ErrorScheme | null
+    /**
+     * 単一行の簡潔な説明文。未指定なら errors.loadFailed を使う (error.code が
+     * RATE_LIMITED の場合は errors.rateLimited に自動切替)。
      */
     message?: string
     /**
@@ -33,8 +40,14 @@ type Props = {
  * useInfiniteScroll の `error` と `retry` を受けて「無言の空セクション」を廃止し、
  * ユーザーに状況と再試行手段を明示する。プロダクトの既存 Card スタイル
  * (rounded-2xl + 1.5px border + bg-background-1) に合わせてある。
+ *
+ * a11y:
+ *  - container: role="alert" でスクリーンリーダーに即通知
+ *  - button: aria-busy で retry 進行中を読み上げ、disabled とセット
+ *  - spinner アイコン / icon 装飾は aria-hidden
  */
 export default function SectionErrorState({
+    error,
     message,
     onRetry,
     variant = 'block',
@@ -56,24 +69,31 @@ export default function SectionErrorState({
         }
     }
 
-    const fallbackMessage = tErrors('loadFailed')
+    // error.code に応じて最適なメッセージを選択。
+    // 明示された message prop が最優先、次に RATE_LIMITED の場合は
+    // errors.rateLimited、それ以外は errors.loadFailed。
+    const resolvedMessage = message
+        ?? (error?.code === 'RATE_LIMITED' ? tErrors('rateLimited') : tErrors('loadFailed'))
     const retryLabel = tCommon('retry')
 
     if (variant === 'inline') {
         return (
             <div
                 role="alert"
+                aria-live="polite"
                 className="w-full flex items-center justify-center gap-3 py-6 text-foreground-1"
             >
                 <HiExclamationTriangle className="w-4 h-4 text-accent-0 shrink-0" aria-hidden />
                 <span className="text-xs font-bold uppercase tracking-[0.2em]">
-                    {message ?? fallbackMessage}
+                    {resolvedMessage}
                 </span>
                 {onRetry && (
                     <button
                         type="button"
                         onClick={handleRetry}
                         disabled={retrying}
+                        aria-busy={retrying}
+                        aria-label={retryLabel}
                         className={[
                             'flex items-center gap-1.5 px-3 py-1.5 rounded-full',
                             'text-[10px] font-bold uppercase tracking-[0.2em]',
@@ -99,6 +119,7 @@ export default function SectionErrorState({
     return (
         <div
             role="alert"
+            aria-live="polite"
             className={[
                 'w-full flex flex-col items-center justify-center gap-4',
                 'px-6 py-12 sm:py-16',
@@ -110,13 +131,15 @@ export default function SectionErrorState({
                 <HiExclamationTriangle className="w-6 h-6 text-accent-0" aria-hidden />
             </div>
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-foreground-0 text-center">
-                {message ?? fallbackMessage}
+                {resolvedMessage}
             </p>
             {onRetry && (
                 <button
                     type="button"
                     onClick={handleRetry}
                     disabled={retrying}
+                    aria-busy={retrying}
+                    aria-label={retryLabel}
                     className={[
                         'mt-1 flex items-center gap-2 px-5 h-10 rounded-full',
                         'text-xs font-bold uppercase tracking-[0.2em]',

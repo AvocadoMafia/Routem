@@ -25,7 +25,7 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
     if (error && routes.length === 0) {
         return (
             <div className="w-full p-6">
-                <SectionErrorState onRetry={onRetry} />
+                <SectionErrorState error={error} onRetry={onRetry} />
             </div>
         );
     }
@@ -63,7 +63,7 @@ export default function ResultsGrid({ routes, isFetching, hasMore, total, observ
                     {/* 追加ロード失敗時: リスト末尾に inline retry */}
                     {error && routes.length > 0 && (
                         <div className="mt-6">
-                            <SectionErrorState variant="inline" onRetry={onRetry} />
+                            <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
                         </div>
                     )}
                 </>

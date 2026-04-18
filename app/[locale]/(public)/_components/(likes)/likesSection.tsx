@@ -42,7 +42,7 @@ export default function LikesSection() {
                     <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
                 </div>
                 <div className="w-full max-w-md">
-                    <SectionErrorState onRetry={retry}/>
+                    <SectionErrorState error={error} onRetry={retry}/>
                 </div>
             </div>
         )

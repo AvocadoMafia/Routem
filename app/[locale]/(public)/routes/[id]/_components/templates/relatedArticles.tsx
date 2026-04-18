@@ -67,7 +67,7 @@ export default function RelatedArticles({
             <span className="text-sm font-bold uppercase tracking-[0.2em]">{t('relatedArticles')}</span>
           </div>
         </div>
-        <SectionErrorState onRetry={onRetry} />
+        <SectionErrorState error={error} onRetry={onRetry} />
       </div>
     );
   }
@@ -90,7 +90,7 @@ export default function RelatedArticles({
 
       {/* 追加ロード失敗 */}
       {error && routes.length > 0 && (
-        <SectionErrorState variant="inline" onRetry={onRetry} />
+        <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
       )}
 
       {!loading && !error && routes.length === 0 && (

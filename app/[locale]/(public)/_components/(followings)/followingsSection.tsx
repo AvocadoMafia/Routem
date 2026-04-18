@@ -100,7 +100,7 @@ export default function FollowingsSection() {
                     <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Followings</h1>
                 </div>
                 <div className="w-full max-w-md">
-                    <SectionErrorState onRetry={async () => {
+                    <SectionErrorState error={followingsError} onRetry={async () => {
                         await Promise.all([retryFollowings(), retryRoutes()])
                     }}/>
                 </div>
@@ -136,7 +136,7 @@ export default function FollowingsSection() {
                 ))}
                 {hasMoreFollowings && !followingsError && followingDummyCards}
                 {followingsError && followings.length > 0 && (
-                    <SectionErrorState variant="inline" onRetry={retryFollowings}/>
+                    <SectionErrorState variant="inline" error={followingsError} onRetry={retryFollowings}/>
                 )}
             </div>
 
@@ -144,7 +144,7 @@ export default function FollowingsSection() {
             <div className={'md:block hidden flex-1 h-full md:overflow-y-scroll flex flex-col py-6 px-3'}>
                 <h2 className="h-fit text-sm font-bold uppercase tracking-[0.2em] text-foreground-1 mb-4">New Routes By Followings</h2>
                 {routesError && (!routes || routes.length === 0) ? (
-                    <SectionErrorState onRetry={retryRoutes}/>
+                    <SectionErrorState error={routesError} onRetry={retryRoutes}/>
                 ) : routes && routes.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
                         {routes.map((route) => (
@@ -155,7 +155,7 @@ export default function FollowingsSection() {
                         {hasMoreRoutes && !routesError && routeDummyCards}
                         {routesError && (
                             <div className="col-span-full">
-                                <SectionErrorState variant="inline" onRetry={retryRoutes}/>
+                                <SectionErrorState variant="inline" error={routesError} onRetry={retryRoutes}/>
                             </div>
                         )}
                     </div>

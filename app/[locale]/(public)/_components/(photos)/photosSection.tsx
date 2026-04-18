@@ -65,7 +65,7 @@ export default function PhotosSection() {
     if (error && (!photos || photos.length === 0)) {
         return (
             <div className={'w-full h-fit py-12'}>
-                <SectionErrorState onRetry={retry}/>
+                <SectionErrorState error={error} onRetry={retry}/>
             </div>
         )
     }
@@ -80,7 +80,7 @@ export default function PhotosSection() {
             {/* 追加ロード失敗: 末尾にinline retry */}
             {error && photos && photos.length > 0 && (
                 <div className="mt-6">
-                    <SectionErrorState variant="inline" onRetry={retry}/>
+                    <SectionErrorState variant="inline" error={error} onRetry={retry}/>
                 </div>
             )}
         </div>

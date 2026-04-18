@@ -210,7 +210,7 @@ function ExploreContent() {
 
                 {/* 初回取得失敗: セクション全体を error UI に差し替え */}
                 {error && routes.length === 0 && (
-                  <SectionErrorState onRetry={retry} />
+                  <SectionErrorState error={error} onRetry={retry} />
                 )}
 
                 {!error && isFetching && routes.length === 0 && <p className="text-foreground-1">{tCommon("loading")}</p>}
@@ -245,7 +245,7 @@ function ExploreContent() {
 
                     {/* 追加ロード失敗: リスト末尾に inline retry */}
                     {error && (
-                      <SectionErrorState variant="inline" onRetry={retry} />
+                      <SectionErrorState variant="inline" error={error} onRetry={retry} />
                     )}
                   </div>
                 )}

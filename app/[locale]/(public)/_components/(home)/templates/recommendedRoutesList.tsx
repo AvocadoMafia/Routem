@@ -44,7 +44,7 @@ export default function RecommendedRoutesList(props: Props) {
         return (
             <div className={'w-full h-fit flex flex-col gap-3'}>
                 <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">Recommended For You</h2>
-                <SectionErrorState onRetry={props.onRetry} />
+                <SectionErrorState error={props.error} onRetry={props.onRetry} />
             </div>
         )
     }
@@ -60,7 +60,7 @@ export default function RecommendedRoutesList(props: Props) {
             </div>
             {/* 追加ロード失敗時は末尾に小さめのエラー行を表示し、再試行させる */}
             {props.error && props.routes && props.routes.length > 0 && (
-                <SectionErrorState variant="inline" onRetry={props.onRetry} />
+                <SectionErrorState variant="inline" error={props.error} onRetry={props.onRetry} />
             )}
         </div>
     )
