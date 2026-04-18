@@ -14,7 +14,6 @@ datasource db {
 model User {
   id              String              @id @db.Uuid // Supabase Auth user.id をそのまま入れる（defaultなし）
   name            String
-  gender          String?
   age             Int?
   bio             String?
   locale          Locale              @default(JA)
@@ -30,13 +29,6 @@ model User {
   followings      Follow[]            @relation("follower")
   followers       Follow[]            @relation("following")
   searchHistories SearchHistory[]
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  NON_BINARY
-  UNSPECIFIED
 }
 
 // 画像モデル：RouteNodeの地点写真や、ユーザーのプロフィール画像などで利用
