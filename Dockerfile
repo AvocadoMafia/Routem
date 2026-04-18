@@ -9,8 +9,10 @@ RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 # ビルド時に Prisma Client の生成と Next.js の型チェックを通すためのダミー環境変数
 # これによりビルド時には実際のデータベース接続が不要になります
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
-ENV NEXT_PUBLIC_SUPABASE_URL="https://dummy.supabase.co"
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY="dummy"
+ARG NEXT_PUBLIC_SUPABASE_URL="https://dummy.supabase.co"
+ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY="dummy"
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY
 
 COPY package*.json ./
 COPY prisma ./prisma/

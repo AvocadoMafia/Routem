@@ -15,6 +15,30 @@ var  s3Client: S3Client;
 var redisClient: RedisClientType;
 }
 
+function requireServerEnv(name: string, value: string | undefined): string {
+    if (!value) {
+        throw new Error(`Missing required server env: ${name}`);
+    }
+    return value;
+}
+
+export function getServerSupabaseUrl(): string {
+    return requireServerEnv(
+        "SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)",
+        process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL,
+    );
+}
+
+export function getServerSupabasePublishableKey(): string {
+    return requireServerEnv(
+        "SUPABASE_PUBLISHABLE_DEFAULT_KEY / SUPABASE_ANON_KEY (or NEXT_PUBLIC_* fallback)",
+        process.env.SUPABASE_PUBLISHABLE_DEFAULT_KEY ??
+            process.env.SUPABASE_ANON_KEY ??
+            process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY ??
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    );
+}
+
 export function getMeilisearch(){ 
     // global変数として存在した場合のガード節
     if(globalThis.meilisearch) return globalThis.meilisearch;
@@ -31,13 +55,12 @@ export function getMeilisearch(){
 export function getPrisma() {
     if (globalThis.prisma) return globalThis.prisma;
 
-    const dbType = process.env.DB_TYPE || 'local';
-    const connectionString = dbType === 'vercel' 
-        ? process.env.VERCEL_DATABASE_URL 
-        : process.env.LOCAL_DATABASE_URL;
+    const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-        throw new Error(`Database connection string for type '${dbType}' is not defined.`);
+        throw new Error(
+            `Database connection string is not defined.`,
+        );
     }
 
     const pool = new Pool({ connectionString });

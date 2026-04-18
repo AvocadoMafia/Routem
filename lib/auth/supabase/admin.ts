@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { getServerSupabaseUrl } from "@/lib/config/server";
 
 export const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! // ← 必ず service role
+  getServerSupabaseUrl(),
+  process.env.SUPABASE_SERVICE_ROLE_KEY!, // service role key
 );
