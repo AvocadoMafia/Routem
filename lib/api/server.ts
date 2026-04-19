@@ -10,9 +10,9 @@ import { z, ZodError } from "zod";
 import { Prisma } from "@prisma/client";
 import { ErrorScheme } from "@/lib/types/error";
 // NOTE: Step 3 の git mv で `lib/auth/supabase/server` → `lib/auth/supabase-server` に
-// renameされるが、Step 2 時点では旧パスのまま。Step 6 の sed で `@/lib/auth/supabase/server`
+// renameされるが、Step 2 時点では旧パスのまま。Step 6 の sed で `@/lib/auth/supabase-server`
 // → `@/lib/auth/supabase-server` に一括置換される。
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 
 // ---------------------------------------------------------------------------
 // validateParams: パスパラメータ / クエリ等の Zod バリデーション

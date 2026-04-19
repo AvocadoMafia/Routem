@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { createClient } from '@/lib/auth/supabase/client';
+import { createClient } from '@/lib/auth/supabase-client';
 
 export default function InvitePage() {
   const router = useRouter();

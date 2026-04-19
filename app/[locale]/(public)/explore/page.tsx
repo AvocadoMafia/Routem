@@ -9,7 +9,7 @@ import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredient
 import { Route, ErrorScheme } from "@/lib/types/domain";
 import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
 import { useTranslations } from "next-intl";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { errorStore } from "@/lib/stores/errorStore";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 
 type ExploreResponse = {

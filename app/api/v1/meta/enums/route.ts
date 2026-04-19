@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { CurrencyCode, RouteFor } from "@prisma/client";
 
 export async function GET() {

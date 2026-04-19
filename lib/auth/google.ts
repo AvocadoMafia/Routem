@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/auth/supabase/client";
-import { getClientAuthRedirectUrl } from "@/lib/config/client";
+import { createClient } from "@/lib/auth/supabase-client";
+import { getClientAuthRedirectUrl } from "@/lib/env/client";
 
 export async function loginWithGoogle() {
   const supabase = createClient();

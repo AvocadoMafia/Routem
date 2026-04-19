@@ -24,10 +24,10 @@ import ImportButton from "./importButton";
 import { Link } from "@/i18n/navigation";
 import { User } from "@supabase/supabase-js";
 import { useTranslations } from "next-intl";
-import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import {MdInfo} from "react-icons/md";
-import { errorStore } from "@/lib/client/stores/errorStore";
-import { getIsLikedByMe } from "@/lib/client/hooks/useLike";
+import { errorStore } from "@/lib/stores/errorStore";
+import { getIsLikedByMe } from "@/lib/hooks/useLike";
 
 type RouteHeaderProps = {
   route: Route;

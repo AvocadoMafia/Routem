@@ -6,9 +6,9 @@ import { HiHeart, HiTrash } from "react-icons/hi2";
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { Comment } from "@/lib/types/domain";
-import { userStore } from "@/lib/client/stores/userStore";
-import { useLike } from "@/lib/client/hooks/useLike";
-import { formatRelativeTime } from "@/lib/client/relativeTime";
+import { userStore } from "@/lib/stores/userStore";
+import { useLike } from "@/lib/hooks/useLike";
+import { formatRelativeTime } from "@/lib/utils/datetime";
 
 type CommentItemProps = {
   comment: Comment;

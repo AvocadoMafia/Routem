@@ -1,7 +1,7 @@
 import ClientRoot from "./clientRoot";
 import { getPrisma } from "@/lib/config/server";
 import { notFound, redirect } from "next/navigation";
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 import { headers } from "next/headers";
 import { RouteCollaboratorPolicy } from "@prisma/client";
 

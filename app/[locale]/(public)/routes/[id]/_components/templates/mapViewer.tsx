@@ -5,8 +5,8 @@ import { Map, Marker, Source, Layer, MapRef } from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import { Route } from "@/lib/types/domain";
 import { MapPin } from "lucide-react";
-import getClientMapboxAccessToken from "@/lib/config/client";
-import { useRouteGeometry } from "@/lib/client/hooks/useRouteGeometry";
+import getClientMapboxAccessToken from "@/lib/env/client";
+import { useRouteGeometry } from "@/lib/hooks/useRouteGeometry";
 import { useTranslations } from "next-intl";
 
 type Props = {

@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { usersService } from '@/features/users/service'
-import { createClient } from '@/lib/auth/supabase/server'
+import { createClient } from '@/lib/auth/supabase-server'
 import { headers } from 'next/headers'
 import RootClient from './rootClient'
 

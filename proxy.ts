@@ -1,4 +1,4 @@
-import { updateSession } from "@/lib/auth/supabase/proxy";
+import { updateSession } from "@/lib/auth/session";
 import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { defaultLocale, localeMapping, locales, type Locale } from "./i18n/config";

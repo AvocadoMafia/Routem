@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
-import { createClient } from "@/lib/auth/supabase/server";
+import { handleRequest } from "@/lib/api/server";
+import { createClient } from "@/lib/auth/supabase-server";
 import { z } from "zod";
 import { viewsService } from "@/features/views/service";
-import { validateParams } from "@/lib/server/validateParams";
+import { validateParams } from "@/lib/api/server";
 import { GetViewsQuerySchema } from "@/features/views/schema";
 
 const ViewSchema = z.object({

@@ -3,9 +3,9 @@
 import { useMemo } from "react";
 import { useLocale } from "next-intl";
 import { type Locale, defaultLocale, locales } from "@/i18n/config";
-import { exchangeRatesStore } from "@/lib/client/stores/exchangeRatesStore";
+import { exchangeRatesStore } from "@/lib/stores/exchangeRatesStore";
 import { dbLocaleToAppLocale, formatBudgetByLocale } from "@/lib/client/helpers";
-import { userStore } from "@/lib/client/stores/userStore";
+import { userStore } from "@/lib/stores/userStore";
 
 export function useLocalizedBudget(
   amount?: number | null,

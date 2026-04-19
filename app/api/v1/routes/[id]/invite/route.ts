@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { routesService } from "@/features/routes/service";
-import { createClient } from "@/lib/auth/supabase/server";
-import { validateParams } from "@/lib/server/validateParams";
+import { createClient } from "@/lib/auth/supabase-server";
+import { validateParams } from "@/lib/api/server";
 import { RouteIdParamSchema } from "@/features/routes/schema";
 
 export async function POST(

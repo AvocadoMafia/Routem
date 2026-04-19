@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
-import { createClient } from "@/lib/auth/supabase/server";
-import { validateParams } from "@/lib/server/validateParams";
+import { handleRequest } from "@/lib/api/server";
+import { createClient } from "@/lib/auth/supabase-server";
+import { validateParams } from "@/lib/api/server";
 import { CreateLikeSchema, GetLikesQuerySchema } from "@/features/likes/schema";
 import { likesService } from "@/features/likes/service";
 

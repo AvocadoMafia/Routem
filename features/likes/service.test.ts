@@ -53,7 +53,7 @@ vi.mock("@/lib/config/server", () => ({
 // mock 設置後に service を import
 // ---------------------------------------------------------------------------
 import { likesService } from "./service";
-import { ValidationError } from "@/lib/server/validateParams";
+import { ValidationError } from "@/lib/api/server";
 
 beforeEach(() => {
   const prismaAny = mocks.prisma as Record<string, unknown>;

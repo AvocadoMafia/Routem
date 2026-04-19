@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { userStore } from "@/lib/client/stores/userStore";
+import { userStore } from "@/lib/stores/userStore";
 
 export default function CTASection() {
     const user = userStore(store => store.user);

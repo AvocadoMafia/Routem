@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import 'swiper/css';
 import { HiHeart } from "react-icons/hi2";
-import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import { useTranslations } from "next-intl";
 
 type Props = {

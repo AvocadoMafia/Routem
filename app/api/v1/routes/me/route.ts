@@ -1,8 +1,8 @@
 import { GetRoutesMeSchema } from "@/features/routes/me/schema";
 import { routesMeService } from "@/features/routes/me/service";
-import { createClient } from "@/lib/auth/supabase/server";
-import { handleRequest } from "@/lib/server/handleRequest";
-import { validateParams } from "@/lib/server/validateParams";
+import { createClient } from "@/lib/auth/supabase-server";
+import { handleRequest } from "@/lib/api/server";
+import { validateParams } from "@/lib/api/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

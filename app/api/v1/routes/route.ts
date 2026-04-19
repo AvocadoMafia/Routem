@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { routesService } from "@/features/routes/service";
-import { validateParams } from "@/lib/server/validateParams";
+import { validateParams } from "@/lib/api/server";
 import { GetRoutesSchema, PostRouteSchema, PatchRouteSchema, DeleteRouteSchema } from "@/features/routes/schema";
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 
 
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { usersService } from "@/features/users/service";
-import { validateParams } from "@/lib/server/validateParams";
+import { validateParams } from "@/lib/api/server";
 import { GetUsersSchema } from "@/features/users/schema";
 
 // GET /api/v1/users

@@ -15,7 +15,7 @@ import RouteHeader from "../ingredients/routeHeader";
 import AuthorSection from "../ingredients/authorSection";
 import CategoryTags from "../ingredients/categoryTags";
 import LikeButton from "../ingredients/likeButton";
-import { getIsLikedByMe } from "@/lib/client/hooks/useLike";
+import { getIsLikedByMe } from "@/lib/hooks/useLike";
 import ShareButton from "../ingredients/shareButton";
 import ImportButton from "../ingredients/importButton";
 import CommentSection from "./commentSection";

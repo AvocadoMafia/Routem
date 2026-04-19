@@ -4,9 +4,9 @@ import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import {HiHeart, HiEye, HiCalendarDays, HiUsers, HiCurrencyDollar, HiClock} from "react-icons/hi2";
 import { Link } from "@/i18n/navigation";
-import { formatDateToYmdInTz } from "@/lib/datetime/format";
+import { formatDateToYmdInTz } from "@/lib/utils/datetime";
 import { useTranslations } from "next-intl";
-import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 
 export type RouteCardBasicProps = {
     route: Route;

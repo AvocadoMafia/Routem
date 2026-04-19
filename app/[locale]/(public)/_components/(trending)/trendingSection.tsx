@@ -9,11 +9,11 @@ import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sec
 import { Route, User } from "@/lib/types/domain";
 import { ErrorScheme } from "@/lib/types/error";
 import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { errorStore } from "@/lib/stores/errorStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiFire, HiUsers, HiHashtag } from "react-icons/hi2";
 import {MdRoute} from "react-icons/md";
-import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
+import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 type TrendingTab = 'routes' | 'users' | 'tags';
 

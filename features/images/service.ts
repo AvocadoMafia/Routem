@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ImageType } from "@prisma/client";
 import { imagesRepository, PhotoImageWithRelations } from "./repository";
 import { GetImagesType } from "./schema";
-import { encodeCursor } from "@/lib/server/cursor";
+import { encodeCursor } from "@/lib/db/cursor";
 
 /** 画像ストレージ上の公開URLを組み立てる。
  *  - prod: OCI Object Storage の固定フォーマット

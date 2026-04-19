@@ -4,7 +4,7 @@ import {IoPersonAdd} from "react-icons/io5";
 import { HiUserGroup, HiBookOpen } from 'react-icons/hi2';
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
-import { userStore } from '@/lib/client/stores/userStore';
+import { userStore } from '@/lib/stores/userStore';
 
 export type Props = {
   user: User;

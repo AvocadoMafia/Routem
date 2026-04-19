@@ -1,7 +1,7 @@
 import {commentsRepository} from "@/features/comments/repository";
 import { getPrisma } from "@/lib/config/server";
-import { encodeCursor } from "@/lib/server/cursor";
-import { DEFAULT_LIMIT } from "@/lib/server/constants";
+import { encodeCursor } from "@/lib/db/cursor";
+import { DEFAULT_LIMIT } from "@/lib/utils/pagination";
 
 export const commentsService = {
     getComments: async (userId?: string, take?: number, onlyMine?: boolean, without?: string[]) => {

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MdClose, MdExplore, MdInfo, MdSettings, MdPostAdd, MdLogout } from 'react-icons/md'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
-import { userStore } from '@/lib/client/stores/userStore'
+import { userStore } from '@/lib/stores/userStore'
 import { useState } from 'react'
 import {AiOutlineEdit} from "react-icons/ai";
 

@@ -3,7 +3,7 @@
 import { HiHeart } from "react-icons/hi2";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useLike } from "@/lib/client/hooks/useLike";
+import { useLike } from "@/lib/hooks/useLike";
 
 type LikeButtonProps = {
   routeId: string;

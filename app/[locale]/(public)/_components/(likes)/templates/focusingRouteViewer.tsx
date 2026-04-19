@@ -7,7 +7,7 @@ import Image from "next/image";
 import {HiHeart, HiEye, HiUsers, HiCurrencyDollar, HiArrowRight} from "react-icons/hi2";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 
 type Props = {
     routeOnFocus: Route

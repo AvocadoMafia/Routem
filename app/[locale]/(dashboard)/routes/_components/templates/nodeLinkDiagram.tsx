@@ -7,7 +7,7 @@ import WaypointCard from "../ingredients/WaypointCard";
 import TransportationCard from "../ingredients/TransportationCard";
 import RouteNode from "../ingredients/RouteNode";
 import InlineAddMenu from "../ingredients/InlineAddMenu";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 

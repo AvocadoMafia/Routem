@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { searchHistoryService } from "@/features/searchHistory/service";
-import {createClient} from "@/lib/auth/supabase/server";
-import { clampLimit } from "@/lib/server/constants";
+import {createClient} from "@/lib/auth/supabase-server";
+import { clampLimit } from "@/lib/utils/pagination";
 
 //ここだけsuggestionを文字列で返している。
 export async function GET(req: NextRequest) {

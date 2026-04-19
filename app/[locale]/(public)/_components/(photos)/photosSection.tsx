@@ -3,7 +3,7 @@
 import PhotoViewer from "@/app/[locale]/(public)/_components/(photos)/templates/photoViewer";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {getDataFromServerWithJson} from "@/lib/client/helpers";
-import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteScroll";
+import {CursorResponse, useInfiniteScroll} from "@/lib/hooks/useInfiniteScroll";
 
 export type Photo = {
     id: string,

@@ -3,9 +3,9 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { postDataToServerWithJson } from "@/lib/client/helpers";
-import { userStore } from "@/lib/client/stores/userStore";
-import { errorStore } from "@/lib/client/stores/errorStore";
-import { showWarningToast } from "@/lib/client/stores/toastStore";
+import { userStore } from "@/lib/stores/userStore";
+import { errorStore } from "@/lib/stores/errorStore";
+import { showWarningToast } from "@/lib/stores/toastStore";
 import { toErrorScheme } from "@/lib/client/helpers";
 
 /**

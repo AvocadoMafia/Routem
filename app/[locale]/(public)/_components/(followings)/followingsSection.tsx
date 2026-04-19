@@ -10,7 +10,7 @@ import {HiUsers} from "react-icons/hi2";
 import {useTranslations} from "next-intl";
 import RouteCardBasicSkeleton from '@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton'
 import FuckingOctopus from "@/app/[locale]/_components/common/ingredients/fuckingOctopus";
-import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteScroll";
+import {CursorResponse, useInfiniteScroll} from "@/lib/hooks/useInfiniteScroll";
 
 // 軽量ユーザー型（ユーザー表示用）
 type LightUser = {

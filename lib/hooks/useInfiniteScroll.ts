@@ -1,7 +1,7 @@
 'use client'
 
 import {DependencyList, RefObject, useCallback, useEffect, useRef, useState} from "react"
-import {errorStore} from "@/lib/client/stores/errorStore"
+import {errorStore} from "@/lib/stores/errorStore"
 import {ErrorScheme} from "@/lib/types/error"
 import {toErrorScheme} from "@/lib/client/helpers"
 

@@ -1,8 +1,8 @@
 import { GetRoutesExploreSchema } from "@/features/routes/explore/schema";
 import { routesExploreService } from "@/features/routes/explore/service";
-import { createClient } from "@/lib/auth/supabase/server";
-import { handleRequest } from "@/lib/server/handleRequest";
-import { validateParams } from "@/lib/server/validateParams";
+import { createClient } from "@/lib/auth/supabase-server";
+import { handleRequest } from "@/lib/api/server";
+import { validateParams } from "@/lib/api/server";
 import { NextRequest, NextResponse } from "next/server";
 
 // 最近作成されたルートを一覧返却します

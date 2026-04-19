@@ -8,11 +8,11 @@ import DiagramViewer from "./_components/templates/diagramViewer";
 import DetailsViewer from "./_components/templates/detailsViewer";
 import InitialModal from "./_components/templates/initialModal";
 import ViewModeSelector from "./_components/ingredients/viewModeSelector";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
 import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
-import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
+import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 type Props = {
   route: Route;

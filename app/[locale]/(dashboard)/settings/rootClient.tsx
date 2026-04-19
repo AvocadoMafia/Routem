@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useLocale, useTranslations } from 'next-intl'
 import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, MdArrowBack, MdLanguage, MdSave } from 'react-icons/md'
-import { createClient } from '@/lib/auth/supabase/client'
-import { userStore } from '@/lib/client/stores/userStore'
+import { createClient } from '@/lib/auth/supabase-client'
+import { userStore } from '@/lib/stores/userStore'
 import { localeNames } from '@/i18n/config'
-import { enumsStore } from '@/lib/client/stores/enumsStore'
+import { enumsStore } from '@/lib/stores/enumsStore'
 import { dbLocaleToAppLocale, deleteDataToServerWithJson } from "@/lib/client/helpers";
 import type { User } from '@/lib/types/domain'
 

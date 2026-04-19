@@ -1,8 +1,8 @@
 import {getPrisma} from "@/lib/config/server";
 import {UpdateUserType, GetUsersType} from "@/features/users/schema";
 import { ImageStatus, Prisma } from "@prisma/client";
-import { buildCursorWhere } from "@/lib/server/cursor";
-import { ValidationError } from "@/lib/server/validateParams";
+import { buildCursorWhere } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
           
 
 export const USER_SELECT = {

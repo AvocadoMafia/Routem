@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef } from 'react'
-import { useUiStore } from '@/lib/client/stores/uiStore'
+import { useUiStore } from '@/lib/stores/uiStore'
 
 export const useHeaderHeight = () => {
     const setHeaderHeight = useUiStore((state) => state.setHeaderHeight)

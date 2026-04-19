@@ -8,7 +8,7 @@ import CommentItem from "../ingredients/commentItem";
 import CommentItemSkeleton from "../ingredients/commentItemSkeleton";
 import LoginPromptCard from "@/app/[locale]/_components/common/ingredients/loginPromptCard";
 import { useTranslations } from "next-intl";
-import { DEFAULT_TAKE as COMMENTS_PAGE_SIZE, useComments } from "@/lib/client/hooks/useComments";
+import { DEFAULT_TAKE as COMMENTS_PAGE_SIZE, useComments } from "@/lib/hooks/useComments";
 
 type CommentSectionProps = {
   isMobile: boolean;

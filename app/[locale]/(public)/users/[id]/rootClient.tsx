@@ -7,7 +7,7 @@ import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
-import { CursorResponse, useInfiniteScroll } from '@/lib/client/hooks/useInfiniteScroll'
+import { CursorResponse, useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll'
 
 import { User as SupabaseUser } from '@supabase/supabase-js'
 

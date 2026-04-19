@@ -26,7 +26,7 @@ import {
     RouteFor,
     RouteVisibility,
 } from "@prisma/client";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { errorStore } from "@/lib/stores/errorStore";
 
 // CurrencyCode enum から OTHER を除いた表示用候補
 const CURRENCY_OPTIONS: CurrencyCode[] = Object.values(CurrencyCode).filter(

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
 
 export async function GET() {

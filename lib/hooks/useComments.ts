@@ -13,10 +13,10 @@ import type {
   CommentUserPayload,
   PostCommentResponse,
 } from "@/features/comments/schema";
-import { userStore } from "@/lib/client/stores/userStore";
-import { errorStore } from "@/lib/client/stores/errorStore";
-import { showWarningToast } from "@/lib/client/stores/toastStore";
-import { isAuthError } from "@/lib/client/hooks/useLike";
+import { userStore } from "@/lib/stores/userStore";
+import { errorStore } from "@/lib/stores/errorStore";
+import { showWarningToast } from "@/lib/stores/toastStore";
+import { isAuthError } from "@/lib/hooks/useLike";
 
 /**
  * useComments: ルート詳細ページのコメント取得 / 投稿 / 無限スクロールのロジック hook。

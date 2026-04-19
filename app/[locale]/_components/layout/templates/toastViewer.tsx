@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { toastStore } from "@/lib/client/stores/toastStore";
+import { toastStore } from "@/lib/stores/toastStore";
 import ToastCard from "@/app/[locale]/_components/layout/ingredients/toastCard";
 
 /**

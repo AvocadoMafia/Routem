@@ -3,12 +3,12 @@
 import { useMemo } from "react";
 import { HiShare, HiCheck } from "react-icons/hi2";
 import { useTranslations } from "next-intl";
-import { useShare } from "@/lib/client/hooks/useShare";
+import { useShare } from "@/lib/hooks/useShare";
 import {
   showSuccessToast,
   showWarningToast,
   toastStore,
-} from "@/lib/client/stores/toastStore";
+} from "@/lib/stores/toastStore";
 
 type ShareButtonProps = {
   variant?: "compact" | "large";

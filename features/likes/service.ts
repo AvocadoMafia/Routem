@@ -3,9 +3,9 @@ import { LikeViewTarget, Prisma } from "@prisma/client";
 import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
 import { getPrisma } from "@/lib/config/server";
 import { USER_SELECT } from "@/features/users/repository";
-import { DEFAULT_LIMIT } from "@/lib/server/constants";
-import { buildCursorWhere, encodeCursor } from "@/lib/server/cursor";
-import { ValidationError } from "@/lib/server/validateParams";
+import { DEFAULT_LIMIT } from "@/lib/utils/pagination";
+import { buildCursorWhere, encodeCursor } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
 
 export const likesService = {
     /**

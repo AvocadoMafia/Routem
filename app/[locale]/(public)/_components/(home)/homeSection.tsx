@@ -7,10 +7,10 @@ import TopUsersList from "@/app/[locale]/(public)/_components/(home)/templates/t
 import RecommendedRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/recommendedRoutesList";
 import { Route } from "@/lib/types/domain";
 import { useEffect, useState } from "react";
-import { useUiStore } from "@/lib/client/stores/uiStore";
-import { userStore } from "@/lib/client/stores/userStore";
+import { useUiStore } from "@/lib/stores/uiStore";
+import { userStore } from "@/lib/stores/userStore";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
-import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
+import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 export default function HomeSection() {
     const [isClient, setIsClient] = useState(false);

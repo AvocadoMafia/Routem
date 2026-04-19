@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
-import { createClient } from '@/lib/auth/supabase/server'
+import { createClient } from '@/lib/auth/supabase-server'
 import {getPrisma} from "@/lib/config/server";
 import { ImageStatus, ImageType } from "@prisma/client";
 

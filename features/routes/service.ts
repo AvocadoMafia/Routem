@@ -12,9 +12,9 @@ import {
   buildUpdateRouteData,
 } from "@/features/routes/utils";
 import { getMeilisearch, getPrisma, getRedisClientOrNull } from "@/lib/config/server";
-import { getNextCursor, sliceByScoreCursor } from "@/lib/server/cursor";
-import { ValidationError } from "@/lib/server/validateParams";
-import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { getNextCursor, sliceByScoreCursor } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
+import { translateJa2En } from "@/lib/services/translate";
 import { Prisma, RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
 import crypto from "crypto";
 import { exchangeRatesRepository } from "../exchangeRates/repository";

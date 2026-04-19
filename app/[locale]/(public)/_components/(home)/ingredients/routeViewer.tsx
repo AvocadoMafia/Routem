@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from 'next-intl';
 import {Route} from "@/lib/types/domain";
-import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
+import { useLocalizedBudget } from '@/lib/hooks/useLocalizedBudget';
 
 type Props = {
   focusedIndex: number;

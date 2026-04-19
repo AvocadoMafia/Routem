@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
-import { createClient } from "@/lib/auth/supabase/server";
+import { handleRequest } from "@/lib/api/server";
+import { createClient } from "@/lib/auth/supabase-server";
 import { imagesService } from "@/features/images/service";
 import {
   isAllowedContentType,
@@ -9,7 +9,7 @@ import {
   sanitizeFileName,
   ALLOWED_CONTENT_TYPES,
   ALLOWED_UPLOAD_TYPES,
-} from "@/lib/server/uploadValidation";
+} from "@/lib/utils/upload";
 
 /**
  * GET /api/v1/images/uploads?fileName=...&contentType=...&type=route-thumbnails

@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { userStore } from '@/lib/client/stores/userStore'
+import { userStore } from '@/lib/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
 import { Route } from '@/lib/types/domain'
-import { CursorResponse, useInfiniteScroll } from '@/lib/client/hooks/useInfiniteScroll'
+import { CursorResponse, useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll'
 
 type LikeRecord = { id: string; createdAt: string; route: Route }
 type ViewRecord = { id: string; updatedAt: string; route: Route }

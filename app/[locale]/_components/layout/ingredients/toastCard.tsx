@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { MdCheckCircle, MdClose, MdInfoOutline, MdWarningAmber } from "react-icons/md";
-import { toastStore, type Toast } from "@/lib/client/stores/toastStore";
+import { toastStore, type Toast } from "@/lib/stores/toastStore";
 
 interface Props {
   toast: Toast;

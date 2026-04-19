@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import RootClient from "./rootClient";
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 import { headers } from "next/headers";
 import { routesService } from "@/features/routes/service";
 import { Metadata } from "next";

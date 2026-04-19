@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import UserProfileEditModal from '../templates/userProfileEditModal'
 import { postDataToServerWithJson } from '@/lib/client/helpers'
 import { useTranslations } from 'next-intl'
-import { errorStore } from '@/lib/client/stores/errorStore'
+import { errorStore } from '@/lib/stores/errorStore'
 
 export type ProfileMode = 'self' | 'public'
 

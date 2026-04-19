@@ -1,12 +1,12 @@
 "use client"
 
 import {useEffect} from "react"
-import {userStore} from "@/lib/client/stores/userStore";
+import {userStore} from "@/lib/stores/userStore";
 import LocaleSync from "./localeSync";
-import {createClient} from "@/lib/auth/supabase/client";
+import {createClient} from "@/lib/auth/supabase-client";
 import {useShallow} from "zustand/react/shallow";
-import { enumsStore } from "@/lib/client/stores/enumsStore";
-import { exchangeRatesStore } from "@/lib/client/stores/exchangeRatesStore";
+import { enumsStore } from "@/lib/stores/enumsStore";
+import { exchangeRatesStore } from "@/lib/stores/exchangeRatesStore";
 
 export default function StateInitializer() {
 

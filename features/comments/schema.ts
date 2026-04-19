@@ -1,6 +1,6 @@
 import z from "zod";
 import { Prisma } from "@prisma/client";
-import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/server/constants";
+import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/utils/pagination";
 
 export const GetCommentsSchema = z.object({
     routeId: z.string().uuid().optional(),

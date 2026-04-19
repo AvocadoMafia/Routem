@@ -1,6 +1,6 @@
 import z from "zod";
 import { LikeViewTarget } from "@prisma/client";
-import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/server/constants";
+import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/utils/pagination";
 
 export const CreateLikeSchema = z.object({
     target: z.nativeEnum(LikeViewTarget),

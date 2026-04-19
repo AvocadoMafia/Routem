@@ -7,7 +7,7 @@ import RouteSettingsSection from "./templates/routeSettingsSection";
 import ActionBar from "./ingredients/actionBar";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
 import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson, convertToWebP, toSpotSource, toTransitMode } from "@/lib/client/helpers";
 import { Route, RouteItem } from "@/lib/types/domain";

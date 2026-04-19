@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/server/constants";
+import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/utils/pagination";
 import {Language, Locale} from "@prisma/client";
 
 /**

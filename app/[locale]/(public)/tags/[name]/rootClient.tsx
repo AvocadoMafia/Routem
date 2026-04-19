@@ -8,7 +8,7 @@ import { HiHashtag } from "react-icons/hi2";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
-import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
+import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 type TagRoutesResponse = CursorResponse<Route> & { totalCount?: number };
 

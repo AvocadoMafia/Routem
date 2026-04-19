@@ -7,10 +7,10 @@ import RouteList from "@/app/[locale]/(public)/_components/(home)/ingredients/ro
 import RouteViewer from "@/app/[locale]/(public)/_components/(home)/ingredients/routeViewer";
 import RouteFilter from "@/app/[locale]/(public)/_components/(home)/ingredients/routeFilter";
 import {Route} from "@/lib/types/domain";
-import getClientMapboxAccessToken from "@/lib/config/client";
+import getClientMapboxAccessToken from "@/lib/env/client";
 import { useMemo } from "react";
 import { MapPin } from "lucide-react";
-import { useRouteGeometry } from "@/lib/client/hooks/useRouteGeometry";
+import { useRouteGeometry } from "@/lib/hooks/useRouteGeometry";
 
 type Props = {
     routes?: Route[];

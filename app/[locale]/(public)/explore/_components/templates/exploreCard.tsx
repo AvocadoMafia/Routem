@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { userStore } from "@/lib/client/stores/userStore";
-import { enumsStore } from "@/lib/client/stores/enumsStore";
+import { userStore } from "@/lib/stores/userStore";
+import { enumsStore } from "@/lib/stores/enumsStore";
 import { dbLocaleToAppLocale } from "@/lib/client/helpers";
 import { CurrencyCode } from "@prisma/client";
 

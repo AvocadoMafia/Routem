@@ -66,7 +66,7 @@ vi.mock("./repository", () => ({
 // mock 設置後に service を import
 // ---------------------------------------------------------------------------
 import { usersService } from "./service";
-import { ValidationError } from "@/lib/server/validateParams";
+import { ValidationError } from "@/lib/api/server";
 
 beforeEach(() => {
   // prisma model の spy をリセット

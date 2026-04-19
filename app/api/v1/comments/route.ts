@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
-import {handleRequest} from "@/lib/server/handleRequest";
-import {createClient} from "@/lib/auth/supabase/server";
-import {validateParams, ValidationError} from "@/lib/server/validateParams";
+import {handleRequest} from "@/lib/api/server";
+import {createClient} from "@/lib/auth/supabase-server";
+import {validateParams, ValidationError} from "@/lib/api/server";
 import {CreateCommentSchema, DeleteCommentSchema, GetCommentsSchema} from "@/features/comments/schema";
 import {commentsService} from "@/features/comments/service";
 

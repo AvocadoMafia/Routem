@@ -1,8 +1,8 @@
 import { GetUsersType } from "./schema";
 import { usersRepository } from "./repository"
 import { getPrisma } from "@/lib/config/server";
-import { encodeCursor } from "@/lib/server/cursor";
-import { ValidationError } from "@/lib/server/validateParams";
+import { encodeCursor } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
 
 // ビジネスロジック層
 // バリデーション→ロジック→throw error or return data

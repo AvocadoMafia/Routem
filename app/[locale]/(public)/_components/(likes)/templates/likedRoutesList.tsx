@@ -4,7 +4,7 @@ import {Route} from "@/lib/types/domain";
 import {useEffect, useMemo, useRef} from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { formatDateToYmdInTz } from "@/lib/datetime/format";
+import { formatDateToYmdInTz } from "@/lib/utils/datetime";
 import { HiHeart } from "react-icons/hi2";
 
 // Likeレコード（バックエンドから返却される素体）

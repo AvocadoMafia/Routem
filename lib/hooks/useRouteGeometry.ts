@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import getClientMapboxAccessToken from "@/lib/config/client";
+import getClientMapboxAccessToken from "@/lib/env/client";
 
 /**
  * Mapbox Directions API を使用して、道路に沿ったルートのジオメトリを取得するカスタムフック

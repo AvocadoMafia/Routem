@@ -9,7 +9,7 @@ import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
 import FuckingSquid from "@/app/[locale]/_components/common/ingredients/fuckingSquid";
 import {HiHeart} from "react-icons/hi2";
-import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteScroll";
+import {CursorResponse, useInfiniteScroll} from "@/lib/hooks/useInfiniteScroll";
 
 type LikeRecord = { id: string; createdAt: string; route: Route }
 

@@ -2,7 +2,7 @@
 
 import ScrollDetector from "@/app/[locale]/_components/layout/templates/scrollDetector";
 import {useCallback, useEffect} from "react";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import { motion } from "framer-motion";
 import Header from "@/app/[locale]/_components/layout/templates/header";
 import Main from "@/app/[locale]/_components/layout/templates/main";

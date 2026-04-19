@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { getMeilisearch, getPrisma } from "@/lib/config/server";
-import { clampLimit } from "@/lib/server/constants";
+import { clampLimit } from "@/lib/utils/pagination";
 import { RouteVisibility } from "@prisma/client";
 
 export async function GET(req: NextRequest) {

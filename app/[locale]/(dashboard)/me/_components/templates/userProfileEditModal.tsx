@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MdClose, MdPhotoCamera } from 'react-icons/md'
 import Image from 'next/image'
-import { userStore } from '@/lib/client/stores/userStore'
+import { userStore } from '@/lib/stores/userStore'
 import { useTranslations } from 'next-intl'
-import { errorStore } from '@/lib/client/stores/errorStore'
+import { errorStore } from '@/lib/stores/errorStore'
 import { convertToWebP } from '@/lib/client/helpers'
 
 interface UserProfileEditModalProps {
