@@ -1,4 +1,4 @@
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { CurrencyCode } from "@prisma/client";
 import { ExchangeRate, ExchangeRateSchema } from "./schema";
 

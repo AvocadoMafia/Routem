@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { getServerSupabasePublishableKey, getServerSupabaseUrl } from "@/lib/config/server";
+import { getServerSupabasePublishableKey, getServerSupabaseUrl } from "@/lib/env/server";
 
 // publicに追加した場合はここにパスを追加する
 const publicPaths = ['/', '/about', '/routes', '/search', '/contact']

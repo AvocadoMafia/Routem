@@ -1,6 +1,6 @@
 
 import {SearchRoutesType} from "@/features/routes/search/schema";
-import {getMeilisearch} from "@/lib/config/server";
+import {getMeilisearch} from "@/lib/services/meilisearch";
 import {routesRepository, RouteWithRelations} from "@/features/routes/repository";
 import { Prisma, RouteVisibility } from "@prisma/client";
 import { User } from "@supabase/supabase-js";

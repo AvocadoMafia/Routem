@@ -29,7 +29,7 @@
  *   };
  * });
  *
- * vi.mock("@/lib/config/server", () => ({ getPrisma: () => mocks.prisma }));
+ * vi.mock("@/lib/db/prisma", () => ({ getPrisma: () => mocks.prisma }));
  * vi.mock("@/lib/auth/supabase-server", () => ({ createClient: async () => mocks.supabase }));
  *
  * import { commentsService } from "@/features/comments/service";

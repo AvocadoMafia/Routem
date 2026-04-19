@@ -1,4 +1,4 @@
-import {getPrisma} from "@/lib/config/server";
+import {getPrisma} from "@/lib/db/prisma";
 import {UpdateUserType, GetUsersType} from "@/features/users/schema";
 import { ImageStatus, Prisma } from "@prisma/client";
 import { buildCursorWhere } from "@/lib/db/cursor";

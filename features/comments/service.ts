@@ -1,5 +1,5 @@
 import {commentsRepository} from "@/features/comments/repository";
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { encodeCursor } from "@/lib/db/cursor";
 import { DEFAULT_LIMIT } from "@/lib/utils/pagination";
 

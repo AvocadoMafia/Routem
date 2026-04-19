@@ -53,7 +53,7 @@ const mocks = vi.hoisted(() => {
   return { prisma };
 });
 
-vi.mock("@/lib/config/server", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   getPrisma: () => mocks.prisma,
   // commentsService が将来 Redis / Meilisearch を触ったら追記する
 }));

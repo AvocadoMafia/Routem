@@ -1,4 +1,5 @@
-import { getPrisma, getRedisClientOrNull } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
+import { getRedisClientOrNull } from "@/lib/services/redis";
 import { ExchangeRates, Prisma } from "@prisma/client";
 
 export const exchangeRatesRepository = {

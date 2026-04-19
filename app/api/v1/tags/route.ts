@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleRequest } from "@/lib/api/server";
-import { getMeilisearch, getPrisma } from "@/lib/config/server";
+import { getMeilisearch } from "@/lib/services/meilisearch";
+import { getPrisma } from "@/lib/db/prisma";
 import { clampLimit } from "@/lib/utils/pagination";
 import { RouteVisibility } from "@prisma/client";
 

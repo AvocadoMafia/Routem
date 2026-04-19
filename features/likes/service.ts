@@ -1,7 +1,7 @@
 import { likesRepository } from "@/features/likes/repository";
 import { LikeViewTarget, Prisma } from "@prisma/client";
 import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { USER_SELECT } from "@/features/users/repository";
 import { DEFAULT_LIMIT } from "@/lib/utils/pagination";
 import { buildCursorWhere, encodeCursor } from "@/lib/db/cursor";

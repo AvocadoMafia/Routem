@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { getServerSupabaseUrl } from "@/lib/config/server";
+import { getServerSupabaseUrl } from "@/lib/env/server";
 
 export const supabaseAdmin = createClient(
   getServerSupabaseUrl(),

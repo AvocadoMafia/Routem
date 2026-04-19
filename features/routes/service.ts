@@ -11,7 +11,9 @@ import {
   buildRoutesWhere,
   buildUpdateRouteData,
 } from "@/features/routes/utils";
-import { getMeilisearch, getPrisma, getRedisClientOrNull } from "@/lib/config/server";
+import { getMeilisearch } from "@/lib/services/meilisearch";
+import { getPrisma } from "@/lib/db/prisma";
+import { getRedisClientOrNull } from "@/lib/services/redis";
 import { getNextCursor, sliceByScoreCursor } from "@/lib/db/cursor";
 import { ValidationError } from "@/lib/api/server";
 import { translateJa2En } from "@/lib/services/translate";

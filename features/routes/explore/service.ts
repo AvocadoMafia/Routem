@@ -1,6 +1,6 @@
 import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
-import { getMeilisearch } from "@/lib/config/server";
+import { getMeilisearch } from "@/lib/services/meilisearch";
 import { Prisma, RouteVisibility } from "@prisma/client";
 import { GetRoutesExploreType } from "./schema";
 

@@ -5,7 +5,7 @@ import { LikeViewTarget } from "@prisma/client";
  * likesService のユニットテスト。
  *
  * features/comments/service.test.ts の scaffolding パターンをそのまま踏襲。
- * vi.hoisted で prisma を差し替え、 `@/lib/config/server` の getPrisma を mock する。
+ * vi.hoisted で prisma を差し替え、 `@/lib/db/prisma` の getPrisma を mock する。
  *
  * カバー範囲:
  *   - toggleLike (ROUTE / COMMENT) の分岐
@@ -45,7 +45,7 @@ const mocks = vi.hoisted(() => {
   return { prisma };
 });
 
-vi.mock("@/lib/config/server", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   getPrisma: () => mocks.prisma,
 }));
 

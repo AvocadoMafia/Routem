@@ -1,6 +1,6 @@
 import { GetUsersType } from "./schema";
 import { usersRepository } from "./repository"
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { encodeCursor } from "@/lib/db/cursor";
 import { ValidationError } from "@/lib/api/server";
 

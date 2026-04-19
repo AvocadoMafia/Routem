@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
             prismaUser = await usersService.getUserById(user.id);
         } catch {
             // 初回ログイン時: Supabaseの情報からPrismaにユーザーを作成
-            const { getPrisma } = await import("@/lib/config/server");
+            const { getPrisma } = await import("@/lib/db/prisma");
             try {
                 prismaUser = await getPrisma().user.create({
                     data: {

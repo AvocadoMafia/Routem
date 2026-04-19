@@ -1,4 +1,4 @@
-import { getMeilisearch } from "@/lib/config/server";
+import { getMeilisearch } from "@/lib/services/meilisearch";
 import { translateJa2En } from "@/lib/services/translate";
 import { searchHistoryRepository } from "./repository";
 

@@ -52,7 +52,7 @@ const mocks = vi.hoisted(() => {
   return { prisma, repo };
 });
 
-vi.mock("@/lib/config/server", () => ({
+vi.mock("@/lib/db/prisma", () => ({
   getPrisma: () => mocks.prisma,
 }));
 

@@ -1,5 +1,5 @@
 import ClientRoot from "./clientRoot";
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/auth/supabase-server";
 import { headers } from "next/headers";

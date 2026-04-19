@@ -1,4 +1,4 @@
-import {getPrisma} from "@/lib/config/server";
+import {getPrisma} from "@/lib/db/prisma";
 import { buildCursorWhere } from "@/lib/db/cursor";
 
 export const commentsRepository = {

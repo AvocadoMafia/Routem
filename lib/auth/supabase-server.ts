@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest } from "next/server";
 import { cookies } from "next/dist/server/request/cookies";
-import { getServerSupabasePublishableKey, getServerSupabaseUrl } from "@/lib/config/server";
+import { getServerSupabasePublishableKey, getServerSupabaseUrl } from "@/lib/env/server";
 
 export async function createClient(request?: NextRequest | { headers: Headers }) {
   const authHeader = request?.headers.get("Authorization");

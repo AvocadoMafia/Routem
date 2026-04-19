@@ -1,4 +1,4 @@
-import {getPrisma} from "@/lib/config/server";
+import {getPrisma} from "@/lib/db/prisma";
 import {LikeViewTarget, Prisma} from "@prisma/client";
 import { ROUTE_INCLUDE } from "@/features/routes/repository";
 
