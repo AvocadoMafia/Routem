@@ -59,6 +59,13 @@ docker-compose.override.yml
 # Playwright / smoke テストの screenshot 出力（root に出てくる *.png を全除外）
 /*.png
 
-# .claude/ 配下のローカル一時ファイル
+# .claude/ 配下のローカル一時ファイル / セッション固有ファイル / D2 作業固有ファイル
 .claude/scheduled_tasks.lock
 .claude/screenshots/
+.claude/settings.local.json
+.claude/tester2-auth-plan.md
+.claude/prisma-import-files.md
+.claude/phase-d2-plan.md
+.claude/phase-d2-checklist.md
+.claude/phase-d2-preflight.sh
+.claude/phase-d2-tag-and-rollback.sh
