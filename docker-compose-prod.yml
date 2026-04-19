@@ -4,10 +4,10 @@ services:
     container_name: nginx
     ports:
       - "80:80"
-      # - "443:443" # Uncomment after setting up SSL
+      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      # - ./nginx/ssl:/etc/nginx/ssl:ro # Uncomment after setting up SSL
+      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       - app
     networks:
