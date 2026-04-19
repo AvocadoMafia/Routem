@@ -1,13 +1,13 @@
 "use client"
 
 import RouteCardGraphical from '@/app/[locale]/_components/common/templates/routeCardGraphical'
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import FeaturedRouteCard from '@/app/[locale]/(public)/_components/(home)/ingredients/featuredRouteCard'
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getDataFromServerWithJson } from "@/lib/client/helpers";
-import { ErrorScheme } from "@/lib/client/types";
+import { ErrorScheme } from "@/lib/types/error";
 import { toErrorScheme } from "@/lib/client/helpers";
 
 

@@ -5,7 +5,7 @@ import MapViewerOnMobile from "@/app/[locale]/(public)/_components/(home)/templa
 import TopRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/topRoutesList";
 import TopUsersList from "@/app/[locale]/(public)/_components/(home)/templates/topUsersList";
 import RecommendedRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/recommendedRoutesList";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import { useEffect, useState } from "react";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { userStore } from "@/lib/client/stores/userStore";

@@ -12,7 +12,7 @@ import { RefObject } from 'react'
 import FuckingOctopus from '@/app/[locale]/_components/common/ingredients/fuckingOctopus'
 import FuckingSquid from '@/app/[locale]/_components/common/ingredients/fuckingSquid'
 import { useTranslations } from 'next-intl'
-import { ErrorScheme } from '@/lib/client/types'
+import { ErrorScheme } from '@/lib/types/domain'
 
 export default function UserProfileContent({
   activeTab,

@@ -2,8 +2,8 @@ import { useTranslations } from "next-intl";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
-import {Route} from "@/lib/client/types";
-import {ErrorScheme} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
+import {ErrorScheme} from "@/lib/types/error";
 import { HiFire } from "react-icons/hi2";
 import { RefObject } from "react";
 

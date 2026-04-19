@@ -1,5 +1,5 @@
 import React from 'react';
-import {User} from "@/lib/client/types";
+import {User} from "@/lib/types/domain";
 import {IoPersonAdd} from "react-icons/io5";
 import { HiUserGroup, HiBookOpen } from 'react-icons/hi2';
 import Image from 'next/image';

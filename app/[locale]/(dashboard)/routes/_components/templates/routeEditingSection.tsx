@@ -1,6 +1,6 @@
 "use client";
 
-import { RouteItem } from "@/lib/client/types";
+import { RouteItem } from "@/lib/types/domain";
 import { MapPin, Navigation, MessageSquare } from "lucide-react";
 import WaypointEditor from "../ingredients/WaypointEditor";
 import TransportationEditor from "../ingredients/TransportationEditor";

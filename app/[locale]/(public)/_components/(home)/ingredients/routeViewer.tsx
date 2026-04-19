@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from 'next-intl';
-import {Route} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
 import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
 
 type Props = {

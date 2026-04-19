@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { RouteItem } from "@/lib/client/types";
+import { RouteItem } from "@/lib/types/domain";
 import { Plus, Settings as SettingsIcon, Loader2, Edit3, Rocket, ChevronRight, X } from "lucide-react";
 import WaypointCard from "../ingredients/WaypointCard";
 import TransportationCard from "../ingredients/TransportationCard";

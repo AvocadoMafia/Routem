@@ -2,7 +2,7 @@
 
 import { User } from "lucide-react";
 import Image from "next/image";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import { Link } from "@/i18n/navigation";
 
 type AuthorSectionProps = {

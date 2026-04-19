@@ -1,6 +1,6 @@
 'use client';
 
-import { Route, ErrorScheme } from '@/lib/client/types';
+import { Route, ErrorScheme } from '@/lib/types/domain';
 import RouteCardBasic from '@/app/[locale]/_components/common/templates/routeCardBasic';
 import RouteCardBasicSkeleton from '@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton';
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState';

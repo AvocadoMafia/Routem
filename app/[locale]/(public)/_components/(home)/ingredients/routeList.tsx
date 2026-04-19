@@ -1,6 +1,6 @@
 import RouteCardHorizontal from '@/app/[locale]/(public)/_components/(home)/ingredients/routeCardHorizontal';
 import RouteCardHorizontalSkeleton from '@/app/[locale]/(public)/_components/(home)/ingredients/routeCardHorizontalSkeleton';
-import {Route} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
 import {useEffect, useRef} from "react";
 import {useTranslations} from "next-intl";
 

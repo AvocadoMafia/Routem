@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Route, User } from '@/lib/client/types'
+import { Route, User } from '@/lib/types/domain'
 import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'

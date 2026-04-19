@@ -6,7 +6,7 @@ import mapboxgl from "mapbox-gl";
 import RouteList from "@/app/[locale]/(public)/_components/(home)/ingredients/routeList";
 import RouteViewer from "@/app/[locale]/(public)/_components/(home)/ingredients/routeViewer";
 import RouteFilter from "@/app/[locale]/(public)/_components/(home)/ingredients/routeFilter";
-import {Route} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
 import getClientMapboxAccessToken from "@/lib/config/client";
 import { useMemo } from "react";
 import { MapPin } from "lucide-react";

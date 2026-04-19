@@ -1,6 +1,6 @@
 "use client";
 
-import { Transportation } from "@/lib/client/types";
+import { Transportation } from "@/lib/types/domain";
 import { Bike, Bus, Car, Footprints, Plane, Ship, Sparkles, TrainFront } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TransitMode } from "@prisma/client";

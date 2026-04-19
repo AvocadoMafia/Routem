@@ -10,7 +10,7 @@ import { userStore } from '@/lib/client/stores/userStore'
 import { localeNames } from '@/i18n/config'
 import { enumsStore } from '@/lib/client/stores/enumsStore'
 import { dbLocaleToAppLocale, deleteDataToServerWithJson } from "@/lib/client/helpers";
-import type { User } from '@/lib/client/types'
+import type { User } from '@/lib/types/domain'
 
 export default function RootClient() {
   const router = useRouter()

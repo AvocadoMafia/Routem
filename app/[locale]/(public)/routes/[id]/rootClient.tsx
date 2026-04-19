@@ -1,6 +1,6 @@
 "use client";
 
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import { User } from "@supabase/supabase-js";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import MapViewer from "./_components/templates/mapViewer";

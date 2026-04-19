@@ -1,6 +1,6 @@
 "use client";
 
-import { Waypoint } from "@/lib/client/types";
+import { Waypoint } from "@/lib/types/domain";
 import { Image as ImageIcon, Loader2, X, CheckCircle2, MapPin, Search, Home } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";

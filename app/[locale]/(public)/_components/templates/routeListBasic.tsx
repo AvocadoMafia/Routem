@@ -1,5 +1,5 @@
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
-import {Route} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
 
 type Props = {
     routes: Route[]

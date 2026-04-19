@@ -1,6 +1,6 @@
 'use client'
 
-import { Waypoint } from "@/lib/client/types";
+import { Waypoint } from "@/lib/types/domain";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 

@@ -1,4 +1,4 @@
-import { RouteItem } from "@/lib/client/types";
+import { RouteItem } from "@/lib/types/domain";
 import { Bike, Bus, Car, Footprints, Plane, Ship, Sparkles, TrainFront } from "lucide-react";
 import { TransitMode } from "@prisma/client";
 

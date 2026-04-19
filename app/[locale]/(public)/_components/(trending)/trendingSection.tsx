@@ -6,8 +6,8 @@ import TrendingRoutesList from "@/app/[locale]/(public)/_components/(trending)/t
 import TrendingUsersList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingUsersList";
 import TrendingTagsList from "@/app/[locale]/(public)/_components/(trending)/templates/trendingTagsList";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
-import { Route, User } from "@/lib/client/types";
-import { ErrorScheme } from "@/lib/client/types";
+import { Route, User } from "@/lib/types/domain";
+import { ErrorScheme } from "@/lib/types/error";
 import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
 import { errorStore } from "@/lib/client/stores/errorStore";
 import { motion, AnimatePresence } from "framer-motion";

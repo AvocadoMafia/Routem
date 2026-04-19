@@ -1,6 +1,7 @@
 "use client";
 
-import { Route, ErrorScheme } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
+import { ErrorScheme } from "@/lib/types/error";
 import { MessageSquare, BookOpen } from "lucide-react";
 import { HiHeart } from "react-icons/hi2";
 import { motion, AnimatePresence } from "framer-motion";

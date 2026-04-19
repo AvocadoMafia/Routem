@@ -10,7 +10,7 @@ import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sec
 import {MdFavoriteBorder, MdHistory, MdRoute} from 'react-icons/md'
 import { RefObject } from 'react'
 import { useTranslations } from 'next-intl'
-import { ErrorScheme } from '@/lib/client/types'
+import { ErrorScheme } from '@/lib/types/domain'
 
 export default function UserProfileContent({
   activeTab,

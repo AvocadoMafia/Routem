@@ -4,7 +4,8 @@ import { BookOpen } from "lucide-react";
 import RouteCardWidely from "@/app/[locale]/_components/common/templates/routeCardWidely";
 import RouteCardWidelySkeleton from "@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
-import { Route, ErrorScheme } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
+import { ErrorScheme } from "@/lib/types/error";
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 

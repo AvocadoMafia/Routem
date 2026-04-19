@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import { useInitialModal } from "../hooks/useInitialModal";
 import { useTranslations } from "next-intl";

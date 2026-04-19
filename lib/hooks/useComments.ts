@@ -8,7 +8,7 @@ import {
   requestToServerWithJson,
   toErrorScheme,
 } from "@/lib/client/helpers";
-import type { Comment } from "@/lib/client/types";
+import type { Comment } from "@/lib/types/domain";
 import type {
   CommentUserPayload,
   PostCommentResponse,

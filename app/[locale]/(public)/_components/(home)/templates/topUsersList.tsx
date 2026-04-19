@@ -1,13 +1,13 @@
 'use client'
 
 import FeaturedUserCard from '@/app/[locale]/(public)/_components/(home)/ingredients/featuredUserCard'
-import { User } from "@/lib/client/types"
+import { User } from "@/lib/types/domain"
 import {UserCardGraphical} from "@/app/[locale]/_components/common/templates/userCardGraphical";
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
-import { ErrorScheme } from "@/lib/client/types";
+import { ErrorScheme } from "@/lib/types/error";
 
 
 export default function TopUsersList() {

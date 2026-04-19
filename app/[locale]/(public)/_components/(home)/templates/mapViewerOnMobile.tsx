@@ -1,6 +1,6 @@
 'use client'
 
-import {Route} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import 'swiper/css';

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { SpotSource, TransitMode } from "@prisma/client";
-import { RouteItem, Waypoint, Transportation } from "@/lib/client/types";
+import { RouteItem, Waypoint, Transportation } from "@/lib/types/domain";
 
 export function useRouteEditor() {
     // items[dayIndex][itemIndex]

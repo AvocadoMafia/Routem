@@ -5,7 +5,7 @@ import Image from "next/image";
 import { HiHeart, HiTrash } from "react-icons/hi2";
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import type { Comment } from "@/lib/client/types";
+import type { Comment } from "@/lib/types/domain";
 import { userStore } from "@/lib/client/stores/userStore";
 import { useLike } from "@/lib/client/hooks/useLike";
 import { formatRelativeTime } from "@/lib/client/relativeTime";

@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useUiStore } from "@/lib/client/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
 import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson, convertToWebP, toSpotSource, toTransitMode } from "@/lib/client/helpers";
-import { Route, RouteItem } from "@/lib/client/types";
+import { Route, RouteItem } from "@/lib/types/domain";
 import {
     CurrencyCode,
     RouteCollaboratorPolicy,

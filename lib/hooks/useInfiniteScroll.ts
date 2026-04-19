@@ -2,7 +2,7 @@
 
 import {DependencyList, RefObject, useCallback, useEffect, useRef, useState} from "react"
 import {errorStore} from "@/lib/client/stores/errorStore"
-import {ErrorScheme} from "@/lib/client/types"
+import {ErrorScheme} from "@/lib/types/error"
 import {toErrorScheme} from "@/lib/client/helpers"
 
 export type CursorResponse<T> = { items: T[]; nextCursor: string | null }

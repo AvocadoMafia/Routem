@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildOptimisticComment, mergeComments } from "./useComments";
-import type { Comment } from "@/lib/client/types";
+import type { Comment } from "@/lib/types/domain";
 
 /**
  * useComments 内部の pure function のテスト。

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import {
   HiEye,

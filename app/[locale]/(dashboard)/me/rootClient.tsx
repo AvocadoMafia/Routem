@@ -6,7 +6,7 @@ import { getDataFromServerWithJson } from '@/lib/client/helpers'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
-import { Route } from '@/lib/client/types'
+import { Route } from '@/lib/types/domain'
 import { CursorResponse, useInfiniteScroll } from '@/lib/client/hooks/useInfiniteScroll'
 
 type LikeRecord = { id: string; createdAt: string; route: Route }

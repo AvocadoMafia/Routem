@@ -1,6 +1,6 @@
 'use client'
 
-import { Transportation } from "@/lib/client/types";
+import { Transportation } from "@/lib/types/domain";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TransitMode } from "@prisma/client";

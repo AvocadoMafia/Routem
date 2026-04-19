@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import RelatedArticles from "./relatedArticles";
 import DiagramCard from "../ingredients/diagramCard";
-import { ErrorScheme } from "@/lib/client/types";
+import { ErrorScheme } from "@/lib/types/error";
 
 type DiagramItem = {
   type: "node" | "transit" | "day_separator";
