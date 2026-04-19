@@ -3,7 +3,7 @@ import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templat
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
-import {getDataFromServerWithJson} from "@/lib/client/helpers";
+import {getDataFromServerWithJson} from "@/lib/api/client";
 import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";

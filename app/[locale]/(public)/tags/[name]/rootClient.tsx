@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Route } from "@/lib/types/domain";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { getDataFromServerWithJson } from "@/lib/api/client";
 import { HiHashtag } from "react-icons/hi2";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";

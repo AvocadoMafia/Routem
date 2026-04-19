@@ -6,7 +6,7 @@ import {UserCardGraphical} from "@/app/[locale]/_components/common/templates/use
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/api/client";
 import { ErrorScheme } from "@/lib/types/error";
 
 

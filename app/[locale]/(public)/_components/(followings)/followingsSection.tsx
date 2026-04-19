@@ -1,7 +1,7 @@
 'use client'
 
 import {Route} from '@/lib/types/domain'
-import {getDataFromServerWithJson} from '@/lib/client/helpers'
+import {getDataFromServerWithJson} from '@/lib/api/client'
 import RouteCardBasic from '@/app/[locale]/_components/common/templates/routeCardBasic'
 import FollowingUserCard from '@/app/[locale]/(public)/_components/(followings)/ingredients/followingUserCard'
 import FollowingUserCardSkeleton from '@/app/[locale]/(public)/_components/(followings)/ingredients/followingUserCardSkeleton'

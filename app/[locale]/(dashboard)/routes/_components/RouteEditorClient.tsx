@@ -9,7 +9,9 @@ import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
-import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson, convertToWebP, toSpotSource, toTransitMode } from "@/lib/client/helpers";
+import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson } from "@/lib/api/client";
+import { convertToWebP } from "@/lib/utils/image";
+import { toSpotSource, toTransitMode } from "@/lib/utils/enum";
 import { Route, RouteItem } from "@/lib/types/domain";
 import {
     CurrencyCode,

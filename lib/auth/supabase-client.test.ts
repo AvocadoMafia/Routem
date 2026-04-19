@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getSupabasePublishableKey, getSupabaseUrl } from "./client";
+import { getSupabasePublishableKey, getSupabaseUrl } from "./supabase-client";
 
 /**
  * lib/auth/supabase/client.ts の env getter ユニットテスト。

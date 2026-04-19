@@ -11,7 +11,7 @@ import ViewModeSelector from "./_components/ingredients/viewModeSelector";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteScroll } from "./_components/hooks/useRouteScroll";
 import { motion } from "framer-motion";
-import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/client/helpers";
+import { postDataToServerWithJson, getDataFromServerWithJson } from "@/lib/api/client";
 import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 type Props = {

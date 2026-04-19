@@ -6,8 +6,9 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import { motion, AnimatePresence } from "framer-motion";
 import RouteCardBasic from "@/app/[locale]/_components/common/templates/routeCardBasic";
 import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredients/routeCardBasicSkeleton";
-import { Route, ErrorScheme } from "@/lib/types/domain";
-import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
+import { Route } from "@/lib/types/domain";
+import { ErrorScheme } from "@/lib/types/error";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/api/client";
 import { useTranslations } from "next-intl";
 import { errorStore } from "@/lib/stores/errorStore";
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";

@@ -2,11 +2,11 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { postDataToServerWithJson } from "@/lib/client/helpers";
+import { postDataToServerWithJson } from "@/lib/api/client";
 import { userStore } from "@/lib/stores/userStore";
 import { errorStore } from "@/lib/stores/errorStore";
 import { showWarningToast } from "@/lib/stores/toastStore";
-import { toErrorScheme } from "@/lib/client/helpers";
+import { toErrorScheme } from "@/lib/api/client";
 
 /**
  * useLike: Route / Comment いいねのトグル UI を駆動する hook。

@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { userStore } from '@/lib/stores/userStore'
 import { useTranslations } from 'next-intl'
 import { errorStore } from '@/lib/stores/errorStore'
-import { convertToWebP } from '@/lib/client/helpers'
+import { convertToWebP } from '@/lib/utils/image'
 
 interface UserProfileEditModalProps {
   isOpen: boolean

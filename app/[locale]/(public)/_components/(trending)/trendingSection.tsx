@@ -8,7 +8,7 @@ import TrendingTagsList from "@/app/[locale]/(public)/_components/(trending)/tem
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import { Route, User } from "@/lib/types/domain";
 import { ErrorScheme } from "@/lib/types/error";
-import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/api/client";
 import { errorStore } from "@/lib/stores/errorStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiFire, HiUsers, HiHashtag } from "react-icons/hi2";

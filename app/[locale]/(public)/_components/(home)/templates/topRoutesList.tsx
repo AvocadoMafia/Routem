@@ -6,9 +6,9 @@ import FeaturedRouteCard from '@/app/[locale]/(public)/_components/(home)/ingred
 import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { getDataFromServerWithJson } from "@/lib/api/client";
 import { ErrorScheme } from "@/lib/types/error";
-import { toErrorScheme } from "@/lib/client/helpers";
+import { toErrorScheme } from "@/lib/api/client";
 
 
 export default function TopRoutesList() {

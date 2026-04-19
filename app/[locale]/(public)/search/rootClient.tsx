@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { Route, ErrorScheme } from "@/lib/types/domain";
-import { getDataFromServerWithJson, toErrorScheme } from "@/lib/client/helpers";
+import { Route } from "@/lib/types/domain";
+import { ErrorScheme } from "@/lib/types/error";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/api/client";
 import SearchHeader from "@/app/[locale]/(public)/search/_components/templates/searchHeader";
 import SearchFilters from "@/app/[locale]/(public)/search/_components/templates/searchFilters";
 import ResultsGrid from "@/app/[locale]/(public)/search/_components/templates/resultsGrid";

@@ -3,7 +3,7 @@
 import { HiExclamationTriangle, HiArrowPath } from "react-icons/hi2"
 import { useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
-import { ErrorScheme } from "@/lib/types/domain"
+import { ErrorScheme } from "@/lib/types/error"
 
 type Variant = 'inline' | 'block'
 

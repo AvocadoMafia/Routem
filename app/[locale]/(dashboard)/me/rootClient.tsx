@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { userStore } from '@/lib/stores/userStore'
-import { getDataFromServerWithJson } from '@/lib/client/helpers'
+import { getDataFromServerWithJson } from '@/lib/api/client'
 import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'

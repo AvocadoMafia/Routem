@@ -1,6 +1,6 @@
 'use client'
 
-import {getDataFromServerWithJson} from "@/lib/client/helpers";
+import {getDataFromServerWithJson} from "@/lib/api/client";
 import {useEffect, useState} from "react";
 
 export default function Page() {

@@ -1,7 +1,7 @@
 import {create} from 'zustand'
 import { User } from "@/lib/types/domain"
 import { ErrorScheme } from "@/lib/types/error"
-import {getDataFromServerWithJson, patchDataToServerWithJson, toErrorScheme} from "@/lib/client/helpers";
+import {getDataFromServerWithJson, patchDataToServerWithJson, toErrorScheme} from "@/lib/api/client";
 import {createClient} from "@/lib/auth/supabase-client";
 import {ImageStatus, ImageType, Language, Locale} from "@prisma/client";
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MdSearch, MdArrowBack } from 'react-icons/md'
-import {getDataFromServerWithJson, postDataToServerWithJson} from "@/lib/client/helpers";
+import {getDataFromServerWithJson, postDataToServerWithJson} from "@/lib/api/client";
 import { useTranslations } from "next-intl";
 
 interface SearchBarProps {

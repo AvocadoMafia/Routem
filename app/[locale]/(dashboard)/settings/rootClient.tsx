@@ -9,7 +9,8 @@ import { createClient } from '@/lib/auth/supabase-client'
 import { userStore } from '@/lib/stores/userStore'
 import { localeNames } from '@/i18n/config'
 import { enumsStore } from '@/lib/stores/enumsStore'
-import { dbLocaleToAppLocale, deleteDataToServerWithJson } from "@/lib/client/helpers";
+import { dbLocaleToAppLocale } from "@/lib/utils/budget";
+import { deleteDataToServerWithJson } from "@/lib/api/client";
 import type { User } from '@/lib/types/domain'
 
 export default function RootClient() {

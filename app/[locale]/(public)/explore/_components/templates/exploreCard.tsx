@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { userStore } from "@/lib/stores/userStore";
 import { enumsStore } from "@/lib/stores/enumsStore";
-import { dbLocaleToAppLocale } from "@/lib/client/helpers";
+import { dbLocaleToAppLocale } from "@/lib/utils/budget";
 import { CurrencyCode } from "@prisma/client";
 
 interface ExploreCardProps {

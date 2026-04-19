@@ -9,7 +9,7 @@ import { Route } from "@/lib/types/domain";
 import { useEffect, useState } from "react";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { userStore } from "@/lib/stores/userStore";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { getDataFromServerWithJson } from "@/lib/api/client";
 import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 export default function HomeSection() {
