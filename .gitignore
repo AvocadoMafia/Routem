@@ -46,3 +46,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /prisma/migrations/
+
+# Playwright (E2E テスト関連は別 PR で整備中)
+.playwright-mcp/
+playwright.config.ts
+playwright-report/
+test-results/
+
+# ローカルの docker-compose override（個人ごとの port 変更等を入れるための場所）
+docker-compose.override.yml
+
+# Playwright / smoke テストの screenshot 出力（root に出てくる *.png を全除外）
+/*.png
+
+# .claude/ 配下のローカル一時ファイル
+.claude/scheduled_tasks.lock
+.claude/screenshots/
