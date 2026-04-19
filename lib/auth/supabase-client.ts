@@ -17,6 +17,10 @@ function requireEnv(name: string, value: string | undefined): string {
   return value;
 }
 
+/**
+ * @internal exported only for unit tests (`supabase-client.test.ts`).
+ * 外部モジュールからは `createClient()` 経由でアクセスし、この getter は直接呼ばないこと。
+ */
 export function getSupabaseUrl(): string {
   return requireEnv(
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -24,6 +28,10 @@ export function getSupabaseUrl(): string {
   );
 }
 
+/**
+ * @internal exported only for unit tests (`supabase-client.test.ts`).
+ * 外部モジュールからは `createClient()` 経由でアクセスし、この getter は直接呼ばないこと。
+ */
 export function getSupabasePublishableKey(): string {
   return requireEnv(
     "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY",
