@@ -1,8 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
-import {createClient} from "@/lib/auth/supabase/server";
-import {handleRequest} from "@/lib/server/handleRequest";
+import {createClient} from "@/lib/auth/supabase-server";
+import {handleRequest} from "@/lib/api/server";
 import {usersService} from "@/features/users/service";
-import {validateParams} from "@/lib/server/validateParams";
+import {validateParams} from "@/lib/api/server";
 import {UpdateUserSchema, UpdateUserType} from "@/features/users/schema";
 
 export async function GET(req: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
             prismaUser = await usersService.getUserById(user.id);
         } catch {
             // 初回ログイン時: Supabaseの情報からPrismaにユーザーを作成
-            const { getPrisma } = await import("@/lib/config/server");
+            const { getPrisma } = await import("@/lib/db/prisma");
             try {
                 prismaUser = await getPrisma().user.create({
                     data: {
@@ -73,7 +73,7 @@ export async function DELETE(req: NextRequest) {
         await usersService.deleteUser(user.id);
 
         // Supabase Auth側のユーザーを削除
-        const { supabaseAdmin } = await import("@/lib/auth/supabase/admin");
+        const { supabaseAdmin } = await import("@/lib/auth/supabase-admin");
         const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
         
         if (deleteError) {

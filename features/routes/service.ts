@@ -11,9 +11,12 @@ import {
   buildRoutesWhere,
   buildUpdateRouteData,
 } from "@/features/routes/utils";
-import { getMeilisearch, getPrisma, getRedisClient } from "@/lib/config/server";
-import { getNextCursor, sliceByScoreCursor } from "@/lib/server/cursor";
-import { translateJa2En } from "@/lib/translation/translateJa2En";
+import { getMeilisearch } from "@/lib/services/meilisearch";
+import { getPrisma } from "@/lib/db/prisma";
+import { getRedisClientOrNull } from "@/lib/services/redis";
+import { getNextCursor, sliceByScoreCursor } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
+import { translateJa2En } from "@/lib/services/translate";
 import { Prisma, RouteCollaboratorPolicy, RouteVisibility } from "@prisma/client";
 import crypto from "crypto";
 import { exchangeRatesRepository } from "../exchangeRates/repository";
@@ -41,7 +44,6 @@ export const routesService = {
       }
 
       if (query.type) {
-        const redis = getRedisClient();
         let redisKey = "";
         switch (query.type) {
           case "recommend":
@@ -68,12 +70,23 @@ export const routesService = {
         }
 
         if (redisKey) {
-          const cachedData = await redis.get(redisKey);
-          if (cachedData) {
-            const items = JSON.parse(cachedData) as { id: string; score: number }[];
-            const sliced = sliceByScoreCursor(items, query.cursor, query.limit);
-            routeIds = sliced.items.map((item) => item.id);
-            nextCursor = sliced.nextCursor;
+          // Redis が不達 / 未接続でもページ全体を壊さず、キャッシュ無し扱いで
+          // DB 直クエリに graceful fallback する。これが本番で「trending 等の
+          // コンポーネントだけ 500 で空になる」問題への耐性になる。
+          const redis = await getRedisClientOrNull();
+          if (redis) {
+            try {
+              const cachedData = await redis.get(redisKey);
+              if (cachedData) {
+                const items = JSON.parse(cachedData) as { id: string; score: number }[];
+                const sliced = sliceByScoreCursor(items, query.cursor, query.limit);
+                routeIds = sliced.items.map((item) => item.id);
+                nextCursor = sliced.nextCursor;
+              }
+            } catch (redisErr) {
+              // 取得失敗はエラーにせずキャッシュ無しパスへフォールバック
+              console.error(`[routes.getRoutes] redis.get(${redisKey}) failed:`, redisErr);
+            }
           }
         }
       }
@@ -110,7 +123,7 @@ export const routesService = {
         select: { language: true },
       });
       if (!author) {
-        throw new Error("User not found");
+        throw new Error("Not Found");
       }
       const data = buildCreateRouteData(parsedBody, userId, author.language);
       const result = await routesRepository.create(data);
@@ -140,7 +153,9 @@ export const routesService = {
       });
 
       if (deleted.count === 0) {
-        throw new Error("Notfound or Unauthorized");
+        // route が見つからない or 認証されていない両方のケース。route handler 側で
+        // 認証は先に検証されるので、ここに到達したら実質「存在しない」扱いで 404 を返す。
+        throw new Error("Not Found");
       }
 
       const meilisearch = getMeilisearch();
@@ -164,7 +179,10 @@ export const routesService = {
       const isCollaborator = route.collaborators.some((c) => c.userId === userId);
 
       if (route.visibility === RouteVisibility.PRIVATE && !isAuthor && !isCollaborator) {
-        throw new Error("Unauthorized");
+        // PRIVATE route へのアクセスは「存在すら明かさない」ポリシー (CWE-209 情報露出防止)。
+        // authorId / collaborator でない他人に対しては 404 NOT_FOUND で均一にレスポンスする。
+        // これにより攻撃者は private route の uuid を brute-force で列挙できない。
+        throw new Error("Not Found");
       }
 
       return route;
@@ -177,10 +195,13 @@ export const routesService = {
     try {
       const route = await routesRepository.findUnique(routeId);
 
-      if (!route) throw new Error("Route not found");
-      if (route.authorId !== userId) throw new Error("Unauthorized");
+      if (!route) throw new Error("Not Found");
+      // generateInvite は owner のみ許可。非 owner には route の存在も明かさず 404 固定。
+      // (他人の private route に対する invite 試行で 401/403 を返すと uuid が列挙可能になるため)
+      if (route.authorId !== userId) throw new Error("Not Found");
       if (route.collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
-        throw new Error("Collaboration is disabled for this route");
+        // コラボ機能が ON/OFF の policy に弾かれた → 403 FORBIDDEN
+        throw new Error("Forbidden");
       }
 
       const token = crypto.randomBytes(32).toString("hex");
@@ -203,11 +224,13 @@ export const routesService = {
       const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
       const invite = await routesRepository.findInviteByTokenHash(tokenHash);
 
-      if (!invite) throw new Error("Invalid token");
-      if (invite.revokedAt) throw new Error("Token revoked");
-      if (invite.expiresAt && invite.expiresAt < new Date()) throw new Error("Token expired");
+      // 招待トークン関連はクライアント入力由来の不正なので 400 VALIDATION_ERROR で返す
+      if (!invite) throw new ValidationError("Invalid token");
+      if (invite.revokedAt) throw new ValidationError("Token revoked");
+      if (invite.expiresAt && invite.expiresAt < new Date()) throw new ValidationError("Token expired");
       if (invite.route.collaboratorPolicy === RouteCollaboratorPolicy.DISABLED) {
-        throw new Error("Collaboration is disabled for this route");
+        // policy 側で弾くケース → 403 FORBIDDEN
+        throw new Error("Forbidden");
       }
 
       if (invite.route.authorId === userId) {

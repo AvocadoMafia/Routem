@@ -1,4 +1,4 @@
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { Prisma } from "@prisma/client";
 
 export const viewsRepository = {

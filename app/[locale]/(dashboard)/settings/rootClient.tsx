@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { useLocale, useTranslations } from 'next-intl'
 import { MdLogout, MdDelete, MdVpnKey, MdDarkMode, MdLightMode, MdChevronRight, MdArrowBack, MdLanguage, MdSave } from 'react-icons/md'
-import { createClient } from '@/lib/auth/supabase/client'
-import { userStore } from '@/lib/client/stores/userStore'
+import { createClient } from '@/lib/auth/supabase-client'
+import { userStore } from '@/lib/stores/userStore'
 import { localeNames } from '@/i18n/config'
-import { searchEnumsStore } from '@/lib/client/stores/searchEnumsStore'
-import { dbLocaleToAppLocale, deleteDataToServerWithJson } from "@/lib/client/helpers";
-import type { User } from '@/lib/client/types'
+import { enumsStore } from '@/lib/stores/enumsStore'
+import { dbLocaleToAppLocale } from "@/lib/utils/budget";
+import { deleteDataToServerWithJson } from "@/lib/api/client";
+import type { User } from '@/lib/types/domain'
 
 export default function RootClient() {
   const router = useRouter()
@@ -22,8 +23,8 @@ export default function RootClient() {
   const user = userStore(state => state.user)
   const [locale, setLocale] = useState<string>(user.locale || '')
   const [language, setLanguage] = useState<string>(user.language || '')
-  const localeOptions = searchEnumsStore(state => state.locale)
-  const languageOptions = searchEnumsStore(state => state.language)
+  const localeOptions = enumsStore(state => state.locale)
+  const languageOptions = enumsStore(state => state.language)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   const currentLocale = useLocale()

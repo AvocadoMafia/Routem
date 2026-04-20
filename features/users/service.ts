@@ -1,7 +1,8 @@
 import { GetUsersType } from "./schema";
 import { usersRepository } from "./repository"
-import { getPrisma } from "@/lib/config/server";
-import { encodeCursor } from "@/lib/server/cursor";
+import { getPrisma } from "@/lib/db/prisma";
+import { encodeCursor } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
 
 // ビジネスロジック層
 // バリデーション→ロジック→throw error or return data
@@ -23,7 +24,7 @@ export const usersService = {
     try {
       const user = await usersRepository.findById(id, requesterId);
       if (!user) {
-        throw new Error("User not found");
+        throw new Error("Not Found");
       }
       return user;
     } catch (e) {
@@ -62,7 +63,7 @@ export const usersService = {
    */
   toggleFollow: async (followingId: string, followerId: string) => {
     if (followingId === followerId) {
-      throw new Error("Cannot follow yourself");
+      throw new ValidationError("Cannot follow yourself");
     }
 
     return getPrisma().$transaction(async (tx) => {

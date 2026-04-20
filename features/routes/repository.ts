@@ -1,4 +1,4 @@
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { Prisma } from "@prisma/client";
 
 export const ROUTE_INCLUDE = {
@@ -88,7 +88,9 @@ export const routesRepository = {
         });
 
         if (!existing) {
-          throw new Error("Notfound or Unauthorized");
+          // route handler 側で認証は先に通過している前提のため、ここは実質「存在しない」。
+          // 他ユーザー所有 route の不正編集試行も 404 でリソースの存在自体を露出しない設計。
+          throw new Error("Not Found");
         }
 
         return (await tx.route.update({

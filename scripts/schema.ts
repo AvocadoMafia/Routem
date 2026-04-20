@@ -1,32 +1,17 @@
 import { z } from "zod";
+import { CurrencyCode } from "@prisma/client";
 
-const CurrencyCode = z.enum([
-  "JPY",
-  "USD",
-  "EUR",
-  "GBP",
-  "KRW",
-  "TWD",
-  "CNY",
-  "THB",
-  "VND",
-  "SGD",
-  "MYR",
-  "PHP",
-  "AUD",
-  "CAD",
-  "OTHER",
-]);
+const CurrencyCodeSchema = z.nativeEnum(CurrencyCode);
 
 const RateToUsd = z.number().min(0, "Rate to USD must be non-negative");
 
-export const ExchangeRateSchema = z.record(CurrencyCode, RateToUsd);
+export const ExchangeRateSchema = z.record(CurrencyCodeSchema, RateToUsd);
 
 export type ExchangeRate = z.infer<typeof ExchangeRateSchema>;
 
 export const ExchangeRatesFindManySchema = z.array(
   z.object({
-    currencyCode: CurrencyCode,
+    currencyCode: CurrencyCodeSchema,
     rateToUsd: RateToUsd,
     updatedAt: z.date(),
   }),

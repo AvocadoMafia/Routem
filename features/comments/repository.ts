@@ -1,5 +1,5 @@
-import {getPrisma} from "@/lib/config/server";
-import { buildCursorWhere } from "@/lib/server/cursor";
+import {getPrisma} from "@/lib/db/prisma";
+import { buildCursorWhere } from "@/lib/db/cursor";
 
 export const commentsRepository = {
     getMyComments: async (userId: string, take?: number, without?: string[]) => {

@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 
-vi.mock("@/lib/auth/supabase/server", () => ({
+vi.mock("@/lib/auth/supabase-server", () => ({
   createClient: vi.fn().mockResolvedValue({
     auth: {
       getUser: vi.fn().mockResolvedValue({

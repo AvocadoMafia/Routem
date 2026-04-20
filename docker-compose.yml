@@ -1,8 +1,9 @@
 services:
-  # proxy
-  enginx:
+  # proxy (dev でも同じ nginx 設定を確認したい場合に起動可能、
+  # 本番は docker-compose-prod.yml を使用)
+  nginx:
     image: nginx:1.27-alpine
-    container_name: enginx
+    container_name: nginx
     ports:
       - "80:80"
       - "443:443"

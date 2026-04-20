@@ -1,5 +1,5 @@
 import { GetRoutesType, PatchRouteType, postRouteType } from "@/features/routes/schema";
-import { buildCursorWhere } from "@/lib/server/cursor";
+import { buildCursorWhere } from "@/lib/db/cursor";
 import {
   CurrencyCode,
   ImageStatus,

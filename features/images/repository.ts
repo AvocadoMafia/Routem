@@ -1,6 +1,6 @@
-import { getPrisma } from "@/lib/config/server";
+import { getPrisma } from "@/lib/db/prisma";
 import { ImageType, ImageStatus, Prisma } from "@prisma/client";
-import { buildCursorWhere } from "@/lib/server/cursor";
+import { buildCursorWhere } from "@/lib/db/cursor";
 
 export const PHOTO_IMAGE_INCLUDE = {
   routeNode: {

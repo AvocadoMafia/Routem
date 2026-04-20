@@ -3,7 +3,7 @@
  * Prismaスキーマベースの型とカスタム型
  */
 
-import { Prisma } from "@prisma/client"
+import { Prisma, type SpotSource, type TransitMode } from "@prisma/client"
 
 // ルート型（リレーション込み）
 export type Route = Prisma.RouteGetPayload<{
@@ -60,7 +60,7 @@ export type Waypoint = {
   order: number
   lat?: number
   lng?: number
-  source: 'MAPBOX' | 'USER'
+  source: SpotSource
   sourceId?: string
 }
 
@@ -68,7 +68,7 @@ export type Waypoint = {
 export type Transportation = {
   id?: string
   type: 'transportation'
-  method: 'WALK' | 'TRAIN' | 'BUS' | 'CAR' | 'BIKE' | 'FLIGHT' | 'SHIP' | 'OTHER'
+  method: TransitMode
   memo: string
   order: number
   duration?: number

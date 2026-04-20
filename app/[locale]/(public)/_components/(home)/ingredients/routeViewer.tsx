@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from 'next-intl';
-import {Route} from "@/lib/client/types";
-import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
+import {Route} from "@/lib/types/domain";
+import { useLocalizedBudget } from '@/lib/hooks/useLocalizedBudget';
 
 type Props = {
   focusedIndex: number;
@@ -72,7 +72,7 @@ export default function RouteViewer(props: Props) {
             </div>
 
             <div className="mt-4 flex flex-col gap-3">
-              <h3 className="text-lg font-semibold text-foreground-1">Description</h3>
+              <h3 className="text-lg font-semibold text-foreground-1">{t('description')}</h3>
               <p className="text-foreground-1/80 leading-relaxed line-clamp-4">
                 {route.description}
               </p>

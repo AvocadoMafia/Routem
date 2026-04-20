@@ -3,8 +3,8 @@
 import { useEffect } from "react"
 import { useLocale } from "next-intl"
 import { useRouter, usePathname } from "@/i18n/navigation"
-import { userStore } from "@/lib/client/stores/userStore"
-import { dbLocaleToAppLocale } from "@/lib/client/helpers"
+import { userStore } from "@/lib/stores/userStore"
+import { dbLocaleToAppLocale } from "@/lib/utils/budget"
 import Cookies from "js-cookie"
 
 export default function LocaleSync() {

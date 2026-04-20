@@ -1,7 +1,8 @@
-import {getPrisma} from "@/lib/config/server";
+import {getPrisma} from "@/lib/db/prisma";
 import {UpdateUserType, GetUsersType} from "@/features/users/schema";
-import { Prisma } from "@prisma/client";
-import { buildCursorWhere } from "@/lib/server/cursor";
+import { ImageStatus, Prisma } from "@prisma/client";
+import { buildCursorWhere } from "@/lib/db/cursor";
+import { ValidationError } from "@/lib/api/server";
           
 
 export const USER_SELECT = {
@@ -98,20 +99,21 @@ export const usersRepository = {
           include: { icon: true, background: true }
         });
 
-        if (!currentUser) throw new Error("User not found");
+        if (!currentUser) throw new Error("Not Found");
 
         // アイコンの更新がある場合
         if (data.icon) {
           // data.icon は imageId として扱う
           const newIcon = await tx.image.findUnique({ where: { id: data.icon } });
-          if (!newIcon) throw new Error("New icon image not found");
+          // クライアントが投げた imageId が存在しない = bad request として 400 に寄せる
+          if (!newIcon) throw new ValidationError("New icon image not found");
 
           // 古いアイコンがある場合、UNUSEDにする
           if (currentUser.icon && currentUser.icon.id !== data.icon) {
             await tx.image.update({
               where: { id: currentUser.icon.id },
               data: {
-                status: 'UNUSED',
+                status: ImageStatus.UNUSED,
                 userIconId: null
               }
             });
@@ -121,7 +123,7 @@ export const usersRepository = {
           await tx.image.update({
             where: { id: data.icon },
             data: {
-              status: 'ADOPTED',
+              status: ImageStatus.ADOPTED,
               userIconId: id
             }
           });
@@ -130,13 +132,14 @@ export const usersRepository = {
         // 背景の更新がある場合
         if (data.background) {
           const newBg = await tx.image.findUnique({ where: { id: data.background } });
-          if (!newBg) throw new Error("New background image not found");
+          // アイコンと同じ理由で 400 VALIDATION_ERROR
+          if (!newBg) throw new ValidationError("New background image not found");
 
           if (currentUser.background && currentUser.background.id !== data.background) {
             await tx.image.update({
               where: { id: currentUser.background.id },
               data: {
-                status: 'UNUSED',
+                status: ImageStatus.UNUSED,
                 userBackgroundId: null
               }
             });
@@ -145,7 +148,7 @@ export const usersRepository = {
           await tx.image.update({
             where: { id: data.background },
             data: {
-              status: 'ADOPTED',
+              status: ImageStatus.ADOPTED,
               userBackgroundId: id
             }
           });

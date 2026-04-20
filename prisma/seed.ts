@@ -1,15 +1,85 @@
 import 'dotenv/config';
-import { PrismaClient, RouteVisibility, RouteFor, TransitMode, SpotSource, CurrencyCode, Locale, Language } from "@prisma/client";
-import { getPrisma, getMeilisearch } from "@/lib/config/server";
-import { translateJa2En } from "@/lib/translation/translateJa2En";
-import { ROUTE_INCLUDE, RouteWithRelations } from "@/features/routes/repository";
-import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
-import { RoutesDocumentsType } from "@/features/routes/schema";
-import { supabaseAdmin } from "@/lib/auth/supabase/admin";
+import { PrismaClient, RouteVisibility, RouteFor, SpotSource, CurrencyCode, Locale, Language, Prisma } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+import { MeiliSearch } from "meilisearch";
+import { createClient } from "@supabase/supabase-js";
 
-const prisma = getPrisma();
+// --- lib/features に依存しないための定義の再録 ---
 
-// Supabase auth.users にユーザーを作成し、そのIDを返す
+const ROUTE_INCLUDE = {
+    author: {
+        select: {
+            id: true,
+            name: true,
+            icon: true,
+        },
+    },
+    thumbnail: true,
+    routeDates: {
+        include: {
+            routeNodes: {
+                include: {
+                    spot: true,
+                    transitSteps: true,
+                    images: true,
+                },
+            },
+        },
+    },
+    likes: true,
+    views: true,
+    collaborators: true,
+    budget: true,
+    tags: true,
+} as const;
+
+type RouteWithRelations = Prisma.RouteGetPayload<{
+    include: typeof ROUTE_INCLUDE;
+}>;
+
+async function translateJa2En(ja_texts: string[]): Promise<string[]> {
+    if (!ja_texts || ja_texts.length === 0) return [];
+    try {
+        const url = process.env.LIBRETRANSLATE_URL!;
+        if (!url) return ja_texts;
+        const translateUrl = url.endsWith('/') ? `${url}translate` : `${url}/translate`;
+        const res = await fetch(translateUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                q: ja_texts,
+                source: "ja",
+                target: "en",
+            }),
+            headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) return ja_texts;
+        const data: any = await res.json();
+        return data.translatedText || ja_texts;
+    } catch (error) {
+        return ja_texts;
+    }
+}
+
+// --- 初期化 ---
+
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error("DATABASE_URL is not defined.");
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+const meilisearch = new MeiliSearch({
+    host: process.env.MEILISEARCH_URL || "http://127.0.0.1:7700",
+    apiKey: process.env.MEILISEARCH_APIKEY || "my_master_key",
+});
+
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+// --- メイン処理 ---
 // 既に同じメールのユーザーが存在する場合は既存のIDを返す
 async function ensureAuthUser(email: string, password: string, name: string): Promise<string> {
     // まず既存ユーザーを検索
@@ -215,17 +285,16 @@ async function syncToMeilisearch(route: RouteWithRelations) {
         ])
     ).filter(Boolean);
 
-    const exchangeRates = await exchangeRatesRepository.findMany();
+    const exchangeRates = await prisma.exchangeRates.findMany();
     const rateToUsd = exchangeRates.find(
         (r) => r.currencyCode === route.budget?.localCurrencyCode,
     )?.rateToUsd;
     const budgetInUsd =
         route.budget?.amount && rateToUsd ? route.budget.amount * rateToUsd : undefined;
 
-    const meilisearch = getMeilisearch();
     const routesIndex = meilisearch.index("routes");
 
-    const documents: RoutesDocumentsType = [
+    const documents = [
         {
             id: route.id,
             title: route.title,
@@ -234,7 +303,7 @@ async function syncToMeilisearch(route: RouteWithRelations) {
             visibility: route.visibility,
             createdAt: route.createdAt?.getTime(),
             updatedAt: route.updatedAt?.getTime(),
-            spotNames: allNodes.map((n) => n.spot.name).filter(Boolean),
+            spotNames: allNodes.map((n) => n.spot?.name).filter(Boolean),
             tags: route.tags.map((t) => t.name),
             month: route.date ? [route.date.getMonth() + 1] : undefined,
             days: route.routeDates.length > 0 ? route.routeDates.length : undefined,
@@ -244,8 +313,8 @@ async function syncToMeilisearch(route: RouteWithRelations) {
             localCurrencyCode: route.budget?.localCurrencyCode,
             budgetInUsd,
             _geo: {
-                lat: allNodes[0]?.spot.latitude ?? undefined,
-                lng: allNodes[0]?.spot.longitude ?? undefined,
+                lat: allNodes[0]?.spot?.latitude ?? undefined,
+                lng: allNodes[0]?.spot?.longitude ?? undefined,
             },
             searchText: [
                 route.title,
@@ -272,16 +341,11 @@ async function syncToMeilisearch(route: RouteWithRelations) {
 main()
   .then(async () => {
     await prisma.$disconnect();
-    // Redis接続が残っているとプロセスが終了しないため明示的に切断する
-    if (globalThis.redisClient) {
-      await globalThis.redisClient.disconnect();
-    }
+    await pool.end();
   })
   .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();
-    if (globalThis.redisClient) {
-      await globalThis.redisClient.disconnect();
-    }
+    await pool.end();
     process.exit(1);
   });

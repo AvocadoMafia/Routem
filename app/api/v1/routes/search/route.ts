@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { routesSearchService } from "@/features/routes/search/service";
-import { validateParams } from "@/lib/server/validateParams";
+import { validateParams } from "@/lib/api/server";
 import { SearchRoutesSchema } from "@/features/routes/search/schema";
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 
 // GET /api/v1/routes/search
 // Search routes with limit-offset pagination

@@ -1,23 +1,25 @@
 "use client"
 
 import {useEffect} from "react"
-import {userStore} from "@/lib/client/stores/userStore";
+import {userStore} from "@/lib/stores/userStore";
 import LocaleSync from "./localeSync";
-import {createClient} from "@/lib/auth/supabase/client";
+import {createClient} from "@/lib/auth/supabase-client";
 import {useShallow} from "zustand/react/shallow";
-import { searchEnumsStore } from "@/lib/client/stores/searchEnumsStore";
-import { exchangeRatesStore } from "@/lib/client/stores/exchangeRatesStore";
+import { enumsStore } from "@/lib/stores/enumsStore";
+import { exchangeRatesStore } from "@/lib/stores/exchangeRatesStore";
 
 export default function StateInitializer() {
 
     const { userId, login, logout } = userStore(useShallow(state => ({ userId: state.user.id, login: state.login, logout: state.logout })))
-    const fetchEnums = searchEnumsStore(state => state.fetchEnums)
+    const fetchSearchEnums = enumsStore(state => state.fetchSearchEnums)
+    const fetchUserEnums = enumsStore(state => state.fetchUserEnums)
     const fetchExchangeRates = exchangeRatesStore(state => state.fetchExchangeRates)
 
     useEffect(() => {
-        fetchEnums()
+        fetchSearchEnums()
+        fetchUserEnums()
         fetchExchangeRates()
-    }, [fetchEnums, fetchExchangeRates])
+    }, [fetchSearchEnums, fetchUserEnums, fetchExchangeRates])
 
     useEffect(() => {
         const supabase = createClient()

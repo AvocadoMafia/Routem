@@ -6,11 +6,13 @@ import RouteCardGraphical from '@/app/[locale]/_components/common/templates/rout
 import RouteCardGraphicalSkeleton from '@/app/[locale]/_components/common/ingredients/routeCardGraphicalSkeleton'
 import RouteCardWidely from '@/app/[locale]/_components/common/templates/routeCardWidely'
 import RouteCardWidelySkeleton from '@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton'
+import SectionErrorState from '@/app/[locale]/_components/common/ingredients/sectionErrorState'
 import { MdHistory } from 'react-icons/md'
 import { RefObject } from 'react'
 import FuckingOctopus from '@/app/[locale]/_components/common/ingredients/fuckingOctopus'
 import FuckingSquid from '@/app/[locale]/_components/common/ingredients/fuckingSquid'
 import { useTranslations } from 'next-intl'
+import { ErrorScheme } from '@/lib/types/error'
 
 export default function UserProfileContent({
   activeTab,
@@ -22,6 +24,8 @@ export default function UserProfileContent({
   mode = 'public',
   hasMore,
   observerTarget,
+  error,
+  onRetry,
 }: {
   activeTab: Tab
   onChangeTab: (t: Tab) => void
@@ -34,6 +38,9 @@ export default function UserProfileContent({
   hasMore?: boolean
   isFetching?: boolean
   observerTarget?: RefObject<HTMLDivElement | null>
+  /** 現在アクティブな tab のフェッチエラー (parent が切替済みで渡される前提) */
+  error?: ErrorScheme | null
+  onRetry?: () => Promise<void>
 }) {
   const t = useTranslations('profile')
 
@@ -56,7 +63,11 @@ export default function UserProfileContent({
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3 pb-20">
         {activeTab === 'routes' && (
-          routes === null ? (
+          error && (!routes || routes.length === 0) ? (
+            <div className="col-span-full">
+              <SectionErrorState error={error} onRetry={onRetry} />
+            </div>
+          ) : routes === null ? (
             dummyCards
           ) : routes && routes.length > 0 ? (
             <>
@@ -70,7 +81,12 @@ export default function UserProfileContent({
                   </div>
                 </div>
               ))}
-              {hasMore && dummyCards}
+              {hasMore && !error && dummyCards}
+              {error && (
+                <div className="col-span-full">
+                  <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
+                </div>
+              )}
             </>
           ) : (
             <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
@@ -82,7 +98,11 @@ export default function UserProfileContent({
         )}
 
         {activeTab === 'likes' && (
-          likedRoutes === null ? (
+          error && (!likedRoutes || likedRoutes.length === 0) ? (
+            <div className="col-span-full">
+              <SectionErrorState error={error} onRetry={onRetry} />
+            </div>
+          ) : likedRoutes === null ? (
             dummyCards
           ) : likedRoutes && likedRoutes.length > 0 ? (
             <>
@@ -96,7 +116,12 @@ export default function UserProfileContent({
                   </div>
                 </div>
               ))}
-              {hasMore && dummyCards}
+              {hasMore && !error && dummyCards}
+              {error && (
+                <div className="col-span-full">
+                  <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
+                </div>
+              )}
             </>
           ) : (
             <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
@@ -108,7 +133,11 @@ export default function UserProfileContent({
         )}
 
         {activeTab === 'history' && mode === 'self' && (
-          historyRoutes === null ? (
+          error && (!historyRoutes || historyRoutes.length === 0) ? (
+            <div className="col-span-full">
+              <SectionErrorState error={error} onRetry={onRetry} />
+            </div>
+          ) : historyRoutes === null ? (
             dummyCards
           ) : historyRoutes && historyRoutes.length > 0 ? (
             <>
@@ -122,7 +151,12 @@ export default function UserProfileContent({
                   </div>
                 </div>
               ))}
-              {hasMore && dummyCards}
+              {hasMore && !error && dummyCards}
+              {error && (
+                <div className="col-span-full">
+                  <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
+                </div>
+              )}
             </>
           ) : (
             <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">

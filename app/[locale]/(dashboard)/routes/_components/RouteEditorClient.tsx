@@ -7,10 +7,20 @@ import RouteSettingsSection from "./templates/routeSettingsSection";
 import ActionBar from "./ingredients/actionBar";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
-import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson } from "@/lib/client/helpers";
-import { Route, RouteItem } from "@/lib/client/types";
+import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerWithJson } from "@/lib/api/client";
+import { convertToWebP } from "@/lib/utils/image";
+import { toSpotSource, toTransitMode } from "@/lib/utils/enum";
+import { Route, RouteItem } from "@/lib/types/domain";
+import {
+    CurrencyCode,
+    RouteCollaboratorPolicy,
+    RouteFor,
+    RouteVisibility,
+    SpotSource,
+    TransitMode,
+} from "@prisma/client";
 
 interface RouteEditorClientProps {
     initialRoute?: Route;
@@ -32,15 +42,15 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
     // ルート全体のメタ情報
     const [title, setTitle] = useState(initialRoute?.title || "");
     const [description, setDescription] = useState(initialRoute?.description || "");
-    const [visibility, setVisibility] = useState<'PUBLIC' | 'PRIVATE'>(initialRoute?.visibility || 'PUBLIC');
-    const [collaboratorPolicy, setCollaboratorPolicy] = useState<'DISABLED' | 'VIEW_ONLY' | 'CAN_EDIT'>(initialRoute?.collaboratorPolicy || 'DISABLED');
+    const [visibility, setVisibility] = useState<RouteVisibility>(initialRoute?.visibility || RouteVisibility.PUBLIC);
+    const [collaboratorPolicy, setCollaboratorPolicy] = useState<RouteCollaboratorPolicy>(initialRoute?.collaboratorPolicy || RouteCollaboratorPolicy.DISABLED);
     const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | undefined>(initialRoute?.thumbnail?.url);
 
     // 追加されたパラメータ
-    const [routeFor, setRouteFor] = useState<'EVERYONE' | 'FAMILY' | 'FRIENDS' | 'COUPLE' | 'SOLO'>(initialRoute?.routeFor || 'EVERYONE');
+    const [routeFor, setRouteFor] = useState<RouteFor>(initialRoute?.routeFor || RouteFor.EVERYONE);
     const [date, setDate] = useState<string>(initialRoute?.date ? new Date(initialRoute.date).toISOString() : new Date().toISOString());
-    const [budget, setBudget] = useState<{ currencyCode: string; amount: number; note?: string }>({
-        currencyCode: initialRoute?.budget?.localCurrencyCode || 'JPY',
+    const [budget, setBudget] = useState<{ currencyCode: CurrencyCode; amount: number; note?: string }>({
+        currencyCode: initialRoute?.budget?.localCurrencyCode || CurrencyCode.JPY,
         amount: Number(initialRoute?.budget?.amount) || 0,
         note: undefined
     });
@@ -73,9 +83,9 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                 const route = JSON.parse(importedData) as Route;
                 setTitle(route.title || "");
                 setDescription(route.description || "");
-                setVisibility(route.visibility || 'PUBLIC');
-                setCollaboratorPolicy(route.collaboratorPolicy || 'DISABLED');
-                setRouteFor(route.routeFor || 'EVERYONE');
+                setVisibility(route.visibility || RouteVisibility.PUBLIC);
+                setCollaboratorPolicy(route.collaboratorPolicy || RouteCollaboratorPolicy.DISABLED);
+                setRouteFor(route.routeFor || RouteFor.EVERYONE);
                 setTags(route.tags?.map((t: { name: string }) => t.name) || []);
                 if (route.thumbnail?.url) {
                     setThumbnailImageSrc(route.thumbnail.url);
@@ -83,7 +93,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
 
                 if (route.budget) {
                     setBudget({
-                        currencyCode: route.budget.localCurrencyCode || 'JPY',
+                        currencyCode: route.budget.localCurrencyCode || CurrencyCode.JPY,
                         amount: Number(route.budget.amount) || 0,
                     });
                 }
@@ -103,7 +113,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                                     lng: node.spot.longitude || 0,
                                     memo: node.details || '',
                                     images: node.images?.map((img) => img.url) || [],
-                                    source: (node.spot.source as 'MAPBOX' | 'USER') || 'USER',
+                                    source: toSpotSource(node.spot.source),
                                     sourceId: node.spot.sourceId || undefined,
                                     order: node.order
                                 });
@@ -114,7 +124,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                                         dayItems.push({
                                             type: 'transportation',
                                             id: Math.random().toString(36).substr(2, 9),
-                                            method: step.mode as any,
+                                            method: toTransitMode(step.mode),
                                             memo: step.memo || '',
                                             distance: step.distance || undefined,
                                             duration: step.duration || undefined,
@@ -165,7 +175,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                         lng: node.spot.longitude || 0,
                         memo: node.details || '',
                         images: node.images?.map((img) => img.url) || [],
-                        source: (node.spot.source as 'MAPBOX' | 'USER') || 'USER',
+                        source: toSpotSource(node.spot.source),
                         sourceId: node.spot.sourceId || undefined,
                         order: node.order
                     });
@@ -176,7 +186,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                             dayItems.push({
                                 type: 'transportation',
                                 id: step.id,
-                                method: step.mode as any,
+                                method: toTransitMode(step.mode),
                                 memo: step.memo || '',
                                 distance: step.distance || undefined,
                                 duration: step.duration || undefined,
@@ -203,7 +213,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                     lng: node.spot.longitude || 0,
                     memo: node.details || '',
                     images: node.images?.map((img) => img.url) || [],
-                    source: (node.spot.source as 'MAPBOX' | 'USER') || 'USER',
+                    source: toSpotSource(node.spot.source),
                     sourceId: node.spot.sourceId || undefined,
                     order: node.order
                 });
@@ -214,7 +224,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                         dayItems.push({
                             type: 'transportation',
                             id: step.id,
-                            method: step.mode as any,
+                            method: toTransitMode(step.mode),
                             memo: step.memo || '',
                             distance: step.distance || undefined,
                             duration: step.duration || undefined,
@@ -277,9 +287,12 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         setUploading(true);
         setMessage(null);
         try {
+            // WebPに変換
+            const webpBlob = await convertToWebP(file, { quality: 0.85, maxSide: 2560 });
+
             const params = new URLSearchParams({
                 fileName: file.name,
-                contentType: file.type,
+                contentType: 'image/webp',
                 type: 'route-thumbnails'
             });
 
@@ -289,8 +302,8 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
 
             const uploadRes = await fetch(uploadUrl, {
                 method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type }
+                body: webpBlob,
+                headers: { 'Content-Type': 'image/webp' }
             });
 
             if (!uploadRes.ok) throw new Error('Failed to upload image');
@@ -329,7 +342,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                         ...(isUuid ? { id } : {}),
                         ...rest,
                         order: index,
-                        source: item.source || 'USER'
+                        source: item.source ?? SpotSource.USER
                     };
                 } else {
                     return {

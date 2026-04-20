@@ -5,7 +5,7 @@ import { HiSparkles, HiFire, HiHeart, HiUsers } from "react-icons/hi2";
 import { selectedType } from "@/app/[locale]/(public)/rootClient";
 import { HiHome } from "react-icons/hi";
 import { useTranslations } from "next-intl";
-import { userStore } from "@/lib/client/stores/userStore";
+import { userStore } from "@/lib/stores/userStore";
 
 const SELECTOR_KEYS = [
     { key: 'home', icon: HiHome, selected: 'home'},

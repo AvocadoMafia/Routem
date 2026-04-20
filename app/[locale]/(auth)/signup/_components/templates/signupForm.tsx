@@ -5,8 +5,8 @@ import { FaGoogle } from "react-icons/fa";
 import { useState } from "react";
 import { useTranslations } from 'next-intl';
 import { Link } from "@/i18n/navigation";
-import {createClient} from "@/lib/auth/supabase/client";
-import {getClientAuthRedirectUrl} from "@/lib/auth/redirectUrl";
+import {createClient} from "@/lib/auth/supabase-client";
+import {getClientAuthRedirectUrl} from "@/lib/env/client";
 import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function SignupForm() {
@@ -86,7 +86,7 @@ export default function SignupForm() {
                 transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
                 className="text-center flex flex-col gap-3"
               >
-                <h2 className="text-5xl font-syne font-bold text-white">Sign Up</h2>
+                <h2 className="text-5xl font-syne font-bold text-white">{t('signUp')}</h2>
                 <p className="text-md font-semibold opacity-90 text-white/75">start your journey today.</p>
               </motion.div>
 

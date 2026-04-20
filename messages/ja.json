@@ -22,6 +22,15 @@
     "share": "共有",
     "copy": "コピー",
     "copied": "コピーしました！",
+    "linkCopied": "リンクをコピーしました",
+    "copyFailed": "リンクをコピーできませんでした",
+    "shareUrlFallback": "このリンクを手動でコピーしてください",
+    "loginRequired": "ログインが必要です",
+    "loginToContinue": "続けるにはログインしてください",
+    "goToLogin": "ログイン",
+    "dismissNotification": "通知を閉じる",
+    "user": "ユーザー",
+    "anonymous": "匿名",
     "publish": "公開",
     "publishing": "公開中...",
     "public": "公開",
@@ -35,7 +44,11 @@
     "version": "ver. 1.0β",
     "min": "分",
     "everyone": "誰でも",
-    "flexible": "フレキシブル"
+    "flexible": "フレキシブル",
+    "clearMessage": "メッセージをクリア",
+    "coverAlt": "カバー画像",
+    "mapPreviewAlt": "マップのプレビュー",
+    "routeListAria": "ルート一覧"
   },
   "auth": {
     "signIn": "ログイン",
@@ -136,6 +149,7 @@
     "viewDetailedRoute": "詳細を見る",
     "copyLink": "リンクをコピー",
     "failedToLike": "いいねに失敗しました",
+    "loginToLike": "いいねするにはログインしてください",
     "importRoute": "このルートを取り込む"
   },
   "routeEditor": {
@@ -184,7 +198,11 @@
     "invitationUrl": "招待URL",
     "generateInviteUrl": "招待URLを生成",
     "inviteUrlAfterSave": "ルートを保存後、招待URLを生成できます",
-    "untitled": "無題"
+    "untitled": "無題",
+    "removeDay": "日程を削除",
+    "addDay": "日程を追加",
+    "removeImage": "画像を削除",
+    "thumbnailPreviewAlt": "サムネイルのプレビュー"
   },
   "transport": {
     "walk": "徒歩",
@@ -257,6 +275,8 @@
     "follow": "フォロー",
     "unfollow": "フォロー解除",
     "noFollowings": "フォロー中のユーザーはいません",
+    "noFollowingsTitle": "フォロー中のユーザーがいません",
+    "noFollowingsDesc": "まだ誰もフォローしていませんね？",
     "noLikedRoutes": "いいねしたルートはありません",
     "noRoutes": "まだルートがありません",
     "noRoutesCreated": "まだルートを作成していません",
@@ -270,6 +290,8 @@
     "name": "名前",
     "namePlaceholder": "あなたの名前",
     "bioPlaceholder": "自己紹介を書いてください",
+    "backgroundAlt": "背景画像",
+    "iconAlt": "アイコン",
     "saving": "保存中...",
     "saveChanges": "変更を保存",
     "settings": "設定"
@@ -306,7 +328,10 @@
     "postComment": "コメントを投稿",
     "posting": "投稿中...",
     "likeComment": "いいね",
-    "likedComment": "いいね済み"
+    "likedComment": "いいね済み",
+    "loginToComment": "コメントするにはログインしてください",
+    "postFailed": "コメントの投稿に失敗しました",
+    "endOfDiscussion": "ここまでです"
   },
   "upload": {
     "selectImage": "画像を選択",
@@ -350,7 +375,31 @@
     "serverError": "サーバーエラーが発生しました",
     "networkError": "ネットワークエラーが発生しました",
     "tryAgain": "もう一度お試しください",
-    "mapboxRequired": "Mapboxアクセストークンが必要です"
+    "mapboxRequired": "Mapboxアクセストークンが必要です",
+    "loadFailed": "読み込みに失敗しました",
+    "rateLimited": "リクエストが多すぎます。少し待ってからお試しください",
+    "retryInSeconds": "{seconds}秒後に再試行"
+  },
+  "home": {
+    "trending": "トレンド",
+    "trendingRoutes": "トレンドルート",
+    "trendingTags": "人気のタグ",
+    "topTravelers": "人気の旅行者",
+    "topRoutes": "トップルート — 今週",
+    "topUsers": "トップユーザー — 今週",
+    "likes": "いいね",
+    "followings": "フォロー中",
+    "newRoutesByFollowings": "フォロー中の新着ルート",
+    "recommendedForYou": "あなたへのおすすめ",
+    "routes": "ルート",
+    "travelers": "旅行者",
+    "tags": "タグ"
+  },
+  "empty": {
+    "noRoutes": "ルートが見つかりません。",
+    "noTravelers": "旅行者が見つかりません。",
+    "noTags": "タグが見つかりません。",
+    "noRoutesForTag": "このタグに該当するルートはありません。"
   },
   "months": {
     "jan": "1月",

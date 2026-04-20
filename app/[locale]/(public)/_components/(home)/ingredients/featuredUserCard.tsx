@@ -1,6 +1,6 @@
 import React from 'react'
 import {BiHash} from "react-icons/bi";
-import {User} from "@/lib/client/types";
+import {User} from "@/lib/types/domain";
 import Image from 'next/image';
 import {IoPersonAdd} from "react-icons/io5";
 import { Link } from "@/i18n/navigation";

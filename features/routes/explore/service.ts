@@ -1,7 +1,7 @@
 import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
 import { routesRepository, RouteWithRelations } from "@/features/routes/repository";
-import { getMeilisearch } from "@/lib/config/server";
-import { Prisma } from "@prisma/client";
+import { getMeilisearch } from "@/lib/services/meilisearch";
+import { Prisma, RouteVisibility } from "@prisma/client";
 import { GetRoutesExploreType } from "./schema";
 
 export const routesExploreService = {
@@ -13,7 +13,7 @@ export const routesExploreService = {
       const index = await meilisearch.getIndex("routes");
       const filterConditions: string[] = [];
 
-      filterConditions.push('visibility = "PUBLIC"');
+      filterConditions.push(`visibility = "${RouteVisibility.PUBLIC}"`);
 
       if (query.currencyCode) {
         const exchangeRates = await exchangeRatesRepository.findMany();

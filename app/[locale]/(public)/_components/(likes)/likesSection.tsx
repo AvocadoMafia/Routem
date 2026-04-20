@@ -1,19 +1,23 @@
 import FocusingRouteViewer from "@/app/[locale]/(public)/_components/(likes)/templates/focusingRouteViewer";
 import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templates/likedRoutesList";
+import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {useEffect, useRef, useState} from "react";
-import {getDataFromServerWithJson} from "@/lib/client/helpers";
+import {useTranslations} from "next-intl";
+import {getDataFromServerWithJson} from "@/lib/api/client";
 import {Route} from "@/lib/types/domain";
 import {AnimatePresence, motion} from "framer-motion";
 import Image from "next/image";
 import FuckingSquid from "@/app/[locale]/_components/common/ingredients/fuckingSquid";
 import {HiHeart} from "react-icons/hi2";
-import {CursorResponse, useInfiniteScroll} from "@/lib/client/hooks/useInfiniteScroll";
+import {CursorResponse, useInfiniteScroll} from "@/lib/hooks/useInfiniteScroll";
 
 type LikeRecord = { id: string; createdAt: string; route: Route }
 
 export default function LikesSection() {
+    const tHome = useTranslations('home');
+    const tProfile = useTranslations('profile');
 
-    const { items: likes } = useInfiniteScroll<LikeRecord>({
+    const { items: likes, error, retry } = useInfiniteScroll<LikeRecord>({
         fetcher: (cursor) => {
             const url = `/api/v1/likes?route=true&take=30${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`;
             return getDataFromServerWithJson<CursorResponse<LikeRecord>>(url);
@@ -32,15 +36,30 @@ export default function LikesSection() {
     const routeOnFocus = routes[focusedRouteIdx];
     const direction = focusedRouteIdx > prevIndexRef.current ? 'up' : 'down';
 
+    // --- error: いいね一覧が取れなかった ---
+    if (error && (!likes || likes.length === 0)) {
+        return (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-6 px-4">
+                <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
+                    <HiHeart className="text-accent-0 w-5 h-5" />
+                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
+                </div>
+                <div className="w-full max-w-md">
+                    <SectionErrorState error={error} onRetry={retry}/>
+                </div>
+            </div>
+        )
+    }
+
     if (likes !== null && likes.length === 0) return (
         <div className="w-full h-full flex flex-col items-center justify-center gap-2 relative">
             <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
                 <HiHeart className="text-accent-0 w-5 h-5" />
-                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">Likes</h1>
+                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
             </div>
             <FuckingSquid className={'w-[300px] h-[300px] text-foreground-1'}/>
-            <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>NO LIKED ROUTES FOUND.</h2>
-            <p className={'text-foreground-1'}>You haven't liked any routes yet, right?</p>
+            <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>{tProfile('noLikedRoutesTitle')}</h2>
+            <p className={'text-foreground-1'}>{tProfile('noLikedRoutesDesc')}</p>
         </div>
     )
 

@@ -22,6 +22,15 @@
     "share": "Share",
     "copy": "Copy",
     "copied": "Copied!",
+    "linkCopied": "Link copied to clipboard",
+    "copyFailed": "Couldn't copy the link",
+    "shareUrlFallback": "Copy this link manually",
+    "loginRequired": "Sign in required",
+    "loginToContinue": "Please sign in to continue",
+    "goToLogin": "Sign in",
+    "dismissNotification": "Dismiss notification",
+    "user": "User",
+    "anonymous": "Anonymous",
     "publish": "Publish",
     "publishing": "Publishing...",
     "public": "Public",
@@ -35,11 +44,15 @@
     "version": "ver. 1.0β",
     "min": "min",
     "everyone": "Everyone",
-    "flexible": "Flexible"
+    "flexible": "Flexible",
+    "clearMessage": "Clear message",
+    "coverAlt": "Cover image",
+    "mapPreviewAlt": "Map preview",
+    "routeListAria": "Route list"
   },
   "auth": {
-    "signIn": "Sign in",
-    "signUp": "Sign up",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
     "signOut": "Sign out",
     "signInWithGoogle": "Sign in with Google",
     "name": "Name",
@@ -136,6 +149,7 @@
     "viewDetailedRoute": "View Detailed Route",
     "copyLink": "Copy link",
     "failedToLike": "Failed to like",
+    "loginToLike": "Sign in to like this route",
     "importRoute": "Import this route"
   },
   "routeEditor": {
@@ -184,7 +198,11 @@
     "invitationUrl": "Invitation URL",
     "generateInviteUrl": "Generate Invitation URL",
     "inviteUrlAfterSave": "Invitation URLs can be generated after saving the route",
-    "untitled": "Untitled"
+    "untitled": "Untitled",
+    "removeDay": "Remove day",
+    "addDay": "Add day",
+    "removeImage": "Remove image",
+    "thumbnailPreviewAlt": "Thumbnail preview"
   },
   "transport": {
     "walk": "Walk",
@@ -257,6 +275,8 @@
     "follow": "Follow",
     "unfollow": "Unfollow",
     "noFollowings": "Not following anyone",
+    "noFollowingsTitle": "No followings found.",
+    "noFollowingsDesc": "You're not following anyone yet, right?",
     "noLikedRoutes": "No liked routes yet",
     "noRoutes": "No routes yet",
     "noRoutesCreated": "No routes created",
@@ -270,6 +290,8 @@
     "name": "Name",
     "namePlaceholder": "Your name",
     "bioPlaceholder": "Tell us about yourself",
+    "backgroundAlt": "Background",
+    "iconAlt": "Icon",
     "saving": "Saving...",
     "saveChanges": "Save Changes",
     "settings": "Settings"
@@ -306,7 +328,10 @@
     "postComment": "Post Comment",
     "posting": "Posting...",
     "likeComment": "Like",
-    "likedComment": "Liked"
+    "likedComment": "Liked",
+    "loginToComment": "Sign in to post a comment",
+    "postFailed": "Failed to post comment",
+    "endOfDiscussion": "End of discussion"
   },
   "upload": {
     "selectImage": "Select image",
@@ -350,7 +375,31 @@
     "serverError": "Server error occurred",
     "networkError": "Network error occurred",
     "tryAgain": "Please try again",
-    "mapboxRequired": "Mapbox Access Token Required"
+    "mapboxRequired": "Mapbox Access Token Required",
+    "loadFailed": "Couldn't load this section",
+    "rateLimited": "Too many requests. Please wait a moment.",
+    "retryInSeconds": "Retry in {seconds}s"
+  },
+  "home": {
+    "trending": "Trending",
+    "trendingRoutes": "Trending Routes",
+    "trendingTags": "Trending Tags",
+    "topTravelers": "Top Travelers",
+    "topRoutes": "Top Routes — This week",
+    "topUsers": "Top Users — This week",
+    "likes": "Likes",
+    "followings": "Followings",
+    "newRoutesByFollowings": "New Routes By Followings",
+    "recommendedForYou": "Recommended For You",
+    "routes": "Routes",
+    "travelers": "Travelers",
+    "tags": "Tags"
+  },
+  "empty": {
+    "noRoutes": "No routes found.",
+    "noTravelers": "No travelers found.",
+    "noTags": "No tags found.",
+    "noRoutesForTag": "No routes found for this tag."
   },
   "months": {
     "jan": "Jan",

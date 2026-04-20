@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
 import { useTranslations } from 'next-intl';
 
-import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
+import { useLocalizedBudget } from '@/lib/hooks/useLocalizedBudget';
 
 export type RouteCardHorizontalProps = {
   route: Route;

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
+import { handleRequest } from "@/lib/api/server";
 import { routesService } from "@/features/routes/service";
-import { validateParams } from "@/lib/server/validateParams";
+import { validateParams } from "@/lib/api/server";
 import { GetRoutesSchema, PostRouteSchema, PatchRouteSchema, DeleteRouteSchema } from "@/features/routes/schema";
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 
 
 
@@ -66,7 +66,7 @@ export async function PATCH(req: NextRequest) {
       error,
     } = await supabase.auth.getUser();
     if (!user || error) {
-      throw new Error("unauthorized");
+      throw new Error("Unauthorized");
     }
     const body = await req.json();
     const parsed_body = await validateParams(PatchRouteSchema, body);
@@ -89,7 +89,7 @@ export async function DELETE(req: NextRequest) {
     const supabase = await createClient(req);
     const { data: { user }, error } = await supabase.auth.getUser();
     if (!user || error) {
-      throw new Error("unauthorized")
+      throw new Error("Unauthorized")
     }
     const search_params = Object.fromEntries(new URL(req.url).searchParams);
     const parsed_params = await validateParams(DeleteRouteSchema, search_params);

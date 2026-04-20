@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { MdEdit, MdExplore, MdInfo, MdLogin, MdSearch } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
-import { userStore } from "@/lib/client/stores/userStore";
+import { userStore } from "@/lib/stores/userStore";
 import { useTranslations } from "next-intl";
 
 

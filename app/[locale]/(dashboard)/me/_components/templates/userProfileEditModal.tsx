@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MdClose, MdPhotoCamera } from 'react-icons/md'
 import Image from 'next/image'
-import { userStore } from '@/lib/client/stores/userStore'
+import { userStore } from '@/lib/stores/userStore'
 import { useTranslations } from 'next-intl'
-import { errorStore } from '@/lib/client/stores/errorStore'
+import { errorStore } from '@/lib/stores/errorStore'
+import { convertToWebP } from '@/lib/utils/image'
 
 interface UserProfileEditModalProps {
   isOpen: boolean
@@ -43,7 +44,10 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
 
   const handleImageUpload = async (file: File, type: 'user-profiles', context?: 'icon' | 'background') => {
     try {
-      let url = `/api/v1/images/uploads?fileName=${encodeURIComponent(file.name)}&contentType=${encodeURIComponent(file.type)}&type=${type}`
+      // WebPに変換
+      const webpBlob = await convertToWebP(file, { quality: 0.85, maxSide: 2560 });
+
+      let url = `/api/v1/images/uploads?fileName=${encodeURIComponent(file.name)}&contentType=image/webp&type=${type}`
       if (context) url += `&context=${context}`
       
       const res = await fetch(url)
@@ -51,9 +55,9 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
 
       await fetch(uploadUrl, {
         method: 'PUT',
-        body: file,
+        body: webpBlob,
         headers: {
-          'Content-Type': file.type,
+          'Content-Type': 'image/webp',
         },
       })
 
@@ -120,7 +124,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                 {bgUrl && (
                   <Image
                     src={bgUrl}
-                    alt="Background"
+                    alt={t('backgroundAlt')}
                     fill
                     className="object-cover"
                     unoptimized
@@ -159,7 +163,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                   {iconUrl && (
                     <Image
                       src={iconUrl}
-                      alt="Icon"
+                      alt={t('iconAlt')}
                       fill
                       className="object-cover"
                       unoptimized

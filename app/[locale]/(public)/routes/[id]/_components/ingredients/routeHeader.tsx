@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import {
   HiEye,
@@ -24,9 +24,10 @@ import ImportButton from "./importButton";
 import { Link } from "@/i18n/navigation";
 import { User } from "@supabase/supabase-js";
 import { useTranslations } from "next-intl";
-import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import {MdInfo} from "react-icons/md";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { errorStore } from "@/lib/stores/errorStore";
+import { getIsLikedByMe } from "@/lib/hooks/useLike";
 
 type RouteHeaderProps = {
   route: Route;
@@ -140,7 +141,11 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-4">
-              <LikeButton routeId={route.id} initialLikesCount={route.likes?.length ?? 0} />
+              <LikeButton
+                routeId={route.id}
+                initialLikesCount={route.likes?.length ?? 0}
+                initialIsLiked={getIsLikedByMe(route.likes, currentUser?.id)}
+              />
               <div className="flex items-center text-foreground-1">
                 <span className="text-[10px] font-bold uppercase tracking-[0.15em]">
                   {route.views?.length ?? 0} {t("views")}
@@ -223,7 +228,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
                       <button
                         onClick={handleCopy}
                         className="p-1.5 hover:bg-foreground-0/10 rounded-full transition-colors text-accent-0"
-                        title="Copy link"
+                        title={t('copyLink')}
                       >
                         {isCopying ? <HiCheck className="w-4 h-4" /> : <HiClipboard className="w-4 h-4" />}
                       </button>

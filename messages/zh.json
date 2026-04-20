@@ -22,6 +22,15 @@
     "share": "分享",
     "copy": "复制",
     "copied": "已复制！",
+    "linkCopied": "链接已复制到剪贴板",
+    "copyFailed": "链接复制失败",
+    "shareUrlFallback": "请手动复制此链接",
+    "loginRequired": "需要登录",
+    "loginToContinue": "请登录以继续",
+    "goToLogin": "登录",
+    "dismissNotification": "关闭通知",
+    "user": "用户",
+    "anonymous": "匿名",
     "publish": "发布",
     "publishing": "发布中...",
     "public": "公开",
@@ -35,7 +44,11 @@
     "version": "ver. 1.0β",
     "min": "分钟",
     "everyone": "所有人",
-    "flexible": "灵活"
+    "flexible": "灵活",
+    "clearMessage": "清除消息",
+    "coverAlt": "封面图片",
+    "mapPreviewAlt": "地图预览",
+    "routeListAria": "路线列表"
   },
   "auth": {
     "signIn": "登录",
@@ -136,6 +149,7 @@
     "viewDetailedRoute": "查看详情",
     "copyLink": "复制链接",
     "failedToLike": "点赞失败",
+    "loginToLike": "请登录后点赞此路线",
     "importRoute": "导入此路线"
   },
   "routeEditor": {
@@ -184,7 +198,11 @@
     "invitationUrl": "邀请链接",
     "generateInviteUrl": "生成邀请链接",
     "inviteUrlAfterSave": "保存路线后可生成邀请链接",
-    "untitled": "无标题"
+    "untitled": "无标题",
+    "removeDay": "删除日程",
+    "addDay": "添加日程",
+    "removeImage": "删除图片",
+    "thumbnailPreviewAlt": "缩略图预览"
   },
   "transport": {
     "walk": "步行",
@@ -257,6 +275,8 @@
     "follow": "关注",
     "unfollow": "取消关注",
     "noFollowings": "没有关注任何人",
+    "noFollowingsTitle": "没有关注任何人",
+    "noFollowingsDesc": "您还没有关注任何人，对吗？",
     "noLikedRoutes": "还没有喜欢的路线",
     "noRoutes": "还没有路线",
     "noRoutesCreated": "还没有创建路线",
@@ -270,6 +290,8 @@
     "name": "姓名",
     "namePlaceholder": "您的姓名",
     "bioPlaceholder": "介绍一下自己",
+    "backgroundAlt": "背景图片",
+    "iconAlt": "头像",
     "saving": "保存中...",
     "saveChanges": "保存更改",
     "settings": "设置"
@@ -306,7 +328,10 @@
     "postComment": "发表评论",
     "posting": "发布中...",
     "likeComment": "喜欢",
-    "likedComment": "已喜欢"
+    "likedComment": "已喜欢",
+    "loginToComment": "请登录后发表评论",
+    "postFailed": "评论发布失败",
+    "endOfDiscussion": "讨论结束"
   },
   "upload": {
     "selectImage": "选择图片",
@@ -350,7 +375,31 @@
     "serverError": "服务器错误",
     "networkError": "网络错误",
     "tryAgain": "请重试",
-    "mapboxRequired": "需要Mapbox访问令牌"
+    "mapboxRequired": "需要Mapbox访问令牌",
+    "loadFailed": "无法加载此部分",
+    "rateLimited": "请求过多，请稍后再试",
+    "retryInSeconds": "{seconds}秒后重试"
+  },
+  "home": {
+    "trending": "热门",
+    "trendingRoutes": "热门路线",
+    "trendingTags": "热门标签",
+    "topTravelers": "热门旅行者",
+    "topRoutes": "本周热门路线",
+    "topUsers": "本周热门用户",
+    "likes": "点赞",
+    "followings": "关注",
+    "newRoutesByFollowings": "关注的新路线",
+    "recommendedForYou": "为您推荐",
+    "routes": "路线",
+    "travelers": "旅行者",
+    "tags": "标签"
+  },
+  "empty": {
+    "noRoutes": "未找到路线。",
+    "noTravelers": "未找到旅行者。",
+    "noTags": "未找到标签。",
+    "noRoutesForTag": "此标签下暂无路线。"
   },
   "months": {
     "jan": "1月",

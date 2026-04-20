@@ -1,0 +1,57 @@
+# =============================================================================
+# Docker ビルド context から除外するファイル。
+# これが無いと node_modules / .next / .git / .env など数百MBが毎回 Docker daemon
+# に送られ、ビルド時間が不必要に長くなる（検証ケースで 474MB → 数MB 程度に削減）。
+# 加えて `.env` を COPY すると機密値が image layer に焼き込まれるセキュリティ
+# リスクもあるため、環境変数ファイルは明示除外する。
+# =============================================================================
+
+# 依存・ビルド成果物（コンテナ内で `npm install` / `npm run build` で再生成）
+node_modules
+.next
+out
+build
+coverage
+dist
+
+# インクリメンタルビルドキャッシュ / 型生成物
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Git / エディタ / OS
+.git
+.gitattributes
+.DS_Store
+.idea
+.vscode
+.junie
+.claude
+
+# 環境変数ファイル（機密値を image layer に焼き込まないため絶対除外）
+# `!.env.example` はテンプレ共有のため context に残しておく
+.env
+.env.*
+!.env.example
+
+# vercel（過去運用の名残。ローカルに `.vercel/` があってもビルドに巻き込まない）
+.vercel
+
+# ロガー / デバッグ
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+tsc_output.txt
+
+# テストファイル / テスト用設定（本番イメージに含めない）
+**/*.test.ts
+**/*.test.tsx
+vitest.config.ts
+
+# Lint / Format 設定（Next.js build 時に参照されない）
+.prettierrc
+eslint.config.mjs
+
+# ユーザーアップロード / ローカルランタイム生成物
+public/uploads

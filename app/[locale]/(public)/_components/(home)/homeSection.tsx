@@ -5,12 +5,12 @@ import MapViewerOnMobile from "@/app/[locale]/(public)/_components/(home)/templa
 import TopRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/topRoutesList";
 import TopUsersList from "@/app/[locale]/(public)/_components/(home)/templates/topUsersList";
 import RecommendedRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/recommendedRoutesList";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import { useEffect, useState } from "react";
-import { useUiStore } from "@/lib/client/stores/uiStore";
-import { userStore } from "@/lib/client/stores/userStore";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
-import { CursorResponse, useInfiniteScroll } from "@/lib/client/hooks/useInfiniteScroll";
+import { useUiStore } from "@/lib/stores/uiStore";
+import { userStore } from "@/lib/stores/userStore";
+import { getDataFromServerWithJson } from "@/lib/api/client";
+import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 export default function HomeSection() {
     const [isClient, setIsClient] = useState(false);
@@ -22,7 +22,7 @@ export default function HomeSection() {
         setIsClient(true);
     }, []);
 
-    const { items: routes, hasMore, isFetching, fetchMore, observerTarget } = useInfiniteScroll<Route>({
+    const { items: routes, hasMore, isFetching, fetchMore, error, retry, observerTarget } = useInfiniteScroll<Route>({
         fetcher: (cursor) => {
             const base = isUserLoggedIn
                 ? '/api/v1/routes?limit=15&type=user_recommend'
@@ -52,6 +52,8 @@ export default function HomeSection() {
                 hasMore={hasMore}
                 isFetching={isFetching}
                 observerTarget={observerTarget}
+                error={error}
+                onRetry={retry}
             />
         </div>
     );

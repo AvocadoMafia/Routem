@@ -1,16 +1,14 @@
-import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
+import { PrismaClient, RouteVisibility } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { createClient } from "redis";
 
 async function main() {
-    const dbType = process.env.DB_TYPE || "local";
-    const connectionString = dbType === "vercel" 
-        ? process.env.VERCEL_DATABASE_URL 
-        : process.env.LOCAL_DATABASE_URL;
+    const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-        throw new Error(`Database connection string for type '${dbType}' is not defined.`);
+        throw new Error("DATABASE_URL is not defined.");
     }
 
     const pool = new Pool({ connectionString });
@@ -29,7 +27,7 @@ async function main() {
     // データの取得
     const routes = await prisma.route.findMany({
         where: {
-            visibility: "PUBLIC",
+            visibility: RouteVisibility.PUBLIC,
         },
         include: {
             likes: true,

@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useRef} from "react";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import {usePathname} from "next/navigation";
 
 export default function ScrollDetector() {

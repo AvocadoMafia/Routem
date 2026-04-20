@@ -1,9 +1,9 @@
 "use client";
 
 import { HiArrowDownOnSquare } from "react-icons/hi2";
-import { Route } from "@/lib/client/types";
+import { Route } from "@/lib/types/domain";
 import { useTranslations } from "next-intl";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { errorStore } from "@/lib/stores/errorStore";
 
 type ImportButtonProps = {
   route: Route;

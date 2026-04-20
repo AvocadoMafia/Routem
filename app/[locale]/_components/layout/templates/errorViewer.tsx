@@ -1,6 +1,6 @@
 'use client'
 
-import { errorStore } from "@/lib/client/stores/errorStore";
+import { errorStore } from "@/lib/stores/errorStore";
 import ErrorCard from "@/app/[locale]/_components/layout/ingredients/errorCard";
 import { AnimatePresence } from "framer-motion";
 

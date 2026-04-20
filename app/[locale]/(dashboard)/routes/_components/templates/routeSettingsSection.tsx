@@ -20,33 +20,44 @@ import {
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { errorStore } from "@/lib/client/stores/errorStore";
+import {
+    CurrencyCode,
+    RouteCollaboratorPolicy,
+    RouteFor,
+    RouteVisibility,
+} from "@prisma/client";
+import { errorStore } from "@/lib/stores/errorStore";
+
+// CurrencyCode enum から OTHER を除いた表示用候補
+const CURRENCY_OPTIONS: CurrencyCode[] = Object.values(CurrencyCode).filter(
+    (c) => c !== CurrencyCode.OTHER,
+);
 
 interface RouteSettingsSectionProps {
     title: string;
     setTitle: (val: string) => void;
     description: string;
     setDescription: (val: string) => void;
-    visibility: 'PUBLIC' | 'PRIVATE';
-    setVisibility: (val: 'PUBLIC' | 'PRIVATE') => void;
-    collaboratorPolicy: 'DISABLED' | 'VIEW_ONLY' | 'CAN_EDIT';
-    setCollaboratorPolicy: (val: 'DISABLED' | 'VIEW_ONLY' | 'CAN_EDIT') => void;
+    visibility: RouteVisibility;
+    setVisibility: (val: RouteVisibility) => void;
+    collaboratorPolicy: RouteCollaboratorPolicy;
+    setCollaboratorPolicy: (val: RouteCollaboratorPolicy) => void;
     routeId?: string; // 編集時のみ存在
     thumbnailImageSrc?: string;
     handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     uploading: boolean;
 
     // 追加されたパラメータ
-    routeFor: 'EVERYONE' | 'FAMILY' | 'FRIENDS' | 'COUPLE' | 'SOLO';
-    setRouteFor: (val: 'EVERYONE' | 'FAMILY' | 'FRIENDS' | 'COUPLE' | 'SOLO') => void;
+    routeFor: RouteFor;
+    setRouteFor: (val: RouteFor) => void;
     date: string;
     setDate: (val: string) => void;
     budget: {
-        currencyCode: string;
+        currencyCode: CurrencyCode;
         amount: number;
         note?: string;
     };
-    setBudget: (val: { currencyCode: string; amount: number; note?: string }) => void;
+    setBudget: (val: { currencyCode: CurrencyCode; amount: number; note?: string }) => void;
     tags: string[];
     setTags: (val: string[]) => void;
 }
@@ -179,7 +190,7 @@ export default function RouteSettingsSection({
                                     <div className="absolute inset-0">
                                         <Image
                                             src={thumbnailImageSrc}
-                                            alt="Thumbnail preview"
+                                            alt={t('thumbnailPreviewAlt')}
                                             fill
                                             className="object-cover"
                                             unoptimized
@@ -235,13 +246,13 @@ export default function RouteSettingsSection({
                             <Users size={16} /> {t('whoIsItFor')}
                         </label>
                         <div className="grid grid-cols-3 md:grid-cols-5 gap-2 bg-background-0 border border-grass rounded-2xl p-1">
-                            {(['EVERYONE', 'FAMILY', 'FRIENDS', 'COUPLE', 'SOLO'] as const).map((opt) => {
-                                const labelMap: Record<string, string> = {
-                                    EVERYONE: t('targetEveryone'),
-                                    FAMILY: t('targetFamily'),
-                                    FRIENDS: t('targetFriends'),
-                                    COUPLE: t('targetCouple'),
-                                    SOLO: t('targetSolo')
+                            {(Object.values(RouteFor)).map((opt) => {
+                                const labelMap: Record<RouteFor, string> = {
+                                    [RouteFor.EVERYONE]: t('targetEveryone'),
+                                    [RouteFor.FAMILY]: t('targetFamily'),
+                                    [RouteFor.FRIENDS]: t('targetFriends'),
+                                    [RouteFor.COUPLE]: t('targetCouple'),
+                                    [RouteFor.SOLO]: t('targetSolo')
                                 };
                                 return (
                                     <button
@@ -283,10 +294,10 @@ export default function RouteSettingsSection({
                             <div className="flex gap-2">
                                 <select
                                     value={budget.currencyCode}
-                                    onChange={(e) => setBudget({ ...budget, currencyCode: e.target.value })}
+                                    onChange={(e) => setBudget({ ...budget, currencyCode: e.target.value as CurrencyCode })}
                                     className="w-24 px-3 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium appearance-none text-center"
                                 >
-                                    {["JPY", "USD", "EUR", "GBP", "KRW", "TWD", "CNY", "THB", "VND", "SGD", "MYR", "PHP", "AUD", "CAD"].map((c) => (
+                                    {CURRENCY_OPTIONS.map((c) => (
                                         <option key={c} value={c}>{c}</option>
                                     ))}
                                 </select>
@@ -295,7 +306,7 @@ export default function RouteSettingsSection({
                                     value={budget.amount === 0 ? "" : budget.amount}
                                     onChange={(e) => setBudget({ ...budget, amount: Number(e.target.value) })}
                                     className="flex-1 px-5 py-4 bg-background-0 border border-grass rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-0/20 focus:border-accent-0 transition-all text-base font-medium"
-                                    placeholder="Amount"
+                                    placeholder={t('budgetPlaceholder')}
                                 />
                             </div>
                         </div>
@@ -360,21 +371,21 @@ export default function RouteSettingsSection({
                             </label>
                             <div className="grid grid-cols-2 bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
-                                    onClick={() => setVisibility('PUBLIC')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PUBLIC' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setVisibility(RouteVisibility.PUBLIC)}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === RouteVisibility.PUBLIC ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     {tCommon('public')}
                                 </button>
                                 <button
-                                    onClick={() => setVisibility('PRIVATE')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === 'PRIVATE' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setVisibility(RouteVisibility.PRIVATE)}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${visibility === RouteVisibility.PRIVATE ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     {tCommon('private')}
                                 </button>
                             </div>
                             <p className="text-xs text-foreground-1/60 px-1">
-                                {visibility === 'PUBLIC' && tRoutes('visibilityPublic')}
-                                {visibility === 'PRIVATE' && tRoutes('visibilityPrivate')}
+                                {visibility === RouteVisibility.PUBLIC && tRoutes('visibilityPublic')}
+                                {visibility === RouteVisibility.PRIVATE && tRoutes('visibilityPrivate')}
                             </p>
                         </div>
 
@@ -385,35 +396,35 @@ export default function RouteSettingsSection({
                             </label>
                             <div className="grid grid-cols-3 bg-background-0 border border-grass rounded-2xl overflow-hidden p-1">
                                 <button
-                                    onClick={() => setCollaboratorPolicy('DISABLED')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'DISABLED' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setCollaboratorPolicy(RouteCollaboratorPolicy.DISABLED)}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === RouteCollaboratorPolicy.DISABLED ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     {t('policyDisabled')}
                                 </button>
                                 <button
-                                    onClick={() => setCollaboratorPolicy('VIEW_ONLY')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'VIEW_ONLY' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setCollaboratorPolicy(RouteCollaboratorPolicy.VIEW_ONLY)}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === RouteCollaboratorPolicy.VIEW_ONLY ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     {t('policyViewOnly')}
                                 </button>
                                 <button
-                                    onClick={() => setCollaboratorPolicy('CAN_EDIT')}
-                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === 'CAN_EDIT' ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
+                                    onClick={() => setCollaboratorPolicy(RouteCollaboratorPolicy.CAN_EDIT)}
+                                    className={`py-3 rounded-xl text-sm font-bold transition-all ${collaboratorPolicy === RouteCollaboratorPolicy.CAN_EDIT ? 'bg-accent-0 text-white shadow-sm' : 'text-foreground-1 hover:bg-grass/10'}`}
                                 >
                                     {t('policyCanEdit')}
                                 </button>
                             </div>
                             <p className="text-xs text-foreground-1/60 px-1">
-                                {collaboratorPolicy === 'DISABLED' && t('policyDisabledDesc')}
-                                {collaboratorPolicy === 'VIEW_ONLY' && t('policyViewOnlyDesc')}
-                                {collaboratorPolicy === 'CAN_EDIT' && t('policyCanEditDesc')}
+                                {collaboratorPolicy === RouteCollaboratorPolicy.DISABLED && t('policyDisabledDesc')}
+                                {collaboratorPolicy === RouteCollaboratorPolicy.VIEW_ONLY && t('policyViewOnlyDesc')}
+                                {collaboratorPolicy === RouteCollaboratorPolicy.CAN_EDIT && t('policyCanEditDesc')}
                             </p>
                         </div>
 
 
 
                         {/* Invite URL (Only for existing routes and if not disabled) */}
-                        {routeId && collaboratorPolicy !== 'DISABLED' && (
+                        {routeId && collaboratorPolicy !== RouteCollaboratorPolicy.DISABLED && (
                             <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                                     <Link size={16} /> {t('invitationUrl')}
@@ -445,7 +456,7 @@ export default function RouteSettingsSection({
                                 </div>
                             </div>
                         )}
-                        {!routeId && collaboratorPolicy !== 'DISABLED' && (
+                        {!routeId && collaboratorPolicy !== RouteCollaboratorPolicy.DISABLED && (
                             <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                 <label className="flex items-center gap-2 text-sm font-bold text-foreground-0">
                                     <Link size={16} /> {t('invitationUrl')}

@@ -1,11 +1,11 @@
 'use client'
 
-import {Route} from "@/lib/client/types";
+import {Route} from "@/lib/types/domain";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import 'swiper/css';
 import { HiHeart } from "react-icons/hi2";
-import { useLocalizedBudget } from "@/lib/client/hooks/useLocalizedBudget";
+import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
 
 export default function MapViewerOnMobile(props: Props) {
     const t = useTranslations('routes');
+    const tCommon = useTranslations('common');
     if (!props.routes) {
         return (
             <div className="w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg overflow-hidden">
@@ -64,8 +65,8 @@ export default function MapViewerOnMobile(props: Props) {
                             <div className="w-full h-[275px] relative">
                                 <Image
                                     className="absolute w-full h-full object-cover rounded-xl"
-                                    src="/map.jpg"
-                                    alt="Map preview"
+                                    src={route.thumbnail?.url || '/map.jpg'}
+                                    alt={tCommon('mapPreviewAlt')}
                                     fill
                                 />
                             </div>

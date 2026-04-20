@@ -1,6 +1,6 @@
 'use client';
 
-import { useUiStore } from '@/lib/client/stores/uiStore';
+import { useUiStore } from '@/lib/stores/uiStore';
 import {motion} from "framer-motion";
 import Header from "@/app/[locale]/_components/layout/templates/header";
 

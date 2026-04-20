@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { Route } from "@/lib/client/types";
-import { getDataFromServerWithJson } from "@/lib/client/helpers";
+import { Route } from "@/lib/types/domain";
+import { ErrorScheme } from "@/lib/types/error";
+import { getDataFromServerWithJson, toErrorScheme } from "@/lib/api/client";
 import SearchHeader from "@/app/[locale]/(public)/search/_components/templates/searchHeader";
 import SearchFilters from "@/app/[locale]/(public)/search/_components/templates/searchFilters";
 import ResultsGrid from "@/app/[locale]/(public)/search/_components/templates/resultsGrid";
@@ -26,14 +27,17 @@ export default function RootClient(props: Props) {
     const [total, setTotal] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [error, setError] = useState<ErrorScheme | null>(null);
     const [filters, setFilters] = useState<FilterState>({ orderBy: "relevant", routeFor: "", month: "" });
     const [showFilters, setShowFilters] = useState(false);
     const limit = 12;
     const observerTarget = useRef<HTMLDivElement>(null);
-    
+
     // Refs to avoid stale closure in IntersectionObserver
     const isFetchingRef = useRef(false);
     const hasMoreRef = useRef(true);
+    // retry 時に「直近どの offset で失敗したか」を参照できるようにする
+    const lastOffsetRef = useRef<number>(0);
 
     useEffect(() => {
         isFetchingRef.current = isFetching;
@@ -58,8 +62,10 @@ export default function RootClient(props: Props) {
 
     const fetchSearchResults = useCallback(async (offset: number) => {
         if (isFetchingRef.current || !hasMoreRef.current) return;
-        
+
+        lastOffsetRef.current = offset;
         setIsFetching(true);
+        setError(null);
         try {
             const params = new URLSearchParams({
                 q: props.q,
@@ -77,7 +83,7 @@ export default function RootClient(props: Props) {
             if (!res) return;
 
             setTotal(res.total);
-            
+
             if (offset === 0) {
                 setRoutes(res.items);
             } else {
@@ -86,26 +92,35 @@ export default function RootClient(props: Props) {
 
             const nextHasMore = (offset + limit) < res.total;
             setHasMore(nextHasMore);
-        } catch (error) {
-            console.error("Search error:", error);
+        } catch (e: unknown) {
+            console.error("Search error:", e);
+            setError(toErrorScheme(e));
         } finally {
             setIsFetching(false);
         }
     }, [props.q, filters, limit]);
+
+    const retry = useCallback(async () => {
+        // 直近失敗した offset から再試行
+        await fetchSearchResults(lastOffsetRef.current);
+    }, [fetchSearchResults]);
 
     // Initial search
     useEffect(() => {
         setRoutes([]);
         setHasMore(true);
         hasMoreRef.current = true;
+        setError(null);
         fetchSearchResults(0);
     }, [fetchSearchResults]);
 
     // Infinite scroll observer
+    // error 状態の時は自動 fetch を止める (無限再試行ループ防止)
     useEffect(() => {
+        if (error) return;
         const observer = new IntersectionObserver(
             (entries) => {
-                if (entries[0].isIntersecting && hasMoreRef.current && !isFetchingRef.current) {
+                if (entries[0].isIntersecting && hasMoreRef.current && !isFetchingRef.current && !error) {
                     fetchSearchResults(routes.length);
                 }
             },
@@ -119,7 +134,7 @@ export default function RootClient(props: Props) {
         return () => {
             observer.disconnect();
         };
-    }, [routes.length]);
+    }, [routes.length, error, fetchSearchResults]);
 
     return (
         <div className="w-full h-full md:overflow-hidden flex relative">
@@ -151,7 +166,7 @@ export default function RootClient(props: Props) {
                     showFilters={showFilters}
                     onToggleFilters={() => setShowFilters(!showFilters)}
                 />
-                <ResultsGrid routes={routes} isFetching={isFetching} hasMore={hasMore} total={total} observerTarget={observerTarget}/>
+                <ResultsGrid routes={routes} isFetching={isFetching} hasMore={hasMore} total={total} observerTarget={observerTarget} error={error} onRetry={retry}/>
             </div>
             {/*<SearchHeader*/}
             {/*    query={props.q}*/}

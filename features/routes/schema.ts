@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  CurrencyCode,
+  Language,
+  RouteCollaboratorPolicy,
+  RouteFor,
+  RouteVisibility,
+} from "@prisma/client";
 import { TransportationSchema, WaypointSchema } from "../database_schema";
 
 // TODO:型の重複部分をnon-optionalにして共通化するべき
@@ -21,30 +28,14 @@ export const PostRouteSchema = z.object({
     .min(1, "At least one day is required"),
   thumbnailImageSrc: z
     .string()
-    .startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL"),
+    .url("Thumbnail image must be a valid URL"),
   title: z.string().min(1, "Title is required").max(100, "Title must be at most 100 characters"),
-  visibility: z.enum(["PUBLIC", "PRIVATE"]),
-  collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-  who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]),
+  visibility: z.nativeEnum(RouteVisibility),
+  collaboratorPolicy: z.nativeEnum(RouteCollaboratorPolicy).optional(),
+  who: z.nativeEnum(RouteFor),
   date: z.string().datetime(),
   budget: z.object({
-    currencyCode: z.enum([
-      "JPY",
-      "USD",
-      "EUR",
-      "GBP",
-      "KRW",
-      "TWD",
-      "CNY",
-      "THB",
-      "VND",
-      "SGD",
-      "MYR",
-      "PHP",
-      "AUD",
-      "CAD",
-      "OTHER",
-    ]),
+    currencyCode: z.nativeEnum(CurrencyCode),
     amount: z.number().min(0),
   }),
   tags: z.array(z.string()).min(1, "At least one tag is required"),
@@ -57,36 +48,20 @@ export const PatchRouteSchema = z.object({
   items: z.array(z.array(z.union([WaypointSchema, TransportationSchema]))).optional(),
   thumbnailImageSrc: z
     .string()
-    .startsWith(process.env.MINIO_ENDPOINT || "", "Thumbnail image must be a valid URL")
+    .url("Thumbnail image must be a valid URL")
     .optional(),
   title: z
     .string()
     .min(1, "Title is required")
     .max(100, "Title must be at most 100 characters")
     .optional(),
-  visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
-  collaboratorPolicy: z.enum(["DISABLED", "VIEW_ONLY", "CAN_EDIT"]).optional(),
-  who: z.enum(["EVERYONE", "FAMILY", "FRIENDS", "COUPLE", "SOLO"]).optional(),
+  visibility: z.nativeEnum(RouteVisibility).optional(),
+  collaboratorPolicy: z.nativeEnum(RouteCollaboratorPolicy).optional(),
+  who: z.nativeEnum(RouteFor).optional(),
   date: z.string().datetime().optional(),
   budget: z
     .object({
-      currencyCode: z.enum([
-        "JPY",
-        "USD",
-        "EUR",
-        "GBP",
-        "KRW",
-        "TWD",
-        "CNY",
-        "THB",
-        "VND",
-        "SGD",
-        "MYR",
-        "PHP",
-        "AUD",
-        "CAD",
-        "OTHER",
-      ]),
+      currencyCode: z.nativeEnum(CurrencyCode),
       amount: z.number().min(0),
     })
     .optional(),
@@ -99,6 +74,17 @@ export const DeleteRouteSchema = z.object({
 });
 
 export type DeleteRouteType = z.infer<typeof DeleteRouteSchema>;
+
+/**
+ * 動的 path param `/api/v1/routes/[id]` の id バリデーション用。
+ * UUID 以外の文字列 (例: "not-a-uuid") が来た場合は 400 VALIDATION_ERROR で拒否する
+ * (旧実装では Prisma の findUnique に渡って 500 を返していた)。
+ */
+export const RouteIdParamSchema = z.object({
+  id: z.string().uuid("Invalid route ID"),
+});
+
+export type RouteIdParamType = z.infer<typeof RouteIdParamSchema>;
 
 const RoutesDocumentsSchema = z.array(
   z.object({
@@ -115,28 +101,10 @@ const RoutesDocumentsSchema = z.array(
     month: z.array(z.number().int().min(1).max(12)).optional(),
     days: z.number().int().min(0).optional(),
     routeFor: PatchRouteSchema.shape.who,
-    language: z.enum(["JA", "EN", "KO", "ZH"]).optional(),
+    language: z.nativeEnum(Language).optional(),
 
     budgetInLocalCurrency: z.number().min(0).optional(),
-    localCurrencyCode: z
-      .enum([
-        "JPY",
-        "USD",
-        "EUR",
-        "GBP",
-        "KRW",
-        "TWD",
-        "CNY",
-        "THB",
-        "VND",
-        "SGD",
-        "MYR",
-        "PHP",
-        "AUD",
-        "CAD",
-        "OTHER",
-      ])
-      .optional(),
+    localCurrencyCode: z.nativeEnum(CurrencyCode).optional(),
     budgetInUsd: z.number().min(0).optional(),
     _geo: z.object({
       lat: z.number().optional(),

@@ -1,7 +1,7 @@
 // components/google-login-button.tsx
 "use client"; // ★ここはクライアントコンポーネントにする
 
-import { loginWithGoogle } from "@/lib/auth/login/google"; 
+import { loginWithGoogle } from "@/lib/auth/google"; 
 
 export default function GoogleLoginButton() {
   return (

@@ -1,9 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
 import RelatedArticles from "./relatedArticles";
 import DiagramCard from "../ingredients/diagramCard";
+import { ErrorScheme } from "@/lib/types/error";
 
 type DiagramItem = {
   type: "node" | "transit" | "day_separator";
@@ -24,6 +24,8 @@ type Props = {
   isFetchingRelated: boolean;
   fetchMoreRelated: () => Promise<void>;
   relatedHasMore: boolean;
+  relatedError?: ErrorScheme | null;
+  retryRelated?: () => Promise<void>;
 };
 
 export default function DiagramViewer({
@@ -37,6 +39,8 @@ export default function DiagramViewer({
   isFetchingRelated,
   fetchMoreRelated,
   relatedHasMore,
+  relatedError,
+  retryRelated,
 }: Props) {
   const isInfoAreaFocused = !isMobile && viewMode !== "map" && focusIndex >= items.length;
 
@@ -94,13 +98,15 @@ export default function DiagramViewer({
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           >
-            <RelatedArticles 
+            <RelatedArticles
               routes={relatedRoutes}
               loading={relatedLoading}
               fetchingMore={isFetchingRelated}
               fetchMore={fetchMoreRelated}
               hasMore={relatedHasMore}
-              compact 
+              error={relatedError}
+              onRetry={retryRelated}
+              compact
             />
           </motion.div>
         )}

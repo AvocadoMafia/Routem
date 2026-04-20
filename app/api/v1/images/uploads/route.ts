@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { handleRequest } from "@/lib/server/handleRequest";
-import { createClient } from "@/lib/auth/supabase/server";
+import { handleRequest } from "@/lib/api/server";
+import { createClient } from "@/lib/auth/supabase-server";
 import { imagesService } from "@/features/images/service";
 import {
   isAllowedContentType,
@@ -9,7 +9,7 @@ import {
   sanitizeFileName,
   ALLOWED_CONTENT_TYPES,
   ALLOWED_UPLOAD_TYPES,
-} from "@/lib/server/uploadValidation";
+} from "@/lib/utils/upload";
 
 /**
  * GET /api/v1/images/uploads?fileName=...&contentType=...&type=route-thumbnails
@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
 
     const url = new URL(req.url);
     const rawFileName = url.searchParams.get('fileName') || `upload-${Date.now()}`;
-    const contentType = url.searchParams.get('contentType') || 'image/webp';
+    // WebPへの変換を強制するため、contentTypeは強制的にimage/webpとする
+    const contentType = 'image/webp';
     const type = url.searchParams.get('type') || 'others';
     const context = url.searchParams.get('context');
 

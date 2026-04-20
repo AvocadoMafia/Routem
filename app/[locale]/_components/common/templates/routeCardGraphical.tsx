@@ -3,7 +3,7 @@ import { HiHeart, HiEye, HiClock, HiBanknotes } from 'react-icons/hi2'
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
-import { useLocalizedBudget } from '@/lib/client/hooks/useLocalizedBudget';
+import { useLocalizedBudget } from '@/lib/hooks/useLocalizedBudget';
 import { useTranslations } from 'next-intl';
 
 export type RouteCardGraphicalProps = {

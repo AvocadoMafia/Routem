@@ -5,11 +5,11 @@ import ContentsSelector from "@/app/[locale]/(public)/_components/templates/cont
 import HomeSection from "@/app/[locale]/(public)/_components/(home)/homeSection";
 import PhotosSection from "@/app/[locale]/(public)/_components/(photos)/photosSection";
 import TrendingSection from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
-import { useUiStore } from "@/lib/client/stores/uiStore";
+import { useUiStore } from "@/lib/stores/uiStore";
 import { motion } from "framer-motion";
 import LikesSection from "@/app/[locale]/(public)/_components/(likes)/likesSection";
 import FollowingsSection from "@/app/[locale]/(public)/_components/(followings)/followingsSection";
-import { userStore } from "@/lib/client/stores/userStore";
+import { userStore } from "@/lib/stores/userStore";
 
 export type selectedType = 'home' | 'photos' | 'trending' | 'likes' | 'followings'
 

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
-import { createClient } from '@/lib/auth/supabase/server'
-import {getPrisma} from "@/lib/config/server";
+import { createClient } from '@/lib/auth/supabase-server'
+import {getPrisma} from "@/lib/db/prisma";
+import { ImageStatus, ImageType } from "@prisma/client";
 
 /**
  * OAuth認証コールバックエンドポイント
@@ -34,10 +35,9 @@ function isValidRedirectPath(path: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  // if "next" is in param, use it as the redirect URL
-  const nextParam = searchParams.get('next') ?? '/'
+  const code = request.nextUrl.searchParams.get('code')
+  const origin = request.nextUrl.origin
+  const nextParam = request.nextUrl.searchParams.get('next') ?? '/'
   const next = isValidRedirectPath(nextParam) ? nextParam : '/'
 
   if (code) {
@@ -76,8 +76,8 @@ export async function GET(request: NextRequest) {
             create: {
               url: iconUrl,
               key: null,
-              status: 'EXTERNAL',
-              type: 'USER_ICON',
+              status: ImageStatus.EXTERNAL,
+              type: ImageType.USER_ICON,
               createdAt: new Date(),
               updatedAt: new Date(),
               uploaderId: supabaseUser.id,

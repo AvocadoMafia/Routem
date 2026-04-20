@@ -1,8 +1,8 @@
-import { handleRequest } from "@/lib/server/handleRequest";
-import { validateParams } from "@/lib/server/validateParams";
+import { handleRequest } from "@/lib/api/server";
+import { validateParams } from "@/lib/api/server";
 import { UserIdSchema } from "@/features/users/schema";
 import { usersService } from "@/features/users/service";
-import { createClient } from "@/lib/auth/supabase/server";
+import { createClient } from "@/lib/auth/supabase-server";
 import { NextRequest } from "next/server";
 
 export async function GET(

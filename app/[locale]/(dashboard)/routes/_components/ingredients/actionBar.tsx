@@ -45,7 +45,7 @@ export default function ActionBar({
                             <button
                                 onClick={onClearMessage}
                                 className="ml-1 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0"
-                                aria-label="Clear message"
+                                aria-label={tCommon('clearMessage')}
                             >
                                 <X size={14} />
                             </button>

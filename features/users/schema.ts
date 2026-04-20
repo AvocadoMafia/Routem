@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/server/constants";
+import { MAX_LIMIT, DEFAULT_LIMIT } from "@/lib/utils/pagination";
 import {Language, Locale} from "@prisma/client";
 
 /**
@@ -25,8 +25,8 @@ export const UserSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
   bio: z.string().optional(),
-  locale: z.enum(Locale).optional(),
-  language: z.enum(Language).optional(),
+  locale: z.nativeEnum(Locale).optional(),
+  language: z.nativeEnum(Language).optional(),
   icon: z.string().optional(),
   background: z.string().optional(),
   createdAt: z.date(),

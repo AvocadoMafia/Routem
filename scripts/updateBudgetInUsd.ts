@@ -1,6 +1,6 @@
 import { exchangeRatesRepository } from "@/features/exchangeRates/repository";
 import { RoutesDocumentsType } from "@/features/routes/schema";
-import { getMeilisearch } from "@/lib/config/server";
+import { getMeilisearch } from "@/lib/services/meilisearch";
 
 const updateBudgetInUsd = async () => {
   try {
