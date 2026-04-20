@@ -150,7 +150,9 @@
     "copyLink": "リンクをコピー",
     "failedToLike": "いいねに失敗しました",
     "loginToLike": "いいねするにはログインしてください",
-    "importRoute": "このルートを取り込む"
+    "importRoute": "このルートを取り込む",
+    "createdBy": "{name} さんが作成",
+    "discover": "発見する"
   },
   "routeEditor": {
     "editRoute": "ルートを編集",

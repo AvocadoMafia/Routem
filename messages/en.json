@@ -150,7 +150,9 @@
     "copyLink": "Copy link",
     "failedToLike": "Failed to like",
     "loginToLike": "Sign in to like this route",
-    "importRoute": "Import this route"
+    "importRoute": "Import this route",
+    "createdBy": "Created by {name}",
+    "discover": "Discover"
   },
   "routeEditor": {
     "editRoute": "Edit Route",

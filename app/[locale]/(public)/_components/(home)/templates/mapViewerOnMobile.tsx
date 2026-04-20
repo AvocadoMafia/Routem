@@ -4,9 +4,12 @@ import {Route} from "@/lib/types/domain";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 import 'swiper/css';
-import { HiHeart } from "react-icons/hi2";
+import {HiBanknotes, HiClock, HiCurrencyDollar, HiEye, HiHeart} from "react-icons/hi2";
 import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import { useTranslations } from "next-intl";
+import {MdPeople} from "react-icons/md";
+import { useRouter } from "next/navigation";
+
 
 type Props = {
     routes?: Route[];
@@ -18,6 +21,9 @@ type Props = {
 export default function MapViewerOnMobile(props: Props) {
     const t = useTranslations('routes');
     const tCommon = useTranslations('common');
+
+    const router = useRouter();
+
     if (!props.routes) {
         return (
             <div className="w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg overflow-hidden">
@@ -47,7 +53,7 @@ export default function MapViewerOnMobile(props: Props) {
     ));
 
     return (
-        <div className={'w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
+        <div className={'w-full h-132 md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
             <Swiper
                 slidesPerView={1}
                 spaceBetween={16}
@@ -59,75 +65,98 @@ export default function MapViewerOnMobile(props: Props) {
                 }}
             >
                 {props.routes.map((route, idx) => (
-                    <SwiperSlide key={route.id ?? idx}>
+                    <SwiperSlide key={route.id ?? idx} className={'h-full'}>
                         <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden bg-background-1">
                             {/* 上部マップ (静止画像に置き換え) */}
-                            <div className="w-full h-[275px] relative">
-                                <Image
-                                    className="absolute w-full h-full object-cover rounded-xl"
-                                    src={route.thumbnail?.url || '/map.jpg'}
-                                    alt={tCommon('mapPreviewAlt')}
-                                    fill
-                                />
-                            </div>
-
+                            <img
+                                className="w-full h-[200px] object-cover rounded-2xl shrink-0"
+                                src={route.thumbnail?.url || '/map.jpg'}
+                                alt={tCommon('mapPreviewAlt')}
+                            />
                             {/* 下部コンテンツ */}
-                            <div className="w-full flex-1 flex flex-col p-6 gap-2">
-                                <h1 className="text-2xl font-bold line-clamp-2">
-                                    {route.title}
-                                </h1>
-
-                                <div className="text-lg flex items-center gap-2 text-foreground-1">
-                                    <div className="relative w-8 h-8">
-                                        <Image
-                                            className="rounded-full"
-                                            src={route.author.icon?.url || "/mockImages/userIcon_1.jpg"}
-                                            alt=""
-                                            fill
-                                        />
+                            <div className="w-full flex-1 flex flex-col py-3 px-5 gap-3">
+                                <div className={'flex gap-2'}>
+                                    <div className={'py-1 px-3 bg-background-0 text-foreground-1 flex items-center gap-2 text-xs rounded-full'}>
+                                        <HiClock/>
+                                        <span>{route.routeDates.length + t("dayUnit")}</span>
                                     </div>
-                                    <span>{route.author.name}</span>
+                                    <div className={'py-1 px-3 bg-background-0 text-foreground-1 flex items-center gap-2 text-xs rounded-full'}>
+                                        <HiBanknotes/>
+                                        <span><RouteBudgetText route={route} /></span>
+                                    </div>
+                                    <div className={'py-1 px-3 bg-background-0 text-foreground-1 flex items-center gap-2 text-xs rounded-full'}>
+                                        <MdPeople/>
+                                        <span>{route.routeFor}</span>
+                                    </div>
                                 </div>
-
-                                <div className="w-fit flex items-center px-2 py-1 gap-2 text-accent-0 bg-accent-0/10 rounded-full">
-                                    <HiHeart />
-                                    <span className="text-nowrap">
-                                    {route.likes?.length ?? 0} likes
-                                </span>
-                                </div>
-
-                                <div className="mt-4 flex flex-col gap-3">
-                                    <h3 className="text-lg font-semibold text-foreground-1">
-                                        {t('description')}
-                                    </h3>
-                                    <p className="text-foreground-1/80 leading-relaxed line-clamp-3">
-                                        {route.description}
-                                    </p>
-                                </div>
-
-                                <div className="mt-4 flex flex-col gap-3">
-                                    <h3 className="text-lg font-semibold text-foreground-1">
-                                        {t('routeInfo')}
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-3 text-sm">
-                                        <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                                            <span className="block text-foreground-1/40 text-xs">
-                                                {t('budget')}
-                                            </span>
-                                            <span className="font-medium text-foreground-1">
-                                                <RouteBudgetText route={route} />
-                                            </span>
-                                        </div>
-                                        <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
-                                            <span className="block text-foreground-1/40 text-xs">
-                                                {t('days')}
-                                            </span>
-                                            <span className="font-medium text-foreground-1">
-                                                {route.routeDates.length} {t('daysUnit')}
-                                            </span>
+                                <div className={'flex gap-3'}>
+                                    <img className={'w-10 h-10 rounded-full'} src={route.author.icon?.url } alt={route.author.name} />
+                                    <div className={'flex flex-col gap-1'}>
+                                        <h1 className="text-xl font-bold line-clamp-2 text-foreground-0" onClick={() => router.push(`/routes/${route.id}`)}>
+                                            {route.title}
+                                        </h1>
+                                        <div className={'flex items-center gap-2 text-sm line-clamp-5 text-foreground-0/80'}>
+                                            <span className={''}>{route.author.name}</span>・
+                                            <span className={'flex items-center gap-1'}><HiHeart className={"text-accent-0"}/>{route.likes?.length}</span>
+                                            <span className={'flex items-center gap-1'}><HiEye className={"text-accent-0"}/>{route.views?.length}</span>
                                         </div>
                                     </div>
                                 </div>
+                                <div className={'text-foreground-1 px-2'}>
+                                    {route.description}
+                                </div>
+
+                                {/*<div className="text-lg flex items-center gap-2 text-foreground-1">*/}
+                                {/*    <div className="relative w-8 h-8">*/}
+                                {/*        <Image*/}
+                                {/*            className="rounded-full"*/}
+                                {/*            src={route.author.icon?.url || "/mockImages/userIcon_1.jpg"}*/}
+                                {/*            alt=""*/}
+                                {/*            fill*/}
+                                {/*        />*/}
+                                {/*    </div>*/}
+                                {/*    <span>{route.author.name}</span>*/}
+                                {/*</div>*/}
+
+                                {/*<div className="w-fit flex items-center px-2 py-1 gap-2 text-accent-0 bg-accent-0/10 rounded-full">*/}
+                                {/*    <HiHeart />*/}
+                                {/*    <span className="text-nowrap">*/}
+                                {/*    {route.likes?.length ?? 0} likes*/}
+                                {/*</span>*/}
+                                {/*</div>*/}
+
+                                {/*<div className="mt-4 flex flex-col gap-3">*/}
+                                {/*    <h3 className="text-lg font-semibold text-foreground-1">*/}
+                                {/*        {t('description')}*/}
+                                {/*    </h3>*/}
+                                {/*    <p className="text-foreground-1/80 leading-relaxed line-clamp-3">*/}
+                                {/*        {route.description}*/}
+                                {/*    </p>*/}
+                                {/*</div>*/}
+
+                                {/*<div className="mt-4 flex flex-col gap-3">*/}
+                                {/*    <h3 className="text-lg font-semibold text-foreground-1">*/}
+                                {/*        {t('routeInfo')}*/}
+                                {/*    </h3>*/}
+                                {/*    <div className="grid grid-cols-2 gap-3 text-sm">*/}
+                                {/*        <div className="p-3 rounded-lg bg-background-0 border border-grass/10">*/}
+                                {/*            <span className="block text-foreground-1/40 text-xs">*/}
+                                {/*                {t('budget')}*/}
+                                {/*            </span>*/}
+                                {/*            <span className="font-medium text-foreground-1">*/}
+                                {/*                <RouteBudgetText route={route} />*/}
+                                {/*            </span>*/}
+                                {/*        </div>*/}
+                                {/*        <div className="p-3 rounded-lg bg-background-0 border border-grass/10">*/}
+                                {/*            <span className="block text-foreground-1/40 text-xs">*/}
+                                {/*                {t('days')}*/}
+                                {/*            </span>*/}
+                                {/*            <span className="font-medium text-foreground-1">*/}
+                                {/*                {route.routeDates.length} {t('daysUnit')}*/}
+                                {/*            </span>*/}
+                                {/*        </div>*/}
+                                {/*    </div>*/}
+                                {/*</div>*/}
                             </div>
                         </div>
                     </SwiperSlide>

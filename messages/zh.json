@@ -150,7 +150,9 @@
     "copyLink": "复制链接",
     "failedToLike": "点赞失败",
     "loginToLike": "请登录后点赞此路线",
-    "importRoute": "导入此路线"
+    "importRoute": "导入此路线",
+    "createdBy": "由 {name} 创建",
+    "discover": "发现"
   },
   "routeEditor": {
     "editRoute": "编辑路线",

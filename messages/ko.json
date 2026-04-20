@@ -150,7 +150,9 @@
     "copyLink": "링크 복사",
     "failedToLike": "좋아요 실패",
     "loginToLike": "좋아요를 누르려면 로그인해 주세요",
-    "importRoute": "이 루트 가져오기"
+    "importRoute": "이 루트 가져오기",
+    "createdBy": "{name} 님이 작성",
+    "discover": "발견하기"
   },
   "routeEditor": {
     "editRoute": "루트 편집",

@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  allowedDevOrigins: ['192.168.10.101'],
   /* config options here */
   images: {
     remotePatterns: [
@@ -19,6 +20,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
+        port: '9000',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.10.101',
         port: '9000',
         pathname: '/**',
       },
