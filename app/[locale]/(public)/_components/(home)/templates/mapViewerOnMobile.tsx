@@ -65,7 +65,7 @@ export default function MapViewerOnMobile(props: Props) {
                             <div className="w-full h-[275px] relative">
                                 <Image
                                     className="absolute w-full h-full object-cover rounded-xl"
-                                    src="/map.jpg"
+                                    src={route.thumbnail?.url || '/map.jpg'}
                                     alt={tCommon('mapPreviewAlt')}
                                     fill
                                 />

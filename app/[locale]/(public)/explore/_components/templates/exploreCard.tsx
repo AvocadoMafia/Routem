@@ -269,7 +269,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       fontWeight: 800,
       letterSpacing: "0.05em",
       transform: "translate(14px, -10px) scale(1)",
-      backgroundColor: "#fcfaf2", // しおりの背景色に合わせる
+      backgroundColor: "var(--background-0)", // しおりの背景色に合わせる
       padding: "0 6px",
       borderRadius: "4px",
       zIndex: 1,
@@ -297,11 +297,11 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
     "& input": {
       color: "var(--foreground-0)",
       fontSize: "0.9rem",
-      padding: "10px 14px",
+      padding: { xs: "8px 12px", md: "10px 14px" },
       fontWeight: 600,
     },
     "& .MuiSelect-select": {
-      padding: "10px 14px",
+      padding: { xs: "8px 12px", md: "10px 14px" },
       fontWeight: 600,
     },
     "& .MuiInputAdornment-root": {
@@ -323,7 +323,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   );
 
   const cardContent = (
-    <div className="flex flex-col gap-5 relative">
+    <div className="flex flex-col gap-4 md:gap-5 relative">
       {/* Bookmark Ribbon Decor */}
       <div className="absolute -top-12 right-8 w-6 h-12 bg-accent-0 rounded-b-sm shadow-md flex items-end justify-center pb-1.5 z-10">
         <div className="w-0.5 h-6 bg-white/20 rounded-full mb-1" />
@@ -353,7 +353,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
         )}
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {/* Step 1: What */}
         <div className="relative" ref={tagBoxRef}>
           <StepLabel icon={MdLocalOffer} text={t("stepWhat")} />
@@ -435,7 +435,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
           <StepLabel icon={MdCalendarMonth} text={t("stepWhen")} />
           <div className="flex items-center">
             <HandwrittenArrow />
-            <div className="grid grid-cols-2 gap-4 flex-1">
+            <div className="grid grid-cols-2 gap-3 md:gap-4 flex-1">
               <TextField
                 select
                 fullWidth
@@ -515,7 +515,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
           <StepLabel icon={MdPayments} text={t("stepBudget")} />
           <div className="flex items-center">
             <HandwrittenArrow />
-            <div className="grid grid-cols-[100px_1fr] gap-4 flex-1">
+            <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr] gap-3 md:gap-4 flex-1">
               <TextField
                 select
                 fullWidth
@@ -597,7 +597,7 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed bottom-0 left-0 right-0 z-[120] bg-[#fcfaf2] rounded-t-[24px] px-6 pt-6 pb-10 max-h-[90vh] overflow-y-auto"
+                className="fixed bottom-0 left-0 right-0 z-[120] bg-background-0 rounded-t-[24px] px-6 pt-6 pb-10 max-h-[90vh] overflow-y-auto"
               >
                 <div className="w-12 h-1 bg-grass rounded-full mx-auto mb-6 opacity-50" />
                 {cardContent}
@@ -616,8 +616,8 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       animate={{ opacity: 1, x: 0 }}
       className={`
         w-full max-w-[480px] h-auto
-        px-8 py-10 flex flex-col gap-8 backdrop-blur-xl bg-background-0 relative overflow-hidden
-        ${isSidebar ? "hidden md:flex h-full border-r-1 border-grass shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] mx-4"}
+        px-6 py-8 md:px-8 md:py-10 flex flex-col gap-8 backdrop-blur-xl bg-background-0 relative overflow-hidden
+        ${isSidebar ? "hidden md:flex h-full border-r-1 border-grass shadow-none rounded-none" : "rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)]"}
       `}
       transition={{
         layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },

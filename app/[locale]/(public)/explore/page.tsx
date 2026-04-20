@@ -181,7 +181,7 @@ function ExploreContent() {
 
       <motion.div
         layout
-        className={`relative w-full h-full flex flex-col md:flex-row ${hasParams ? "justify-start" : "items-center justify-center"}`}
+        className={`relative w-full h-full flex flex-col md:flex-row md:p-0 p-4 ${hasParams ? "justify-start" : "items-center justify-center"}`}
         transition={{ layout: { duration: 0.8, ease: [0.32, 0.72, 0, 1] } }}
       >
         <ExploreCard isSidebar={hasParams} />
@@ -194,7 +194,7 @@ function ExploreContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ delay: 0.6, duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
-              className="flex-1 h-full p-4 md:p-12 pt-24 overflow-y-auto bg-background-0"
+              className="flex-1 h-full md:p-6 p-0 overflow-y-auto"
             >
               <div className="max-w-5xl mx-auto flex flex-col gap-8 md:gap-16">
                 <div className="flex flex-col gap-4 md:gap-6">
