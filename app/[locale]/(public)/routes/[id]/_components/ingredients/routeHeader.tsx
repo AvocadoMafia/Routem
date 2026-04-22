@@ -13,6 +13,8 @@ import { useTranslations } from "next-intl";
 import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import { getIsLikedByMe } from "@/lib/hooks/useLike";
 import RouteManagementActions from "./routeManagementActions";
+import FollowButton from "./followButton";
+import {formatDateToYmdInTz} from "@/lib/utils/datetime";
 
 type RouteHeaderProps = {
   route: Route;
@@ -53,16 +55,32 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             unoptimized
           />
         </motion.div>
-        <div className={"flex flex-col gap-3 flex-1 md:py-3 md:px-0 px-3 py-0"}>
+        <div className={"flex flex-col gap-3 md:flex-1 w-full md:py-3 md:px-0 px-3 py-0"}>
           {/*なるべくタイトルのクランプはしたくないが、とんでも長いタイトルを持つ記事への対策*/}
           <div className={"flex flex-col gap-1"}>
             <h1 className={"md:text-3xl text-xl font-bold text-foreground-0 line-clamp-3"}>{route.title}</h1>
             <p className={"text-sm text-foreground-1"}>{}</p>
           </div>
-          <div className={"flex gap-2 items-center"}>
-            <img className={"md:w-10 w-7 md:h-10 h-7 rounded-full"} src={route.author.icon?.url || "/mockImages/author.png"} alt={"author"} />
-            <span className={"text-foreground-0 text-lg"}>{route.author.name}</span>
+          <div className={"w-full flex gap-3 items-center justify-between"}>
+            <div className="flex gap-2 items-center">
+              <img className={"md:w-10 w-7 md:h-10 h-7 rounded-full"} src={route.author.icon?.url || "/mockImages/author.png"} alt={"author"} />
+                <div className={'flex flex-col'}>
+                    <span className={"text-foreground-0 text-lg"}>{route.author.name}</span>
+                    <span className={'text-foreground-1 text-sm'}>{route.author.followers?.length || 0} followers</span>
+                </div>
+            </div>
+            <FollowButton 
+              followingId={route.authorId} 
+              currentUser={currentUser} 
+              initialIsFollowed={false} 
+            />
           </div>
+            <div className={'w-full h-fit flex flex-col text-md font-semibold text-foreground-1 p-3 bg-background-0 rounded-lg'}>
+                <div className={'flex flex-col gap-3'}>
+                    <span className={'text-xs text-foreground-1'}>{formatDateToYmdInTz(route.date)}</span>
+                    <p className={'text-sm text-foreground-0/80'}>{route.description}</p>
+                </div>
+            </div>
         </div>
 
 
