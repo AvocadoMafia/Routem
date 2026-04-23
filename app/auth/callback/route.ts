@@ -114,7 +114,9 @@ export async function GET(request: NextRequest) {
       const redirectUrl = next;
 
       console.log(`[Auth-Callback] Final Redirect URL (Relative): ${redirectUrl}`)
-      return NextResponse.redirect(new URL(redirectUrl, request.url))
+      console.log(redirectUrl)
+      console.log(request.url)
+      return NextResponse.redirect(redirectUrl)
     } catch (unexpectedError) {
       console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
       // Use relative path as last resort to avoid origin issues
