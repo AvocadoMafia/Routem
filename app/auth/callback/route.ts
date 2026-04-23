@@ -109,21 +109,27 @@ export async function GET(request: NextRequest) {
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
       
-      console.log(`[Auth-Callback] Redirecting. forwardedHost: ${forwardedHost}, next: ${next}`)
-
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`)
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
+      // Build final redirect URL
+      let redirectUrl: string;
+      if (forwardedHost) {
+        redirectUrl = `https://${forwardedHost}${next}`
+      } else if (isLocalEnv) {
+        redirectUrl = `${origin}${next}`
       } else {
-        return NextResponse.redirect(`${origin}${next}`)
+        // Fallback for production without forwardedHost
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin
+        redirectUrl = `${siteUrl}${next}`
       }
+
+      console.log(`[Auth-Callback] Final Redirect URL: ${redirectUrl}`)
+      return NextResponse.redirect(redirectUrl)
     } catch (unexpectedError) {
       console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
-      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=unexpected_error`)
+      // Use relative path as last resort to avoid origin issues
+      return NextResponse.redirect(new URL('/auth/auth-code-error?error=unexpected_error', request.url))
     }
   }
 
   console.warn(`[Auth-Callback] No code provided in query params.`)
-  return NextResponse.redirect(`${origin}/auth/auth-code-error?error=no_code`)
+  return NextResponse.redirect(new URL('/auth/auth-code-error?error=no_code', request.url))
 }
