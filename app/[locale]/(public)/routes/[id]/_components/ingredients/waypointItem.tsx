@@ -19,8 +19,8 @@ export default function WaypointItem({ idx, data, isFocused }: WaypointItemProps
         isFocused ? "opacity-100" : "opacity-40"
       }`}
     >
-      <div className="max-w-4xl overflow-x-hidden">
-        <div className="flex flex-col gap-4 mb-16">
+      <div className="max-w-4xl overflow-x-hidden flex flex-col md:gap-6 gap-3">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-accent-0" />
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground-1">
@@ -33,7 +33,7 @@ export default function WaypointItem({ idx, data, isFocused }: WaypointItemProps
         </div>
 
         {data.images && data.images.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data.images.map((img: any, i: number) => (
               <motion.div
                 key={img.id}

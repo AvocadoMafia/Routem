@@ -16,7 +16,7 @@ export default function TransitItem({ data, isFocused }: TransitItemProps) {
       }`}
     >
       <div className="max-w-4xl overflow-x-hidden">
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-6 md:gap-12 flex-wrap">
             <div className="flex items-center gap-4">
               <div className="text-accent-0">

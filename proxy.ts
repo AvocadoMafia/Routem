@@ -142,8 +142,26 @@ export async function proxy(request: NextRequest) {
     const allowedOrigin =
       process.env.NEXT_PUBLIC_SITE_URL || (isDev ? "http://localhost:3000" : null);
 
-    // 完全一致で判定（`origin.includes(allowedOrigin)` は `routem.net.evil.com` 等を通す脆弱性あり）
-    if (origin && allowedOrigin && !isSameOrigin(origin, allowedOrigin)) {
+    const allowedOrigins = [allowedOrigin];
+    if (allowedOrigin) {
+      try {
+        const url = new URL(allowedOrigin);
+        if (url.hostname.startsWith("www.")) {
+          // www.routem.net -> routem.net も許可
+          allowedOrigins.push(`${url.protocol}//${url.hostname.replace(/^www\./, "")}${url.port ? `:${url.port}` : ""}`);
+        } else {
+          // routem.net -> www.routem.net も許可
+          allowedOrigins.push(`${url.protocol}//www.${url.hostname}${url.port ? `:${url.port}` : ""}`);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // 完全一致で判定
+    const isAllowed = origin && allowedOrigins.some(allowed => allowed && isSameOrigin(origin, allowed));
+
+    if (origin && !isAllowed) {
       console.warn(`[Blocked] Unauthorized origin:${origin}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Invalid Origin" }), {
         status: 403,
@@ -152,7 +170,7 @@ export async function proxy(request: NextRequest) {
     }
 
     const secFetchSite = request.headers.get("sec-fetch-site");
-    if (secFetchSite && secFetchSite !== "same-origin" && !isDev) {
+    if (secFetchSite && secFetchSite !== "same-origin" && secFetchSite !== "same-site" && !isDev) {
       console.warn(`[Blocked] Unauthorized origin:${secFetchSite}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Cross-site request" }), {
         status: 403,
