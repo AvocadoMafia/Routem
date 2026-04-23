@@ -205,7 +205,10 @@ export async function proxy(request: NextRequest) {
 
   // OAuth コールバックはセッション更新のみ
   if (pathname.startsWith("/auth/callback")) {
-    return await updateSession(request);
+    console.log(`[Proxy-Debug] Auth callback accessed: ${pathname}`);
+    const res = await updateSession(request);
+    console.log(`[Proxy-Debug] Auth callback session update status: ${res.status}`);
+    return res;
   }
 
   // ユーザーのロケール設定をクッキーからチェック

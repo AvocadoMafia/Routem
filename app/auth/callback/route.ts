@@ -40,21 +40,29 @@ export async function GET(request: NextRequest) {
   const nextParam = request.nextUrl.searchParams.get('next') ?? '/'
   const next = isValidRedirectPath(nextParam) ? nextParam : '/'
 
-  if (code) {
-    const supabase = await createClient(request)
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+  console.log(`[Auth-Callback] Processing callback. Code present: ${!!code}, Origin: ${origin}`)
 
-    if (!error) {
-      const { data: userData, error: userError } = await supabase.auth.getUser()
-      if (userError || !userData.user) {
-        return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  if (code) {
+    try {
+      const supabase = await createClient(request)
+      console.log(`[Auth-Callback] Exchanging code for session...`)
+      const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+      if (error) {
+        console.error(`[Auth-Callback] Auth error:`, error)
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=auth_exchange_failed`)
       }
 
-      console.log(userData)
+      console.log(`[Auth-Callback] Getting user data...`)
+      const { data: userData, error: userError } = await supabase.auth.getUser()
+      if (userError || !userData.user) {
+        console.error(`[Auth-Callback] User fetch error:`, userError)
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=user_fetch_failed`)
+      }
 
       const supabaseUser = userData.user
+      console.log(`[Auth-Callback] Supabase User ID: ${supabaseUser.id}`)
 
-      // 初回ログイン時のみ作成（ただし upsert なので冪等）
       const displayName =
         (supabaseUser.user_metadata?.name as string | undefined) ??
         (supabaseUser.user_metadata?.full_name as string | undefined) ??
@@ -64,51 +72,58 @@ export async function GET(request: NextRequest) {
           userData.user.user_metadata.avatar_url ||
           userData.user.user_metadata.picture
 
-      console.log(iconUrl)
+      console.log(`[Auth-Callback] Starting DB upsert for user... Icon: ${!!iconUrl}`)
 
-      const user = await getPrisma().user.upsert({
-        where: { id: supabaseUser.id },
-        create: {
-          id: supabaseUser.id,
-          name: displayName,
-          bio: undefined,
-          icon: {
-            create: {
-              url: iconUrl,
-              key: null,
-              status: ImageStatus.EXTERNAL,
-              type: ImageType.USER_ICON,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              uploaderId: supabaseUser.id,
-            }
+      try {
+        const user = await getPrisma().user.upsert({
+          where: { id: supabaseUser.id },
+          create: {
+            id: supabaseUser.id,
+            name: displayName,
+            bio: undefined,
+            icon: {
+              create: {
+                url: iconUrl,
+                key: null,
+                status: ImageStatus.EXTERNAL,
+                type: ImageType.USER_ICON,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                uploaderId: supabaseUser.id,
+              }
+            },
           },
-          // location/profileImage 等も必要ならここで user_metadata から埋める
-        },
-        update: {
-          // 初回以降に同期したい項目だけ更新する（例：nameを毎回上書きしたくないなら空でOK）
-          //すでにユーザーを登録済みの場合は、アイコンがアップデートされないので注意
-        },
-        include: {
-          icon: true
-        }
-      })
+          update: {},
+          include: {
+            icon: true
+          }
+        })
+        console.log(`[Auth-Callback] DB upsert success. User: ${user.name}`)
+      } catch (dbError) {
+        console.error(`[Auth-Callback] DB Error:`, dbError)
+        // DBエラーでもセッションは確立されているのでリダイレクトさせる選択肢もあるが、
+        // ユーザー作成に失敗するとアプリが動かない可能性が高いので一旦エラーページへ
+        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=db_upsert_failed`)
+      }
 
-      console.log(user)
-
-      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
+      const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
+      
+      console.log(`[Auth-Callback] Redirecting. forwardedHost: ${forwardedHost}, next: ${next}`)
+
       if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
         return NextResponse.redirect(`${origin}${next}`)
       } else if (forwardedHost) {
         return NextResponse.redirect(`https://${forwardedHost}${next}`)
       } else {
         return NextResponse.redirect(`${origin}${next}`)
       }
+    } catch (unexpectedError) {
+      console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
+      return NextResponse.redirect(`${origin}/auth/auth-code-error?error=unexpected_error`)
     }
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  console.warn(`[Auth-Callback] No code provided in query params.`)
+  return NextResponse.redirect(`${origin}/auth/auth-code-error?error=no_code`)
 }
