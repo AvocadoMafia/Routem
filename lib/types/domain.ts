@@ -8,7 +8,7 @@ import { Prisma, type SpotSource, type TransitMode } from "@prisma/client"
 // ルート型（リレーション込み）
 export type Route = Prisma.RouteGetPayload<{
   include: {
-    author: { include: { icon: true } }
+    author: { include: { icon: true , followers: true} }
     thumbnail: true
     likes: true
     views: true

@@ -13,6 +13,7 @@ import WaypointItem from "../ingredients/waypointItem";
 import TransitItem from "../ingredients/transitItem";
 import RouteHeader from "../ingredients/routeHeader";
 import AuthorSection from "../ingredients/authorSection";
+import RouteMetadataSection from "../ingredients/routeMetadataSection";
 import CategoryTags from "../ingredients/categoryTags";
 import LikeButton from "../ingredients/likeButton";
 import { getIsLikedByMe } from "@/lib/hooks/useLike";
@@ -66,7 +67,7 @@ export default function DetailsViewer({
   return (
     <div
       ref={scrollContainerRef}
-      className={`w-full h-full overflow-y-scroll px-8 pt-4 pb-40 flex flex-col gap-16 transition-all duration-500 ${
+      className={`w-full h-full overflow-y-scroll px-8 pt-4 pb-40 flex flex-col gap-10 transition-all duration-500 ${
         viewMode === "details"
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-12 pointer-events-none invisible max-md:hidden max-md:h-0 max-md:overflow-hidden"
@@ -81,7 +82,7 @@ export default function DetailsViewer({
           }
         }}>
           {item.type === "day_separator" ? (
-            <div className="py-12 flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               <div className="flex items-center gap-6">
                 <div className="text-4xl font-black text-accent-0">Day {item.day}</div>
                 <div className="flex-1 h-px bg-accent-0/20" />
@@ -105,15 +106,16 @@ export default function DetailsViewer({
       {/* ルートを気に入った場合のいいねボタン */}
       <div className="flex flex-col items-center gap-6">
         <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-foreground-1">{t('enjoyRoute')}</span>
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl">
           <LikeButton 
             routeId={route.id} 
             initialLikesCount={route.likes?.length ?? 0} 
             initialIsLiked={isLikedByMe}
-            variant="large" 
+            variant="large"
+            className="w-full"
           />
-          <ShareButton variant="large" />
-          <ImportButton route={route} variant="large" />
+          <ShareButton variant="large" className="w-full" />
+          <ImportButton route={route} variant="large" className="w-full" />
         </div>
       </div>
 
@@ -128,31 +130,15 @@ export default function DetailsViewer({
           focusIndex === items.length ? "opacity-100" : "opacity-40"
         }`}
       >
-        <div className="flex flex-col gap-20">
-          {/* 上部: 投稿者とタグ */}
-          <div className="max-w-4xl flex flex-col gap-12">
-            <AuthorSection author={route.author} />
-            <CategoryTags tags={route.tags} />
-          </div>
+        <div className="flex flex-col gap-12 max-w-4xl">
+          <AuthorSection author={route.author} />
+          <RouteMetadataSection route={route} />
+          <CategoryTags tags={route.tags} />
 
           {/* 下部: タブ切り替えエリア (Comments / Related Articles) */}
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 pt-8 border-t border-grass/20">
             {isMobile && (
               <div className="flex items-center gap-8 border-b border-foreground-0/5">
-                <button
-                  onClick={() => setInfoTab?.("comments")}
-                  className={`pb-4 text-xs font-bold uppercase tracking-[0.2em] transition-all relative ${
-                    infoTab === "comments" ? "text-accent-0" : "text-foreground-1 hover:text-foreground-0"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    <span>{t('comments')}</span>
-                  </div>
-                  {infoTab === "comments" && (
-                    <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />
-                  )}
-                </button>
                 <button
                   onClick={() => setInfoTab?.("related")}
                   className={`pb-4 text-xs font-bold uppercase tracking-[0.2em] transition-all relative ${
@@ -167,14 +153,26 @@ export default function DetailsViewer({
                     <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />
                   )}
                 </button>
+                <button
+                  onClick={() => setInfoTab?.("comments")}
+                  className={`pb-4 text-xs font-bold uppercase tracking-[0.2em] transition-all relative ${
+                    infoTab === "comments" ? "text-accent-0" : "text-foreground-1 hover:text-foreground-0"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>{t('comments')}</span>
+                  </div>
+                  {infoTab === "comments" && (
+                    <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-0" />
+                  )}
+                </button>
               </div>
             )}
 
             <div className="min-h-[400px]">
               <AnimatePresence mode="wait">
-                {!isMobile || infoTab === "comments" ? (
-                  <CommentSection key="comments" isMobile={isMobile} routeId={route.id} />
-                ) : (
+                {!isMobile || infoTab === "related" ? (
                   <motion.div
                     key="related"
                     initial={{ opacity: 0, y: 10 }}
@@ -193,6 +191,8 @@ export default function DetailsViewer({
                       onRetry={retryRelated}
                     />
                   </motion.div>
+                ) : (
+                  <CommentSection key="comments" isMobile={isMobile} routeId={route.id} />
                 )}
               </AnimatePresence>
             </div>

@@ -12,13 +12,14 @@ import {
 
 type ShareButtonProps = {
   variant?: "compact" | "large";
+  className?: string;
 };
 
 /**
  * 記事ページの共有ボタン。ロジックは useShare hook に委譲し、
  * このコンポーネントは見た目とフィードバック (トースト) のみを担当する。
  */
-export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
+export default function ShareButton({ variant = "compact", className = "" }: ShareButtonProps) {
   const t = useTranslations("common");
   const tRoutes = useTranslations("routes");
 
@@ -55,7 +56,7 @@ export default function ShareButton({ variant = "compact" }: ShareButtonProps) {
         type="button"
         onClick={handleShare}
         disabled={isSharing}
-        className="group flex items-center gap-4 px-8 py-4 bg-background-0 border border-grass rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer hover:border-accent-0 active:scale-[0.98] disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none"
+        className={`group flex items-center justify-center gap-4 px-8 py-4 bg-background-0 border border-grass rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer hover:border-accent-0 active:scale-[0.98] disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none ${className}`}
       >
         {justCopied ? (
           <HiCheck className="w-6 h-6 text-accent-0" />

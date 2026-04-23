@@ -10,6 +10,7 @@ type LikeButtonProps = {
   initialLikesCount: number;
   initialIsLiked?: boolean;
   variant?: "compact" | "large";
+  className?: string;
 };
 
 /**
@@ -25,6 +26,7 @@ export default function LikeButton({
   initialLikesCount,
   initialIsLiked = false,
   variant = "compact",
+  className = "",
 }: LikeButtonProps) {
   const t = useTranslations("routes");
   const tCommon = useTranslations("common");
@@ -46,9 +48,9 @@ export default function LikeButton({
         onClick={toggle}
         disabled={pending}
         aria-pressed={isLiked}
-        className={`group flex items-center gap-4 px-8 py-4 bg-background-0 border rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer active:scale-[0.98] disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none ${
+        className={`group flex items-center justify-center gap-4 px-8 py-4 bg-background-0 border rounded-full transition-all shadow-sm hover:shadow-xl hover:shadow-accent-0/10 cursor-pointer active:scale-[0.98] disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-accent-0 focus-visible:ring-offset-2 focus-visible:outline-none ${
           isLiked ? "border-accent-0 ring-1 ring-accent-0/20" : "border-grass hover:border-accent-0"
-        }`}
+        } ${className}`}
       >
         {pending ? (
           <Loader2 className="w-6 h-6 text-accent-0 animate-spin" />

@@ -82,7 +82,7 @@ function getFlattenedItems(route: Route) {
 export default function RootClient({ route, currentUser }: Props) {
     const items = useMemo(() => getFlattenedItems(route), [route.id]);
   const [viewMode, setViewMode] = useState<"diagram" | "details" | "map">("details");
-  const [infoTab, setInfoTab] = useState<"comments" | "related">("comments");
+  const [infoTab, setInfoTab] = useState<"comments" | "related">("related");
   const [isMobile, setIsMobile] = useState(false);
 
   // 関連記事 (Related Routes) — 共通フック経由で error/retry 込みの無限スクロール

@@ -105,58 +105,6 @@ export default function MapViewerOnMobile(props: Props) {
                                 <div className={'text-foreground-1 px-2'}>
                                     {route.description}
                                 </div>
-
-                                {/*<div className="text-lg flex items-center gap-2 text-foreground-1">*/}
-                                {/*    <div className="relative w-8 h-8">*/}
-                                {/*        <Image*/}
-                                {/*            className="rounded-full"*/}
-                                {/*            src={route.author.icon?.url || "/mockImages/userIcon_1.jpg"}*/}
-                                {/*            alt=""*/}
-                                {/*            fill*/}
-                                {/*        />*/}
-                                {/*    </div>*/}
-                                {/*    <span>{route.author.name}</span>*/}
-                                {/*</div>*/}
-
-                                {/*<div className="w-fit flex items-center px-2 py-1 gap-2 text-accent-0 bg-accent-0/10 rounded-full">*/}
-                                {/*    <HiHeart />*/}
-                                {/*    <span className="text-nowrap">*/}
-                                {/*    {route.likes?.length ?? 0} likes*/}
-                                {/*</span>*/}
-                                {/*</div>*/}
-
-                                {/*<div className="mt-4 flex flex-col gap-3">*/}
-                                {/*    <h3 className="text-lg font-semibold text-foreground-1">*/}
-                                {/*        {t('description')}*/}
-                                {/*    </h3>*/}
-                                {/*    <p className="text-foreground-1/80 leading-relaxed line-clamp-3">*/}
-                                {/*        {route.description}*/}
-                                {/*    </p>*/}
-                                {/*</div>*/}
-
-                                {/*<div className="mt-4 flex flex-col gap-3">*/}
-                                {/*    <h3 className="text-lg font-semibold text-foreground-1">*/}
-                                {/*        {t('routeInfo')}*/}
-                                {/*    </h3>*/}
-                                {/*    <div className="grid grid-cols-2 gap-3 text-sm">*/}
-                                {/*        <div className="p-3 rounded-lg bg-background-0 border border-grass/10">*/}
-                                {/*            <span className="block text-foreground-1/40 text-xs">*/}
-                                {/*                {t('budget')}*/}
-                                {/*            </span>*/}
-                                {/*            <span className="font-medium text-foreground-1">*/}
-                                {/*                <RouteBudgetText route={route} />*/}
-                                {/*            </span>*/}
-                                {/*        </div>*/}
-                                {/*        <div className="p-3 rounded-lg bg-background-0 border border-grass/10">*/}
-                                {/*            <span className="block text-foreground-1/40 text-xs">*/}
-                                {/*                {t('days')}*/}
-                                {/*            </span>*/}
-                                {/*            <span className="font-medium text-foreground-1">*/}
-                                {/*                {route.routeDates.length} {t('daysUnit')}*/}
-                                {/*            </span>*/}
-                                {/*        </div>*/}
-                                {/*    </div>*/}
-                                {/*</div>*/}
                             </div>
                         </div>
                     </SwiperSlide>

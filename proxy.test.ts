@@ -49,3 +49,75 @@ describe("isSameOrigin", () => {
     expect(isSameOrigin("https://routem.net?x=1", "https://routem.net")).toBe(true);
   });
 });
+
+import { NextRequest, NextResponse } from "next/server";
+import { proxy } from "./proxy";
+import { vi, beforeEach, afterEach } from "vitest";
+import * as session from "@/lib/auth/session";
+
+describe("proxy (CORS logic)", () => {
+  beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://routem.net");
+    // updateSession をモック化して環境変数のエラーを回避
+    vi.spyOn(session, "updateSession").mockResolvedValue(NextResponse.next());
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it("allowedOrigin と一致する Origin は許可される", async () => {
+    const req = new NextRequest("https://routem.net/api/test", {
+      headers: { origin: "https://routem.net", "sec-fetch-site": "same-origin" },
+    });
+    const res = await proxy(req);
+    expect(res.status).toBe(200);
+  });
+
+  it("www ありの Origin も許可される (allowedOrigin が www なしの場合)", async () => {
+    const req = new NextRequest("https://routem.net/api/test", {
+      headers: { origin: "https://www.routem.net", "sec-fetch-site": "same-site" },
+    });
+    const res = await proxy(req);
+    expect(res.status).toBe(200);
+  });
+
+  it("www なしの Origin も許可される (allowedOrigin が www ありの場合)", async () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://www.routem.net");
+    const req = new NextRequest("https://www.routem.net/api/test", {
+      headers: { origin: "https://routem.net", "sec-fetch-site": "same-site" },
+    });
+    const res = await proxy(req);
+    expect(res.status).toBe(200);
+  });
+
+  it("全く別の Origin はブロックされる", async () => {
+    const req = new NextRequest("https://routem.net/api/test", {
+      headers: { origin: "https://evil.com", "sec-fetch-site": "cross-site" },
+    });
+    const res = await proxy(req);
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error).toBe("Forbidden: Invalid Origin");
+  });
+
+  it("sec-fetch-site: same-site は許可される", async () => {
+    const req = new NextRequest("https://routem.net/api/test", {
+      headers: { origin: "https://www.routem.net", "sec-fetch-site": "same-site" },
+    });
+    const res = await proxy(req);
+    expect(res.status).toBe(200);
+  });
+
+  it("sec-fetch-site: cross-site はブロックされる", async () => {
+    const req = new NextRequest("https://routem.net/api/test", {
+      headers: { origin: "https://routem.net", "sec-fetch-site": "cross-site" },
+    });
+    const res = await proxy(req);
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error).toBe("Forbidden: Cross-site request");
+  });
+});
