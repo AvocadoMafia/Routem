@@ -206,9 +206,10 @@ export async function proxy(request: NextRequest) {
   // OAuth コールバックはセッション更新のみ
   if (pathname.startsWith("/auth/callback")) {
     console.log(`[Proxy-Debug] Auth callback accessed: ${pathname}`);
-    const res = await updateSession(request);
-    console.log(`[Proxy-Debug] Auth callback session update status: ${res.status}`);
-    return res;
+    // route.ts 側でも updateSession は行われるが、ミドルウェアで実行しておかないと
+    // 以降のページ遷移で不整合が起きる可能性があるため実行する。
+    // ただし、もしここで 502 が出るようなら一時的に無効化して切り分けを行う。
+    return await updateSession(request);
   }
 
   // ユーザーのロケール設定をクッキーからチェック
