@@ -3,7 +3,7 @@ import LoginTypography from "./loginTypography";
 
 export default function LoginBackground() {
   return (
-    <div className={'absolute inset-0 w-full h-full overflow-hidden'}>
+    <div className={'fixed inset-0 w-full h-screen overflow-hidden'}>
       <motion.img
         initial={{ scale: 1.1, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

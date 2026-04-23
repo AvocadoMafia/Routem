@@ -74,138 +74,137 @@ export default function SignupForm() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="absolute md:w-1/2 w-full h-fit md:top-0 md:left-0 z-10 p-6"
+      className="absolute md:w-1/2 w-full h-fit min-h-screen md:top-0 md:left-0 m-auto z-10 p-6 flex items-center justify-center"
     >
-      <div className="w-full h-fit flex justify-center items-center p-3">
-        <div className="w-full max-w-sm space-y-8">
-          {!isSubmitted ? (
+      <div className="w-full max-w-sm space-y-8">
+        {!isSubmitted ? (
             <>
               <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
-                className="text-center flex flex-col gap-3"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
+                  className="text-center flex flex-col gap-3"
               >
                 <h2 className="text-5xl font-syne font-bold text-white">SignUp</h2>
                 <p className="text-md font-semibold opacity-90 text-white/75">start your journey today.</p>
               </motion.div>
 
               <motion.form
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
-                className="mt-8 space-y-6"
-                onSubmit={handleSignup}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
+                  className="mt-8 space-y-6"
+                  onSubmit={handleSignup}
               >
                 <div className="space-y-4">
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.7, ease: "easeOut" }}
                   >
                     <label htmlFor="username" className="block text-sm font-bold text-white">
                       {t('username')}
                     </label>
                     <input
-                      id="username"
-                      name="username"
-                      type="text"
-                      autoComplete="username"
-                      required
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
-                      placeholder={t('usernamePlaceholder')}
+                        id="username"
+                        name="username"
+                        type="text"
+                        autoComplete="username"
+                        required
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
+                        placeholder={t('usernamePlaceholder')}
                     />
                   </motion.div>
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.8, ease: "easeOut" }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.8, ease: "easeOut" }}
                   >
                     <label htmlFor="email-address" className="block text-sm font-bold text-white">
                       {t('email')}
                     </label>
                     <input
-                      id="email-address"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
-                      placeholder={t('emailPlaceholder')}
+                        id="email-address"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
+                        placeholder={t('emailPlaceholder')}
                     />
                   </motion.div>
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
                   >
                     <label htmlFor="password" id="password-label" className="block text-sm font-bold text-white">
                       {t('password')}
                     </label>
                     <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="new-password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
-                      placeholder="••••••••"
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="new-password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="mt-1 block w-full px-6 py-3 rounded-full backdrop-blur-md sm:text-sm text-white border-1 border-white/40 focus:outline-none focus:border-white transition-all"
+                        placeholder="••••••••"
                     />
                   </motion.div>
                 </div>
 
                 {error && (
-                  <motion.div
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 1.0 }}
-                    className="text-accent-warning text-sm text-center"
-                  >
-                    {error}
-                  </motion.div>
+                    <motion.div
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.3, delay: 1.0 }}
+                        className="text-accent-warning text-sm text-center"
+                    >
+                      {error}
+                    </motion.div>
                 )}
 
                 <div className="space-y-4">
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 1.05, ease: "easeOut" }}
-                    className="flex justify-center"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 1.05, ease: "easeOut" }}
+                      className="flex justify-center"
                   >
                     <Turnstile
-                      siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-                      onSuccess={(token) => {
-                        console.log('captcha token:', token)
-                        setCaptchaToken(token)
-                      }}
-                      onExpire={() => setCaptchaToken(null)}
-                      onError={() => setCaptchaToken(null)}
+                        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+                        onSuccess={(token) => {
+                          console.log('captcha token:', token)
+                          setCaptchaToken(token)
+                        }}
+                        onExpire={() => setCaptchaToken(null)}
+                        onError={() => setCaptchaToken(null)}
                     />
                   </motion.div>
 
                   <motion.button
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 1.1, ease: "easeOut" }}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    type="submit"
-                    className="w-full flex justify-center py-3 px-6 bg-background-1 border-1 border-background-1 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 1.1, ease: "easeOut" }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      type="submit"
+                      className="w-full flex justify-center py-3 px-6 bg-background-1 border-1 border-background-1 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
                   >
                     {t('signUp')}
                   </motion.button>
 
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 1.2, ease: "easeOut" }}
-                    className="text-center"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 1.2, ease: "easeOut" }}
+                      className="text-center"
                   >
                     <span className="text-sm text-white/75">{t('hasAccount')} </span>
                     <Link href="/login" className="text-sm font-medium text-white hover:underline hover:text-accent-0">
@@ -214,10 +213,10 @@ export default function SignupForm() {
                   </motion.div>
 
                   <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 1.3, ease: "easeOut" }}
-                    className="relative"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 1.3, ease: "easeOut" }}
+                      className="relative"
                   >
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-foreground-1/30"></div>
@@ -228,14 +227,14 @@ export default function SignupForm() {
                   </motion.div>
 
                   <motion.button
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 1.4, ease: "easeOut" }}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    type="button"
-                    className="w-full flex justify-center gap-3 py-3 px-6 border-1 border-white/40 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
-                    onClick={handleGoogleLogin}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 1.4, ease: "easeOut" }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      type="button"
+                      className="w-full flex justify-center gap-3 py-3 px-6 border-1 border-white/40 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
+                      onClick={handleGoogleLogin}
                   >
                     <FaGoogle className="w-5 h-5 text-accent-0" />
                     <span className={'text-white'}>{t('google')}</span>
@@ -243,12 +242,12 @@ export default function SignupForm() {
                 </div>
               </motion.form>
             </>
-          ) : (
+        ) : (
             <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="text-center space-y-6"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="text-center space-y-6"
             >
               <div className="space-y-3">
                 <h2 className="text-4xl font-syne font-bold text-white">{t('checkEmail')}</h2>
@@ -259,15 +258,14 @@ export default function SignupForm() {
 
               <div className="pt-4">
                 <Link
-                  href="/login"
-                  className="inline-flex justify-center py-3 px-8 bg-background-1 border-1 border-background-1 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
+                    href="/login"
+                    className="inline-flex justify-center py-3 px-8 bg-background-1 border-1 border-background-1 backdrop-blur-sm rounded-full font-bold hover:border-white transition-colors"
                 >
                   {t('backToSignIn')}
                 </Link>
               </div>
             </motion.div>
-          )}
-        </div>
+        )}
       </div>
     </motion.div>
   );

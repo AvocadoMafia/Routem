@@ -106,7 +106,7 @@ export default function DetailsViewer({
       {/* ルートを気に入った場合のいいねボタン */}
       <div className="flex flex-col items-center gap-6">
         <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-foreground-1">{t('enjoyRoute')}</span>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
           <LikeButton 
             routeId={route.id} 
             initialLikesCount={route.likes?.length ?? 0} 

@@ -65,7 +65,9 @@ function applyApiSecurityHeaders(res: NextResponse) {
  */
 export function isSameOrigin(a: string, b: string): boolean {
   try {
-    return new URL(a).origin === new URL(b).origin;
+    const urlA = new URL(a.trim());
+    const urlB = new URL(b.trim());
+    return urlA.origin === urlB.origin;
   } catch {
     return false;
   }
@@ -142,27 +144,36 @@ export async function proxy(request: NextRequest) {
     const allowedOrigin =
       process.env.NEXT_PUBLIC_SITE_URL || (isDev ? "http://localhost:3000" : null);
 
-    const allowedOrigins = [allowedOrigin];
+    const allowedOrigins = [allowedOrigin].filter((o): o is string => !!o);
     if (allowedOrigin) {
       try {
-        const url = new URL(allowedOrigin);
-        if (url.hostname.startsWith("www.")) {
+        const url = new URL(allowedOrigin.trim());
+        const protocol = url.protocol;
+        const host = url.hostname;
+        const port = url.port ? `:${url.port}` : "";
+
+        if (host.startsWith("www.")) {
           // www.routem.net -> routem.net も許可
-          allowedOrigins.push(`${url.protocol}//${url.hostname.replace(/^www\./, "")}${url.port ? `:${url.port}` : ""}`);
+          allowedOrigins.push(`${protocol}//${host.replace(/^www\./, "")}${port}`);
         } else {
           // routem.net -> www.routem.net も許可
-          allowedOrigins.push(`${url.protocol}//www.${url.hostname}${url.port ? `:${url.port}` : ""}`);
+          allowedOrigins.push(`${protocol}//www.${host}${port}`);
         }
-      } catch {
-        // ignore
+      } catch (e) {
+        console.error(`[Proxy] Failed to parse allowedOrigin: ${allowedOrigin}`, e);
       }
     }
 
     // 完全一致で判定
-    const isAllowed = origin && allowedOrigins.some(allowed => allowed && isSameOrigin(origin, allowed));
+    const isAllowed = origin && allowedOrigins.some(allowed => {
+      const match = allowed && isSameOrigin(origin, allowed);
+      console.log(`[Proxy-Debug] Checking Origin: [${origin}] against Allowed: [${allowed}] -> Match: ${match}`);
+      return match;
+    });
 
     if (origin && !isAllowed) {
-      console.warn(`[Blocked] Unauthorized origin:${origin}`);
+      console.warn(`[Blocked] Unauthorized origin:${origin}. Allowed:${allowedOrigins.join(", ")} (Configured: ${process.env.NEXT_PUBLIC_SITE_URL})`);
+      console.warn(`[Blocked-Debug] Path: ${pathname}, Method: ${request.method}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Invalid Origin" }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
@@ -171,7 +182,7 @@ export async function proxy(request: NextRequest) {
 
     const secFetchSite = request.headers.get("sec-fetch-site");
     if (secFetchSite && secFetchSite !== "same-origin" && secFetchSite !== "same-site" && !isDev) {
-      console.warn(`[Blocked] Unauthorized origin:${secFetchSite}`);
+      console.warn(`[Blocked] Unauthorized sec-fetch-site:${secFetchSite}`);
       return new NextResponse(JSON.stringify({ error: "Forbidden: Cross-site request" }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
