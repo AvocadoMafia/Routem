@@ -110,19 +110,11 @@ export async function GET(request: NextRequest) {
       const isLocalEnv = process.env.NODE_ENV === 'development'
       
       // Build final redirect URL
-      let redirectUrl: string;
-      if (forwardedHost) {
-        redirectUrl = `https://${forwardedHost}${next}`
-      } else if (isLocalEnv) {
-        redirectUrl = `${origin}${next}`
-      } else {
-        // Fallback for production without forwardedHost
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || origin
-        redirectUrl = `${siteUrl}${next}`
-      }
+      // Use relative path to avoid 502/origin mismatch issues with full URLs
+      const redirectUrl = next;
 
-      console.log(`[Auth-Callback] Final Redirect URL: ${redirectUrl}`)
-      return NextResponse.redirect(redirectUrl)
+      console.log(`[Auth-Callback] Final Redirect URL (Relative): ${redirectUrl}`)
+      return NextResponse.redirect(new URL(redirectUrl, request.url))
     } catch (unexpectedError) {
       console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
       // Use relative path as last resort to avoid origin issues

@@ -203,13 +203,11 @@ export async function proxy(request: NextRequest) {
     return nextResponse;
   }
 
-  // OAuth コールバックはセッション更新のみ
+  // OAuth コールバックはセッション更新のみ行い、後続の route.ts に任せる。
+  // ここで updateSession を行うと、route.ts 側でも重複して実行されるため、
+  // Set-Cookie ヘッダーが肥大化し 502 エラーの原因になる可能性がある。
   if (pathname.startsWith("/auth/callback")) {
-    console.log(`[Proxy-Debug] Auth callback accessed: ${pathname}`);
-    // route.ts 側でも updateSession は行われるが、ミドルウェアで実行しておかないと
-    // 以降のページ遷移で不整合が起きる可能性があるため実行する。
-    // ただし、もしここで 502 が出るようなら一時的に無効化して切り分けを行う。
-    return await updateSession(request);
+    return NextResponse.next();
   }
 
   // ユーザーのロケール設定をクッキーからチェック
