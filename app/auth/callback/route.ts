@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
       console.log(`[Auth-Callback] Final Redirect URL (Relative): ${redirectUrl}`)
       console.log(redirectUrl)
       console.log(request.url)
-      return NextResponse.redirect(redirectUrl)
+      return NextResponse.redirect('https://routem.net')
     } catch (unexpectedError) {
       console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
       // Use relative path as last resort to avoid origin issues
