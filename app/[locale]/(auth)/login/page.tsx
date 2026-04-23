@@ -8,7 +8,7 @@ import RootClient from "@/app/[locale]/(auth)/login/_components/rootClient";
 
 export default function Page() {
   return (
-    <div className="w-full h-full flex items-center justify-center bg-background-0 overflow-hidden">
+    <div className="w-full h-fit flex items-center justify-center bg-background-0 overflow-hidden">
       <RootClient />
     </div>
   );

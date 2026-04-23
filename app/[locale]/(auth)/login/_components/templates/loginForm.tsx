@@ -68,9 +68,9 @@ export default function LoginForm() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="absolute md:w-1/2 w-full h-full md:top-0 md:right-0 m-auto z-10 p-6"
+      className="absolute md:w-1/2 w-full h-fit md:top-0 md:right-0 m-auto z-10 p-6"
     >
-      <div className="w-full h-full flex justify-center items-center p-3">
+      <div className="w-full h-fit flex justify-center items-center p-3">
         <div className="w-full max-w-sm space-y-8">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -78,7 +78,7 @@ export default function LoginForm() {
             transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
             className="text-center flex flex-col gap-2"
           >
-            <h2 className="text-5xl font-syne font-bold text-white">{t('signIn')}</h2>
+            <h2 className="text-5xl font-syne font-bold text-white">SignIn</h2>
             <p className={'text-md font-semibold text-white/75'}>welcome back, traveler.</p>
           </motion.div>
 

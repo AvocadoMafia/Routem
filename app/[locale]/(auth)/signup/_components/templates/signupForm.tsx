@@ -74,9 +74,9 @@ export default function SignupForm() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
-      className="absolute md:w-1/2 w-full h-full md:top-0 md:left-0 z-10 p-6"
+      className="absolute md:w-1/2 w-full h-fit md:top-0 md:left-0 z-10 p-6"
     >
-      <div className="w-full h-full flex justify-center items-center p-3">
+      <div className="w-full h-fit flex justify-center items-center p-3">
         <div className="w-full max-w-sm space-y-8">
           {!isSubmitted ? (
             <>
@@ -86,7 +86,7 @@ export default function SignupForm() {
                 transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
                 className="text-center flex flex-col gap-3"
               >
-                <h2 className="text-5xl font-syne font-bold text-white">{t('signUp')}</h2>
+                <h2 className="text-5xl font-syne font-bold text-white">SignUp</h2>
                 <p className="text-md font-semibold opacity-90 text-white/75">start your journey today.</p>
               </motion.div>
 
