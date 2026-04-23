@@ -130,15 +130,17 @@ export default function DetailsViewer({
           focusIndex === items.length ? "opacity-100" : "opacity-40"
         }`}
       >
-        <div className="flex flex-col gap-12 max-w-4xl">
-          <AuthorSection author={route.author} />
-          <RouteMetadataSection route={route} />
-          <CategoryTags tags={route.tags} />
+        <div className="flex flex-col gap-12">
+          <div className="max-w-4xl flex flex-col gap-12">
+            <AuthorSection author={route.author} />
+            <RouteMetadataSection route={route} />
+            <CategoryTags tags={route.tags} />
+          </div>
 
           {/* 下部: タブ切り替えエリア (Comments / Related Articles) */}
           <div className="flex flex-col gap-8 pt-8 border-t border-grass/20">
             {isMobile && (
-              <div className="flex items-center gap-8 border-b border-foreground-0/5">
+              <div className="flex items-center gap-8 border-b border-foreground-0/5 max-w-4xl">
                 <button
                   onClick={() => setInfoTab?.("related")}
                   className={`pb-4 text-xs font-bold uppercase tracking-[0.2em] transition-all relative ${
@@ -172,27 +174,35 @@ export default function DetailsViewer({
 
             <div className="min-h-[400px]">
               <AnimatePresence mode="wait">
-                {!isMobile || infoTab === "related" ? (
-                  <motion.div
-                    key="related"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full"
-                  >
-                    <RelatedArticles
-                      routes={relatedRoutes}
-                      loading={relatedLoading}
-                      fetchingMore={isFetchingRelated}
-                      fetchMore={fetchMoreRelated}
-                      hasMore={relatedHasMore}
-                      error={relatedError}
-                      onRetry={retryRelated}
-                    />
-                  </motion.div>
+                {isMobile ? (
+                  infoTab === "related" ? (
+                    <motion.div
+                      key="related"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full max-w-4xl"
+                    >
+                      <RelatedArticles
+                        routes={relatedRoutes}
+                        loading={relatedLoading}
+                        fetchingMore={isFetchingRelated}
+                        fetchMore={fetchMoreRelated}
+                        hasMore={relatedHasMore}
+                        error={relatedError}
+                        onRetry={retryRelated}
+                      />
+                    </motion.div>
+                  ) : (
+                    <div className="max-w-4xl">
+                      <CommentSection key="comments" isMobile={isMobile} routeId={route.id} />
+                    </div>
+                  )
                 ) : (
-                  <CommentSection key="comments" isMobile={isMobile} routeId={route.id} />
+                  <div key="comments-desktop" className="w-full">
+                    <CommentSection isMobile={isMobile} routeId={route.id} />
+                  </div>
                 )}
               </AnimatePresence>
             </div>
