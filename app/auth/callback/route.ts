@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/auth/supabase-server'
 import {getPrisma} from "@/lib/db/prisma";
 import { ImageStatus, ImageType } from "@prisma/client";
+import {getClientSiteUrl} from "@/lib/env/client";
 
 /**
  * OAuth認証コールバックエンドポイント
@@ -105,18 +106,19 @@ export async function GET(request: NextRequest) {
         // ユーザー作成に失敗するとアプリが動かない可能性が高いので一旦エラーページへ
         return NextResponse.redirect(`${origin}/auth/auth-code-error?error=db_upsert_failed`)
       }
-
+      const forwardedProtocol = request.headers.get('x-forwarded-proto')
       const forwardedHost = request.headers.get('x-forwarded-host')
-      const isLocalEnv = process.env.NODE_ENV === 'development'
+      const siteUrl = getClientSiteUrl()
       
       // Build final redirect URL
       // Use relative path to avoid 502/origin mismatch issues with full URLs
-      const redirectUrl = next;
+      const redirectUrl = forwardedProtocol + '://' + forwardedHost
 
       console.log(`[Auth-Callback] Final Redirect URL (Relative): ${redirectUrl}`)
       console.log(redirectUrl)
       console.log(request.url)
-      return NextResponse.redirect('https://routem.net')
+        console.log('test:' + redirectUrl)
+      return NextResponse.redirect(redirectUrl || siteUrl )
     } catch (unexpectedError) {
       console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
       // Use relative path as last resort to avoid origin issues
