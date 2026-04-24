@@ -1,20 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 // The client you created from the Server-Side Auth instructions
-import { createClient } from '@/lib/auth/supabase-server'
 import {getPrisma} from "@/lib/db/prisma";
-import { ImageStatus, ImageType } from "@prisma/client";
-import {getClientSiteUrl} from "@/lib/env/client";
+import {createClient} from "@/lib/auth/supabase-server";
 
 /**
  * OAuth認証コールバックエンドポイント
- * 
+ *
  * Supabaseからリダイレクトされ、認証コードをセッションに交換するエンドポイント
- * 
+ *
  * このエンドポイントへのアクセスソースについて：
  * - ブラウザ（Web）: http://localhost:3000/auth/callback
  * - iPhone実機: http://192.168.x.x:3000/auth/callback (またはNGROK URL)
  * - いずれの場合でも、Supabaseの「Redirect URLs」設定に追加する必要があります
- * 
+ *
  * リダイレクト後の挙動：
  * - 開発環境: request.origin を使用（自動的にクライアントの origin が使われる）
  * - 本番環境: X-Forwarded-Host ヘッダーを確認（ロードバランサー等を想定）
@@ -28,104 +26,89 @@ import {getClientSiteUrl} from "@/lib/env/client";
  * - `\`を含むURL（パストラバーサル）を拒否
  */
 function isValidRedirectPath(path: string): boolean {
-  if (!path.startsWith('/')) return false
-  if (path.startsWith('//')) return false
-  if (path.includes(':')) return false
-  if (path.includes('\\')) return false
-  return true
+    if (!path.startsWith('/')) return false
+    if (path.startsWith('//')) return false
+    if (path.includes(':')) return false
+    if (path.includes('\\')) return false
+    return true
 }
 
 export async function GET(request: NextRequest) {
-  const code = request.nextUrl.searchParams.get('code')
-  const origin = request.nextUrl.origin
-  const nextParam = request.nextUrl.searchParams.get('next') ?? '/'
-  const next = isValidRedirectPath(nextParam) ? nextParam : '/'
+    const { searchParams, origin } = new URL(request.url)
+    const code = searchParams.get('code')
+    // if "next" is in param, use it as the redirect URL
+    const nextParam = searchParams.get('next') ?? '/'
+    const next = isValidRedirectPath(nextParam) ? nextParam : '/'
 
-  console.log(`[Auth-Callback] Processing callback. Code present: ${!!code}, Origin: ${origin}`)
+    if (code) {
+        const supabase = await createClient(request)
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
 
-  if (code) {
-    try {
-      const supabase = await createClient(request)
-      console.log(`[Auth-Callback] Exchanging code for session...`)
-      const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (!error) {
+            const { data: userData, error: userError } = await supabase.auth.getUser()
+            if (userError || !userData.user) {
+                return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+            }
 
-      if (error) {
-        console.error(`[Auth-Callback] Auth error:`, error)
-        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=auth_exchange_failed`)
-      }
+            console.log(userData)
 
-      console.log(`[Auth-Callback] Getting user data...`)
-      const { data: userData, error: userError } = await supabase.auth.getUser()
-      if (userError || !userData.user) {
-        console.error(`[Auth-Callback] User fetch error:`, userError)
-        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=user_fetch_failed`)
-      }
+            const supabaseUser = userData.user
 
-      const supabaseUser = userData.user
-      console.log(`[Auth-Callback] Supabase User ID: ${supabaseUser.id}`)
+            // 初回ログイン時のみ作成（ただし upsert なので冪等）
+            const displayName =
+                (supabaseUser.user_metadata?.name as string | undefined) ??
+                (supabaseUser.user_metadata?.full_name as string | undefined) ??
+                (supabaseUser.email ? supabaseUser.email.split('@')[0] : 'user')
 
-      const displayName =
-        (supabaseUser.user_metadata?.name as string | undefined) ??
-        (supabaseUser.user_metadata?.full_name as string | undefined) ??
-        (supabaseUser.email ? supabaseUser.email.split('@')[0] : 'user')
+            const iconUrl =
+                userData.user.user_metadata.avatar_url ||
+                userData.user.user_metadata.picture
 
-      const iconUrl =
-          userData.user.user_metadata.avatar_url ||
-          userData.user.user_metadata.picture
+            console.log(iconUrl)
 
-      console.log(`[Auth-Callback] Starting DB upsert for user... Icon: ${!!iconUrl}`)
+            const user = await getPrisma().user.upsert({
+                where: { id: supabaseUser.id },
+                create: {
+                    id: supabaseUser.id,
+                    name: displayName,
+                    bio: undefined,
+                    icon: {
+                        create: {
+                            url: iconUrl,
+                            key: null,
+                            status: 'EXTERNAL',
+                            type: 'USER_ICON',
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                            uploaderId: supabaseUser.id,
+                        }
+                    },
+                    // location/profileImage 等も必要ならここで user_metadata から埋める
+                },
+                update: {
+                    // 初回以降に同期したい項目だけ更新する（例：nameを毎回上書きしたくないなら空でOK）
+                    //すでにユーザーを登録済みの場合は、アイコンがアップデートされないので注意
+                },
+                include: {
+                    icon: true
+                }
+            })
 
-      try {
-        const user = await getPrisma().user.upsert({
-          where: { id: supabaseUser.id },
-          create: {
-            id: supabaseUser.id,
-            name: displayName,
-            bio: undefined,
-            icon: {
-              create: {
-                url: iconUrl,
-                key: null,
-                status: ImageStatus.EXTERNAL,
-                type: ImageType.USER_ICON,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                uploaderId: supabaseUser.id,
-              }
-            },
-          },
-          update: {},
-          include: {
-            icon: true
-          }
-        })
-        console.log(`[Auth-Callback] DB upsert success. User: ${user.name}`)
-      } catch (dbError) {
-        console.error(`[Auth-Callback] DB Error:`, dbError)
-        // DBエラーでもセッションは確立されているのでリダイレクトさせる選択肢もあるが、
-        // ユーザー作成に失敗するとアプリが動かない可能性が高いので一旦エラーページへ
-        return NextResponse.redirect(`${origin}/auth/auth-code-error?error=db_upsert_failed`)
-      }
-      const forwardedProtocol = request.headers.get('x-forwarded-proto')
-      const forwardedHost = request.headers.get('x-forwarded-host')
-      const siteUrl = getClientSiteUrl()
-      
-      // Build final redirect URL
-      // Use relative path to avoid 502/origin mismatch issues with full URLs
-      const redirectUrl = forwardedProtocol + '://' + forwardedHost
+            console.log(user)
 
-      console.log(`[Auth-Callback] Final Redirect URL (Relative): ${redirectUrl}`)
-      console.log(redirectUrl)
-      console.log(request.url)
-        console.log('test:' + redirectUrl)
-      return NextResponse.redirect(redirectUrl || siteUrl )
-    } catch (unexpectedError) {
-      console.error(`[Auth-Callback] Unexpected critical error:`, unexpectedError)
-      // Use relative path as last resort to avoid origin issues
-      return NextResponse.redirect(new URL('/auth/auth-code-error?error=unexpected_error', request.url))
+            const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
+            const isLocalEnv = process.env.NODE_ENV === 'development'
+            if (isLocalEnv) {
+                // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+                return NextResponse.redirect(`${origin}${next}`)
+            } else if (forwardedHost) {
+                return NextResponse.redirect(`https://${forwardedHost}${next}`)
+            } else {
+                return NextResponse.redirect(`${origin}${next}`)
+            }
+        }
     }
-  }
 
-  console.warn(`[Auth-Callback] No code provided in query params.`)
-  return NextResponse.redirect(new URL('/auth/auth-code-error?error=no_code', request.url))
+    // return the user to an error page with instructions
+    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
