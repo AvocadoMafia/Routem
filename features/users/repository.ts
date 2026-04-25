@@ -10,6 +10,7 @@ export const USER_SELECT = {
     name: true,
     bio: true,
     icon: true,
+  background: true,
 } as const;
 
 export const USER_WITH_COUNT_SELECT = {
@@ -17,6 +18,7 @@ export const USER_WITH_COUNT_SELECT = {
     name: true,
     bio: true,
     icon: true,
+  background: true,
     _count: {
         select: {
             routes: true,
