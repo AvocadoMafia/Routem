@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { usersService } from '@/features/users/service'
 import { createClient } from '@/lib/auth/supabase-server'
 import { headers } from 'next/headers'
+import { buildMetadata } from '@/lib/utils/metadata'
 import RootClient from './rootClient'
 
 type Props = {
@@ -13,19 +14,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   try {
     const user = await usersService.getUserById(id)
-    return {
-      title: `${user.name} | Rootem`,
-      description: user.bio || `Check out ${user.name}'s profile on Rootem`,
-      openGraph: {
-        title: user.name,
-        description: user.bio || `Check out ${user.name}'s profile on Rootem`,
-        images: user.icon?.url ? [user.icon.url] : [],
-      },
-    }
+    return buildMetadata({
+      title: user.name,
+      description: user.bio || `Check out ${user.name}'s profile on Routem`,
+      image: user.icon?.url,
+      path: `/users/${id}`,
+      type: 'profile',
+    })
   } catch (e) {
-    return {
-      title: 'User Not Found',
-    }
+    return buildMetadata({ title: 'User Not Found' })
   }
 }
 

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/auth/supabase-server";
 import { headers } from "next/headers";
 import { routesService } from "@/features/routes/service";
 import { Metadata } from "next";
+import { buildMetadata } from "@/lib/utils/metadata";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -14,20 +15,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const route = await routesService.getRouteDetail(id, null);
 
   if (!route) {
-    return {
-      title: "Route Not Found",
-    };
+    return buildMetadata({ title: "Route Not Found" });
   }
 
-  return {
-    title: `${route.title} | Rootem`,
-    description: route.description || "Check out this route on Rootem",
-    openGraph: {
-      title: route.title,
-      description: route.description || "Check out this route on Rootem",
-      type: "website",
-    },
-  };
+  return buildMetadata({
+    title: route.title,
+    description: route.description || "Check out this route on Routem",
+    image: route.thumbnail?.url,
+    path: `/routes/${id}`,
+    type: "article",
+  });
 }
 
 export default async function RoutePage({ params }: Props) {

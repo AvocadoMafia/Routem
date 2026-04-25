@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Roboto, Syne, Outfit, Josefin_Sans, Caveat } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -9,6 +8,7 @@ import RootClient from "@/app/[locale]/rootClient";
 import { ThemeProvider } from "@/app/[locale]/_components/providers/themeProvider";
 import StateInitializer from "@/app/[locale]/_components/layout/templates/stateInitializer";
 import { locales, type Locale } from '@/i18n/config';
+import { buildMetadata } from "@/lib/utils/metadata";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
@@ -42,10 +42,7 @@ const caveat = Caveat({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Routem",
-  description: "Share your travel routes with the world",
-};
+export const metadata = buildMetadata();
 
 type Props = {
   children: React.ReactNode;
