@@ -82,7 +82,7 @@ export default function PhotoContainer({photo}: { photo: Photo }) {
                         <div className="flex items-center gap-1.5 md:gap-2">
                             <div className="relative w-5 h-5 md:w-6 md:h-6 rounded-full overflow-hidden border border-white/20">
                                 <Image
-                                    src={photo.userIcon || "/mockImages/userIcon_1.jpg"}
+                                    src={photo.userIcon || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp"}
                                     alt={photo.username}
                                     fill
                                     className="object-cover"

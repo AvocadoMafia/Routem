@@ -31,7 +31,7 @@ export default function RouteCardBasic({ route, isLinkCard = true, isFocused = f
                     [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
                     [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
                 <Image
-                    src={route.thumbnail?.url ?? '/map.jpg'}
+                    src={route.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                     alt={route.title}
                     fill
                     className={'object-cover group-hover:scale-110 duration-700 ease-out'}
@@ -80,7 +80,7 @@ export default function RouteCardBasic({ route, isLinkCard = true, isFocused = f
                 <div className="mt-auto w-full flex items-center justify-end gap-3">
                     <div className="relative sm:w-10 w-7 aspect-square rounded-full overflow-hidden">
                         <Image
-                            src={route.author.icon?.url || "/mockImages/userIcon_2.jpg"}
+                            src={route.author.icon?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp"}
                             alt={route.author.name}
                             fill
                             className="rounded-full object-cover"

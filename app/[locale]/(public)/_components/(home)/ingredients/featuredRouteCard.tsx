@@ -27,7 +27,7 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
       {/* Background Image with Margin (via container padding) */}
       <div className="relative w-full h-full rounded-xl overflow-hidden">
         <Image
-          src={route.thumbnail?.url || '/map.jpg'}
+          src={route.thumbnail?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
           alt={`${route.title} background`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"

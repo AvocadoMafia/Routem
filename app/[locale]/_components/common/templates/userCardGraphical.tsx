@@ -26,7 +26,7 @@ export function UserCardGraphical(props: Props) {
       {/* Background Image with Margin (via container padding) */}
       <div className="relative w-full h-full rounded-xl overflow-hidden">
         <Image
-          src={props.user.background?.url || "/mockImages/userProfile.jpg"}
+          src={props.user.background?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp"}
           alt={`${props.user.name} background`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
@@ -55,7 +55,7 @@ export function UserCardGraphical(props: Props) {
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-black/10 shrink-0 shadow-lg">
                 <Image
-                  src={props.user.icon?.url || "/mockImages/userIcon_1.jpg"}
+                  src={props.user.icon?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp"}
                   alt={`${props.user.name} icon`}
                   fill
                   className="object-cover"

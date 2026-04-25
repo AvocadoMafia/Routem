@@ -154,14 +154,8 @@ function ExploreContent() {
             exit={{ y: "-100%", opacity: 0 }}
             transition={{ duration: 0.8, ease: [0.32, 0.72, 0, 1] }}
           >
-            <div className="absolute bottom-12 left-12 flex items-center gap-3 group z-20">
-              <div className="w-12 h-[1px] bg-white/50 group-hover:w-20 transition-all duration-700" />
-              <span className="text-[10px] text-white/40 tracking-[0.5em] uppercase font-bold">
-                Captured by @lychee / Mt. Fuji
-              </span>
-            </div>
 
-            <img className="w-full h-full object-cover" src="/mockImages/mountain.jpg" alt="background" />
+            <img className="w-full h-full object-cover" src="https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/explore-bg.webp" alt="background" />
             <div
               className="absolute inset-0 z-10 pointer-events-none"
               style={{

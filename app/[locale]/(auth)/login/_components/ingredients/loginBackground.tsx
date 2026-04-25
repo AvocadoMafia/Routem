@@ -9,7 +9,8 @@ export default function LoginBackground() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
         className={'w-full h-full object-cover'}
-        src={'/mockImages/mountain.jpg'}
+        src={'\n' +
+            'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/signin-bg.webp'}
         alt="login background"
       />
       <motion.div

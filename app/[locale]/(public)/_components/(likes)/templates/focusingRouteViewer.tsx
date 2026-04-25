@@ -87,7 +87,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                         {/* メイン画像セクション */}
                         <div className="relative w-[55%] h-full shrink-0">
                             <Image
-                                src={routeOnFocus.thumbnail?.url ?? '/mockImages/Fuji.jpg'}
+                                src={routeOnFocus.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                                 alt={routeOnFocus.title}
                                 fill
                                 className="object-cover"
@@ -109,7 +109,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                 <div className="flex items-center gap-4">
                                     <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-background-0 shadow-md">
                                         <Image
-                                            src={routeOnFocus.author.icon?.url || "/mockImages/userIcon_2.jpg"}
+                                            src={routeOnFocus.author.icon?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp"}
                                             alt={routeOnFocus.author.name}
                                             fill
                                             className="object-cover"

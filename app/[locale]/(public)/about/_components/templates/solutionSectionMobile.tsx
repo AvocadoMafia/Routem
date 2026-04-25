@@ -24,7 +24,7 @@ export default function SolutionSectionMobile() {
                 </div>
             </div>
             <div className={'w-[40svw] h-fit absolute top-[115cqw] left-[15cqw]'}>
-                <SolutionCard imageSrc={'/mockImages/Fuji.jpg'} title_line1={'地図上で作る、'} title_line2={'地図上で伝える。'} description={'地図上の施設情報を結んでルートを作成。道のり・移動手段を可視化し、写真や感想を各スポットに添付。投稿者はブログ感覚でルートの詳細説明を書くこともできます。'}/>
+                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'地図上で作る、'} title_line2={'地図上で伝える。'} description={'地図上の施設情報を結んでルートを作成。道のり・移動手段を可視化し、写真や感想を各スポットに添付。投稿者はブログ感覚でルートの詳細説明を書くこともできます。'}/>
             </div>
         </section>
     )

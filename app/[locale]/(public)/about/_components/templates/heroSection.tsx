@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const images = [
-    "/lp/slideshow/LP1.jpg",
-    "/lp/slideshow/LP2.jpg",
-    "/lp/slideshow/LP3.jpg",
-    "/lp/slideshow/LP4.jpg",
-    "/lp/slideshow/LP5.jpg",
+    "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/lp%2FLP1.webp",
+    "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/lp%2FLP2.webp",
+    "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/lp%2FLP3.webp",
+    "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/lp%2FLP4.webp",
+    "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/lp%2FLP5.webp",
 ];
 
 export default function HeroSection() {

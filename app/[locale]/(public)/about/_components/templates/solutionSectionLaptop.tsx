@@ -26,19 +26,19 @@ export default function SolutionSectionLaptop() {
                 </div>
             </div>
             <div className={'w-[20svw] h-[32svw] absolute top-[65cqw] left-[10cqw]'}>
-                <SolutionCard imageSrc={'/mockImages/Fuji.jpg'} title_line1={'地図上で作る、'} title_line2={'地図上で伝える。'} description={'地図上の施設情報を結んでルートを作成。道のり・移動手段を可視化し、写真や感想を各スポットに添付。投稿者はブログ感覚でルートの詳細説明を書くこともできます。'}/>
+                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'地図上で作る、'} title_line2={'地図上で伝える。'} description={'地図上の施設情報を結んでルートを作成。道のり・移動手段を可視化し、写真や感想を各スポットに添付。投稿者はブログ感覚でルートの詳細説明を書くこともできます。'}/>
             </div>
 
             <div className={'w-[20svw] h-[32svw] absolute top-[70cqw] left-[50cqw]'}>
-                <SolutionCard imageSrc={'/mockImages/Fuji.jpg'} title_line1={'旅の条件で、'} title_line2={'すぐに見つかる。'} description={'通常の文字列検索はもちろん、目的、場所、日時、期間、予算等で絞り込む探索機能を用いて、あいまいなアイデアを具体的なプランとして素早く出力できます。'}/>
+                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'旅の条件で、'} title_line2={'すぐに見つかる。'} description={'通常の文字列検索はもちろん、目的、場所、日時、期間、予算等で絞り込む探索機能を用いて、あいまいなアイデアを具体的なプランとして素早く出力できます。'}/>
             </div>
 
             <div className={'w-[20svw] h-[32svw] absolute top-[105cqw] left-[25cqw]'}>
-                <SolutionCard imageSrc={'/mockImages/Fuji.jpg'} title_line1={'借りて、アレンジして、'} title_line2={'また誰かに貸す。'} description={'他のユーザーのルートをワンタップでコピーし、自分のプランとして活用。そのまま使っても、スポットを入れ替えアレンジしても、編集後に再共有してもOK。'}/>
+                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'借りて、アレンジして、'} title_line2={'また誰かに貸す。'} description={'他のユーザーのルートをワンタップでコピーし、自分のプランとして活用。そのまま使っても、スポットを入れ替えアレンジしても、編集後に再共有してもOK。'}/>
             </div>
 
             <div className={'w-[20svw] h-[32svw] absolute top-[107cqw] left-[60cqw]'}>
-                <SolutionCard imageSrc={'/mockImages/Fuji.jpg'} title_line1={'旅行好きが、'} title_line2={'つながる場所。'} description={'ルートのコメント・いいね機能で他ユーザーと交流。気に入った投稿者をフォローして新しいルートをチェック。モデルコースも地図上のインタラクティブなルートとして掲載可能。'}/>
+                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'旅行好きが、'} title_line2={'つながる場所。'} description={'ルートのコメント・いいね機能で他ユーザーと交流。気に入った投稿者をフォローして新しいルートをチェック。モデルコースも地図上のインタラクティブなルートとして掲載可能。'}/>
             </div>
         </section>
     );

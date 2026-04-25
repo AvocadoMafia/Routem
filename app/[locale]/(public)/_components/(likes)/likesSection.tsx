@@ -77,7 +77,7 @@ export default function LikesSection() {
                 >
                     {routeOnFocus && (
                         <Image
-                            src={routeOnFocus.thumbnail?.url ?? '/mockImages/Fuji.jpg'}
+                            src={routeOnFocus.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'}
                             alt=""
                             fill
                             className="object-cover blur-sm opacity-50 scale-110"

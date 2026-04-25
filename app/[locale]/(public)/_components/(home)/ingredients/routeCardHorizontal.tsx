@@ -15,7 +15,7 @@ export type RouteCardHorizontalProps = {
 // 横長のシンプルな旅行ルート サムネイルカード
 export default function RouteCardHorizontal({route, isLinkCard = false, isFocused = false, onClick}: RouteCardHorizontalProps){
   const t = useTranslations('routes');
-  const bgSrc = route.thumbnail?.url  ?? '/map.jpg';
+  const bgSrc = route.thumbnail?.url  ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp';
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode);
   const daysCount = route.routeDates.length;
   

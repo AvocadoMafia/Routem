@@ -23,7 +23,7 @@ export default function FollowingUserCard({ user, active }: Props) {
     >
       <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden border border-foreground-2/10 group-hover:border-accent-0/40 transition-colors">
         <Image
-          src={user.icon?.url || "/mockImages/userIcon_1.jpg"}
+          src={user.icon?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp"}
           alt={user.name}
           fill
           className="object-cover"

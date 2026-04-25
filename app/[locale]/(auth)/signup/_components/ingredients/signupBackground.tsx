@@ -9,7 +9,8 @@ export default function SignupBackground() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
         className={'w-full h-full object-cover'}
-        src={'/mockImages/town.jpg'}
+        src={'\n' +
+            'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/signup-bg.webp'}
         alt="signup background"
       />
       <motion.div

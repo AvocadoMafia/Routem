@@ -23,7 +23,7 @@ export default function RouteViewer(props: Props) {
           <Link href={`/routes/${route.id}`} className="block group">
             <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-shadow">
               <Image
-                src={route.thumbnail?.url ?? '/map.jpg'}
+                src={route.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                 alt={route.title}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"

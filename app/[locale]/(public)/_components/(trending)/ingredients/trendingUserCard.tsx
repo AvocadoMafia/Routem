@@ -34,7 +34,7 @@ export default function TrendingUserCard({user, rank}: Props) {
                 <div className="relative h-full w-full rounded-full border border-grass/10 group-hover:border-grass/40 overflow-hidden transition-colors duration-300">
                     <Image
                         className={'h-full w-full object-cover scale-100 group-hover:scale-110 transition-transform duration-500'}
-                        src={user.icon?.url || '/mockImages/userIcon_1.jpg'}
+                        src={user.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                         alt={user.name}
                         fill
                         unoptimized

@@ -47,7 +47,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
           className="relative w-full md:w-2/5 aspect-video md:aspect-[16/10] rounded-2xl overflow-hidden shadow-xl shrink-0"
         >
           <Image
-            src={route.thumbnail?.url || "/mockImages/Kyoto.jpg"}
+            src={route.thumbnail?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp"}
             alt={route.title}
             fill
             className="object-cover"

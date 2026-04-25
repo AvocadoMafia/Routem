@@ -70,7 +70,7 @@ export default function MapViewerOnMobile(props: Props) {
                             {/* 上部マップ (静止画像に置き換え) */}
                             <img
                                 className="w-full h-[200px] object-cover rounded-2xl shrink-0"
-                                src={route.thumbnail?.url || '/map.jpg'}
+                                src={route.thumbnail?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                                 alt={tCommon('mapPreviewAlt')}
                             />
                             {/* 下部コンテンツ */}
