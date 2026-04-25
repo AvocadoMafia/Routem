@@ -11,11 +11,21 @@ export const ROUTE_INCLUDE = {
   },
   thumbnail: true,
   routeDates: {
+    orderBy: {
+      day: "asc",
+    },
     include: {
       routeNodes: {
+        orderBy: {
+          order: "asc",
+        },
         include: {
           spot: true,
-          transitSteps: true,
+          transitSteps: {
+            orderBy: {
+              order: "asc",
+            },
+          },
           images: true,
         },
       },
