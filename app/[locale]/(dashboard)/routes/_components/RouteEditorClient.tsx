@@ -6,6 +6,7 @@ import RouteEditingSection from "./templates/routeEditingSection";
 import RouteSettingsSection from "./templates/routeSettingsSection";
 import ActionBar from "./ingredients/actionBar";
 import { X } from "lucide-react";
+import ModalFullSize from "@/app/[locale]/_components/common/templates/modalFullSize";
 import { useRouter } from "next/navigation";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
@@ -21,6 +22,7 @@ import {
     SpotSource,
     TransitMode,
 } from "@prisma/client";
+import {useTranslations} from "next-intl";
 
 interface RouteEditorClientProps {
     initialRoute?: Route;
@@ -30,6 +32,7 @@ interface RouteEditorClientProps {
 export default function RouteEditorClient({ initialRoute, mode }: RouteEditorClientProps) {
     const router = useRouter();
     const isMobile = useUiStore((state) => state.isMobile);
+    const t = useTranslations('routeEditor');
 
     // -------------------------------------------------------------------------
     // 状態管理
@@ -506,25 +509,25 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
 
             {/* モバイル用エディタモーダル */}
             {isMobile && isEditorModalOpen && selectedItem && (
-                <div className="absolute inset-0 z-50 flex md:hidden" aria-modal="true" role="dialog">
-                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                <ModalFullSize onBackgroundClick={() => setIsEditorModalOpen(false)}>
+                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200 min-h-full">
                         <div className="sticky z-10 bg-background-1 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between top-0">
-                            <div className="text-base font-bold text-foreground-0">{selectedItem.type === 'waypoint' ? 'Edit Waypoint' : 'Edit Transportation'}</div>
+                            <div className="text-base font-bold text-foreground-0">{selectedItem.type === 'waypoint' ?  t('editWaypoint') : t('editTransportation')}</div>
                             <button className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95" onClick={() => setIsEditorModalOpen(false)}>
                                 <X size={22} />
                             </button>
                         </div>
                         <RouteEditingSection selectedItem={selectedItem} onUpdateItem={(updates) => updateItem(selectedIndex, updates)} />
                     </div>
-                </div>
+                </ModalFullSize>
             )}
 
             {/* モバイル用設定モーダル */}
             {isMobile && isSettingsModalOpen && (
-                <div className="absolute inset-0 z-50 flex md:hidden" aria-modal="true" role="dialog">
-                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                <ModalFullSize onBackgroundClick={() => setIsSettingsModalOpen(false)}>
+                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200 min-h-full">
                         <div className="sticky z-10 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between top-0">
-                            <div className="text-base font-bold text-foreground-0">Publication Settings</div>
+                            <div className="text-base font-bold text-foreground-0">{t('publicationSettings')}</div>
                             <button className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95" onClick={() => setIsSettingsModalOpen(false)}>
                                 <X size={22} />
                             </button>
@@ -552,7 +555,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                             setTags={setTags}
                         />
                     </div>
-                </div>
+                </ModalFullSize>
             )}
         </div>
     );
