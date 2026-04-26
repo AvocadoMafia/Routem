@@ -90,7 +90,7 @@ export default function NodeLinkDiagram({
     }, []);
 
     return (
-        <div className="w-full md:w-[450px] h-full bg-background-0/50 backdrop-blur-md border-b md:border-b-0 md:border-r border-grass flex flex-col overflow-y-scroll">
+        <div className="w-full md:w-[450px] md:h-full h-fit md:border-r-1 border-grass flex flex-col overflow-y-scroll md:pb-0 pb-12">
             {/* Sticky header for diagram actions */}
             <div
                 className="sticky top-0 z-20 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 md:hidden flex items-center justify-between"
@@ -145,7 +145,7 @@ export default function NodeLinkDiagram({
                 </div>
             </div>
 
-            <div className="flex items-center gap-0 px-2 pt-2 border-b border-grass overflow-x-auto no-scrollbar bg-background-1/30">
+            <div className="h-fit flex items-center gap-0 px-2 pt-2 border-b border-grass overflow-x-auto no-scrollbar bg-background-1/30 shrink-0">
                 {allDaysItems.map((_, idx) => (
                     <div
                         key={idx}
@@ -286,7 +286,7 @@ export default function NodeLinkDiagram({
 
             {/* 下部の「経由地を追加」ボタン */}
             <motion.div
-                className="p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass sticky bottom-0 mt-auto z-50"
+                className="w-full h-fit p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass md:sticky fixed bottom-0 mt-auto z-50"
             >
                 <button
                     onClick={onAddWaypoint}

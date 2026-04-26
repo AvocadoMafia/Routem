@@ -404,7 +404,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
     };
 
     return (
-        <div className="relative w-full h-full flex flex-row">
+        <div className="w-full md:h-full h-fit flex flex-row">
             {/* 左側：ダイアグラム */}
             <NodeLinkDiagram
                 items={items[currentDayIndex] || []}

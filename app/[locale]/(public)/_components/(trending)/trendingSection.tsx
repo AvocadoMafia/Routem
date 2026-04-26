@@ -109,7 +109,7 @@ export default function TrendingSection() {
             </div>
 
             {/* モバイル表示: アクティブなタブに応じて切り替え */}
-            <div className="md:hidden w-full h-fit px-4 py-6">
+            <div className="md:hidden w-full h-fit md:px-4 px-0 py-6">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
