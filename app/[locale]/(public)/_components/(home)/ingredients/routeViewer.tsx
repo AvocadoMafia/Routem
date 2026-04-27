@@ -71,14 +71,14 @@ export default function RouteViewer(props: Props) {
               </span>
             </div>
 
-            <div className="mt-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
               <h3 className="text-lg font-semibold text-foreground-1">{t('description')}</h3>
               <p className="text-foreground-1/80 leading-relaxed line-clamp-4">
                 {route.description}
               </p>
             </div>
 
-            <div className="mt-4 flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
               <h3 className="text-lg font-semibold text-foreground-1">{t('routeInfo')}</h3>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div className="p-3 rounded-lg bg-background-0 border border-grass/10">
