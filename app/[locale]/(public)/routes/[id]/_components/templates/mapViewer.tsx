@@ -114,57 +114,57 @@ export default function MapViewer({ route, focusIndex, items }: Props) {
 
   return (
     <div className="absolute inset-0 z-0">
-      <Map
-        ref={mapRef}
-        initialViewState={{
-          latitude: allRouteNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,
-          longitude: allRouteNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,
-          zoom: 11,
-        }}
-        mapStyle="mapbox://styles/mapbox/streets-v12"
-        mapboxAccessToken={mapboxAccessToken}
-        style={{ width: "100%", height: "100%" }}
-      >
-        {allRouteNodes?.filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (
-          <Marker
-            key={node.id}
-            longitude={node.spot.longitude as number}
-            latitude={node.spot.latitude as number}
-            anchor="bottom"
-          >
-            <div className="flex flex-col items-center">
-              <div className="bg-accent-0 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 shadow-md border border-white/20 z-10">
-                {idx + 1}
-              </div>
-              <div className="relative flex items-center justify-center">
-                <MapPin
-                  size={24}
-                  className="text-accent-0 fill-accent-0/20 stroke-[2.5px] drop-shadow-sm"
-                />
-                <div className="absolute w-1.5 h-1.5 bg-white rounded-full translate-y-[-3px]" />
-              </div>
-            </div>
-          </Marker>
-        ))}
+      {/*<Map*/}
+      {/*  ref={mapRef}*/}
+      {/*  initialViewState={{*/}
+      {/*    latitude: allRouteNodes?.find(node => node.spot)?.spot.latitude ?? 35.6804,*/}
+      {/*    longitude: allRouteNodes?.find(node => node.spot)?.spot.longitude ?? 139.7690,*/}
+      {/*    zoom: 11,*/}
+      {/*  }}*/}
+      {/*  mapStyle="mapbox://styles/mapbox/streets-v12"*/}
+      {/*  mapboxAccessToken={mapboxAccessToken}*/}
+      {/*  style={{ width: "100%", height: "100%" }}*/}
+      {/*>*/}
+      {/*  {allRouteNodes?.filter(node => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node, idx) => (*/}
+      {/*    <Marker*/}
+      {/*      key={node.id}*/}
+      {/*      longitude={node.spot.longitude as number}*/}
+      {/*      latitude={node.spot.latitude as number}*/}
+      {/*      anchor="bottom"*/}
+      {/*    >*/}
+      {/*      <div className="flex flex-col items-center">*/}
+      {/*        <div className="bg-accent-0 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full mb-0.5 shadow-md border border-white/20 z-10">*/}
+      {/*          {idx + 1}*/}
+      {/*        </div>*/}
+      {/*        <div className="relative flex items-center justify-center">*/}
+      {/*          <MapPin*/}
+      {/*            size={24}*/}
+      {/*            className="text-accent-0 fill-accent-0/20 stroke-[2.5px] drop-shadow-sm"*/}
+      {/*          />*/}
+      {/*          <div className="absolute w-1.5 h-1.5 bg-white rounded-full translate-y-[-3px]" />*/}
+      {/*        </div>*/}
+      {/*      </div>*/}
+      {/*    </Marker>*/}
+      {/*  ))}*/}
 
-        {lineData && (
-          <Source type="geojson" data={lineData}>
-            <Layer
-              id="route-line"
-              type="line"
-              layout={{
-                "line-join": "round",
-                "line-cap": "round"
-              }}
-              paint={{
-                "line-color": "#ff6363", // accent-color-0
-                "line-width": 4,
-                "line-opacity": 0.8
-              }}
-            />
-          </Source>
-        )}
-      </Map>
+      {/*  {lineData && (*/}
+      {/*    <Source type="geojson" data={lineData}>*/}
+      {/*      <Layer*/}
+      {/*        id="route-line"*/}
+      {/*        type="line"*/}
+      {/*        layout={{*/}
+      {/*          "line-join": "round",*/}
+      {/*          "line-cap": "round"*/}
+      {/*        }}*/}
+      {/*        paint={{*/}
+      {/*          "line-color": "#ff6363", // accent-color-0*/}
+      {/*          "line-width": 4,*/}
+      {/*          "line-opacity": 0.8*/}
+      {/*        }}*/}
+      {/*      />*/}
+      {/*    </Source>*/}
+      {/*  )}*/}
+      {/*</Map>*/}
     </div>
   );
 }
