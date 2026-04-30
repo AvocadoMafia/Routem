@@ -17,7 +17,7 @@ export default function RouteViewer(props: Props) {
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode);
 
   return (
-    <div className={'flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-6 backdrop-blur-xs overflow-hidden px-6 border-l border-grass/20'}>
+    <div className={'flex xl:w-[400px] lg:w-[330px] w-1/2 h-full flex-col gap-6 backdrop-blur-xs overflow-hidden lg:px-6 px-0 border-l border-grass/20'}>
       {route ? (
         <>
           <Link href={`/routes/${route.id}`} className="block group">
@@ -31,7 +31,7 @@ export default function RouteViewer(props: Props) {
               />
             </div>
           </Link>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:px-0 px-3">
             <div>
               <Link href={`/routes/${route.id}`} className="hover:text-accent-0 transition-colors">
                 <h2 className="text-2xl font-bold text-foreground-1 leading-tight">

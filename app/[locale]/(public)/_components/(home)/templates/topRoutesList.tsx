@@ -49,9 +49,9 @@ export default function TopRoutesList() {
       <div className="w-full mb-3 flex items-center gap-2">
         <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topRoutes')}</h2>
       </div>
-      <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">
+      <div className="w-full lg:min-h-[350px] md:min-h-[700px] sm:min-h-[1000px] min-h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="w-full h-full bg-background-1 animate-pulse rounded-2xl" />
+          <div key={i} className="w-full h-full min-h-[250px] bg-background-1 animate-pulse rounded-2xl" />
         ))}
       </div>
     </div>
@@ -66,7 +66,7 @@ export default function TopRoutesList() {
         <h2 className="text-md font-bold uppercase tracking-[0.3em] text-foreground-0">{tHome('topRoutes')}</h2>
       </div>
 
-      <div className="w-full lg:h-[350px] md:h-[700px] sm:h-[1000px] h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">
+      <div className="w-full lg:min-h-[350px] md:min-h-[700px] sm:min-h-[1000px] min-h-[1400px] grid gap-3 xl:grid-rows-1 xl:grid-cols-5 lg:grid-rows-1 lg:grid-cols-4 md:grid-rows-2 md:grid-cols-3 sm:grid-rows-3 sm:grid-cols-2 grid-rows-5 grid-cols-1">
         <div className="sm:col-span-2 col-span-1">
           <FeaturedRouteCard route={routes[0]} isLinkCard={true}/>
         </div>

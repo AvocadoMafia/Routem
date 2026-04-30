@@ -113,7 +113,7 @@ function MapViewerOnLaptop(props: Props) {
         <div className={'w-full h-[650px] p-1.5 block bg-background-0 rounded-3xl md:block hidden shadow-md'}>
             <div className={'w-full h-full rounded-2xl overflow-hidden relative bg-background-1'}>
                 <div className={'w-full h-full flex flex-row'}>
-                    <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 block'} onWheel={e => e.stopPropagation()}>
+                    <div className={'flex-1 h-full bg-background-1 relative border-r border-grass/10 lg:block hidden'} onWheel={e => e.stopPropagation()}>
                         {!props.routes ? (
                              <div className="w-full h-full bg-background-0/50 flex items-center justify-center">
                                  <p className="text-foreground-1 font-bold uppercase tracking-[0.2em] animate-pulse">LOADING...</p>

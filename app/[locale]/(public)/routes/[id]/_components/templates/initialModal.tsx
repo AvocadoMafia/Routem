@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Route } from "@/lib/types/domain";
 import Image from "next/image";
@@ -9,12 +10,14 @@ import { useTranslations } from "next-intl";
 export default function InitialModal({ route }: { route: Route }) {
     const t = useTranslations('routes');
     const { isVisible } = useInitialModal();
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
 
     return (
         <AnimatePresence>
             {isVisible && (
-                <motion.div
-                    initial={{ y: 0 }}
+                <Suspense fallback={<div className="absolute inset-0 bg-neutral-950 z-200" />}>
+                    <motion.div
+                        initial={{ y: 0 }}
                     animate={{ y: 0 }}
                     exit={{ 
                         y: '-100%',
@@ -29,13 +32,18 @@ export default function InitialModal({ route }: { route: Route }) {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                         className="absolute inset-0"
                     >
+                        {/* 読み込み中のプレースホルダー */}
+                        {!isImageLoaded && (
+                            <div className="absolute inset-0 bg-neutral-900 animate-pulse" />
+                        )}
                         <Image
                             src={route.thumbnail?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                             alt={route.title}
                             fill
-                            className="object-cover"
+                            className={`object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             priority
                             unoptimized
+                            onLoad={() => setIsImageLoaded(true)}
                         />
                     </motion.div>
                     
@@ -77,6 +85,7 @@ export default function InitialModal({ route }: { route: Route }) {
                         </motion.div>
                     </div>
                 </motion.div>
+                </Suspense>
             )}
         </AnimatePresence>
     )

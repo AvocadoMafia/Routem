@@ -6,21 +6,17 @@ import TopRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/
 import TopUsersList from "@/app/[locale]/(public)/_components/(home)/templates/topUsersList";
 import RecommendedRoutesList from "@/app/[locale]/(public)/_components/(home)/templates/recommendedRoutesList";
 import { Route } from "@/lib/types/domain";
-import { useEffect, useState } from "react";
+import {Suspense, useEffect, useState} from "react";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { userStore } from "@/lib/stores/userStore";
 import { getDataFromServerWithJson } from "@/lib/api/client";
 import { CursorResponse, useInfiniteScroll } from "@/lib/hooks/useInfiniteScroll";
 
 export default function HomeSection() {
-    const [isClient, setIsClient] = useState(false);
     const isMobile = useUiStore((state) => state.isMobile);
     const user = userStore((state) => state.user);
     const isUserLoggedIn = !!user?.id;
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
 
     const { items: routes, hasMore, isFetching, fetchMore, error, retry, observerTarget } = useInfiniteScroll<Route>({
         fetcher: (cursor) => {
@@ -35,14 +31,10 @@ export default function HomeSection() {
 
     return (
         <div className="w-full h-full flex flex-col items-center gap-20 py-12">
-            {isClient && (
-                <>
-                    {isMobile ? (
-                        <MapViewerOnMobile routes={routes ?? undefined} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching}/>
-                    ) : (
-                        <MapViewerOnLaptop routes={routes ?? undefined} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching}/>
-                    )}
-                </>
+            {isMobile ? (
+                <MapViewerOnMobile routes={routes ?? undefined} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching}/>
+            ) : (
+                <MapViewerOnLaptop routes={routes ?? undefined} fetchMore={fetchMore} hasMore={hasMore} isFetching={isFetching}/>
             )}
             <TopRoutesList />
             <TopUsersList />

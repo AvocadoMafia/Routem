@@ -38,23 +38,9 @@ function MapViewerOnMobile(props: Props) {
         </SwiperSlide>
     )), []);
 
-    if (!props.routes) {
-        return (
-            <div className="w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg overflow-hidden">
-                <div className="w-full h-full rounded-2xl bg-background-1 flex flex-col">
-                    <div className="w-full h-[275px] bg-background-0/50 shimmer" />
-                    <div className="p-6 flex flex-col gap-4">
-                        <div className="w-3/4 h-8 bg-background-0 rounded shimmer" />
-                        <div className="w-1/2 h-6 bg-background-0 rounded shimmer" />
-                        <div className="w-full h-20 bg-background-0 rounded shimmer" />
-                    </div>
-                </div>
-            </div>
-        )
-    }
 
     return (
-        <div className={'w-full h-132 md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
+        <div className={'w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
             <Swiper
                 slidesPerView={1}
                 spaceBetween={16}
@@ -65,7 +51,7 @@ function MapViewerOnMobile(props: Props) {
                     }
                 }}
             >
-                {props.routes.map((route, idx) => (
+                {props.routes?.map((route, idx) => (
                     <SwiperSlide key={route.id ?? idx} className={'h-full'}>
                         <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden bg-background-1">
                             {/* 上部マップ (静止画像に置き換え) */}
