@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, memo} from "react";
 import {Map, Marker, Source, Layer, MapRef} from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import RouteList from "@/app/[locale]/(public)/_components/(home)/ingredients/routeList";
@@ -25,13 +25,17 @@ type RouteNodeWithSpot = {
     spot: { longitude: number | null; latitude: number | null };
 };
 
-export default function MapViewerOnLaptop(props: Props) {
+function MapViewerOnLaptop(props: Props) {
     const [focusedRouteIndex, setFocusedRouteIndex] = useState<number>(0);
     const mapRef = useRef<MapRef>(null);
 
     const mapboxAccessToken = getClientMapboxAccessToken()
     const focusedRoute = props.routes ? props.routes[focusedRouteIndex] : undefined;
     const routeGeometry = useRouteGeometry(focusedRoute);
+
+    const allRouteNodes = useMemo(() => {
+        return focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
+    }, [focusedRoute?.id]);
 
     useEffect(() => {
         if (mapboxAccessToken) {
@@ -40,10 +44,9 @@ export default function MapViewerOnLaptop(props: Props) {
     }, [mapboxAccessToken]);
 
     useEffect(() => {
-        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
-        if (!focusedRoute || routeNodes.length === 0 || !mapRef.current) return;
+        if (!focusedRoute?.id || allRouteNodes.length === 0 || !mapRef.current) return;
 
-        const coords = (routeNodes as RouteNodeWithSpot[])
+        const coords = (allRouteNodes as RouteNodeWithSpot[])
             .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
             .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
 
@@ -53,7 +56,7 @@ export default function MapViewerOnLaptop(props: Props) {
             mapRef.current.flyTo({
                 center: [coords[0][0], coords[0][1]],
                 zoom: 14,
-                duration: 2000
+                duration: 1000
             });
         } else {
             const lats = coords.map(c => c[1]);
@@ -65,14 +68,13 @@ export default function MapViewerOnLaptop(props: Props) {
 
             mapRef.current.fitBounds(
                 [[minLng, minLat], [maxLng, maxLat]],
-                { padding: 80, duration: 2000 }
+                { padding: 80, duration: 1000 }
             );
         }
     }, [focusedRoute?.id]);
 
     const lineData = useMemo(() => {
-        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
-        if (!focusedRoute || routeNodes.length < 2) return null;
+        if (!focusedRoute?.id || allRouteNodes.length < 2) return null;
 
         if (routeGeometry) {
             return {
@@ -82,7 +84,7 @@ export default function MapViewerOnLaptop(props: Props) {
             };
         }
 
-        const coordinates = (routeNodes as RouteNodeWithSpot[])
+        const coordinates = (allRouteNodes as RouteNodeWithSpot[])
             .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
             .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
 
@@ -96,7 +98,7 @@ export default function MapViewerOnLaptop(props: Props) {
                 coordinates: coordinates
             }
         };
-    }, [focusedRoute, routeGeometry]);
+    }, [focusedRoute?.id, routeGeometry, allRouteNodes]);
 
     if(!mapboxAccessToken) {
         console.error("Mapbox access token is missing!");
@@ -177,3 +179,5 @@ export default function MapViewerOnLaptop(props: Props) {
         </div>
     )
 }
+
+export default memo(MapViewerOnLaptop);

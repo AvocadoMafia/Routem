@@ -54,7 +54,7 @@ export default function ScrollDetector() {
             }
 
             const diff = currentScrollY - lastScrollY.current
-            const threshold = 5 // 微小なスクロールでのチャタリング防止
+            const threshold = 200 // 微小なスクロールでのチャタリング防止
 
             if (Math.abs(diff) > threshold) {
                 if (diff > 0) {
@@ -116,7 +116,7 @@ export default function ScrollDetector() {
             const dy = touchEnd.y - touchStart.current.y
 
             // スワイプ判定の閾値
-            const threshold = 30
+            const threshold = 100
 
             if (Math.abs(dx) > Math.abs(dy)) {
                 if (Math.abs(dx) > threshold) {
