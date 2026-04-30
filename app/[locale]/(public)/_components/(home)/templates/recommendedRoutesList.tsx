@@ -4,7 +4,7 @@ import RouteCardBasicSkeleton from "@/app/[locale]/_components/common/ingredient
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {Route} from "@/lib/types/domain";
 import {ErrorScheme} from "@/lib/types/error";
-import {RefObject} from "react";
+import {RefObject, useMemo} from "react";
 
 type Props = {
     routes?: Route[]
@@ -20,13 +20,13 @@ export default function RecommendedRoutesList(props: Props) {
     const tHome = useTranslations('home');
 
     // ダミーカードの生成（15個）
-    const dummyCards = Array.from({ length: 15 }).map((_, i) => (
+    const dummyCards = useMemo(() => Array.from({ length: 6 }).map((_, i) => (
         <RouteCardBasicSkeleton
             key={`dummy-${i}`}
             isFirst={i === 0}
             observerTarget={props.observerTarget}
         />
-    ));
+    )), [props.observerTarget]);
 
     // --- loading 状態 (初回ロード中: routes=undefined かつ error なし) ---
     if (!props.routes && !props.error) {
