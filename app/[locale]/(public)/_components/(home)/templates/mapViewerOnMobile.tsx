@@ -40,7 +40,7 @@ function MapViewerOnMobile(props: Props) {
 
 
     return (
-        <div className={'w-full sm:h-[700px] h-[600px] md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
+        <div className={'w-full h-132 md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
             <Swiper
                 slidesPerView={1}
                 spaceBetween={16}
