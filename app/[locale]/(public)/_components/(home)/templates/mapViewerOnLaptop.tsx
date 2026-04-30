@@ -33,6 +33,10 @@ export default function MapViewerOnLaptop(props: Props) {
     const focusedRoute = props.routes ? props.routes[focusedRouteIndex] : undefined;
     const routeGeometry = useRouteGeometry(focusedRoute);
 
+    const allRouteNodes = useMemo(() => {
+        return focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
+    }, [focusedRoute?.id]);
+
     useEffect(() => {
         if (mapboxAccessToken) {
             mapboxgl.accessToken = mapboxAccessToken;
@@ -40,10 +44,9 @@ export default function MapViewerOnLaptop(props: Props) {
     }, [mapboxAccessToken]);
 
     useEffect(() => {
-        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
-        if (!focusedRoute || routeNodes.length === 0 || !mapRef.current) return;
+        if (!focusedRoute?.id || allRouteNodes.length === 0 || !mapRef.current) return;
 
-        const coords = (routeNodes as RouteNodeWithSpot[])
+        const coords = (allRouteNodes as RouteNodeWithSpot[])
             .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
             .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
 
@@ -53,7 +56,7 @@ export default function MapViewerOnLaptop(props: Props) {
             mapRef.current.flyTo({
                 center: [coords[0][0], coords[0][1]],
                 zoom: 14,
-                duration: 2000
+                duration: 1000
             });
         } else {
             const lats = coords.map(c => c[1]);
@@ -65,14 +68,13 @@ export default function MapViewerOnLaptop(props: Props) {
 
             mapRef.current.fitBounds(
                 [[minLng, minLat], [maxLng, maxLat]],
-                { padding: 80, duration: 2000 }
+                { padding: 80, duration: 1000 }
             );
         }
     }, [focusedRoute?.id]);
 
     const lineData = useMemo(() => {
-        const routeNodes = focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [];
-        if (!focusedRoute || routeNodes.length < 2) return null;
+        if (!focusedRoute?.id || allRouteNodes.length < 2) return null;
 
         if (routeGeometry) {
             return {
@@ -82,7 +84,7 @@ export default function MapViewerOnLaptop(props: Props) {
             };
         }
 
-        const coordinates = (routeNodes as RouteNodeWithSpot[])
+        const coordinates = (allRouteNodes as RouteNodeWithSpot[])
             .filter((node) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null)
             .map((node) => [node.spot.longitude as number, node.spot.latitude as number]);
 
@@ -96,7 +98,7 @@ export default function MapViewerOnLaptop(props: Props) {
                 coordinates: coordinates
             }
         };
-    }, [focusedRoute, routeGeometry]);
+    }, [focusedRoute?.id, routeGeometry, allRouteNodes]);
 
     if(!mapboxAccessToken) {
         console.error("Mapbox access token is missing!");
@@ -117,50 +119,49 @@ export default function MapViewerOnLaptop(props: Props) {
                                  <p className="text-foreground-1 font-bold uppercase tracking-[0.2em] animate-pulse">LOADING...</p>
                              </div>
                         ) : (
-                            <div/>
-                            // <Map
-                            //     ref={mapRef}
-                            //     initialViewState={{
-                            //         latitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
-                            //         longitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
-                            //         zoom: 12,
-                            //     }}
-                            //     mapStyle="mapbox://styles/mapbox/streets-v12"
-                            //     mapboxAccessToken={mapboxAccessToken}
-                            //     style={{ width: "100%", height: "100%" }}
-                            // >
-                            //     {(focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.filter((node: any) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node: any, idx: number) => (
-                            //         <Marker
-                            //             key={node.id}
-                            //             longitude={node.spot.longitude as number}
-                            //             latitude={node.spot.latitude as number}
-                            //             anchor="bottom"
-                            //         >
-                            //             <MapPin
-                            //                 size={32}
-                            //                 className="text-accent-0 fill-accent-0/20 stroke-[2.5px] drop-shadow-sm"
-                            //             />
-                            //         </Marker>
-                            //     ))}
-                            //
-                            //     {lineData && (
-                            //         <Source type="geojson" data={lineData as any}>
-                            //             <Layer
-                            //                 id="route-line"
-                            //                 type="line"
-                            //                 layout={{
-                            //                     "line-join": "round",
-                            //                     "line-cap": "round"
-                            //                 }}
-                            //                 paint={{
-                            //                     "line-color": "#ff6363",
-                            //                     "line-width": 4,
-                            //                     "line-opacity": 0.6
-                            //                 }}
-                            //             />
-                            //         </Source>
-                            //     )}
-                            // </Map>
+                            <Map
+                                ref={mapRef}
+                                initialViewState={{
+                                    latitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.latitude !== null)?.spot.latitude ?? 35.6804,
+                                    longitude: (focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.find((node: any) => node.spot && node.spot.longitude !== null)?.spot.longitude ?? 139.7690,
+                                    zoom: 12,
+                                }}
+                                mapStyle="mapbox://styles/mapbox/streets-v12"
+                                mapboxAccessToken={mapboxAccessToken}
+                                style={{ width: "100%", height: "100%" }}
+                            >
+                                {(focusedRoute?.routeDates?.flatMap(rd => rd.routeNodes) || (focusedRoute as any)?.routeNodes || [] as any[])?.filter((node: any) => node.spot && node.spot.longitude !== null && node.spot.latitude !== null).map((node: any, idx: number) => (
+                                    <Marker
+                                        key={node.id}
+                                        longitude={node.spot.longitude as number}
+                                        latitude={node.spot.latitude as number}
+                                        anchor="bottom"
+                                    >
+                                        <MapPin
+                                            size={32}
+                                            className="text-accent-0 fill-accent-0/20 stroke-[2.5px] drop-shadow-sm"
+                                        />
+                                    </Marker>
+                                ))}
+
+                                {lineData && (
+                                    <Source type="geojson" data={lineData as any}>
+                                        <Layer
+                                            id="route-line"
+                                            type="line"
+                                            layout={{
+                                                "line-join": "round",
+                                                "line-cap": "round"
+                                            }}
+                                            paint={{
+                                                "line-color": "#ff6363",
+                                                "line-width": 4,
+                                                "line-opacity": 0.6
+                                            }}
+                                        />
+                                    </Source>
+                                )}
+                            </Map>
                         )}
                     </div>
                     <RouteViewer focusedIndex={focusedRouteIndex} routes={props.routes}/>
