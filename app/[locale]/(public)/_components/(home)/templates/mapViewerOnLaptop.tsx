@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect, useRef} from "react";
+import {useState, useEffect, useRef, memo} from "react";
 import {Map, Marker, Source, Layer, MapRef} from "react-map-gl/mapbox";
 import mapboxgl from "mapbox-gl";
 import RouteList from "@/app/[locale]/(public)/_components/(home)/ingredients/routeList";
@@ -25,7 +25,7 @@ type RouteNodeWithSpot = {
     spot: { longitude: number | null; latitude: number | null };
 };
 
-export default function MapViewerOnLaptop(props: Props) {
+function MapViewerOnLaptop(props: Props) {
     const [focusedRouteIndex, setFocusedRouteIndex] = useState<number>(0);
     const mapRef = useRef<MapRef>(null);
 
@@ -179,3 +179,5 @@ export default function MapViewerOnLaptop(props: Props) {
         </div>
     )
 }
+
+export default memo(MapViewerOnLaptop);

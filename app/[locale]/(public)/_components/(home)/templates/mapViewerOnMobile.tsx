@@ -9,6 +9,7 @@ import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
 import { useTranslations } from "next-intl";
 import {MdPeople} from "react-icons/md";
 import { useRouter } from "next/navigation";
+import {memo, useMemo} from "react";
 
 
 type Props = {
@@ -18,11 +19,24 @@ type Props = {
     isFetching?: boolean;
 };
 
-export default function MapViewerOnMobile(props: Props) {
+function MapViewerOnMobile(props: Props) {
     const t = useTranslations('routes');
     const tCommon = useTranslations('common');
 
     const router = useRouter();
+
+    const dummySlides = useMemo(() => Array.from({ length: 5 }).map((_, i) => (
+        <SwiperSlide key={`dummy-${i}`}>
+            <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden bg-background-1">
+                <div className="w-full h-[275px] bg-background-0/50 shimmer" />
+                <div className="p-6 flex flex-col gap-4">
+                    <div className="w-3/4 h-8 bg-background-0 rounded shimmer" />
+                    <div className="w-1/2 h-6 bg-background-0 rounded shimmer" />
+                    <div className="w-full h-20 bg-background-0 rounded shimmer" />
+                </div>
+            </div>
+        </SwiperSlide>
+    )), []);
 
     if (!props.routes) {
         return (
@@ -38,19 +52,6 @@ export default function MapViewerOnMobile(props: Props) {
             </div>
         )
     }
-
-    const dummySlides = Array.from({ length: 5 }).map((_, i) => (
-        <SwiperSlide key={`dummy-${i}`}>
-            <div className="w-full h-full flex flex-col rounded-2xl overflow-hidden bg-background-1">
-                <div className="w-full h-[275px] bg-background-0/50 shimmer" />
-                <div className="p-6 flex flex-col gap-4">
-                    <div className="w-3/4 h-8 bg-background-0 rounded shimmer" />
-                    <div className="w-1/2 h-6 bg-background-0 rounded shimmer" />
-                    <div className="w-full h-20 bg-background-0 rounded shimmer" />
-                </div>
-            </div>
-        </SwiperSlide>
-    ));
 
     return (
         <div className={'w-full h-132 md:hidden block p-2 rounded-2xl bg-background-0 shadow-lg'}>
@@ -114,6 +115,8 @@ export default function MapViewerOnMobile(props: Props) {
         </div>
     );
 }
+
+export default memo(MapViewerOnMobile);
 
 function RouteBudgetText({ route }: { route: Route }) {
     const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode);
