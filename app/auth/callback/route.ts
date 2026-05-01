@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {createClient} from "@/lib/auth/supabase-server";
+import {getPrisma} from "@/lib/db/prisma";
 // The client you created from the Server-Side Auth instructions
-import { createClient } from '@/lib/auth/supabase/server'
-import {getPrisma} from "@/lib/config/server";
 
 /**
  * OAuth認証コールバックエンドポイント
