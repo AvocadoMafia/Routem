@@ -4,9 +4,8 @@ import { useState, useEffect } from "react";
 import NodeLinkDiagram from "./templates/nodeLinkDiagram";
 import RouteEditingSection from "./templates/routeEditingSection";
 import RouteSettingsSection from "./templates/routeSettingsSection";
+import RouteEditorMobileModals from "./templates/routeEditorMobileModals";
 import ActionBar from "./ingredients/actionBar";
-import { X } from "lucide-react";
-import ModalFullSize from "@/app/[locale]/_components/common/templates/modalFullSize";
 import { useRouter } from "next/navigation";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { useRouteEditor } from "../_hooks/useRouteEditor";
@@ -14,13 +13,13 @@ import { getDataFromServerWithJson, postDataToServerWithJson, patchDataToServerW
 import { convertToWebP } from "@/lib/utils/image";
 import { toSpotSource, toTransitMode } from "@/lib/utils/enum";
 import { Route, RouteItem } from "@/lib/types/domain";
+import { convertRouteToEditorItems } from "@/lib/utils/routeConverter";
 import {
     CurrencyCode,
     RouteCollaboratorPolicy,
     RouteFor,
     RouteVisibility,
     SpotSource,
-    TransitMode,
 } from "@prisma/client";
 import {useTranslations} from "next-intl";
 
@@ -101,44 +100,8 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                     });
                 }
 
-                if (route.routeDates && Array.isArray(route.routeDates) && route.routeDates.length > 0) {
-                    const sortedRouteDates = [...route.routeDates].sort((a, b) => (a.day || 0) - (b.day || 0));
-                    const newItems: RouteItem[][] = sortedRouteDates.map((date) => {
-                        const dayItems: RouteItem[] = [];
-                        if (date.routeNodes) {
-                            const sortedNodes = [...(date.routeNodes as RouteNodeData[])].sort((a, b) => a.order - b.order);
-                            sortedNodes.forEach((node) => {
-                                dayItems.push({
-                                    type: 'waypoint',
-                                    id: Math.random().toString(36).substr(2, 9), // 新規作成として扱うためIDを振り直す
-                                    name: node.spot.name,
-                                    lat: node.spot.latitude || 0,
-                                    lng: node.spot.longitude || 0,
-                                    memo: node.details || '',
-                                    images: node.images?.map((img) => img.url) || [],
-                                    source: toSpotSource(node.spot.source),
-                                    sourceId: node.spot.sourceId || undefined,
-                                    order: node.order
-                                });
-
-                                if (node.transitSteps) {
-                                    const sortedSteps = [...node.transitSteps].sort((a, b) => a.order - b.order);
-                                    sortedSteps.forEach((step) => {
-                                        dayItems.push({
-                                            type: 'transportation',
-                                            id: Math.random().toString(36).substr(2, 9),
-                                            method: toTransitMode(step.mode),
-                                            memo: step.memo || '',
-                                            distance: step.distance || undefined,
-                                            duration: step.duration || undefined,
-                                            order: step.order
-                                        });
-                                    });
-                                }
-                            });
-                        }
-                        return dayItems;
-                    });
+                const newItems = convertRouteToEditorItems(route, true);
+                if (newItems.length > 0) {
                     setItems(newItems);
                 }
             } catch (error) {
@@ -149,94 +112,12 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
         }
     }, [setItems]);
 
-    // RouteNode型定義（Prismaベース）
-    type RouteNodeData = {
-        id: string;
-        order: number;
-        details: string | null;
-        spot: { name: string; latitude: number | null; longitude: number | null; source: string | null; sourceId: string | null };
-        images: { url: string }[];
-        transitSteps: { id: string; mode: string; memo: string | null; distance: number | null; duration: number | null; order: number }[];
-    };
-
     // 初期値をセットする（編集時、または初期データがある場合）
     useEffect(() => {
-        if (initialRoute?.routeDates && Array.isArray(initialRoute.routeDates) && initialRoute.routeDates.length > 0) {
-            const initialDays: RouteItem[][] = [];
-            const sortedRouteDates = [...initialRoute.routeDates].sort((a, b) => (a.day || 0) - (b.day || 0));
-
-            sortedRouteDates.forEach((date) => {
-                const dayItems: RouteItem[] = [];
-                const sortedNodes = [...(date.routeNodes as RouteNodeData[])].sort((a, b) => a.order - b.order);
-
-                sortedNodes.forEach((node) => {
-                    dayItems.push({
-                        type: 'waypoint',
-                        id: node.id,
-                        name: node.spot.name,
-                        lat: node.spot.latitude || 0,
-                        lng: node.spot.longitude || 0,
-                        memo: node.details || '',
-                        images: node.images?.map((img) => img.url) || [],
-                        source: toSpotSource(node.spot.source),
-                        sourceId: node.spot.sourceId || undefined,
-                        order: node.order
-                    });
-
-                    if (node.transitSteps) {
-                        const sortedSteps = [...node.transitSteps].sort((a, b) => a.order - b.order);
-                        sortedSteps.forEach((step) => {
-                            dayItems.push({
-                                type: 'transportation',
-                                id: step.id,
-                                method: toTransitMode(step.mode),
-                                memo: step.memo || '',
-                                distance: step.distance || undefined,
-                                duration: step.duration || undefined,
-                                order: step.order
-                            });
-                        });
-                    }
-                });
-                initialDays.push(dayItems);
-            });
+        if (!initialRoute) return;
+        const initialDays = convertRouteToEditorItems(initialRoute);
+        if (initialDays.length > 0) {
             setItems(initialDays);
-        } else if ((initialRoute as any)?.routeNodes) {
-            // 後方互換性（旧スキーマ用）
-            const dayItems: RouteItem[] = [];
-            const routeNodes = (initialRoute as any).routeNodes as RouteNodeData[];
-            const sortedNodes = [...routeNodes].sort((a, b) => a.order - b.order);
-
-            sortedNodes.forEach((node) => {
-                dayItems.push({
-                    type: 'waypoint',
-                    id: node.id,
-                    name: node.spot.name,
-                    lat: node.spot.latitude || 0,
-                    lng: node.spot.longitude || 0,
-                    memo: node.details || '',
-                    images: node.images?.map((img) => img.url) || [],
-                    source: toSpotSource(node.spot.source),
-                    sourceId: node.spot.sourceId || undefined,
-                    order: node.order
-                });
-
-                if (node.transitSteps) {
-                    const sortedSteps = [...node.transitSteps].sort((a, b) => a.order - b.order);
-                    sortedSteps.forEach((step) => {
-                        dayItems.push({
-                            type: 'transportation',
-                            id: step.id,
-                            method: toTransitMode(step.mode),
-                            memo: step.memo || '',
-                            distance: step.distance || undefined,
-                            duration: step.duration || undefined,
-                            order: step.order
-                        });
-                    });
-                }
-            });
-            setItems([dayItems]);
         }
     }, [initialRoute, setItems]);
 
@@ -407,7 +288,7 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
     };
 
     return (
-        <div className="w-full md:h-full h-fit flex flex-row">
+        <div className="w-full md:h-full h-fit md:flex flex-row">
             {/* 左側：ダイアグラム */}
             <NodeLinkDiagram
                 items={items[currentDayIndex] || []}
@@ -507,55 +388,41 @@ export default function RouteEditorClient({ initialRoute, mode }: RouteEditorCli
                 </div>
             </div>
 
-            {/* モバイル用エディタモーダル */}
-            {isMobile && isEditorModalOpen && selectedItem && (
-                <ModalFullSize onBackgroundClick={() => setIsEditorModalOpen(false)}>
-                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200 min-h-full">
-                        <div className="sticky z-10 bg-background-1 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between top-0">
-                            <div className="text-base font-bold text-foreground-0">{selectedItem.type === 'waypoint' ?  t('editWaypoint') : t('editTransportation')}</div>
-                            <button className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95" onClick={() => setIsEditorModalOpen(false)}>
-                                <X size={22} />
-                            </button>
-                        </div>
-                        <RouteEditingSection selectedItem={selectedItem} onUpdateItem={(updates) => updateItem(selectedIndex, updates)} />
-                    </div>
-                </ModalFullSize>
-            )}
-
-            {/* モバイル用設定モーダル */}
-            {isMobile && isSettingsModalOpen && (
-                <ModalFullSize onBackgroundClick={() => setIsSettingsModalOpen(false)}>
-                    <div className="flex flex-col w-screen h-fit bg-background-0 shadow-2xl animate-in slide-in-from-bottom-4 duration-200 min-h-full">
-                        <div className="sticky z-10 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 flex items-center justify-between top-0">
-                            <div className="text-base font-bold text-foreground-0">{t('publicationSettings')}</div>
-                            <button className="p-2 -mr-2 text-foreground-1 hover:text-foreground-0 active:scale-95" onClick={() => setIsSettingsModalOpen(false)}>
-                                <X size={22} />
-                            </button>
-                        </div>
-                        <RouteSettingsSection
-                            title={title}
-                            setTitle={setTitle}
-                            description={description}
-                            setDescription={setDescription}
-                            visibility={visibility}
-                            setVisibility={setVisibility}
-                            collaboratorPolicy={collaboratorPolicy}
-                            setCollaboratorPolicy={setCollaboratorPolicy}
-                            thumbnailImageSrc={thumbnailImageSrc}
-                            handleImageUpload={handleImageUpload}
-                            uploading={uploading}
-                            routeId={initialRoute?.id}
-                            routeFor={routeFor}
-                            setRouteFor={setRouteFor}
-                            date={date}
-                            setDate={setDate}
-                            budget={budget}
-                            setBudget={setBudget}
-                            tags={tags}
-                            setTags={setTags}
-                        />
-                    </div>
-                </ModalFullSize>
+            {/* モバイル用モーダル群 */}
+            {isMobile && (
+                <RouteEditorMobileModals
+                    isEditorModalOpen={isEditorModalOpen}
+                    setIsEditorModalOpen={setIsEditorModalOpen}
+                    isSettingsModalOpen={isSettingsModalOpen}
+                    setIsSettingsModalOpen={setIsSettingsModalOpen}
+                    selectedItem={selectedItem}
+                    selectedIndex={selectedIndex}
+                    updateItem={updateItem}
+                    t={t}
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    visibility={visibility}
+                    setVisibility={setVisibility}
+                    collaboratorPolicy={collaboratorPolicy}
+                    setCollaboratorPolicy={setCollaboratorPolicy}
+                    thumbnailImageSrc={thumbnailImageSrc}
+                    handleImageUpload={handleImageUpload}
+                    uploading={uploading}
+                    routeId={initialRoute?.id}
+                    routeFor={routeFor}
+                    setRouteFor={setRouteFor}
+                    date={date}
+                    setDate={setDate}
+                    budget={budget}
+                    setBudget={setBudget}
+                    tags={tags}
+                    setTags={setTags}
+                    handleSave={handleSave}
+                    publishing={publishing}
+                    isSettingsComplete={isSettingsComplete}
+                />
             )}
         </div>
     );

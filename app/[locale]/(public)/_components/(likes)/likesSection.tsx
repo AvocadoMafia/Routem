@@ -1,6 +1,5 @@
 import FocusingRouteViewer from "@/app/[locale]/(public)/_components/(likes)/templates/focusingRouteViewer";
 import LikedRoutesList from "@/app/[locale]/(public)/_components/(likes)/templates/likedRoutesList";
-import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import {useEffect, useRef, useState} from "react";
 import {useTranslations} from "next-intl";
 import {getDataFromServerWithJson} from "@/lib/api/client";
@@ -36,65 +35,56 @@ export default function LikesSection() {
     const routeOnFocus = routes[focusedRouteIdx];
     const direction = focusedRouteIdx > prevIndexRef.current ? 'up' : 'down';
 
-    // --- error: いいね一覧が取れなかった ---
-    if (error && (!likes || likes.length === 0)) {
-        return (
-            <div className="w-full h-full flex flex-col items-center justify-center gap-6 px-4">
-                <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
-                    <HiHeart className="text-accent-0 w-5 h-5" />
-                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
-                </div>
-                <div className="w-full max-w-md">
-                    <SectionErrorState error={error} onRetry={retry}/>
-                </div>
-            </div>
-        )
-    }
-
-    if (likes !== null && likes.length === 0) return (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-2 relative">
-            <div className="w-full md:hidden absolute top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
-                <HiHeart className="text-accent-0 w-5 h-5" />
-                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
-            </div>
-            <FuckingSquid className={'w-[300px] h-[300px] text-foreground-1'}/>
-            <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>{tProfile('noLikedRoutesTitle')}</h2>
-            <p className={'text-foreground-1'}>{tProfile('noLikedRoutesDesc')}</p>
-        </div>
-    )
+    const isEmpty = likes !== null && likes.length === 0;
 
     return (
-        <div className={'w-full md:h-full h-fit flex flex-row relative md:overflow-hidden'}>
-            {/* 全面背景装飾 */}
-            <AnimatePresence custom={direction} initial={false}>
-                <motion.div
-                    key={focusedRouteIdx}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="fixed inset-0 z-0 overflow-hidden pointer-events-none md:block hidden"
-                >
-                    {routeOnFocus && (
-                        <Image
-                            src={routeOnFocus.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'}
-                            alt=""
-                            fill
-                            className="object-cover blur-sm opacity-50 scale-110"
-                            unoptimized
-                        />
-                    )}
-                </motion.div>
-            </AnimatePresence>
-
-            <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
-
-            <div className="relative z-10 w-full md:h-full h-fit flex flex-row">
-                <LikedRoutesList routes={likes ? routes : undefined} likes={likes ?? undefined} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
-                <div className="flex-1 h-full relative md:block hidden">
-                    <FocusingRouteViewer routeOnFocus={routeOnFocus} focusedRouteIdx={focusedRouteIdx} setFocusedRouteIdx={setFocusedRouteIdx} routesLength={routes.length}/>
-                </div>
+        <div className="w-full h-full md:h-full h-fit flex flex-col md:flex-row relative">
+            {/* Mobile Header (Fixed) */}
+            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2 w-full">
+                <span className="text-accent-0 w-5 h-5 flex items-center justify-center"><HiHeart className="w-5 h-5" /></span>
+                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
             </div>
+
+            {isEmpty ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-2">
+                    <FuckingSquid className={'w-[300px] h-[300px] text-foreground-1'}/>
+                    <h2 className={'text-foreground-0 font-bold uppercase text-xl'}>{tProfile('noLikedRoutesTitle')}</h2>
+                    <p className={'text-foreground-1'}>{tProfile('noLikedRoutesDesc')}</p>
+                </div>
+            ) : (
+                <div className={'w-full md:h-full h-fit flex flex-row relative md:overflow-hidden'}>
+                    {/* 全面背景装飾 */}
+                    <AnimatePresence custom={direction} initial={false}>
+                        <motion.div
+                            key={focusedRouteIdx}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className="fixed inset-0 z-0 overflow-hidden pointer-events-none md:block hidden"
+                        >
+                            {routeOnFocus && (
+                                <Image
+                                    src={routeOnFocus.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
+                                    alt=""
+                                    fill
+                                    className="object-cover blur-sm opacity-50 scale-110"
+                                    unoptimized
+                                />
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+
+                    <div className="fixed inset-0 bg-black/50 pointer-events-none z-1 md:block hidden" />
+
+                    <div className="relative z-10 w-full md:h-full h-fit flex flex-row">
+                        <LikedRoutesList routes={likes ? routes : undefined} likes={likes ?? undefined} setFocusedRouteIdx={setFocusedRouteIdx} focusedRouteIdx={focusedRouteIdx}/>
+                        <div className="flex-1 h-full relative md:block hidden">
+                            <FocusingRouteViewer routeOnFocus={routeOnFocus} focusedRouteIdx={focusedRouteIdx} setFocusedRouteIdx={setFocusedRouteIdx} routesLength={routes.length}/>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

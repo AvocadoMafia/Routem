@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { RouteItem } from "@/lib/types/domain";
-import { Plus, Settings as SettingsIcon, Loader2, Edit3, Rocket, ChevronRight, X } from "lucide-react";
 import WaypointCard from "../ingredients/WaypointCard";
 import TransportationCard from "../ingredients/TransportationCard";
 import RouteNode from "../ingredients/RouteNode";
 import InlineAddMenu from "../ingredients/InlineAddMenu";
+import DiagramHeaderMobile from "../ingredients/DiagramHeaderMobile";
+import DayTabs from "../ingredients/DayTabs";
+import AddWaypointButton from "../ingredients/AddWaypointButton";
 import { useUiStore } from "@/lib/stores/uiStore";
-import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 interface NodeLinkDiagramProps {
@@ -90,106 +91,23 @@ export default function NodeLinkDiagram({
     }, []);
 
     return (
-        <div className="w-full md:w-[450px] md:h-full h-fit md:border-r-1 border-grass flex flex-col overflow-y-scroll md:pb-0 pb-12">
-            {/* Sticky header for diagram actions */}
-            <div
-                className="sticky top-0 z-20 bg-background-1/80 backdrop-blur-md border-b border-grass px-4 md:px-5 py-3 md:hidden flex items-center justify-between"
-            >
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-                    {/* Step 1: Edit */}
-                    <button
-                        onClick={onOpenEdit}
-                        className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all active:scale-90 bg-background-0 text-foreground-1 border-grass"
-                        aria-label={tRouteEditor('editRoute')}
-                    >
-                        <Edit3 size={18} />
-                    </button>
+        <div className="w-full md:w-[450px] md:h-full h-fit md:border-r-1 border-grass flex flex-col md:overflow-y-scroll md:pb-0 pb-12">
+            <DiagramHeaderMobile
+                onOpenEdit={onOpenEdit}
+                onOpenSettings={onOpenSettings}
+                onPublish={onPublish}
+                publishing={publishing}
+                isSettingsComplete={isSettingsComplete}
+                waypointCount={items.filter(i => i.type === 'waypoint').length}
+            />
 
-                    <div className="shrink-0 text-grass">
-                        <ChevronRight size={14} />
-                    </div>
-
-                    {/* Step 2: Settings */}
-                    <button
-                        onClick={onOpenSettings}
-                        className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all active:scale-90 bg-background-0 text-foreground-1 border-grass"
-                        aria-label={tRouteEditor('routeSettings')}
-                    >
-                        <SettingsIcon size={18} />
-                    </button>
-
-                    <div className="shrink-0 text-grass">
-                        <ChevronRight size={14} />
-                    </div>
-
-                    {/* Step 3: Publish */}
-                    <button
-                        onClick={onPublish}
-                        disabled={publishing}
-                        className={`shrink-0 px-4 h-10 rounded-xl font-bold text-sm text-white flex items-center gap-2 active:scale-90 shadow-md transition-all ${(!isSettingsComplete || publishing) ? 'bg-foreground-1/40 grayscale' : 'bg-accent-0 hover:bg-accent-0/90'}`}
-                        aria-label={t('publish')}
-                    >
-                        {publishing ? (
-                            <Loader2 className="animate-spin" size={16} />
-                        ) : (
-                            <Rocket size={16} className={isSettingsComplete ? 'animate-bounce' : ''} />
-                        )}
-                        <span>{publishing ? t('publishing') : t('publish')}</span>
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-2 pl-2 border-l border-grass/30 ml-2">
-                    <span className="shrink-0 text-[10px] font-black px-2 py-1 bg-accent-0/10 text-accent-0 rounded-lg border border-accent-0/20">
-                        {items.filter(i => i.type === 'waypoint').length}W
-                    </span>
-                </div>
-            </div>
-
-            <div className="h-fit flex items-center gap-0 px-2 pt-2 border-b border-grass overflow-x-auto no-scrollbar bg-background-1/30 shrink-0">
-                {allDaysItems.map((_, idx) => (
-                    <div
-                        key={idx}
-                        className={`relative group shrink-0 flex items-center h-10 px-4 transition-all cursor-pointer rounded-t-xl border-t border-x ${
-                            currentDayIndex === idx
-                                ? "bg-background-0 text-accent-0 border-grass shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-10"
-                                : "bg-transparent border-transparent text-foreground-1/40 hover:text-foreground-1/60 hover:bg-background-0/20"
-                        }`}
-                        onClick={() => onSelectDay(idx)}
-                    >
-                        {currentDayIndex === idx && (
-                            <div className="absolute -bottom-px left-0 right-0 h-px bg-background-0 z-20" />
-                        )}
-                        <p className="font-black text-sm pt-[2px]  uppercase tracking-widest whitespace-nowrap select-none">
-                            Day {idx + 1}
-                        </p>
-                        {allDaysItems.length > 1 && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onRemoveDay(idx);
-                                }}
-                                className={`ml-2 w-6 h-6 rounded-md flex items-center justify-center transition-all ${
-                                    currentDayIndex === idx
-                                        ? "opacity-100 text-accent-0/40 hover:bg-accent-0/10 hover:text-accent-0"
-                                        : "opacity-0 group-hover:opacity-100 text-foreground-1/20 hover:bg-foreground-1/10 hover:text-foreground-1"
-                                }`}
-                                aria-label={tRouteEditor('removeDay')}
-                            >
-                                <X size={14} />
-                            </button>
-                        )}
-                    </div>
-                ))}
-                {allDaysItems.length < 10 && (
-                    <button
-                        onClick={onAddDay}
-                        className="ml-4 p-1.5 h-7 w-7 flex items-center justify-center rounded-lg bg-background-0/50 text-foreground-1/40 hover:text-accent-0 hover:bg-background-0 border border-dashed border-grass transition-all"
-                        aria-label={tRouteEditor('addDay')}
-                    >
-                        <Plus size={16} />
-                    </button>
-                )}
-            </div>
+            <DayTabs
+                allDaysItems={allDaysItems}
+                currentDayIndex={currentDayIndex}
+                onSelectDay={onSelectDay}
+                onRemoveDay={onRemoveDay}
+                onAddDay={onAddDay}
+            />
 
             <div className="p-6 md:p-8 flex flex-col flex-1">
                 {/*
@@ -284,18 +202,7 @@ export default function NodeLinkDiagram({
                 </div>
             </div>
 
-            {/* 下部の「経由地を追加」ボタン */}
-            <motion.div
-                className="w-full h-fit p-6 bg-background-1/80 backdrop-blur-sm border-t border-grass md:sticky fixed bottom-0 mt-auto z-50"
-            >
-                <button
-                    onClick={onAddWaypoint}
-                    className="w-full py-4 bg-accent-0 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent-0/90 active:scale-[0.98] transition-all shadow-[0_10px_20px_rgba(45,31,246,0.2)]"
-                >
-                    <Plus size={20} strokeWidth={3} />
-                    <span>{tRoutes('addWaypoint')}</span>
-                </button>
-            </motion.div>
+            <AddWaypointButton onAddWaypoint={onAddWaypoint} />
         </div>
     )
 }

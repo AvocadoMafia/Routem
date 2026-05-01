@@ -16,5 +16,5 @@ export default async function DashboardLayout({ children, params }: Props) {
     redirect(`/${locale}/login`);
   }
 
-  return <div className={'w-full h-full'}>{children}</div>;
+  return <div className={'w-full md:h-full h-fit'}>{children}</div>;
 }

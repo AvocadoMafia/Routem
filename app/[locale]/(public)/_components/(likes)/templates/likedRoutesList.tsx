@@ -52,60 +52,46 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
         return Array.from(map.entries());
     }, [likes]);
 
-    if (!routes || !likes) {
-        return (
-            <div className={'md:w-1/3 w-full min-w-[340px] md:h-full h-fit md:p-3 no-scrollbar '}>
-                {/* モバイル用 Sticky Header */}
-                <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
-                    <HiHeart className="text-accent-0 w-5 h-5" />
-                    <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
-                </div>
-
+    return (
+        <div className={'md:w-1/3 w-full min-w-[340px] md:h-full h-fit md:p-3 no-scrollbar '}>
+            {!routes || !likes ? (
                 <div className={'flex flex-col gap-4 h-full md:p-3'}>
                     {Array.from({ length: 10 }).map((_, i) => (
                         <RouteCardWidelySkeleton key={i} />
                     ))}
                 </div>
-            </div>
-        )
-    }
-
-    return (
-        <div className={'md:w-1/3 w-full min-w-[340px] md:h-full h-fit md:p-3 no-scrollbar '}>
-            {/* モバイル用 Sticky Header */}
-            <div className="md:hidden sticky top-0 z-30 bg-background-1/80 backdrop-blur-sm border-b border-grass/30 px-2 py-3 flex items-center gap-2">
-                <HiHeart className="text-accent-0 w-5 h-5" />
-                <h1 className="text-base font-black tracking-[0.2em] uppercase text-foreground-0">{tHome('likes')}</h1>
-            </div>
-
-            {/* デスクトップ: フォーカス可能な縦スクロールリスト */}
-            <div ref={containerRef} className={'hidden md:flex flex-col gap-4 h-full overflow-y-scroll md:p-3 no-scrollbar bg-linear-to-br from-grass/60 via-grass/30 to-grass/60 backdrop-blur-md rounded-2xl border-1 border-white/20 shadow-inner'}>
-                {routes.map((route, idx) => (
-                    <div key={route.id ?? idx} ref={(el) => {
-                        if (el) {
-                            itemRefs.current.set(idx, el);
-                        } else {
-                            itemRefs.current.delete(idx);
-                        }
-                    }}>
-                        <RouteCardWidely route={route} isFocused={focusedRouteIdx === idx} onClick={() => setFocusedRouteIdx(idx)} isLinkCard={false}/>
+            ) : (
+                <>
+                    {/* デスクトップ: フォーカス可能な縦スクロールリスト */}
+                    <div ref={containerRef} className={'hidden md:flex flex-col gap-4 h-full overflow-y-scroll md:p-3 no-scrollbar bg-linear-to-br from-grass/60 via-grass/30 to-grass/60 backdrop-blur-md rounded-2xl border-1 border-white/20 shadow-inner'}>
+                        {routes.map((route, idx) => (
+                            <div key={route.id ?? idx} ref={(el) => {
+                                if (el) {
+                                    itemRefs.current.set(idx, el);
+                                } else {
+                                    itemRefs.current.delete(idx);
+                                }
+                            }}>
+                                <RouteCardWidely route={route} isFocused={focusedRouteIdx === idx} onClick={() => setFocusedRouteIdx(idx)} isLinkCard={false}/>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
 
-            {/* モバイル: いいね日ごとにグルーピングしたシンプルな縦リスト */}
-            <div className={'md:hidden flex flex-col gap-6'}>
-                {groupedByDate.map(([date, items]) => (
-                    <div key={date} className={'flex flex-col gap-2'}>
-                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1/80 px-1">{date}</div>
-                        <div className={'flex flex-col gap-3'}>
-            {items.map((like, idx) => (
-                                    <RouteCardWidely key={idx} route={like.route} isFocused={false} />
-                            ))}
-                        </div>
+                    {/* モバイル: いいね日ごとにグルーピングしたシンプルな縦リスト */}
+                    <div className={'md:hidden flex flex-col gap-6 py-3'}>
+                        {groupedByDate.map(([date, items]) => (
+                            <div key={date} className={'flex flex-col gap-2'}>
+                                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground-1/80 px-1">{date}</div>
+                                <div className={'flex flex-col gap-3'}>
+                                    {items.map((like, idx) => (
+                                        <RouteCardWidely key={idx} route={like.route} isFocused={false} />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+                </>
+            )}
         </div>
     )
 }
