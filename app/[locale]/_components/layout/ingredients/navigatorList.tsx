@@ -45,7 +45,16 @@ export default function NavigatorList({ onSearchClick }: Props) {
                 ))}
             </div>
 
-            <div className={'flex items-center md:gap-6 md:justify-end justify-between'}>
+            <div className={'flex items-center md:gap-4 md:justify-end justify-between'}>
+                <motion.button
+                    onClick={onSearchClick}
+                    className={'p-2 rounded-full hover:bg-grass transition-colors cursor-pointer text-foreground-0 flex items-center justify-center'}
+                    whileHover={{scale:1.02}}
+                    whileTap={{scale:0.98}}
+                >
+                    <MdSearch size={24} />
+                </motion.button>
+
                 {isLoggedIn ? (
                     <>
                         <motion.button
@@ -58,15 +67,6 @@ export default function NavigatorList({ onSearchClick }: Props) {
                             <AiOutlineEdit className={'text-2xl md:text-xl'}/>
                         </motion.button>
                         
-                        <motion.button
-                            onClick={onSearchClick}
-                            className={'md:hidden p-2 rounded-full hover:bg-grass transition-colors cursor-pointer text-foreground-0 flex items-center justify-center'}
-                            whileHover={{scale:1.02}}
-                            whileTap={{scale:0.98}}
-                        >
-                            <MdSearch size={24} />
-                        </motion.button>
-
                         <motion.button 
                             onClick={() => router.push('/me')}
                             className={'flex items-center gap-2 p-1 md:pr-3 rounded-full hover:bg-grass transition-colors cursor-pointer'}
@@ -81,11 +81,12 @@ export default function NavigatorList({ onSearchClick }: Props) {
                 ) : (
                     <motion.button
                         onClick={() => router.push('/login')}
-                        className={'bg-background-1 text-foreground-0 py-1.5 px-4 border border-grass rounded-lg font-medium hover:bg-grass transition-colors cursor-pointer'}
+                        className={'p-2 rounded-full hover:bg-grass transition-colors cursor-pointer text-foreground-0 flex items-center justify-center'}
                         whileHover={{scale:1.02}}
                         whileTap={{scale:0.98}}
+                        title={tAuth('signIn')}
                     >
-                        {tAuth('signIn')}
+                        <MdLogin size={24} />
                     </motion.button>
                 )}
             </div>

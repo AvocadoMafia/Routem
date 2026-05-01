@@ -68,7 +68,17 @@ export function UserCardGraphical(props: Props) {
                 </h4>
                 <div className="flex items-center gap-1.5 text-xs text-white/80">
                   <IoPersonAdd className="w-3.5 h-3.5 text-accent-0" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
+                    {props.user._count?.followers ?? 0} followers
+                  </span>
+                  {props.user.locale && (
+                    <>
+                      <span className="opacity-60">・</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
+                        {props.user.locale}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

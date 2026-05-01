@@ -17,7 +17,6 @@ import { ErrorScheme } from '@/lib/types/error'
 export default function UserProfileContent({
   activeTab,
   onChangeTab,
-  stats,
   routes,
   likedRoutes,
   historyRoutes,
@@ -29,7 +28,6 @@ export default function UserProfileContent({
 }: {
   activeTab: Tab
   onChangeTab: (t: Tab) => void
-  stats: { routes: number; followers: number | string; following: number | string }
   routes?: any[] | null
   likedRoutes?: any[] | null
   historyRoutes?: any[] | null
@@ -58,7 +56,6 @@ export default function UserProfileContent({
 
   return (
     <div className="w-full h-fit max-w-[1200px] mx-auto px-6">
-      <ProfileStats routes={stats.routes} followers={stats.followers} following={stats.following} />
       <TabNavigation activeTab={activeTab} onChange={onChangeTab} mode={mode} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3 pb-20">

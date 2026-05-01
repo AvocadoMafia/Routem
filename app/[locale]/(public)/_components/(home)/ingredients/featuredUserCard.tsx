@@ -59,9 +59,17 @@ export default function FeaturedUserCard(props: Props) {
               </h3>
               <div className="flex items-center gap-2 mt-1 text-white/80">
                 <IoPersonAdd className="w-4 h-4 text-accent-0" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">17k followers</span>
-                <span className="opacity-60">・</span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">from US</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
+                  {props.user._count?.followers ?? 0} followers
+                </span>
+                {props.user.locale && (
+                  <>
+                    <span className="opacity-60">・</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em]">
+                      from {props.user.locale}
+                    </span>
+                  </>
+                )}
               </div>
               {props.user.bio && (
                 <p className="text-xs text-white/60 line-clamp-2 mt-2 leading-relaxed max-w-md">

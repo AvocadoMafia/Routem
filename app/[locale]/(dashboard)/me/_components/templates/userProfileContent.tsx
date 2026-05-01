@@ -15,7 +15,6 @@ import { ErrorScheme } from '@/lib/types/error'
 export default function UserProfileContent({
   activeTab,
   onChangeTab,
-  stats,
   routes,
   likedRoutes,
   historyRoutes,
@@ -27,7 +26,6 @@ export default function UserProfileContent({
 }: {
   activeTab: Tab
   onChangeTab: (t: Tab) => void
-  stats: { routes: number; followers: number | string; following: number | string }
   routes?: any[] | null
   likedRoutes?: any[] | null
   historyRoutes?: any[] | null
@@ -59,7 +57,6 @@ export default function UserProfileContent({
 
   return (
     <div className="w-full h-fit max-w-[1200px] mx-auto px-6">
-      <ProfileStats routes={stats.routes} followers={stats.followers} following={stats.following} />
       <TabNavigation activeTab={activeTab} onChange={onChangeTab} mode={mode} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 md:gap-6 gap-3 pb-20">
@@ -73,7 +70,7 @@ export default function UserProfileContent({
           ) : routes && routes.length > 0 ? (
             <>
               {routes.map((route, idx) => (
-                <div key={route.id ?? idx} className="md:aspect-[4/5]">
+                <div key={idx} className="md:aspect-[4/5]">
                   <div className="hidden md:block h-full">
                     <RouteCardGraphical route={route} />
                   </div>
@@ -109,7 +106,7 @@ export default function UserProfileContent({
           ) : likedRoutes && likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
-                <div key={route.id ?? idx} className="md:aspect-[4/5]">
+                <div key={idx} className="md:aspect-[4/5]">
                   <div className="hidden md:block h-full">
                     <RouteCardGraphical route={route} />
                   </div>
@@ -145,7 +142,7 @@ export default function UserProfileContent({
           ) : historyRoutes && historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
-                <div key={route.id ?? idx} className="md:aspect-[4/5]">
+                <div key={idx} className="md:aspect-[4/5]">
                   <div className="hidden md:block h-full">
                     <RouteCardGraphical route={route} />
                   </div>

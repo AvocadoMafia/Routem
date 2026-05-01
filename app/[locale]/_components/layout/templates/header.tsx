@@ -31,7 +31,7 @@ export default function Header () {
                             <SearchBar />
                         </div>
 
-                        <div className={'flex items-center gap-8 flex-1'}>
+                        <div className={'flex items-center md:gap-4 lg:gap-8 flex-1'}>
                             <NavigatorList onSearchClick={() => setIsSearchMode(true)} />
                         </div>
                     </>

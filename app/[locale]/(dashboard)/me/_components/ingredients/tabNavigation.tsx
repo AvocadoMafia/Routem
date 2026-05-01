@@ -18,10 +18,10 @@ export default function TabNavigation({
   const t = useTranslations('tabs')
 
   return (
-    <div className="flex items-center gap-8 border-b border-grass mb-8">
+    <div className="sticky top-0 flex items-center gap-8 border-b border-grass/20 bg-background-1/80 backdrop-blur-md z-10 mb-6">
       <button
         onClick={() => onChange('routes')}
-        className={`flex items-center gap-2 pb-4 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
+        className={`flex items-center gap-2 py-3 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'routes' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
       >
         <MdRoute size={18} />
         <span>{t('routes').toUpperCase()}</span>
@@ -31,7 +31,7 @@ export default function TabNavigation({
       {mode === 'self' && (
         <button
           onClick={() => onChange('likes')}
-          className={`flex items-center gap-2 pb-4 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'likes' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
+          className={`flex items-center gap-2 py-3 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'likes' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
         >
           <MdFavoriteBorder size={18} />
           <span>{t('likes').toUpperCase()}</span>
@@ -42,7 +42,7 @@ export default function TabNavigation({
       {mode === 'self' && (
         <button
           onClick={() => onChange('history')}
-          className={`flex items-center gap-2 pb-4 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'history' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
+          className={`flex items-center gap-2 py-3 text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'history' ? 'text-accent-0' : 'text-foreground-1 hover:text-foreground-0'}`}
         >
           <MdHistory size={18} />
           <span>{t('history').toUpperCase()}</span>

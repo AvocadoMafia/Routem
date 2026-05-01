@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { MdClose, MdExplore, MdInfo, MdSettings, MdPostAdd, MdLogout } from 'react-icons/md'
+import {MdClose, MdExplore, MdInfo, MdSettings, MdPostAdd, MdLogout, MdHome} from 'react-icons/md'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
 import { userStore } from '@/lib/stores/userStore'
@@ -122,6 +122,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                             {/* Navigation Links */}
                             <div className={'space-y-2'}>
                                 {[
+                                    { icon: MdHome, label: t('home'), path: '/' },
                                     { icon: MdExplore, label: t('explore'), path: '/explore' },
                                     { icon: MdInfo, label: t('about'), path: '/about' },
                                     { icon: MdSettings, label: t('settings'), path: '/settings' },

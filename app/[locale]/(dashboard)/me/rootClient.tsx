@@ -3,20 +3,24 @@
 import { useState } from 'react'
 import { userStore } from '@/lib/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/api/client'
-import UserProfileHeader from './_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
+import UserProfileHeader from './_components/templates/userProfileHeader'
 import { Tab } from './_components/ingredients/tabNavigation'
 import { Route } from '@/lib/types/domain'
 import { CursorResponse, useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll'
+import {useUiStore} from "@/lib/stores/uiStore";
 
 type LikeRecord = { id: string; createdAt: string; route: Route }
-type ViewRecord = { id: string; updatedAt: string; route: Route }
+type ViewRecord = { id: string; createdAt: string; route: Route }
 
 export default function RootClient() {
   const currentUser = userStore(state => state.user)
   const userId = currentUser?.id
   const enabled = !!userId
   const [activeTab, setActiveTab] = useState<Tab>('routes')
+
+  const scrollDirection = useUiStore((state) => state.scrollDirection)
+  const headerHeight = useUiStore((state) => state.headerHeight)
 
   const {
     items: userRoutes,
@@ -99,34 +103,36 @@ export default function RootClient() {
     activeTab === 'likes' ? retryLikes :
     retryHistory
 
+  if (!currentUser) return null
+
   return (
-    <div className="w-full h-fit flex flex-col">
+    <div className="w-full h-fit relative bg-background-1">
       <UserProfileHeader
         name={currentUser.name}
-        bio={currentUser.bio as string}
+        bio={currentUser.bio　|| ""}
         iconUrl={currentUser.icon?.url}
         bgUrl={currentUser.background?.url}
-      />
-
-      <UserProfileContent
-        activeTab={activeTab}
-        onChangeTab={setActiveTab}
-        stats={{
-          routes: currentUser._count?.routes ?? 0,
-          followers: '0',
-          following: '0'
-        }}
-        routes={userRoutes ?? null}
-        likedRoutes={likedRoutes ?? null}
-        historyRoutes={historyRoutes ?? null}
         mode="self"
-        fetchMore={fetchMore}
-        hasMore={hasMore}
-        isFetching={isFetching}
-        observerTarget={observerTarget}
-        error={error}
-        onRetry={onRetry}
+        routesCount={currentUser._count?.routes ?? 0}
+        followersCount={currentUser._count?.followers ?? 0}
+        followingCount={currentUser._count?.followings ?? 0}
       />
+      <div className="relative w-full h-fit z-20 flex flex-col bg-background-1">
+        <UserProfileContent
+          activeTab={activeTab}
+          onChangeTab={setActiveTab}
+          routes={userRoutes ?? null}
+          likedRoutes={likedRoutes ?? null}
+          historyRoutes={historyRoutes ?? null}
+          mode="self"
+          fetchMore={fetchMore}
+          hasMore={hasMore}
+          isFetching={isFetching}
+          observerTarget={observerTarget}
+          error={error}
+          onRetry={onRetry}
+        />
+      </div>
     </div>
   )
 }

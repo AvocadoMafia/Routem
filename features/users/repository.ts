@@ -10,7 +10,15 @@ export const USER_SELECT = {
     name: true,
     bio: true,
     icon: true,
-  background: true,
+    background: true,
+    locale: true,
+    _count: {
+        select: {
+            routes: true,
+            followers: true,
+            followings: true,
+        },
+    },
 } as const;
 
 export const USER_WITH_COUNT_SELECT = {
@@ -18,7 +26,8 @@ export const USER_WITH_COUNT_SELECT = {
     name: true,
     bio: true,
     icon: true,
-  background: true,
+    background: true,
+    locale: true,
     _count: {
         select: {
             routes: true,
@@ -62,7 +71,6 @@ export const usersRepository = {
 
   findById: async (id: string, requesterId?: string) => {
     try {
-        const isOwner = !!requesterId && requesterId === id;
         const user = await getPrisma().user.findUnique({
             where: { id: id },
             include: {
@@ -70,7 +78,9 @@ export const usersRepository = {
                 background: true,
                 _count: {
                     select: {
-                        routes: true
+                        routes: true,
+                        followers: true,
+                        followings: true,
                     }
                 }
             }
