@@ -3,14 +3,15 @@ import TrendingTagCard from "@/app/[locale]/(public)/_components/(trending)/ingr
 import { TrendingTag } from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
 
 type Props = {
-    tags?: TrendingTag[];
+    tags?: TrendingTag[] | null;
 };
 
 export default function TrendingTagsList({tags}: Props) {
     const tHome = useTranslations('home');
     const tEmpty = useTranslations('empty');
 
-    if (!tags) {
+    // ローディング状態
+    if (tags === null || tags === undefined) {
         return (
             <div className={`w-full h-fit md:p-1.5 md:bg-background-0 md:rounded-2xl md:shadow-md`}>
                 <div className={`w-full flex flex-col gap-4 md:bg-background-1 md:rounded-xl md:p-6`}>

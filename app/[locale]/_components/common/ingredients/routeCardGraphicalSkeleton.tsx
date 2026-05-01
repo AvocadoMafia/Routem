@@ -4,7 +4,7 @@ export default function RouteCardGraphicalSkeleton({ isFirst, observerTarget }: 
   return (
     <div
       ref={isFirst ? observerTarget : null}
-      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm bg-background-0 p-1.5"
+      className="shrink-0 group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm bg-background-0 p-1.5"
     >
       <div className="relative w-full h-full rounded-xl overflow-hidden bg-background-1 shimmer">
         {/* Overlay to match the style */}

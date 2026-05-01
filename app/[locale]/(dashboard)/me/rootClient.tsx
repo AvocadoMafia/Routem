@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { userStore } from '@/lib/stores/userStore'
 import { getDataFromServerWithJson } from '@/lib/api/client'
+import { CursorResponse, useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll'
+import { useUiStore } from "@/lib/stores/uiStore"
+import { userStore } from '@/lib/stores/userStore'
+import { Route } from '@/lib/types/domain'
+import { useState } from 'react'
+import { Tab } from './_components/ingredients/tabNavigation'
 import UserProfileContent from './_components/templates/userProfileContent'
 import UserProfileHeader from './_components/templates/userProfileHeader'
-import { Tab } from './_components/ingredients/tabNavigation'
-import { Route } from '@/lib/types/domain'
-import { CursorResponse, useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll'
-import {useUiStore} from "@/lib/stores/uiStore";
 
 type LikeRecord = { id: string; createdAt: string; route: Route }
 type ViewRecord = { id: string; createdAt: string; route: Route }
@@ -47,12 +47,11 @@ export default function RootClient() {
     observerTarget: observerTargetLikes,
     error: errorLikes,
     retry: retryLikes,
-  } = useInfiniteScroll<LikeRecord, Route>({
+  } = useInfiniteScroll<LikeRecord>({
     fetcher: (cursor) => {
       const url = `/api/v1/likes?route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
       return getDataFromServerWithJson<CursorResponse<LikeRecord>>(url)
     },
-    mapItem: (l) => l.route ?? null,
     deps: [userId],
     enabled,
   })
@@ -65,12 +64,11 @@ export default function RootClient() {
     observerTarget: observerTargetHistory,
     error: errorHistory,
     retry: retryHistory,
-  } = useInfiniteScroll<ViewRecord, Route>({
+  } = useInfiniteScroll<ViewRecord>({
     fetcher: (cursor) => {
       const url = `/api/v1/views?route=true&take=15${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`
       return getDataFromServerWithJson<CursorResponse<ViewRecord>>(url)
     },
-    mapItem: (v) => v.route ?? null,
     deps: [userId],
     enabled,
   })

@@ -1,11 +1,9 @@
-import RouteCardWidely from "@/app/[locale]/_components/common/templates/routeCardWidely";
 import RouteCardWidelySkeleton from "@/app/[locale]/_components/common/ingredients/routeCardWidelySkeleton";
-import {Route} from "@/lib/types/domain";
-import {useEffect, useMemo, useRef} from "react";
+import RouteCardWidely from "@/app/[locale]/_components/common/templates/routeCardWidely";
+import { Route } from "@/lib/types/domain";
+import { groupItemsByDate } from "@/lib/utils/groupByDate";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { formatDateToYmdInTz } from "@/lib/utils/datetime";
-import { HiHeart } from "react-icons/hi2";
+import { useEffect, useMemo, useRef } from "react";
 
 // Likeレコード（バックエンドから返却される素体）
 type LikeRecord = { id: string; createdAt: string | Date; route: Route }
@@ -40,16 +38,7 @@ export default function LikedRoutesList({routes, likes, focusedRouteIdx, setFocu
 
     // モバイル（md以下）: いいね日（yyyy/mm/dd, JST）でグルーピング
     const groupedByDate = useMemo(() => {
-        if (!likes) return [];
-        const map = new Map<string, LikeRecord[]>();
-        likes.forEach(like => {
-            const key = formatDateToYmdInTz(new Date(like.createdAt as any));
-            const arr = map.get(key) ?? [];
-            arr.push(like);
-            map.set(key, arr);
-        });
-        // preserve order by first appearance in likes (already desc by createdAt from API)
-        return Array.from(map.entries());
+        return groupItemsByDate(likes)
     }, [likes]);
 
     return (

@@ -4,7 +4,7 @@ export default function RouteCardBasicSkeleton({ isFirst, observerTarget }: { is
     return (
         <div
             ref={isFirst ? observerTarget : null}
-            className={'w-full h-[440px] sm:h-[320px] overflow-hidden rounded-2xl flex flex-col sm:flex-row shadow-sm bg-background-0 p-1.5 border border-foreground-1/10'}
+            className={'shrink-0 w-full h-[440px] sm:h-[320px] overflow-hidden rounded-2xl flex flex-col sm:flex-row shadow-sm bg-background-0 p-1.5 border border-foreground-1/10'}
         >
             {/* 画像部分のスケルトン */}
             <div className={'flex-1 min-h-[240px] sm:h-full relative overflow-hidden sm:rounded-l-xl rounded-t-xl bg-background-1 shimmer'}>

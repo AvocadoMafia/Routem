@@ -4,7 +4,7 @@ export default function RouteCardWidelySkeleton({ isFirst, observerTarget }: { i
     return (
         <div
             ref={isFirst ? observerTarget : null}
-            className="w-full h-32 bg-background-0 rounded-2xl p-1.5 shadow-sm border border-foreground-1/10"
+            className="shrink-0 w-full h-32 bg-background-0 rounded-2xl p-1.5 shadow-sm border border-foreground-1/10"
         >
             <div className="w-full h-full flex flex-row rounded-xl overflow-hidden bg-background-1">
                 {/* 画像部分のスケルトン */}

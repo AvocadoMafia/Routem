@@ -4,14 +4,15 @@ import TrendingUserCardSkeleton from "@/app/[locale]/(public)/_components/(trend
 import { TrendingUser } from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
 
 type Props = {
-    users?: TrendingUser[];
+    users?: TrendingUser[] | null;
 };
 
 export default function TrendingUsersList({ users }: Props) {
     const tHome = useTranslations('home');
     const tEmpty = useTranslations('empty');
 
-    if (!users) {
+    // ローディング状態
+    if (users === null || users === undefined) {
         return (
             <div className={`w-full h-fit p-1.5 md:bg-background-0 md:rounded-2xl md:shadow-md`}>
                 <div className={`w-full flex flex-col gap-4 md:bg-background-1 md:rounded-xl md:p-6`}>
