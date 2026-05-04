@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { postDataToServerWithJson } from "@/lib/api/client";
+import { useState } from "react";
+import { postDataToServerWithJson, toErrorScheme } from "@/lib/api/client";
 import { useTranslations } from "next-intl";
 import { errorStore } from "@/lib/stores/errorStore";
 
@@ -18,8 +18,9 @@ export default function FollowButton({
 }: FollowButtonProps) {
   const t = useTranslations("profile");
   const appendError = errorStore((state) => state.appendError);
-  const [isFollowed, setIsFollowed] = useState(initialIsFollowed);
+  const [optimisticIsFollowed, setOptimisticIsFollowed] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const isFollowed = optimisticIsFollowed ?? initialIsFollowed;
 
   // 自分のページでは表示しない、またはログインしていない場合は無効化
   const isOwnAccount = currentUser?.id === followingId;
@@ -34,18 +35,19 @@ export default function FollowButton({
     
     setIsLoading(true);
     // 楽観的アップデート
-    setIsFollowed(!isFollowed);
+    const nextIsFollowed = !isFollowed;
+    setOptimisticIsFollowed(nextIsFollowed);
 
     try {
       await postDataToServerWithJson<{ followed: boolean; follower_count: number }>(
         "/api/v1/follows",
         { followingId }
       );
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Failed to toggle follow", e);
       // エラー時は元の状態に戻す
-      setIsFollowed(isFollowed);
-      appendError(e);
+      setOptimisticIsFollowed(isFollowed);
+      appendError(toErrorScheme(e));
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +63,7 @@ export default function FollowButton({
           : "bg-accent-0 text-background-1 shadow-md shadow-accent-0/20 hover:opacity-90"
       } disabled:opacity-50`}
     >
-      {isFollowed ? t("following") : t("follow")}
+      {isFollowed ? t("unfollow") : t("follow")}
     </button>
   );
 }

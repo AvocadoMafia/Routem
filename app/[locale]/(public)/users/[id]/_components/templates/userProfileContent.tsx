@@ -43,8 +43,8 @@ export default function UserProfileContent({
   const t = useTranslations('profile')
 
   // ダミーカードの生成（15個）
-  const dummyCards = Array.from({ length: 15 }).map((_, i) => (
-    <div key={`dummy-${i}`} className="md:aspect-[4/5]" ref={i === 0 ? observerTarget : null}>
+  const getDummyCards = (refTarget?: RefObject<HTMLDivElement | null>) => Array.from({ length: 15 }).map((_, i) => (
+    <div key={`dummy-${i}`} className="md:aspect-[4/5]" ref={i === 0 ? refTarget : null}>
       <div className="hidden md:block h-full">
         <RouteCardGraphicalSkeleton />
       </div>
@@ -65,7 +65,7 @@ export default function UserProfileContent({
               <SectionErrorState error={error} onRetry={onRetry} />
             </div>
           ) : routes === null ? (
-            dummyCards
+            getDummyCards(observerTarget)
           ) : routes && routes.length > 0 ? (
             <>
               {routes.map((route, idx) => (
@@ -78,7 +78,7 @@ export default function UserProfileContent({
                   </div>
                 </div>
               ))}
-              {hasMore && !error && dummyCards}
+              {hasMore && !error && getDummyCards(observerTarget)}
               {error && (
                 <div className="col-span-full">
                   <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
@@ -100,7 +100,7 @@ export default function UserProfileContent({
               <SectionErrorState error={error} onRetry={onRetry} />
             </div>
           ) : likedRoutes === null ? (
-            dummyCards
+            getDummyCards(observerTarget)
           ) : likedRoutes && likedRoutes.length > 0 ? (
             <>
               {likedRoutes.map((route, idx) => (
@@ -113,7 +113,7 @@ export default function UserProfileContent({
                   </div>
                 </div>
               ))}
-              {hasMore && !error && dummyCards}
+              {hasMore && !error && getDummyCards(observerTarget)}
               {error && (
                 <div className="col-span-full">
                   <SectionErrorState variant="inline" error={error} onRetry={onRetry} />
@@ -135,7 +135,7 @@ export default function UserProfileContent({
               <SectionErrorState error={error} onRetry={onRetry} />
             </div>
           ) : historyRoutes === null ? (
-            dummyCards
+            getDummyCards(observerTarget)
           ) : historyRoutes && historyRoutes.length > 0 ? (
             <>
               {historyRoutes.map((route, idx) => (
@@ -148,7 +148,7 @@ export default function UserProfileContent({
                   </div>
                 </div>
               ))}
-              {hasMore && !error && dummyCards}
+              {hasMore && !error && getDummyCards(observerTarget)}
               {error && (
                 <div className="col-span-full">
                   <SectionErrorState variant="inline" error={error} onRetry={onRetry} />

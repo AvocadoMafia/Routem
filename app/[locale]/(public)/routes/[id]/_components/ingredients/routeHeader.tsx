@@ -34,6 +34,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const isAuthor = currentUser?.id === route.authorId;
   const isCollaborator = route.collaborators?.some((c) => c.userId === currentUser?.id);
   const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === "CAN_EDIT");
+  const initialIsFollowed = !!currentUser?.id && route.author.followers?.some((f) => f.followerId === currentUser.id);
 
 
   return (
@@ -63,7 +64,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
           </div>
           <div className={"w-full flex gap-3 items-center justify-between"}>
             <div className="flex gap-2 items-center">
-              <img className={"md:w-10 w-7 md:h-10 h-7 rounded-full"} src={route.author.icon?.url || "/mockImages/author.png"} alt={"author"} />
+              <img className={"md:w-10 w-7 md:h-10 h-7 rounded-full"} src={route.author.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'} alt={"author"} />
                 <div className={'flex flex-col'}>
                     <span className={"text-foreground-0 text-lg"}>{route.author.name}</span>
                     <span className={'text-foreground-1 text-sm'}>{route.author.followers?.length || 0} followers</span>
@@ -72,7 +73,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             <FollowButton 
               followingId={route.authorId} 
               currentUser={currentUser} 
-              initialIsFollowed={false} 
+              initialIsFollowed={initialIsFollowed} 
             />
           </div>
             <div className={'w-full h-fit flex flex-col text-md font-semibold text-foreground-1 p-3 bg-background-0 rounded-lg'}>

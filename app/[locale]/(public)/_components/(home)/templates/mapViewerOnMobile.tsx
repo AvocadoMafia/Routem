@@ -77,7 +77,7 @@ function MapViewerOnMobile(props: Props) {
                                     </div>
                                 </div>
                                 <div className={'flex gap-3'}>
-                                    <img className={'w-10 h-10 rounded-full'} src={route.author.icon?.url } alt={route.author.name} />
+                                    <img className={'w-10 h-10 rounded-full'} src={route.author.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'} alt={route.author.name} />
                                     <div className={'flex flex-col gap-1'}>
                                         <h1 className="text-xl font-bold line-clamp-2 text-foreground-0" onClick={() => router.push(`/routes/${route.id}`)}>
                                             {route.title}

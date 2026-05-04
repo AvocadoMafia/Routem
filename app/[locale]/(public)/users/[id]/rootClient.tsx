@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Route, User } from '@/lib/types/domain'
-import { postDataToServerWithJson, deleteDataToServerWithJson, getDataFromServerWithJson } from '@/lib/api/client'
+import { postDataToServerWithJson, getDataFromServerWithJson } from '@/lib/api/client'
 import UserProfileHeader from '@/app/[locale]/(dashboard)/me/_components/templates/userProfileHeader'
 import UserProfileContent from './_components/templates/userProfileContent'
 import { Tab } from './_components/ingredients/tabNavigation'
@@ -21,25 +21,26 @@ type Props = {
 export default function RootClient({ targetUser, currentUser }: Props) {
   const id = targetUser.id
   const router = useRouter()
+  const initialIsFollowing = (targetUser as User & { isFollowing?: boolean }).isFollowing ?? false
   const [activeTab, setActiveTab] = useState<Tab>('routes')
-  const [isFollowing, setIsFollowing] = useState((targetUser as any).isFollowing ?? false)
+  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [followersCount, setFollowersCount] = useState(targetUser._count?.followers ?? 0)
 
   const handleFollowToggle = async () => {
+    const prevIsFollowing = isFollowing
+    const prevFollowersCount = followersCount
     try {
-      if (isFollowing) {
-        setIsFollowing(false)
-        setFollowersCount(prev => Math.max(0, prev - 1))
-        await deleteDataToServerWithJson(`/api/v1/users/${id}/follow`)
-      } else {
-        setIsFollowing(true)
-        setFollowersCount(prev => prev + 1)
-        await postDataToServerWithJson(`/api/v1/users/${id}/follow`, {})
-      }
-    } catch (e) {
+      const nextIsFollowing = !isFollowing
+      setIsFollowing(nextIsFollowing)
+      setFollowersCount((prev) => Math.max(0, prev + (nextIsFollowing ? 1 : -1)))
+      await postDataToServerWithJson<{ followed: boolean; follower_count: number }>(
+        '/api/v1/follows',
+        { followingId: id }
+      )
+    } catch {
       // Revert on error
-      setIsFollowing((targetUser as any).isFollowing ?? false)
-      setFollowersCount(targetUser._count?.followers ?? 0)
+      setIsFollowing(prevIsFollowing)
+      setFollowersCount(prevFollowersCount)
     }
   }
 

@@ -48,7 +48,7 @@ export default function NavigatorList({ onSearchClick }: Props) {
             <div className={'flex items-center md:gap-4 md:justify-end justify-between'}>
                 <motion.button
                     onClick={onSearchClick}
-                    className={'p-2 rounded-full hover:bg-grass transition-colors cursor-pointer text-foreground-0 flex items-center justify-center'}
+                    className={'md:hidden p-2 rounded-full hover:bg-grass transition-colors cursor-pointer text-foreground-0 flex items-center justify-center'}
                     whileHover={{scale:1.02}}
                     whileTap={{scale:0.98}}
                 >

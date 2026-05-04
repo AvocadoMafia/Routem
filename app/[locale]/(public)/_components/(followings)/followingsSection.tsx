@@ -106,13 +106,13 @@ export default function FollowingsSection() {
                     <div className={'md:block hidden flex-1 h-full md:overflow-y-scroll flex flex-col py-6 px-3'}>
                         <h2 className="h-fit text-sm font-bold uppercase tracking-[0.2em] text-foreground-1 mb-4">{tHome('newRoutesByFollowings')}</h2>
                         {routes === null && !routesError ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-2 gap-4 md:gap-6">
                                 {Array.from({length: 6}).map((_, i) => (
                                     <RouteCardBasicSkeleton key={i}/>
                                 ))}
                             </div>
                         ) : routes && routes.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-2 gap-4 md:gap-6">
                                 {routes.map((route) => (
                                     <div key={route.id}>
                                         <RouteCardBasic route={route}/>

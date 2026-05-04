@@ -4,41 +4,78 @@ import SolutionCard from "@/app/[locale]/(public)/about/_components/ingredients/
 
 export default function SolutionSectionLaptop() {
     return (
-        <section className={'hidden md:flex w-full h-fit bg-background-0/75 backdrop-blur-sm justify-center relative @container'}>
-            <img className={'w-full object-cover'} src={'/lp/mapLaptop.svg'}/>
-            <img className={'absolute w-[6cqw] top-[14cqw] left-[16cqw]'} src={'/lp/pinBig.svg'}/>
-            <h3 className={'absolute text-[2.5cqw] top-[16cqw] left-[23cqw] rotate-[-2deg] leading-tight font-extrabold text-[#48484e]'}>旅行の計画って<br/>なんか面倒じゃない？</h3>
-            <img className={'absolute w-[6cqw] top-[9.5cqw] left-[53.8cqw]'} src={'/lp/pinBig.svg'}/>
-            <h3 className={'absolute text-[2.5cqw] top-[12cqw] left-[60cqw] rotate-[-2deg] leading-tight font-extrabold text-[#48484e]'}>とっておきのルート<br/>シェアしてみない？</h3>
-            <img className={'absolute w-[8cqw] top-[23cqw] left-[45.5cqw]'} src={'/lp/pinBig.svg'}/>
-            <h3 className={'absolute text-[4cqw] top-[25cqw] left-[54cqw] rotate-[-2deg] leading-tight font-extrabold text-accent-0'}>それ全部、<br/>Routemで解決。</h3>
-            <div className={'absolute w-full h-fit bg-background-0/75 backdrop-blur-sm z-20 top-[40cqw] flex justify-center'}>
-                <div className={'w-full max-w-[1000px] flex items-center px-6 py-3'}>
-                    <p className={'flex-1 h-fit text-foreground-0 lg:text-3xl md:text-2xl text-md font-bold leading-relaxed'}>旅行計画が面倒。<br/>気になるあの子と同じ旅をしたい。<br/>自分のとっておきのルートを共有したい。<br/>これ全部、<span className={'font-josefin-sans uppercase mr-2 text-accent-0 text-[1.1em]'}>Routem</span>で解決してみない？</p>
-                    <div className={'lg:w-[400px] md:w-[300px] w-[250px] grid grid-cols-4 grid-rows-1 gap-3 overflow-hidden items-center'}>
-                        <div className={' col-span-3'}>
-                            <img className={'w-full'} src={'/lp/pc.png'}/>
+        <section className={'hidden md:flex flex-col w-full min-h-screen bg-background-0 py-24 px-12'}>
+            {/* Hero Section */}
+            <div className={'w-full max-w-[1400px] mx-auto mb-32'}>
+                <div className={'flex flex-col gap-4 mb-16'}>
+                    <p className={'text-foreground-1/60 text-lg font-light tracking-wider uppercase'}>
+                        旅行の計画ってなんか面倒じゃない？
+                    </p>
+                    <p className={'text-foreground-1/60 text-lg font-light tracking-wider uppercase'}>
+                        とっておきのルート シェアしてみない？
+                    </p>
+                </div>
+
+                <h1 className={'text-8xl font-black text-foreground-0 leading-[1.05] tracking-tighter mb-12'}>
+                    それ全部、<br/>
+                    <span className={'text-accent-0'}>Routem</span>で解決。
+                </h1>
+
+                <div className={'flex items-end gap-16'}>
+                    <div className={'flex-1 max-w-2xl'}>
+                        <p className={'text-2xl text-foreground-0/90 font-light leading-relaxed mb-6'}>
+                            旅行計画が面倒。<br/>
+                            気になるあの子と同じ旅をしたい。<br/>
+                            自分のとっておきのルートを共有したい。
+                        </p>
+                        <p className={'text-3xl text-foreground-0 font-semibold leading-relaxed'}>
+                            これ全部、
+                            <span className={'font-josefin-sans uppercase mx-3 text-accent-0'}>Routem</span>
+                            で解決してみない？
+                        </p>
+                    </div>
+
+                    <div className={'flex items-end gap-6'}>
+                        <div className={'w-64 transform hover:scale-105 transition-transform duration-500'}>
+                            <img className={'w-full drop-shadow-2xl'} src={'/lp/pc.png'} alt="PC"/>
                         </div>
-                        <div className={''}>
-                            <img className={'w-full'} src={'/lp/phone.png'}/>
+                        <div className={'w-20 transform hover:scale-105 transition-transform duration-500'}>
+                            <img className={'w-full drop-shadow-2xl'} src={'/lp/phone.png'} alt="Phone"/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className={'w-[20svw] h-[32svw] absolute top-[65cqw] left-[10cqw]'}>
-                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'地図上で作る、'} title_line2={'地図上で伝える。'} description={'地図上の施設情報を結んでルートを作成。道のり・移動手段を可視化し、写真や感想を各スポットに添付。投稿者はブログ感覚でルートの詳細説明を書くこともできます。'}/>
-            </div>
 
-            <div className={'w-[20svw] h-[32svw] absolute top-[70cqw] left-[50cqw]'}>
-                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'旅の条件で、'} title_line2={'すぐに見つかる。'} description={'通常の文字列検索はもちろん、目的、場所、日時、期間、予算等で絞り込む探索機能を用いて、あいまいなアイデアを具体的なプランとして素早く出力できます。'}/>
-            </div>
-
-            <div className={'w-[20svw] h-[32svw] absolute top-[105cqw] left-[25cqw]'}>
-                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'借りて、アレンジして、'} title_line2={'また誰かに貸す。'} description={'他のユーザーのルートをワンタップでコピーし、自分のプランとして活用。そのまま使っても、スポットを入れ替えアレンジしても、編集後に再共有してもOK。'}/>
-            </div>
-
-            <div className={'w-[20svw] h-[32svw] absolute top-[107cqw] left-[60cqw]'}>
-                <SolutionCard imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'} title_line1={'旅行好きが、'} title_line2={'つながる場所。'} description={'ルートのコメント・いいね機能で他ユーザーと交流。気に入った投稿者をフォローして新しいルートをチェック。モデルコースも地図上のインタラクティブなルートとして掲載可能。'}/>
+            {/* Features Grid */}
+            <div className={'w-full max-w-[1400px] mx-auto'}>
+                <div className={'grid grid-cols-2 gap-8 mb-8'}>
+                    <SolutionCard
+                        imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
+                        title_line1={'地図上で作る、'}
+                        title_line2={'地図上で伝える。'}
+                        description={'地図上の施設情報を結んでルートを作成。道のり・移動手段を可視化し、写真や感想を各スポットに添付。投稿者はブログ感覚でルートの詳細説明を書くこともできます。'}
+                    />
+                    <SolutionCard
+                        imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
+                        title_line1={'旅の条件で、'}
+                        title_line2={'すぐに見つかる。'}
+                        description={'通常の文字列検索はもちろん、目的、場所、日時、期間、予算等で絞り込む探索機能を用いて、あいまいなアイデアを具体的なプランとして素早く出力できます。'}
+                    />
+                </div>
+                <div className={'grid grid-cols-2 gap-8'}>
+                    <SolutionCard
+                        imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
+                        title_line1={'借りて、アレンジして、'}
+                        title_line2={'また誰かに貸す。'}
+                        description={'他のユーザーのルートをワンタップでコピーし、自分のプランとして活用。そのまま使っても、スポットを入れ替えアレンジしても、編集後に再共有してもOK。'}
+                    />
+                    <SolutionCard
+                        imageSrc={'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
+                        title_line1={'旅行好きが、'}
+                        title_line2={'つながる場所。'}
+                        description={'ルートのコメント・いいね機能で他ユーザーと交流。気に入った投稿者をフォローして新しいルートをチェック。モデルコースも地図上のインタラクティブなルートとして掲載可能。'}
+                    />
+                </div>
             </div>
         </section>
     );

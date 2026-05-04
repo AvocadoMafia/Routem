@@ -24,7 +24,7 @@ export default function AuthorSection({ author }: AuthorSectionProps) {
       >
         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-accent-0/20">
           <Image
-            src={author.icon?.url || "/default-avatar.png"}
+            src={author.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'}
             alt={author.name}
             fill
             className="object-cover"
@@ -32,7 +32,7 @@ export default function AuthorSection({ author }: AuthorSectionProps) {
           />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-foreground-0">@{author.name}</h3>
+          <h3 className="text-xl font-bold text-foreground-0">{author.name}</h3>
           <p className="text-sm text-foreground-1">{author.bio || "No bio provided."}</p>
         </div>
       </Link>

@@ -18,9 +18,21 @@ export default function RootClient() {
   const userId = currentUser?.id
   const enabled = !!userId
   const [activeTab, setActiveTab] = useState<Tab>('routes')
+  const [loadedTabs, setLoadedTabs] = useState<Record<Tab, boolean>>({
+    routes: true,
+    likes: false,
+    history: false,
+  })
 
   const scrollDirection = useUiStore((state) => state.scrollDirection)
   const headerHeight = useUiStore((state) => state.headerHeight)
+
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab)
+    setLoadedTabs((prev) => (
+      prev[tab] ? prev : { ...prev, [tab]: true }
+    ))
+  }
 
   const {
     items: userRoutes,
@@ -36,7 +48,7 @@ export default function RootClient() {
       return getDataFromServerWithJson<CursorResponse<Route>>(url)
     },
     deps: [userId],
-    enabled,
+    enabled: enabled && loadedTabs.routes,
   })
 
   const {
@@ -53,7 +65,7 @@ export default function RootClient() {
       return getDataFromServerWithJson<CursorResponse<LikeRecord>>(url)
     },
     deps: [userId],
-    enabled,
+    enabled: enabled && loadedTabs.likes,
   })
 
   const {
@@ -70,7 +82,7 @@ export default function RootClient() {
       return getDataFromServerWithJson<CursorResponse<ViewRecord>>(url)
     },
     deps: [userId],
-    enabled,
+    enabled: enabled && loadedTabs.history,
   })
 
   // activeTab に応じて UserProfileContent に渡す派生値を一元化。
@@ -118,7 +130,7 @@ export default function RootClient() {
       <div className="relative w-full h-fit z-20 flex flex-col bg-background-1">
         <UserProfileContent
           activeTab={activeTab}
-          onChangeTab={setActiveTab}
+          onChangeTab={handleTabChange}
           routes={userRoutes ?? null}
           likedRoutes={likedRoutes ?? null}
           historyRoutes={historyRoutes ?? null}
