@@ -2,8 +2,8 @@ import React from 'react'
 
 export default function UserCardGraphicalSkeleton() {
   return (
-    <div className="w-full h-full rounded-2xl overflow-hidden shadow-sm bg-background-0 p-1.5 animate-pulse">
-      <div className="relative w-full h-full rounded-xl overflow-hidden bg-background-1">
+    <div className="w-full h-full rounded-2xl overflow-hidden shadow-sm bg-background-0 p-1.5">
+      <div className="relative w-full h-full rounded-xl overflow-hidden bg-background-1 shimmer">
         {/* Overlay to match UserCardGraphical style */}
         <div className="absolute inset-0 rounded-lg
           backdrop-blur-2xl bg-black/50
