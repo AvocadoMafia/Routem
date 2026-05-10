@@ -105,6 +105,23 @@ html, body {
     }
 }
 
+/*
+ * カードのサムネイル上に重ねる、下部から立ち上がる暗色グラデーション。
+ * 以前は backdrop-filter + mask-image でぼかしを掛けていたが、
+ * Gecko 等の非 WebKit 系ブラウザで合成コストが高く、多数並べると
+ * レイアウトシフト / ジャンクの原因になっていたため、純粋な
+ * linear-gradient に置き換えている。
+ */
+@utility card-thumbnail-overlay {
+    background-image: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.45) 30%,
+        rgba(0, 0, 0, 0.15) 65%,
+        transparent 95%
+    );
+}
+
 /* macOS-style floating scrollbar */
 @layer base {
     ::-webkit-scrollbar {

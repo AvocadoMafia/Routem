@@ -8,10 +8,7 @@ export default function RouteCardGraphicalSkeleton({ isFirst, observerTarget }: 
     >
       <div className="relative w-full h-full rounded-xl overflow-hidden bg-background-1 shimmer">
         {/* Overlay to match the style */}
-        <div className="absolute inset-0 rounded-lg
-          backdrop-blur-2xl bg-black/50
-          [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-          [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+        <div className="absolute inset-0 rounded-lg pointer-events-none card-thumbnail-overlay" />
 
         <div className="absolute inset-0 p-4 flex flex-col justify-between">
           <div className="flex justify-end items-start">

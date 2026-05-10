@@ -5,10 +5,7 @@ export default function FeaturedUserCardSkeleton() {
     <div className="w-full h-full rounded-2xl overflow-hidden shadow-sm bg-background-0 p-1.5">
       <div className="relative w-full h-full rounded-xl overflow-hidden bg-background-1 shimmer">
         {/* Overlay to match FeaturedUserCard style */}
-        <div className="absolute inset-0 rounded-lg
-          backdrop-blur-2xl bg-black/50
-          [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-          [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+        <div className="absolute inset-0 rounded-lg pointer-events-none card-thumbnail-overlay" />
 
         {/* Content Container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between">

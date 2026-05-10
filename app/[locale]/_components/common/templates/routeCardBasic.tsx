@@ -25,11 +25,8 @@ export default function RouteCardBasic({ route, isLinkCard = true, isFocused = f
             onClick={onClick}
         >
             <div className={'flex-1 min-h-[240px] sm:h-full relative overflow-hidden sm:rounded-l-xl rounded-t-xl bg-background-1'}>
-                {/* オーバーレイ（視認性向上） - Smoother blur gradient with masked blur to avoid sharp boundary */}
-                <div className="absolute inset-0 z-10 sm:rounded-l-xl rounded-t-xl overflow-hidden
-                    backdrop-blur-2xl bg-black/50
-                    [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-                    [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+                {/* オーバーレイ（視認性向上） */}
+                <div className="absolute inset-0 z-10 sm:rounded-l-xl rounded-t-xl pointer-events-none card-thumbnail-overlay" />
                 <Image
                     src={route.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                     alt={route.title}
