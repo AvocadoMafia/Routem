@@ -34,7 +34,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const isAuthor = currentUser?.id === route.authorId;
   const isCollaborator = route.collaborators?.some((c) => c.userId === currentUser?.id);
   const canEdit = isAuthor || (isCollaborator && route.collaboratorPolicy === "CAN_EDIT");
-  const initialIsFollowed = !!currentUser?.id && route.author.followers?.some((f) => f.followerId === currentUser.id);
+  // フォロー初期状態は FollowButton 内の useEffect で非同期チェックするため不要
 
 
   return (
@@ -67,13 +67,12 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
               <img className={"md:w-10 w-7 md:h-10 h-7 rounded-full"} src={route.author.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'} alt={"author"} />
                 <div className={'flex flex-col'}>
                     <span className={"text-foreground-0 text-lg"}>{route.author.name}</span>
-                    <span className={'text-foreground-1 text-sm'}>{route.author.followers?.length || 0} followers</span>
+                    <span className={'text-foreground-1 text-sm'}>{route.author._count?.followers ?? 0} followers</span>
                 </div>
             </div>
-            <FollowButton 
-              followingId={route.authorId} 
-              currentUser={currentUser} 
-              initialIsFollowed={initialIsFollowed} 
+            <FollowButton
+              followingId={route.authorId}
+              currentUser={currentUser}
             />
           </div>
             <div className={'w-full h-fit flex flex-col text-md font-semibold text-foreground-1 p-3 bg-background-0 rounded-lg'}>

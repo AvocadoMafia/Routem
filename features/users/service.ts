@@ -107,7 +107,7 @@ export const usersService = {
   // 新API: フォローそのもの（include制御・カーソル対応）
   getFollowRecords: async (
     userId: string,
-    opts: { type: "following" | "follower"; include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string }
+    opts: { type: "following" | "follower"; include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string; targetId?: string }
   ) => {
     try {
       const take = opts.take ?? 30;
@@ -116,6 +116,7 @@ export const usersService = {
         include: opts.include,
         take,
         cursor: opts.cursor,
+        targetId: opts.targetId,
       });
 
       // nextCursorを計算

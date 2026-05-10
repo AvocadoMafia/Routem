@@ -93,6 +93,19 @@ export default function RootClient({ targetUser, currentUser }: Props) {
     }
   }, [id, currentUser?.id, router])
 
+  useEffect(() => {
+    if (!currentUser?.id || currentUser.id === id) return;
+    getDataFromServerWithJson<{ items: { id: string }[]; nextCursor: string | null }>(
+      `/api/v1/follows?type=following&targetId=${id}`
+    )
+      .then((data) => {
+        if ((data?.items?.length ?? 0) > 0) {
+          setIsFollowing(true);
+        }
+      })
+      .catch(() => {});
+  }, [currentUser?.id, id]);
+
   return (
     <div className="w-full h-fit">
       <UserProfileHeader

@@ -6,7 +6,14 @@ export const ROUTE_INCLUDE = {
     select: {
       id: true,
       name: true,
+      bio: true,
       icon: true,
+      _count: {
+        select: {
+          followers: true,
+          followings: true,
+        },
+      },
     },
   },
   thumbnail: true,

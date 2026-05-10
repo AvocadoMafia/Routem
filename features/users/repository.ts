@@ -272,7 +272,7 @@ export const usersRepository = {
   // 動的include対応のFollowレコード取得（カーソルベース）
   findFollowRecords: async (
     userId: string,
-    opts: { type: "following" | "follower"; include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string }
+    opts: { type: "following" | "follower"; include?: { following?: boolean; follower?: boolean }; take?: number; cursor?: string; targetId?: string }
   ) => {
     try {
       const include: any = {};
@@ -281,11 +281,17 @@ export const usersRepository = {
 
       // カーソル条件を構築
       const cursorWhere = buildCursorWhere(opts.cursor);
-      
+
       // typeに応じて followerId か followingId を指定
       const where: any = {
         ...(opts.type === "following" ? { followerId: userId } : { followingId: userId }),
         ...cursorWhere,
+        // targetIdが指定された場合は特定ユーザーとの関係のみ取得
+        ...(opts.targetId
+          ? opts.type === "following"
+            ? { followingId: opts.targetId }
+            : { followerId: opts.targetId }
+          : {}),
       };
 
       return await getPrisma().follow.findMany({

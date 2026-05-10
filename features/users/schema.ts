@@ -66,10 +66,11 @@ const BoolParam = z
   .union([z.literal("true"), z.literal("false"), z.boolean()])
   .transform((v) => v === true || v === "true");
 
-// Follows GET query: type? userId? take? cursor?
+// Follows GET query: type? userId? targetId? take? cursor?
 export const GetFollowsQuerySchema = z.object({
   type: z.enum(["following", "follower"]).default("following"),
   userId: z.string().uuid().optional(), // 省略時は自分
+  targetId: z.string().uuid().optional(), // 特定フォロー関係チェック用
   take: z
     .union([z.string().regex(/^\d+$/), z.number()])
     .transform((n: any) => (typeof n === "string" ? Number(n) : n))

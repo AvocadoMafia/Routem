@@ -130,9 +130,9 @@ export default function DetailsViewer({
           focusIndex === items.length ? "opacity-100" : "opacity-40"
         }`}
       >
-        <div className="flex flex-col gap-12">
-          <div className="max-w-4xl flex flex-col gap-12">
-            <AuthorSection author={route.author} />
+        <div className="w-full flex flex-col gap-12">
+          <div className=" flex flex-col gap-12">
+            <AuthorSection author={route.author} currentUser={currentUser} />
             <RouteMetadataSection route={route} />
             <CategoryTags tags={route.tags} />
           </div>

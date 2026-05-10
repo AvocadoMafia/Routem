@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
       },
       take: parsed.take ?? 30,
       cursor: parsed.cursor,
+      targetId: parsed.targetId,
     });
 
     return NextResponse.json({

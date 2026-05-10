@@ -1,8 +1,6 @@
 'use client';
 
-import { useUiStore } from '@/lib/stores/uiStore';
-import {motion} from "framer-motion";
-import Header from "@/app/[locale]/_components/layout/templates/header";
+import { motion } from "framer-motion";
 
 type Props = {
     children: React.ReactNode;
@@ -11,19 +9,13 @@ type Props = {
 }
 
 export default function ModalFullSize({ children, hiddenUnderMd, onBackgroundClick }: Props) {
-
-    const scrollDirection = useUiStore((state) => state.scrollDirection)
-    const headerHeight = useUiStore((state) => state.headerHeight)
-
     return (
         <motion.div
             initial={false}
-            animate={{
-                y: scrollDirection === 'down' ? 0 : headerHeight,
-                height: scrollDirection === 'down' ? '100%' : `calc(100% - ${headerHeight}px)`,
-            }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className={`fixed top-0 left-0 w-full z-1000 overflow-y-scroll ${hiddenUnderMd ? 'md:hidden' : ''}`}
+            animate={{ opacity: 1 }}
+            className={`fixed inset-0 z-1000 overflow-y-scroll overscroll-contain ${hiddenUnderMd ? 'md:hidden' : ''}`}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
         >
             {children}
         </motion.div>

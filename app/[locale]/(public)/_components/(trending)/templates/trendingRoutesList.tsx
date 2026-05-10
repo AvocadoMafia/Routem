@@ -34,12 +34,12 @@ export default function TrendingRoutesList() {
         }
     }, [routesError, appendError]);
 
-    // ダミーカードの生成（15個）
+    // ダミーカードの生成（15個）- isFirst=true のカードに observerTarget を渡してセンチネルにする
     const dummyCards = Array.from({ length: 15 }).map((_, i) => (
         <RouteCardBasicSkeleton
             key={`dummy-${i}`}
             isFirst={i === 0}
-            observerTarget={i === 14 ? observerTarget : undefined}
+            observerTarget={i === 0 ? observerTarget : undefined}
         />
     ));
 
