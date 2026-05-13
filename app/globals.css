@@ -105,6 +105,10 @@ html, body {
     }
 }
 
+@utility will-change-transform {
+    will-change: transform;
+}
+
 /*
  * カードのサムネイル上に重ねる、下部から立ち上がる暗色グラデーション。
  * 以前は backdrop-filter + mask-image でぼかしを掛けていたが、
