@@ -41,18 +41,23 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
                     y: scrollDirection === 'down' ? -headerHeight : 0,
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="fixed top-0 left-0 w-full z-50 will-change-transform"
+                className="fixed top-0 left-0 w-full z-50"
             >
                 <Header />
             </motion.div>
 
             {/* 👇 ここが唯一のスクロール要素 */}
-            <div
+            <motion.div
+                initial={false}
                 id="main-scroll-container"
-                className="w-full h-full overflow-y-auto box-border pt-[50px] md:pt-[60px]"
+                animate={{
+                    paddingTop: scrollDirection === 'down' ? 0 : headerHeight,
+                }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="w-full h-full overflow-y-auto box-border"
             >
                 <Main>{children}</Main>
-            </div>
+            </motion.div>
         </main>
     )
 }
