@@ -48,7 +48,7 @@ const RouteCardBasic = memo(function RouteCardBasic({ route, isLinkCard = true, 
                     </div>
                 </div>
                 <div className={'absolute left-0 bottom-0 w-full p-6 flex flex-col items-start gap-2 z-15'}>
-                    <h2 className={'text-3xl font-bold text-white text-left leading-tight drop-shadow-md'}>{route.title}</h2>
+                    <h2 className={'text-3xl font-bold text-white text-left leading-tight drop-shadow-md line-clamp-4'}>{route.title}</h2>
                     <div className={'text-sm font-bold text-white/80 text-left uppercase tracking-[0.2em] flex items-center gap-2'}>
                         <HiCalendarDays className="w-4 h-4 text-white/80" aria-hidden />
                         <span>{formatDateToYmdInTz(route.createdAt)}</span>

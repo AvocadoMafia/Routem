@@ -53,7 +53,7 @@ const RouteCardGraphical = memo(function RouteCardGraphical({route, isLinkCard =
           {/* Bottom section: Title and Meta Info */}
           <div className="space-y-3">
             <div className="space-y-1">
-              <h4 className="text-lg font-bold leading-tight drop-shadow-sm line-clamp-2">
+              <h4 className="text-lg font-bold leading-tight drop-shadow-sm line-clamp-4">
                 {route?.title}
               </h4>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">

@@ -12,6 +12,7 @@ import ToastViewer from "@/app/[locale]/_components/layout/templates/toastViewer
 export default function RootClient({ children }: { children: React.ReactNode }) {
 
     const scrollDirection = useUiStore((state) => state.scrollDirection)
+    const isMobile = useUiStore((state) => state.isMobile)
     const setIsMobile = useUiStore((state) => state.setIsMobile)
     const headerHeight = useUiStore((state) => state.headerHeight)
     const setHeaderHeight = useUiStore((state) => state.setHeaderHeight)
@@ -40,7 +41,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
             <motion.div
                 initial={false}
                 animate={{
-                    y: scrollDirection === 'down' ? -headerHeight : 0,
+                    y: (isMobile && scrollDirection === 'down') ? -headerHeight : 0,
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="fixed top-0 left-0 w-full z-50"
@@ -54,7 +55,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
                 className="w-full h-full overflow-y-auto box-border"
                 initial={false}
                 animate={{
-                    paddingTop: scrollDirection === "down" ? 0 : headerHeight
+                    paddingTop: (isMobile && scrollDirection === "down") ? 0 : headerHeight
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
             >

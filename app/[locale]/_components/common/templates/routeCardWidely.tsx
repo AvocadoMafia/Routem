@@ -27,7 +27,7 @@ const RouteCardWidely = memo(function RouteCardWidely({route, isLinkCard = true,
                 </div>
                 <div className={'flex-1 h-full px-4 py-3 flex flex-col justify-between overflow-hidden'}>
                     <div className="flex flex-col gap-1">
-                        <h2 className={'font-bold text-sm line-clamp-2 leading-tight text-foreground-0'}>{route.title}</h2>
+                        <h2 className={'font-bold text-sm line-clamp-4 leading-tight text-foreground-0'}>{route.title}</h2>
                         <span className="text-[10px] text-foreground-1 font-medium">by @{route.author.name}</span>
                     </div>
                     <div className="flex items-center gap-3">

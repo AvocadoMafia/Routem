@@ -49,7 +49,7 @@ const FeaturedRouteCard = memo(function FeaturedRouteCard({route, isLinkCard = t
           {/* Bottom section: Title, Meta, and Detail Chips (styled like RouteCardGraphical) */}
           <div className="space-y-3">
             <div className="space-y-1">
-              <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-2 text-white">
+              <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-4 text-white">
                 {route.title}
               </h3>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">

@@ -77,14 +77,15 @@ const SelectorInner = memo(function SelectorInner({ selected, setSelected }: Pro
 
 const ContentsSelector = memo(function ContentsSelector(props: Props) {
     const scrollDirection = useUiStore((state) => state.scrollDirection)
+    const isMobile = useUiStore((state) => state.isMobile)
 
     return (
         <div className="fixed bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none">
             <motion.div
                 initial={false}
                 animate={{
-                    y: scrollDirection === 'down' ? 100 : 0,
-                    opacity: scrollDirection === 'down' ? 0 : 1,
+                    y: (isMobile && scrollDirection === 'down') ? 100 : 0,
+                    opacity: (isMobile && scrollDirection === 'down') ? 0 : 1,
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="pointer-events-auto"
