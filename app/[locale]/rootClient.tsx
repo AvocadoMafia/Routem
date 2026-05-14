@@ -49,17 +49,13 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
             </motion.div>
 
             {/* 👇 ここが唯一のスクロール要素 */}
-            <motion.div
-                initial={false}
+            <div
                 id="main-scroll-container"
-                animate={{
-                    paddingTop: scrollDirection === 'down' ? 0 : headerHeight,
-                }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="w-full h-full overflow-y-auto box-border"
+                style={{ paddingTop: scrollDirection === "down" ? 0 : headerHeight }}
             >
                 <Main>{memoizedChildren}</Main>
-            </motion.div>
+            </div>
         </main>
     )
 }

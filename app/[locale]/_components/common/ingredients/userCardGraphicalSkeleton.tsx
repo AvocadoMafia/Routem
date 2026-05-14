@@ -4,11 +4,8 @@ export default function UserCardGraphicalSkeleton() {
   return (
     <div className="w-full h-full rounded-2xl overflow-hidden shadow-sm bg-background-0 p-1.5">
       <div className="relative w-full h-full rounded-xl overflow-hidden bg-background-1 shimmer">
-        {/* Overlay to match UserCardGraphical style */}
-        <div className="absolute inset-0 rounded-lg
-          backdrop-blur-2xl bg-black/50
-          [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-          [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+        {/* Overlay to match UserCardGraphical style - Simple color gradient instead of heavy backdrop-blur */}
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {/* Content Container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between">

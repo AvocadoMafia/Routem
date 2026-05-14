@@ -33,11 +33,8 @@ export const UserCardGraphical = memo(function UserCardGraphical(props: Props) {
           unoptimized
         />
 
-        {/* Gradient Mask Overlay (Top to Bottom) with Smooth Blur - Inside the image container */}
-        <div className="absolute inset-0 rounded-lg
-      backdrop-blur-2xl bg-black/50
-      [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+        {/* Gradient Overlay (Top to Bottom) - Simple color gradient instead of heavy backdrop-blur */}
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
