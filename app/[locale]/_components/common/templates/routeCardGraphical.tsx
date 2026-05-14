@@ -22,7 +22,7 @@ const RouteCardGraphical = memo(function RouteCardGraphical({route, isLinkCard =
   const content = (
     <div
       onClick={onClick}
-      className={`group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`}
+      className={`group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm transition-all duration-300 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : 'hover:ring-1 hover:ring-foreground-1/20'}`}
       aria-label={route?.title}
     >
       {/* Background Thumbnail Image with Margin (via container padding) */}
@@ -31,7 +31,7 @@ const RouteCardGraphical = memo(function RouteCardGraphical({route, isLinkCard =
           src={route?.thumbnail?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
           alt={`${route?.title} thumbnail`}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="object-cover transition-transform duration-500 ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
@@ -76,11 +76,11 @@ const RouteCardGraphical = memo(function RouteCardGraphical({route, isLinkCard =
 
             {/* Duration and Cost area (Button-like) */}
             <div className="flex gap-2">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiClock className="w-4 h-4 text-foreground-0" />
                 <span className="text-[10px] font-bold tracking-[0.3em] uppercase">{daysCount} {t('daysUnit')}</span>
               </div>
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />
                 <span className="text-[10px] font-bold tracking-[0.3em] uppercase">{localizedBudget}</span>
               </div>

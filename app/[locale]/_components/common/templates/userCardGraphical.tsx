@@ -20,7 +20,7 @@ export const UserCardGraphical = memo(function UserCardGraphical(props: Props) {
   return (
     <Link
       href={href}
-      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 text-left"
+      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm transition-all duration-300 bg-background-0 p-1.5 text-left hover:ring-1 hover:ring-foreground-1/20"
       aria-label={props.rank ? `Rank ${props.rank}: ${props.user.name}` : props.user.name}
     >
       {/* Background Image with Margin (via container padding) */}
@@ -29,7 +29,7 @@ export const UserCardGraphical = memo(function UserCardGraphical(props: Props) {
           src={props.user.background?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp"}
           alt={`${props.user.name} background`}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="object-cover transition-transform duration-500 ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 

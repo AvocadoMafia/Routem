@@ -22,8 +22,8 @@ const RouteCardHorizontal = memo(function RouteCardHorizontal({route, isLinkCard
   
   const content = (
     <div
-      className={`relative w-full max-w-2xl overflow-hidden rounded-lg border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
-        isFocused ? 'border-accent-0/50' : 'bg-background-1 border-transparent'
+      className={`relative w-full max-w-2xl overflow-hidden rounded-lg border-2 shadow-sm transition-all cursor-pointer ${
+        isFocused ? 'border-accent-0/50' : 'bg-background-1 border-transparent hover:border-foreground-1/20'
       }`}
       style={{ minHeight: '96px' }}
       onClick={onClick}

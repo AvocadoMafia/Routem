@@ -22,7 +22,7 @@ const RouteCardBasic = memo(function RouteCardBasic({ route, isLinkCard = true, 
     const daysCount = route.routeDates.length;
     const content = (
         <div
-            className={`group w-full h-[440px] sm:h-[320px] overflow-hidden rounded-2xl flex flex-col sm:flex-row shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`}
+            className={`group w-full h-[440px] sm:h-[320px] overflow-hidden rounded-2xl flex flex-col sm:flex-row shadow-sm transition-all duration-300 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : 'hover:ring-1 hover:ring-foreground-1/20'}`}
             onClick={onClick}
         >
             <div className={'flex-1 min-h-[240px] sm:h-full relative overflow-hidden sm:rounded-l-xl rounded-t-xl bg-background-1'}>
@@ -33,16 +33,16 @@ const RouteCardBasic = memo(function RouteCardBasic({ route, isLinkCard = true, 
                     src={route.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                     alt={route.title}
                     fill
-                    className={'object-cover group-hover:scale-110 duration-700 ease-out'}
+                    className={'object-cover duration-700 ease-out'}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                {/* 画像右上: いいね数/閲覧数（グラス＆rounded-full） */}
+                {/* 画像右上: いいね数/閲覧数（rounded-full） */}
                 <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/15 text-white backdrop-blur-md shadow-md">
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background-1 text-foreground-0 shadow-md">
                         <HiHeart className="w-4 h-4 text-accent-0" />
                         <span className="text-xs font-bold">{route.likes?.length ?? 0}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/15 text-white backdrop-blur-md shadow-md">
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-background-1 text-foreground-0 shadow-md">
                         <HiEye className="w-4 h-4 text-accent-0" />
                         <span className="text-xs font-bold">{route.views?.length ?? 0}</span>
                     </div>

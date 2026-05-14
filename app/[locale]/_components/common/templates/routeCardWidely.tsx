@@ -14,7 +14,7 @@ export type RouteCardWidelyProps = {
 const RouteCardWidely = memo(function RouteCardWidely({route, isLinkCard = true, isFocused = false, onClick}: RouteCardWidelyProps) {
 
     const content = (
-        <div className={`w-full h-32 bg-background-0 text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`} onClick={onClick}>
+        <div className={`w-full h-32 bg-background-0 text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:ring-1 hover:ring-foreground-1/20 active:scale-[0.99] ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`} onClick={onClick}>
             <div className={`w-full h-full flex flex-row rounded-xl overflow-hidden bg-background-1`}>
                 <div className="relative h-full aspect-square">
                     <Image

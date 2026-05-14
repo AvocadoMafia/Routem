@@ -16,7 +16,7 @@ const FeaturedUserCard = memo(function FeaturedUserCard(props: Props) {
   const content = (
     <div
       onClick={props.onClick}
-      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 text-left cursor-pointer"
+      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm transition-all duration-300 bg-background-0 p-1.5 text-left cursor-pointer hover:ring-1 hover:ring-foreground-1/20"
       aria-label={`Top user: ${props.user.name}`}
       role="button"
       tabIndex={0}
@@ -32,7 +32,7 @@ const FeaturedUserCard = memo(function FeaturedUserCard(props: Props) {
           src={props.user.background?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp"}
           alt={`${props.user.name} background`}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="object-cover transition-transform duration-500 ease-out"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
@@ -75,7 +75,7 @@ const FeaturedUserCard = memo(function FeaturedUserCard(props: Props) {
               )}
             </div>
 
-            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-black/10 shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-500">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-black/10 shrink-0 shadow-lg transition-transform duration-500">
               <Image
                 src={props.user.icon?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp"}
                 alt={`${props.user.name} icon`}
