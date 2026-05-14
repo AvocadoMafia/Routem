@@ -11,8 +11,8 @@ import ToastViewer from "@/app/[locale]/_components/layout/templates/toastViewer
 
 export default function RootClient({ children }: { children: React.ReactNode }) {
 
-    const scrollDirection = useUiStore((state) => state.scrollDirection)
     const isMobile = useUiStore((state) => state.isMobile)
+    const scrollDirection = useUiStore((state) => state.isMobile ? state.scrollDirection : 'up')
     const setIsMobile = useUiStore((state) => state.setIsMobile)
     const headerHeight = useUiStore((state) => state.headerHeight)
     const setHeaderHeight = useUiStore((state) => state.setHeaderHeight)

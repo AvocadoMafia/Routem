@@ -76,8 +76,8 @@ const SelectorInner = memo(function SelectorInner({ selected, setSelected }: Pro
 });
 
 const ContentsSelector = memo(function ContentsSelector(props: Props) {
-    const scrollDirection = useUiStore((state) => state.scrollDirection)
     const isMobile = useUiStore((state) => state.isMobile)
+    const scrollDirection = useUiStore((state) => state.isMobile ? state.scrollDirection : 'up')
 
     return (
         <div className="fixed bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none">
