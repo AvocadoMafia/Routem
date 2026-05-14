@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { MdCheckCircle, MdClose, MdInfoOutline, MdWarningAmber } from "react-icons/md";
@@ -56,7 +56,7 @@ const TONE_STYLES: Record<
  *  ここでは `toastStore.getState().dismissToast(toast.id)` を effect 内で直接呼び、
  *  親の参照に依存しない形にした。
  */
-export default function ToastCard({ toast }: Props) {
+const ToastCard = memo(function ToastCard({ toast }: Props) {
   const t = useTranslations("common");
   const tone = TONE_STYLES[toast.tone];
 
@@ -126,4 +126,6 @@ export default function ToastCard({ toast }: Props) {
       </button>
     </motion.div>
   );
-}
+});
+
+export default ToastCard;

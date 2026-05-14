@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { postDataToServerWithJson, toErrorScheme } from "@/lib/api/client";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useTranslations } from "next-intl";
 import { errorStore } from "@/lib/stores/errorStore";
 import { MdClose } from "react-icons/md";
@@ -18,7 +18,7 @@ type Props = {
   active?: boolean;
 };
 
-export default function FollowingUserCard({ user, active }: Props) {
+const FollowingUserCard = memo(function FollowingUserCard({ user, active }: Props) {
   const t = useTranslations("profile");
   const appendError = errorStore((state) => state.appendError);
   const [isUnfollowed, setIsUnfollowed] = useState(false);
@@ -83,4 +83,6 @@ export default function FollowingUserCard({ user, active }: Props) {
       </button>
     </div>
   );
-}
+});
+
+export default FollowingUserCard;

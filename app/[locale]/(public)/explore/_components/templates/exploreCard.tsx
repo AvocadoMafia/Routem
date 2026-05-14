@@ -4,7 +4,7 @@ import { MdClose, MdExplore, MdLocationOn, MdCalendarMonth, MdAccessTime, MdPeop
 import { InputAdornment, MenuItem, TextField } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, memo } from "react";
 import { useTranslations } from "next-intl";
 import { userStore } from "@/lib/stores/userStore";
 import { enumsStore } from "@/lib/stores/enumsStore";
@@ -53,7 +53,7 @@ const CURRENCY_FALLBACK: CurrencyCode[] = Object.values(CurrencyCode).filter(
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
+const ExploreCard = memo(function ExploreCard({ isSidebar = false }: ExploreCardProps) {
   const t = useTranslations("explore");
   const tFilter = useTranslations("filter");
   const router = useRouter();
@@ -628,4 +628,6 @@ export default function ExploreCard({ isSidebar = false }: ExploreCardProps) {
       {cardContent}
     </motion.div>
   );
-}
+});
+
+export default ExploreCard;

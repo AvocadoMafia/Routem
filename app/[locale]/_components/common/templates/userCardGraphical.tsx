@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {User} from "@/lib/types/domain";
 import {IoPersonAdd} from "react-icons/io5";
 import { HiUserGroup, HiBookOpen } from 'react-icons/hi2';
@@ -12,7 +12,7 @@ export type Props = {
   onClick?: () => void;
 };
 
-export function UserCardGraphical(props: Props) {
+export const UserCardGraphical = memo(function UserCardGraphical(props: Props) {
   const currentUser = userStore(state => state.user);
   const isMe = currentUser?.id === props.user.id;
   const href = isMe ? '/me' : `/users/${props.user.id}`;
@@ -91,4 +91,4 @@ export function UserCardGraphical(props: Props) {
       </div>
     </Link>
   );
-}
+});

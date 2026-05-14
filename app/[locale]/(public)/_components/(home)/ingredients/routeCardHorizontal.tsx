@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
 import { useTranslations } from 'next-intl';
+import { memo } from 'react';
 
 import { useLocalizedBudget } from '@/lib/hooks/useLocalizedBudget';
 
@@ -13,7 +14,7 @@ export type RouteCardHorizontalProps = {
 }
 
 // 横長のシンプルな旅行ルート サムネイルカード
-export default function RouteCardHorizontal({route, isLinkCard = false, isFocused = false, onClick}: RouteCardHorizontalProps){
+const RouteCardHorizontal = memo(function RouteCardHorizontal({route, isLinkCard = false, isFocused = false, onClick}: RouteCardHorizontalProps){
   const t = useTranslations('routes');
   const bgSrc = route.thumbnail?.url  ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp';
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode);
@@ -113,5 +114,7 @@ export default function RouteCardHorizontal({route, isLinkCard = false, isFocuse
   }
 
   return content;
-};
+});
+
+export default RouteCardHorizontal;
 

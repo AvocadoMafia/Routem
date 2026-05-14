@@ -1,7 +1,7 @@
 'use client'
 
 import ScrollDetector from "@/app/[locale]/_components/layout/templates/scrollDetector";
-import {useCallback, useEffect} from "react";
+import {useCallback, useEffect, useMemo} from "react";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { motion } from "framer-motion";
 import Header from "@/app/[locale]/_components/layout/templates/header";
@@ -27,6 +27,8 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
         window.addEventListener('resize', updateHeight)
         return () => window.removeEventListener('resize', updateHeight)
     }, [updateHeight])
+
+    const memoizedChildren = useMemo(() => children, [children]);
 
     return (
         <main className="w-full h-full overflow-hidden bg-background-1">
@@ -56,7 +58,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="w-full h-full overflow-y-auto box-border"
             >
-                <Main>{children}</Main>
+                <Main>{memoizedChildren}</Main>
             </motion.div>
         </main>
     )

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Hash } from "lucide-react";
 import { Route } from "@/lib/types/domain";
 import { Link } from "@/i18n/navigation";
@@ -8,7 +9,7 @@ type CategoryTagsProps = {
   tags: Route["tags"];
 };
 
-export default function CategoryTags({ tags }: CategoryTagsProps) {
+const CategoryTags = memo(function CategoryTags({ tags }: CategoryTagsProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
@@ -35,4 +36,6 @@ export default function CategoryTags({ tags }: CategoryTagsProps) {
       </div>
     </div>
   );
-}
+});
+
+export default CategoryTags;

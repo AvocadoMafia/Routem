@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { HiHeart, HiEye, HiClock, HiBanknotes } from 'react-icons/hi2'
 import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
@@ -14,7 +14,7 @@ export type RouteCardGraphicalProps = {
   rank?: number;
 }
 
-export default function RouteCardGraphical({route, isLinkCard = true, isFocused = false, onClick, rank}: RouteCardGraphicalProps) {
+const RouteCardGraphical = memo(function RouteCardGraphical({route, isLinkCard = true, isFocused = false, onClick, rank}: RouteCardGraphicalProps) {
   const t = useTranslations('routes');
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
   const daysCount = route?.routeDates?.length ?? 0;
@@ -103,4 +103,6 @@ export default function RouteCardGraphical({route, isLinkCard = true, isFocused 
   }
 
   return content;
-}
+});
+
+export default RouteCardGraphical;

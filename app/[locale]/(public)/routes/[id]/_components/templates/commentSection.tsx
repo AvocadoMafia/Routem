@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import { motion } from "framer-motion";
 import { MessageSquare } from "lucide-react";
 import CommentInput from "../ingredients/commentInput";
@@ -20,7 +20,7 @@ type CommentSectionProps = {
  * 取得/投稿/削除/無限スクロールは useComments hook に委譲し、
  * このコンポーネントは並びと状態別の UI (loading / empty / login prompt) のみ責務を持つ。
  */
-export default function CommentSection({ isMobile, routeId }: CommentSectionProps) {
+const CommentSection = memo(function CommentSection({ isMobile, routeId }: CommentSectionProps) {
   const t = useTranslations("comments");
   const tRoutes = useTranslations("routes");
   const tCommon = useTranslations("common");
@@ -131,4 +131,6 @@ export default function CommentSection({ isMobile, routeId }: CommentSectionProp
       )}
     </motion.div>
   );
-}
+});
+
+export default CommentSection;

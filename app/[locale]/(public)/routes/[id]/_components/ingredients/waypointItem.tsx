@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -11,12 +12,12 @@ type WaypointItemProps = {
   isFocused: boolean;
 };
 
-export default function WaypointItem({ idx, data, isFocused }: WaypointItemProps) {
+const WaypointItem = memo(function WaypointItem({ idx, data, isFocused }: WaypointItemProps) {
   const t = useTranslations('routes');
   return (
     <div
-      className={`transition-all duration-700 ease-[0.22,1,0.36,1] ${
-        isFocused ? "opacity-100" : "opacity-40"
+      className={`transition-opacity duration-300 ${
+        isFocused ? "opacity-100" : "opacity-100"
       }`}
     >
       <div className="max-w-4xl overflow-x-hidden flex flex-col md:gap-6 gap-3">
@@ -63,4 +64,6 @@ export default function WaypointItem({ idx, data, isFocused }: WaypointItemProps
       </div>
     </div>
   );
-}
+});
+
+export default WaypointItem;

@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import React from 'react'
+import React, { memo } from 'react'
 import {HiHeart, HiClock, HiBanknotes, HiEye} from 'react-icons/hi2'
 import Image from 'next/image';
 import { Route } from '@/lib/types/domain';
@@ -13,7 +13,7 @@ export type FeaturedRouteCardProps = {
   onClick?: () => void;
 }
 
-export default function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
+const FeaturedRouteCard = memo(function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
   const t = useTranslations('routes');
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
   const daysCount = route.routeDates.length;
@@ -100,4 +100,6 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
   }
 
   return content;
-}
+});
+
+export default FeaturedRouteCard;

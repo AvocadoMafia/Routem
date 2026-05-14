@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import ContentsSelector from "@/app/[locale]/(public)/_components/templates/contentsSelector";
 import HomeSection from "@/app/[locale]/(public)/_components/(home)/homeSection";
 import PhotosSection from "@/app/[locale]/(public)/_components/(photos)/photosSection";
@@ -20,13 +20,15 @@ export default function RootClient() {
     const isLoggedIn = !!user.id
 
     const [selected, setSelected] = useState<selectedType>('home')
+    const handleSetSelected = useCallback((val: selectedType) => setSelected(val), [])
+
     const activeSelected = !isLoggedIn && (selected === 'likes' || selected === 'followings')
         ? 'home'
         : selected
 
     return (
         <div className={'w-full max-w-[1600px] h-full flex flex-col items-center md:px-8 px-4 relative'}>
-            <ContentsSelector selected={activeSelected} setSelected={setSelected}/>
+            <ContentsSelector selected={activeSelected} setSelected={handleSetSelected}/>
             {(() => {
                 switch (activeSelected) {
                     case 'home': return (

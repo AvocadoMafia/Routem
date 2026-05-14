@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import {BiHash} from "react-icons/bi";
 import {User} from "@/lib/types/domain";
 import Image from 'next/image';
@@ -11,7 +11,7 @@ export type Props = {
   onClick?: () => void
 }
 
-export default function FeaturedUserCard(props: Props) {
+const FeaturedUserCard = memo(function FeaturedUserCard(props: Props) {
 
   const content = (
     <div
@@ -102,4 +102,6 @@ export default function FeaturedUserCard(props: Props) {
     }
 
     return content;
-}
+});
+
+export default FeaturedUserCard;

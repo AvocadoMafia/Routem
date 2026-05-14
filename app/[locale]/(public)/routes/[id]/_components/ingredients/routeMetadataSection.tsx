@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Banknote, Calendar, Users } from "lucide-react";
 import { Route } from "@/lib/types/domain";
 import { useTranslations } from "next-intl";
@@ -9,7 +10,7 @@ type RouteMetadataSectionProps = {
   route: Route;
 };
 
-export default function RouteMetadataSection({ route }: RouteMetadataSectionProps) {
+const RouteMetadataSection = memo(function RouteMetadataSection({ route }: RouteMetadataSectionProps) {
   const t = useTranslations("routes");
   const tEditor = useTranslations("routeEditor");
   
@@ -77,4 +78,6 @@ export default function RouteMetadataSection({ route }: RouteMetadataSectionProp
       </div>
     </div>
   );
-}
+});
+
+export default RouteMetadataSection;

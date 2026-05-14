@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import {
@@ -21,7 +22,7 @@ type RouteHeaderProps = {
   currentUser?: User | null;
 };
 
-export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
+const RouteHeader = memo(function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const t = useTranslations("routes");
   const tEditor = useTranslations("routeEditor");
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode, "3,500");
@@ -95,4 +96,6 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       />
     </div>
   );
-}
+});
+
+export default RouteHeader;

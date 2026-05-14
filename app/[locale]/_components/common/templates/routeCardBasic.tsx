@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { formatDateToYmdInTz } from "@/lib/utils/datetime";
 import { useTranslations } from "next-intl";
 import { useLocalizedBudget } from "@/lib/hooks/useLocalizedBudget";
+import { memo } from "react";
 
 export type RouteCardBasicProps = {
     route: Route;
@@ -15,7 +16,7 @@ export type RouteCardBasicProps = {
     onClick?: () => void;
 }
 
-export default function RouteCardBasic({ route, isLinkCard = true, isFocused = false, onClick }: RouteCardBasicProps) {
+const RouteCardBasic = memo(function RouteCardBasic({ route, isLinkCard = true, isFocused = false, onClick }: RouteCardBasicProps) {
     const t = useTranslations('routes');
     const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode, "---");
     const daysCount = route.routeDates.length;
@@ -104,5 +105,7 @@ export default function RouteCardBasic({ route, isLinkCard = true, isFocused = f
     }
 
     return content;
-}
+});
+
+export default RouteCardBasic;
 

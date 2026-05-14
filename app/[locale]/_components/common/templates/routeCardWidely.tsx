@@ -2,6 +2,7 @@ import {Route} from "@/lib/types/domain";
 import Image from "next/image";
 import {HiHeart, HiEye} from "react-icons/hi2";
 import { Link } from "@/i18n/navigation";
+import { memo } from "react";
 
 export type RouteCardWidelyProps = {
     route: Route;
@@ -10,7 +11,7 @@ export type RouteCardWidelyProps = {
     onClick?: () => void;
 }
 
-export default function RouteCardWidely({route, isLinkCard = true, isFocused = false, onClick}: RouteCardWidelyProps) {
+const RouteCardWidely = memo(function RouteCardWidely({route, isLinkCard = true, isFocused = false, onClick}: RouteCardWidelyProps) {
 
     const content = (
         <div className={`w-full h-32 bg-background-0 text-foreground-1 rounded-2xl p-1.5 shadow-sm cursor-pointer transition-all duration-300 hover:shadow-md hover:scale-[1.01] active:scale-[0.99] ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`} onClick={onClick}>
@@ -53,4 +54,6 @@ export default function RouteCardWidely({route, isLinkCard = true, isFocused = f
     }
 
     return content;
-}
+});
+
+export default RouteCardWidely;
