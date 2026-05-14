@@ -33,7 +33,7 @@ const AuthorSection = memo(function AuthorSection({ author, currentUser }: Autho
               alt={author.name}
               fill
               className="object-cover"
-              unoptimized
+              sizes="64px"
             />
           </div>
           <div className="min-w-0">

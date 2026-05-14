@@ -91,7 +91,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                 alt={routeOnFocus.title}
                                 fill
                                 className="object-cover"
-                                unoptimized
+                                sizes="(max-width: 768px) 100vw, 850px"
                             />
                             {/* グラデーションオーバーレイ */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
@@ -113,7 +113,7 @@ export default function FocusingRouteViewer({routeOnFocus, focusedRouteIdx, setF
                                             alt={routeOnFocus.author.name}
                                             fill
                                             className="object-cover"
-                                            unoptimized
+                                            sizes="48px"
                                         />
                                     </div>
                                     <div className="flex flex-col">

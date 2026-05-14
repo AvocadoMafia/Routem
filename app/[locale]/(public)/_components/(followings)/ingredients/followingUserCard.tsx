@@ -60,7 +60,7 @@ const FollowingUserCard = memo(function FollowingUserCard({ user, active }: Prop
             alt={user.name}
             fill
             className="object-cover"
-            unoptimized
+            sizes="48px"
           />
         </div>
         <div className="min-w-0 flex-1">

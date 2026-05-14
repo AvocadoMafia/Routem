@@ -42,7 +42,7 @@ export default function InitialModal({ route }: { route: Route }) {
                             fill
                             className={`object-cover transition-opacity duration-700 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                             priority
-                            unoptimized
+                            sizes="100vw"
                             onLoad={() => setIsImageLoaded(true)}
                         />
                     </motion.div>

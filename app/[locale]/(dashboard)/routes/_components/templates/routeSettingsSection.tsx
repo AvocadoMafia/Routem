@@ -193,7 +193,7 @@ export default function RouteSettingsSection({
                                             alt={t('thumbnailPreviewAlt')}
                                             fill
                                             className="object-cover"
-                                            unoptimized
+                                            sizes="(max-width: 768px) 100vw, 800px"
                                         />
                                     </div>
                                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

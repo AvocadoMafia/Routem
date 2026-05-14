@@ -31,7 +31,7 @@ const FeaturedRouteCard = memo(function FeaturedRouteCard({route, isLinkCard = t
           alt={`${route.title} background`}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
         {/* Gradient Overlay (Top to Bottom) - Simple color gradient instead of heavy backdrop-blur */}

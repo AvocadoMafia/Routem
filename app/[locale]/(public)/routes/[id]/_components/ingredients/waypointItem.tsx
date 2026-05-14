@@ -49,7 +49,7 @@ const WaypointItem = memo(function WaypointItem({ idx, data, isFocused }: Waypoi
                   alt="spot image"
                   fill
                   className="object-cover"
-                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </motion.div>
             ))}

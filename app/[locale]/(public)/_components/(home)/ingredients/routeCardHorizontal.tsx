@@ -38,10 +38,9 @@ const RouteCardHorizontal = memo(function RouteCardHorizontal({route, isLinkCard
           src={bgSrc}
           alt={`${route.title} background`}
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 768px) 100vw, 672px"
           className="object-cover"
           priority={false}
-          unoptimized
         />
         {/* オーバーレイ（視認性向上） */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/20" />

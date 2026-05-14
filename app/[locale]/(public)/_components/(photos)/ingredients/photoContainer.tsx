@@ -24,7 +24,7 @@ export default function PhotoContainer({photo}: { photo: Photo }) {
                       ease-[0.22,1,0.36,1]
                       group-hover:scale-110
                     "
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
             </div>
 
@@ -86,7 +86,7 @@ export default function PhotoContainer({photo}: { photo: Photo }) {
                                     alt={photo.username}
                                     fill
                                     className="object-cover"
-                                    unoptimized
+                                    sizes="24px"
                                 />
                             </div>
                             <span className="text-[10px] md:text-xs font-bold text-white/80">@{photo.username}</span>

@@ -38,7 +38,7 @@ const TrendingUserCard = memo(function TrendingUserCard({user, rank}: Props) {
                         src={user.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                         alt={user.name}
                         fill
-                        unoptimized
+                        sizes="40px"
                     />
                 </div>
             </div>

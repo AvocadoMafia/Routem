@@ -22,7 +22,7 @@ const RouteCardWidely = memo(function RouteCardWidely({route, isLinkCard = true,
                         src={route.thumbnail?.url ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                         alt={route.title}
                         fill
-                        unoptimized
+                        sizes="120px"
                     />
                 </div>
                 <div className={'flex-1 h-full px-4 py-3 flex flex-col justify-between overflow-hidden'}>

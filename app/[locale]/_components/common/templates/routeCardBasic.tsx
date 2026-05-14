@@ -34,7 +34,7 @@ const RouteCardBasic = memo(function RouteCardBasic({ route, isLinkCard = true, 
                     alt={route.title}
                     fill
                     className={'object-cover group-hover:scale-110 duration-700 ease-out'}
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 {/* 画像右上: いいね数/閲覧数（グラス＆rounded-full） */}
                 <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
@@ -83,7 +83,7 @@ const RouteCardBasic = memo(function RouteCardBasic({ route, isLinkCard = true, 
                             alt={route.author.name}
                             fill
                             className="rounded-full object-cover"
-                            unoptimized
+                            sizes="40px"
                         />
                     </div>
                     <div className="flex flex-col min-w-0">
