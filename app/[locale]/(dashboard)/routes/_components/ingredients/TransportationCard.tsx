@@ -4,6 +4,7 @@ import { Transportation } from "@/lib/types/domain";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TransitMode } from "@prisma/client";
+import { memo } from "react";
 
 interface TransportationCardProps {
     item: Transportation;
@@ -12,7 +13,7 @@ interface TransportationCardProps {
     onDelete: () => void;
 }
 
-export default function TransportationCard({ item, isSelected, onSelect, onDelete }: TransportationCardProps) {
+const TransportationCard = memo(function TransportationCard({ item, isSelected, onSelect, onDelete }: TransportationCardProps) {
     const t = useTranslations('transport');
     const tCommon = useTranslations('common');
 
@@ -63,4 +64,6 @@ export default function TransportationCard({ item, isSelected, onSelect, onDelet
             </button>
         </div>
     );
-}
+});
+
+export default TransportationCard;

@@ -88,7 +88,7 @@ export default function CommentItem({ comment, canDelete = false, onDelete }: Co
               alt={comment.user?.name || tCommon("user")}
               fill
               className="object-cover"
-              unoptimized
+              sizes="32px"
             />
           </div>
           <div className="flex flex-col">

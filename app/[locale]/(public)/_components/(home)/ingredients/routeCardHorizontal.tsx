@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Link } from "@/i18n/navigation";
 import { Route } from '@/lib/types/domain';
 import { useTranslations } from 'next-intl';
+import { memo } from 'react';
 
 import { useLocalizedBudget } from '@/lib/hooks/useLocalizedBudget';
 
@@ -13,7 +14,7 @@ export type RouteCardHorizontalProps = {
 }
 
 // 横長のシンプルな旅行ルート サムネイルカード
-export default function RouteCardHorizontal({route, isLinkCard = false, isFocused = false, onClick}: RouteCardHorizontalProps){
+const RouteCardHorizontal = memo(function RouteCardHorizontal({route, isLinkCard = false, isFocused = false, onClick}: RouteCardHorizontalProps){
   const t = useTranslations('routes');
   const bgSrc = route.thumbnail?.url  ?? 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp';
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode);
@@ -21,8 +22,8 @@ export default function RouteCardHorizontal({route, isLinkCard = false, isFocuse
   
   const content = (
     <div
-      className={`relative w-full max-w-2xl overflow-hidden rounded-lg border-2 shadow-sm hover:shadow-md transition-all cursor-pointer ${
-        isFocused ? 'border-accent-0/50' : 'bg-background-1 border-transparent'
+      className={`relative w-full max-w-2xl overflow-hidden rounded-lg border-2 shadow-sm transition-all cursor-pointer ${
+        isFocused ? 'border-accent-0/50' : 'bg-background-1 border-transparent hover:border-foreground-1/20'
       }`}
       style={{ minHeight: '96px' }}
       onClick={onClick}
@@ -37,10 +38,9 @@ export default function RouteCardHorizontal({route, isLinkCard = false, isFocuse
           src={bgSrc}
           alt={`${route.title} background`}
           fill
-          sizes="(max-width: 768px) 100vw, 50vw"
+          sizes="(max-width: 768px) 100vw, 672px"
           className="object-cover"
           priority={false}
-          unoptimized
         />
         {/* オーバーレイ（視認性向上） */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/20" />
@@ -113,5 +113,7 @@ export default function RouteCardHorizontal({route, isLinkCard = false, isFocuse
   }
 
   return content;
-};
+});
+
+export default RouteCardHorizontal;
 

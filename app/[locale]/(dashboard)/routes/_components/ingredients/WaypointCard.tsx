@@ -3,6 +3,7 @@
 import { Waypoint } from "@/lib/types/domain";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 
 interface WaypointCardProps {
     item: Waypoint;
@@ -11,7 +12,7 @@ interface WaypointCardProps {
     onDelete: () => void;
 }
 
-export default function WaypointCard({ item, isSelected, onSelect, onDelete }: WaypointCardProps) {
+const WaypointCard = memo(function WaypointCard({ item, isSelected, onSelect, onDelete }: WaypointCardProps) {
     const t = useTranslations('routeEditor');
     const tCommon = useTranslations('common');
 
@@ -63,4 +64,6 @@ export default function WaypointCard({ item, isSelected, onSelect, onDelete }: W
             </button>
         </div>
     );
-}
+});
+
+export default WaypointCard;

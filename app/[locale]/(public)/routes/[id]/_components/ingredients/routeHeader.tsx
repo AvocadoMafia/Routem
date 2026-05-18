@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Route } from "@/lib/types/domain";
 import Image from "next/image";
 import {
@@ -21,7 +22,7 @@ type RouteHeaderProps = {
   currentUser?: User | null;
 };
 
-export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
+const RouteHeader = memo(function RouteHeader({ route, currentUser }: RouteHeaderProps) {
   const t = useTranslations("routes");
   const tEditor = useTranslations("routeEditor");
   const localizedBudget = useLocalizedBudget(route.budget?.amount, route.budget?.localCurrencyCode, "3,500");
@@ -53,7 +54,7 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
             fill
             className="object-cover"
             priority
-            unoptimized
+            sizes="(max-width: 768px) 100vw, 40vw"
           />
         </motion.div>
         <div className={"flex flex-col gap-3 md:flex-1 w-full md:py-3 md:px-0 px-3 py-0"}>
@@ -64,7 +65,13 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
           </div>
           <div className={"w-full flex gap-3 items-center justify-between"}>
             <div className="flex gap-2 items-center">
-              <img className={"md:w-10 w-7 md:h-10 h-7 rounded-full"} src={route.author.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'} alt={"author"} />
+            <Image 
+              src={route.author.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-profile.webp'} 
+              alt={"author"}
+              width={40}
+              height={40}
+              className={"md:w-10 w-7 md:h-10 h-7 rounded-full object-cover"}
+            />
                 <div className={'flex flex-col'}>
                     <span className={"text-foreground-0 text-lg"}>{route.author.name}</span>
                     <span className={'text-foreground-1 text-sm'}>{route.author._count?.followers ?? 0} followers</span>
@@ -95,4 +102,6 @@ export default function RouteHeader({ route, currentUser }: RouteHeaderProps) {
       />
     </div>
   );
-}
+});
+
+export default RouteHeader;

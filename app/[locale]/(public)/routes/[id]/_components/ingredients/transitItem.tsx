@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Clock } from "lucide-react";
 import TransitIcon from "./transitIcon";
 
@@ -8,11 +9,11 @@ type TransitItemProps = {
   isFocused: boolean;
 };
 
-export default function TransitItem({ data, isFocused }: TransitItemProps) {
+const TransitItem = memo(function TransitItem({ data, isFocused }: TransitItemProps) {
   return (
     <div
-      className={`transition-all duration-700 ease-[0.22,1,0.36,1] ${
-        isFocused ? "opacity-100" : "opacity-40"
+      className={`transition-opacity duration-300 ${
+        isFocused ? "opacity-100" : "opacity-100"
       }`}
     >
       <div className="max-w-4xl overflow-x-hidden">
@@ -44,4 +45,6 @@ export default function TransitItem({ data, isFocused }: TransitItemProps) {
       </div>
     </div>
   );
-}
+});
+
+export default TransitItem;

@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from "react";
+import { useState, memo } from "react";
 import { MdMenu, MdSearch } from "react-icons/md";
 import PageTitle from "@/app/[locale]/_components/layout/ingredients/pageTitle";
 import NavigatorList from "@/app/[locale]/_components/layout/ingredients/navigatorList";
 import SearchBar from "@/app/[locale]/_components/layout/ingredients/searchBar";
 import MobileMenu from "@/app/[locale]/_components/layout/ingredients/mobileMenu";
 
-export default function Header () {
+const Header = memo(function Header () {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchMode, setIsSearchMode] = useState(false);
 
@@ -48,4 +48,6 @@ export default function Header () {
             />
         </header>
     )
-}
+});
+
+export default Header;

@@ -129,7 +129,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                     alt={t('backgroundAlt')}
                     fill
                     className="object-cover"
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, 800px"
                   />
                 )}
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
@@ -168,7 +168,7 @@ export default function UserProfileEditModal({ isOpen, onClose }: UserProfileEdi
                       alt={t('iconAlt')}
                       fill
                       className="object-cover"
-                      unoptimized
+                      sizes="96px"
                     />
                   )}
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">

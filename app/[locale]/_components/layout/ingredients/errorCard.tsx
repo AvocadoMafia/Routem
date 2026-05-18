@@ -3,13 +3,14 @@
 import { ErrorScheme } from "@/lib/types/error";
 import { MdClose, MdErrorOutline } from "react-icons/md";
 import { motion } from "framer-motion";
+import { memo } from "react";
 
 interface Props {
     error: ErrorScheme;
     onDelete: () => void;
 }
 
-export default function ErrorCard({ error, onDelete }: Props) {
+const ErrorCard = memo(function ErrorCard({ error, onDelete }: Props) {
     return (
         <motion.div
             layout
@@ -42,4 +43,6 @@ export default function ErrorCard({ error, onDelete }: Props) {
             </button>
         </motion.div>
     );
-}
+});
+
+export default ErrorCard;

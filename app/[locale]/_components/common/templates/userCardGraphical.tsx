@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {User} from "@/lib/types/domain";
 import {IoPersonAdd} from "react-icons/io5";
 import { HiUserGroup, HiBookOpen } from 'react-icons/hi2';
@@ -12,7 +12,7 @@ export type Props = {
   onClick?: () => void;
 };
 
-export function UserCardGraphical(props: Props) {
+export const UserCardGraphical = memo(function UserCardGraphical(props: Props) {
   const currentUser = userStore(state => state.user);
   const isMe = currentUser?.id === props.user.id;
   const href = isMe ? '/me' : `/users/${props.user.id}`;
@@ -20,7 +20,7 @@ export function UserCardGraphical(props: Props) {
   return (
     <Link
       href={href}
-      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 text-left"
+      className="group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm transition-all duration-300 bg-background-0 p-1.5 text-left hover:ring-1 hover:ring-foreground-1/20"
       aria-label={props.rank ? `Rank ${props.rank}: ${props.user.name}` : props.user.name}
     >
       {/* Background Image with Margin (via container padding) */}
@@ -29,15 +29,12 @@ export function UserCardGraphical(props: Props) {
           src={props.user.background?.url || "https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp"}
           alt={`${props.user.name} background`}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          unoptimized
+          className="object-cover transition-transform duration-500 ease-out"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
-        {/* Gradient Mask Overlay (Top to Bottom) with Smooth Blur - Inside the image container */}
-        <div className="absolute inset-0 rounded-lg
-      backdrop-blur-2xl bg-black/50
-      [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+        {/* Gradient Overlay (Top to Bottom) - Simple color gradient instead of heavy backdrop-blur */}
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
@@ -59,7 +56,7 @@ export function UserCardGraphical(props: Props) {
                   alt={`${props.user.name} icon`}
                   fill
                   className="object-cover"
-                  unoptimized
+                  sizes="40px"
                 />
               </div>
               <div className="space-y-1">
@@ -91,4 +88,4 @@ export function UserCardGraphical(props: Props) {
       </div>
     </Link>
   );
-}
+});

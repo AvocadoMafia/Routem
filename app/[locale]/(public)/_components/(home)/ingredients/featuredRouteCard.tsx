@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import React from 'react'
+import React, { memo } from 'react'
 import {HiHeart, HiClock, HiBanknotes, HiEye} from 'react-icons/hi2'
 import Image from 'next/image';
 import { Route } from '@/lib/types/domain';
@@ -13,7 +13,7 @@ export type FeaturedRouteCardProps = {
   onClick?: () => void;
 }
 
-export default function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
+const FeaturedRouteCard = memo(function FeaturedRouteCard({route, isLinkCard = true, isFocused = false, onClick}: FeaturedRouteCardProps) {
   const t = useTranslations('routes');
   const localizedBudget = useLocalizedBudget(route?.budget?.amount, route?.budget?.localCurrencyCode, "---");
   const daysCount = route.routeDates.length;
@@ -21,7 +21,7 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
   const content = (
     <div
       onClick={onClick}
-      className={`group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : ''}`}
+      className={`group relative block w-full h-full rounded-2xl overflow-hidden shadow-sm transition-all duration-300 bg-background-0 p-1.5 cursor-pointer ${isFocused ? 'ring-2 ring-accent-0 border-transparent' : 'hover:ring-1 hover:ring-foreground-1/20'}`}
       aria-label={`Top route: ${route.title}`}
     >
       {/* Background Image with Margin (via container padding) */}
@@ -30,15 +30,12 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
           src={route.thumbnail?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
           alt={`${route.title} background`}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-          unoptimized
+          className="object-cover transition-transform duration-500 ease-out"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
-        {/* Gradient Mask Overlay (Top to Bottom) with Smooth Blur - Inside the image container */}
-        <div className="absolute inset-0 rounded-lg overflow-hidden
-      backdrop-blur-2xl bg-black/50
-      [mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]
-      [-webkit-mask-image:linear-gradient(to_bottom,transparent_10%,black_80%)]" />
+        {/* Gradient Overlay (Top to Bottom) - Simple color gradient instead of heavy backdrop-blur */}
+        <div className="absolute inset-0 rounded-lg overflow-hidden bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {/* Content Container (Padding around edges) - Inside the image container */}
         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
@@ -52,7 +49,7 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
           {/* Bottom section: Title, Meta, and Detail Chips (styled like RouteCardGraphical) */}
           <div className="space-y-3">
             <div className="space-y-1">
-              <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-2 text-white">
+              <h3 className="md:text-3xl text-xl font-bold leading-tight drop-shadow-sm line-clamp-4 text-white">
                 {route.title}
               </h3>
               <div className="flex items-center gap-1.5 truncate mr-2 text-[10px] font-bold uppercase tracking-[0.3em] text-white/90">
@@ -76,11 +73,11 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
 
             {/* Period and Cost area (Button-like) */}
             <div className="flex gap-2">
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiClock className="w-4 h-4 text-foreground-0" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">{daysCount} {t('daysUnit')}</span>
               </div>
-              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 backdrop-blur-md rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
+              <div className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-full shadow-inner bg-background-1 text-foreground-0 transition-colors">
                 <HiBanknotes className="w-4 h-4 text-foreground-0" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em]">{localizedBudget}</span>
               </div>
@@ -100,4 +97,6 @@ export default function FeaturedRouteCard({route, isLinkCard = true, isFocused =
   }
 
   return content;
-}
+});
+
+export default FeaturedRouteCard;

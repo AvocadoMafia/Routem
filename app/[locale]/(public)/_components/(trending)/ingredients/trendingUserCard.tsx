@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { TrendingUser } from "@/app/[locale]/(public)/_components/(trending)/trendingSection";
+import { memo } from "react";
 
 type Props = {
     user: TrendingUser;
@@ -13,7 +14,7 @@ function formatCount(n: number): string {
     return `${n}`;
 }
 
-export default function TrendingUserCard({user, rank}: Props) {
+const TrendingUserCard = memo(function TrendingUserCard({user, rank}: Props) {
     const followerCount = user._count?.followers ?? 0;
     return (
         <Link
@@ -37,7 +38,7 @@ export default function TrendingUserCard({user, rank}: Props) {
                         src={user.icon?.url || 'https://objectstorage.ap-tokyo-1.oraclecloud.com/n/nrsgvi73cynt/b/routem-image-bucket/o/initial-thumbnail.webp'}
                         alt={user.name}
                         fill
-                        unoptimized
+                        sizes="40px"
                     />
                 </div>
             </div>
@@ -62,4 +63,6 @@ export default function TrendingUserCard({user, rank}: Props) {
             </div>
         </Link>
     )
-}
+});
+
+export default TrendingUserCard;

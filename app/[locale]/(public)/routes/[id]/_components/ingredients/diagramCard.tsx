@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import TransitIcon from "./transitIcon";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 
 type DiagramCardProps = {
   item: {
@@ -16,7 +17,7 @@ type DiagramCardProps = {
   onItemClick: (index: number) => void;
 };
 
-export default function DiagramCard({
+const DiagramCard = memo(function DiagramCard({
   item,
   idx,
   isFocused,
@@ -77,4 +78,6 @@ export default function DiagramCard({
       </motion.button>
     </div>
   );
-}
+});
+
+export default DiagramCard;

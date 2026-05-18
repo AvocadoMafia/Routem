@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { HiHashtag } from "react-icons/hi2";
+import { memo } from "react";
 
 type Props = {
     tag: string;
@@ -13,7 +14,7 @@ function formatCount(n: number): string {
     return `${n}`;
 }
 
-export default function TrendingTagCard({tag, rank, postCount}: Props) {
+const TrendingTagCard = memo(function TrendingTagCard({tag, rank, postCount}: Props) {
     return (
         <Link
             href={`/tags/${encodeURIComponent(tag)}`}
@@ -57,4 +58,6 @@ export default function TrendingTagCard({tag, rank, postCount}: Props) {
             </div>
         </Link>
     )
-}
+});
+
+export default TrendingTagCard;

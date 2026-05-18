@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { MdFavoriteBorder, MdGridOn } from 'react-icons/md'
+import { memo } from 'react'
 
 export type RouteItem = {
   id: string
@@ -10,7 +11,7 @@ export type RouteItem = {
   category: string
 }
 
-export default function RouteCard({ route }: { route: RouteItem }) {
+const RouteCard = memo(function RouteCard({ route }: { route: RouteItem }) {
   return (
     <motion.div 
       key={route.id}
@@ -43,4 +44,6 @@ export default function RouteCard({ route }: { route: RouteItem }) {
       <h3 className="font-bold text-foreground-0 group-hover:text-accent-0 transition-colors">{route.title}</h3>
     </motion.div>
   )
-}
+});
+
+export default RouteCard;

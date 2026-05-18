@@ -1,7 +1,7 @@
 'use client'
 
 import ScrollDetector from "@/app/[locale]/_components/layout/templates/scrollDetector";
-import {useCallback, useEffect} from "react";
+import {useCallback, useEffect, useMemo} from "react";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { motion } from "framer-motion";
 import Header from "@/app/[locale]/_components/layout/templates/header";
@@ -11,7 +11,8 @@ import ToastViewer from "@/app/[locale]/_components/layout/templates/toastViewer
 
 export default function RootClient({ children }: { children: React.ReactNode }) {
 
-    const scrollDirection = useUiStore((state) => state.scrollDirection)
+    const isMobile = useUiStore((state) => state.isMobile)
+    const scrollDirection = useUiStore((state) => state.isMobile ? state.scrollDirection : 'up')
     const setIsMobile = useUiStore((state) => state.setIsMobile)
     const headerHeight = useUiStore((state) => state.headerHeight)
     const setHeaderHeight = useUiStore((state) => state.setHeaderHeight)
@@ -28,6 +29,8 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
         return () => window.removeEventListener('resize', updateHeight)
     }, [updateHeight])
 
+    const memoizedChildren = useMemo(() => children, [children]);
+
     return (
         <main className="w-full h-full overflow-hidden bg-background-1">
             <ErrorViewer />
@@ -38,7 +41,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
             <motion.div
                 initial={false}
                 animate={{
-                    y: scrollDirection === 'down' ? -headerHeight : 0,
+                    y: (isMobile && scrollDirection === 'down') ? -headerHeight : 0,
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="fixed top-0 left-0 w-full z-50"
@@ -48,15 +51,15 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
 
             {/* 👇 ここが唯一のスクロール要素 */}
             <motion.div
-                initial={false}
                 id="main-scroll-container"
+                className="w-full h-full overflow-y-auto box-border"
+                initial={false}
                 animate={{
-                    paddingTop: scrollDirection === 'down' ? 0 : headerHeight,
+                    paddingTop: (isMobile && scrollDirection === "down") ? 0 : headerHeight
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="w-full h-full overflow-y-auto box-border"
             >
-                <Main>{children}</Main>
+                <Main>{memoizedChildren}</Main>
             </motion.div>
         </main>
     )

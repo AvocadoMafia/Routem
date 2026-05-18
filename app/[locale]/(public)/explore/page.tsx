@@ -159,14 +159,8 @@ function ExploreContent() {
             <div
               className="absolute inset-0 z-10 pointer-events-none"
               style={{
-                backdropFilter: "blur(6px)",
-                WebkitBackdropFilter: "blur(6px)",
                 background:
-                  "linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.35) 25%, rgba(0,0,0,0.15) 40%, transparent 55%)",
-                maskImage:
-                  "linear-gradient(to bottom, transparent 0%, transparent 55%, rgba(0,0,0,0.4) 70%, black 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, transparent 0%, transparent 55%, rgba(0,0,0,0.4) 70%, black 100%)",
+                  "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 30%, transparent 60%)",
               }}
             />
           </motion.div>

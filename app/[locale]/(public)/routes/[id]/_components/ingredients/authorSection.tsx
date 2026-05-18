@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { User } from "lucide-react";
 import Image from "next/image";
 import { Route } from "@/lib/types/domain";
@@ -12,7 +13,7 @@ type AuthorSectionProps = {
   currentUser?: SupabaseUser | null;
 };
 
-export default function AuthorSection({ author, currentUser }: AuthorSectionProps) {
+const AuthorSection = memo(function AuthorSection({ author, currentUser }: AuthorSectionProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -32,7 +33,7 @@ export default function AuthorSection({ author, currentUser }: AuthorSectionProp
               alt={author.name}
               fill
               className="object-cover"
-              unoptimized
+              sizes="64px"
             />
           </div>
           <div className="min-w-0">
@@ -44,4 +45,6 @@ export default function AuthorSection({ author, currentUser }: AuthorSectionProp
       </div>
     </div>
   );
-}
+});
+
+export default AuthorSection;

@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, memo } from "react";
 import { usePathname } from "next/navigation";
 
-export default function Main({children}: {children: React.ReactNode}) {
+const Main = memo(function Main({children}: {children: React.ReactNode}) {
     const containerRef = useRef<HTMLDivElement>(null);
 
 
@@ -13,4 +13,6 @@ export default function Main({children}: {children: React.ReactNode}) {
             {children}
         </div>
     );
-}
+});
+
+export default Main;

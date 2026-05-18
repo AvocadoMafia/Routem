@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
+import { memo } from "react";
 
 type Props = {
   /** カード上部に表示する短いメッセージ (何故ログインが要るかを1行で) */
@@ -27,7 +28,7 @@ type Props = {
  * デフォルトの href は「現在ページに戻るための `redirectTo` を含んだ /login URL」を自動生成する。
  * これにより commentSection などで呼び出し側が毎回 pathname を気にせず済む。
  */
-export default function LoginPromptCard({
+const LoginPromptCard = memo(function LoginPromptCard({
   title,
   ctaLabel,
   href,
@@ -76,4 +77,6 @@ export default function LoginPromptCard({
       </Link>
     </motion.div>
   );
-}
+});
+
+export default LoginPromptCard;

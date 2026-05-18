@@ -7,6 +7,7 @@ import { HiHome } from "react-icons/hi";
 import { useTranslations } from "next-intl";
 import { userStore } from "@/lib/stores/userStore";
 import {useUiStore} from "@/lib/stores/uiStore";
+import { memo } from "react";
 
 const SELECTOR_KEYS = [
     { key: 'home', icon: HiHome, selected: 'home'},
@@ -21,13 +22,11 @@ type Props = {
     setSelected: (selected: selectedType) => void
 }
 
-export default function ContentsSelector(props: Props) {
+const SelectorInner = memo(function SelectorInner({ selected, setSelected }: Props) {
     const t = useTranslations('tabs');
     const tNav = useTranslations('navigation');
     const user = userStore((state) => state.user);
     const isLoggedIn = !!user.id;
-
-    const scrollDirection = useUiStore((state) => state.scrollDirection)
 
     const getLabel = (key: string) => {
         if (key === 'home') return tNav('home');
@@ -44,48 +43,59 @@ export default function ContentsSelector(props: Props) {
     });
 
     return (
+        <div className={'shrink-0 w-fit h-fit bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
+            {visibleKeys.map((item, idx) => {
+                const isSelected = selected === item.selected;
+                return (
+                    <button
+                        key={idx}
+                        className={'relative flex items-center justify-center md:min-w-28 gap-2 px-4 py-2 cursor-pointer group whitespace-nowrap rounded-full transition-colors'}
+                        onClick={() => {setSelected(item.selected as selectedType)}}
+                    >
+                        {isSelected && (
+                            <motion.div
+                                layoutId="active-pill"
+                                className="absolute inset-0 bg-accent-0 rounded-full shadow-sm z-0"
+                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            />
+                        )}
+
+                        <div className="relative z-10 flex items-center gap-2">
+                            <item.icon
+                                className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-white' : 'text-accent-0 group-hover:text-accent-0'}`}
+                            />
+                            <span className={`text-[10px] font-bold uppercase tracking-[0.3em] transition-colors duration-300 md:block ${isSelected ? 'text-white block' : 'hidden text-foreground-1 group-hover:text-foreground-0'}`}>
+                                {getLabel(item.key)}
+                            </span>
+                        </div>
+                    </button>
+                );
+            })}
+        </div>
+    );
+});
+
+const ContentsSelector = memo(function ContentsSelector(props: Props) {
+    const isMobile = useUiStore((state) => state.isMobile)
+    const scrollDirection = useUiStore((state) => state.isMobile ? state.scrollDirection : 'up')
+
+    return (
         <div className="fixed bottom-8 left-0 w-full flex justify-center z-40 pointer-events-none">
             <motion.div
                 initial={false}
                 animate={{
-                    y: scrollDirection === 'down' ? 100 : 0,
-                    opacity: scrollDirection === 'down' ? 0 : 1,
+                    y: (isMobile && scrollDirection === 'down') ? 100 : 0,
+                    opacity: (isMobile && scrollDirection === 'down') ? 0 : 1,
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="pointer-events-auto"
             >
-                <div className={'shrink-0 w-fit h-fit bg-background-1/80 backdrop-blur-sm flex items-center justify-start md:justify-center gap-1 md:gap-2 px-2 py-2 border border-grass overflow-x-auto no-scrollbar rounded-full shadow-sm'}>
-                    {visibleKeys.map((item, idx) => {
-                        const isSelected = props.selected === item.selected;
-                        return (
-                            <button
-                                key={idx}
-                                className={'relative flex items-center justify-center md:min-w-28 gap-2 px-4 py-2 cursor-pointer group whitespace-nowrap rounded-full transition-colors'}
-                                onClick={() => {props.setSelected(item.selected as selectedType)}}
-                            >
-                                {isSelected && (
-                                    <motion.div
-                                        layoutId="active-pill"
-                                        className="absolute inset-0 bg-accent-0 rounded-full shadow-sm z-0"
-                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                    />
-                                )}
-
-                                <div className="relative z-10 flex items-center gap-2">
-                                    <item.icon
-                                        className={`w-5 h-5 transition-colors duration-300 ${isSelected ? 'text-white' : 'text-accent-0 group-hover:text-accent-0'}`}
-                                    />
-                                    <span className={`text-[10px] font-bold uppercase tracking-[0.3em] transition-colors duration-300 md:block ${isSelected ? 'text-white block' : 'hidden text-foreground-1 group-hover:text-foreground-0'}`}>
-                                {getLabel(item.key)}
-                            </span>
-                                </div>
-                            </button>
-                        );
-                    })}
-                </div>
+                <SelectorInner {...props} />
             </motion.div>
         </div>
     )
-}
+});
+
+export default ContentsSelector;
 
 

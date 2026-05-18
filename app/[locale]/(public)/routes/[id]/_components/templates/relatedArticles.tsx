@@ -6,6 +6,7 @@ import RouteCardWidelySkeleton from "@/app/[locale]/_components/common/ingredien
 import SectionErrorState from "@/app/[locale]/_components/common/ingredients/sectionErrorState";
 import { Route } from "@/lib/types/domain";
 import { ErrorScheme } from "@/lib/types/error";
+import { memo } from "react";
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 
@@ -20,7 +21,7 @@ type Props = {
   onRetry?: () => Promise<void>;
 };
 
-export default function RelatedArticles({
+const RelatedArticles = memo(function RelatedArticles({
   routes,
   loading,
   fetchingMore: isFetching,
@@ -101,4 +102,6 @@ export default function RelatedArticles({
       )}
     </div>
   );
-}
+});
+
+export default RelatedArticles;
